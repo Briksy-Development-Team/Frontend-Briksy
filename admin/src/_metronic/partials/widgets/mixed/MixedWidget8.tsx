@@ -49,7 +49,6 @@ const MixedWidget8: FC<Props> = ({className, chartColor, chartHeight}) => {
         </h3>
 
         <div className='card-toolbar'>
-          {/* begin::Menu */}
           <button
             type='button'
             className='btn btn-sm btn-icon btn-color-primary btn-active-light-primary'
@@ -60,7 +59,6 @@ const MixedWidget8: FC<Props> = ({className, chartColor, chartHeight}) => {
             <KTIcon iconName='category' className='fs-2' />
           </button>
           <Dropdown1 />
-          {/* end::Menu */}
         </div>
       </div>
       {/* end::Header */}

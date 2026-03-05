@@ -29,4 +29,4 @@ export * from './modals/invite-users/InviteUsers'
 export * from './modals/upgrade-plan/UpgradePlan'
 
 // chat
-export * from './chat/ChatInner'
+// export * from './chat/ChatInner'
