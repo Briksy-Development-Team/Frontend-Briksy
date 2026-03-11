@@ -1,12 +1,20 @@
-
 import './App.css'
+import { useState, useEffect } from "react"
+import { testConnection } from "./api/clients.api"
+import { BrowserRouter } from "react-router-dom";
+import AppRouter from './routes/AppRouter';
 
 function App() {
+  const [dark, setDark] = useState<boolean>(true)
+
+  useEffect(() => {
+    testConnection()
+  }, [])
 
   return (
-    <>
-      <h1 className='text-red-700 font-extrabold text-9xl text-center '>briksy real Estate </h1>
-    </>
+    <BrowserRouter>
+      <AppRouter dark={dark} setDark={setDark} />
+    </BrowserRouter>
   )
 }
 
