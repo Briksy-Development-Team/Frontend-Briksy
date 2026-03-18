@@ -1,20 +1,24 @@
 import { useMemo, useState, useEffect } from 'react'
-import { useTable, Column } from 'react-table'
+import { useTable } from 'react-table'
 import { useNavigate } from 'react-router-dom'
 import { KTCardBody } from '../../../../../../_metronic/helpers'
 
-type User = {
-  id: number
-  image: string
-  name: string
-  email: string
-  status: string
-  last_login: string
+type Props<T extends { id?: number }> = {
+  data: T[]
+  columns: any[]
+  pageSize?: number
+  enableRowClick?: boolean
+  getRowLink?: (row: T) => string
 }
 
-const UserTable = ({ data }: { data: User[] }) => {
+const EntityTable = <T extends { id?: number }>({
+  data,
+  columns,
+  pageSize = 10,
+  enableRowClick = false,
+  getRowLink,
+}: Props<T>) => {
   const [currentPage, setCurrentPage] = useState(1)
-  const pageSize = 10
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -24,20 +28,9 @@ const UserTable = ({ data }: { data: User[] }) => {
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * pageSize
     return data.slice(start, start + pageSize)
-  }, [data, currentPage])
+  }, [data, currentPage, pageSize])
 
   const totalPages = Math.ceil(data.length / pageSize)
-
-  const columns: Column<User>[] = useMemo(
-    () => [
-      { Header: 'Image', accessor: 'image' },
-      { Header: 'Name', accessor: 'name' },
-      { Header: 'Email', accessor: 'email' },
-      { Header: 'Status', accessor: 'status' },
-      { Header: 'Last Login', accessor: 'last_login' },
-    ],
-    []
-  )
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({
@@ -52,7 +45,9 @@ const UserTable = ({ data }: { data: User[] }) => {
           {headerGroups.map((hg) => (
             <tr {...hg.getHeaderGroupProps()}>
               {hg.headers.map((col) => (
-                <th {...col.getHeaderProps()}>{col.render('Header')}</th>
+                <th {...col.getHeaderProps()}>
+                  {col.render('Header')}
+                </th>
               ))}
             </tr>
           ))}
@@ -62,15 +57,21 @@ const UserTable = ({ data }: { data: User[] }) => {
           {rows.length > 0 ? (
             rows.map((row) => {
               prepareRow(row)
+              const rowData = row.original
+
               return (
                 <tr
                   {...row.getRowProps()}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() =>
-                    navigate(`/apps/user-management/user/${row.original.id}`, {
-                      state: row.original,
-                    })
-                  }
+                  style={{
+                    cursor: enableRowClick ? 'pointer' : 'default',
+                  }}
+                  onClick={() => {
+                    if (enableRowClick && getRowLink) {
+                      navigate(getRowLink(rowData), {
+                        state: rowData,
+                      })
+                    }
+                  }}
                 >
                   {row.cells.map((cell) => (
                     <td {...cell.getCellProps()}>
@@ -82,7 +83,7 @@ const UserTable = ({ data }: { data: User[] }) => {
             })
           ) : (
             <tr>
-              <td colSpan={5} className='text-center'>
+              <td colSpan={columns.length} className='text-center'>
                 No data found
               </td>
             </tr>
@@ -90,7 +91,6 @@ const UserTable = ({ data }: { data: User[] }) => {
         </tbody>
       </table>
 
-      {/* Pagination */}
       <div className='d-flex justify-content-between align-items-center mt-5'>
         <button
           className='btn btn-sm btn-light'
@@ -125,4 +125,4 @@ const UserTable = ({ data }: { data: User[] }) => {
   )
 }
 
-export { UserTable }
+export { EntityTable }

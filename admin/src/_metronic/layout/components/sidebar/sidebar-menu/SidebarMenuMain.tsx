@@ -167,6 +167,12 @@ const SidebarMenuMain = () => {
           title="Staff management"
           fontIcon="bi-layers"
         />
+        <SidebarMenuItem
+          to="/apps/business-management/agencies"
+          icon="abstract-28"
+          title="Business Management"
+          fontIcon="bi-layers"
+        />
       </SidebarMenuItemWithSub>
     </>
   );

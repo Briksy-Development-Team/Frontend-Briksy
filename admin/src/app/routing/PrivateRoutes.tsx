@@ -6,6 +6,7 @@ import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
 import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
+import AgencyPage from '../modules/apps/business-management/AgencyPage'
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -14,6 +15,8 @@ const PrivateRoutes = () => {
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
   const StaffPage = lazy(() => import('../modules/apps/staff-management/StaffPage'))
   const UserPage = lazy(() => import('../modules/apps/user-managements/UserPage'))
+  const BusinessPage = lazy(() => import('../modules/apps/business-management/AgencyPage'))
+
 
 
   return (
@@ -73,6 +76,15 @@ const PrivateRoutes = () => {
           element={
             <SuspensedView>
               <StaffPage />
+            </SuspensedView>
+          }
+        />
+
+        <Route
+          path='/apps/business-management/*'
+          element={
+            <SuspensedView>
+              <AgencyPage />
             </SuspensedView>
           }
         />
