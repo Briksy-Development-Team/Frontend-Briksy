@@ -107,7 +107,6 @@ export default function Profile({ dark }: ProfilePageProps) {
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">
-            {/* Profile Header */}
             <div className={`
                 relative rounded-3xl overflow-hidden mb-6 border 
                 ${dark ? "bg-zinc-900 border-zinc-800" : "bg-white border-zinc-200"}
@@ -175,7 +174,6 @@ export default function Profile({ dark }: ProfilePageProps) {
                 </div>
             </div>
 
-            {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {statItems.map((stat, i) => (
                     <StatCard
@@ -188,7 +186,6 @@ export default function Profile({ dark }: ProfilePageProps) {
                 ))}
             </div>
 
-            {/* Tab Navigation */}
             <div className={`
                 flex gap-1 p-1 rounded-2xl mb-6 w-fit border 
                 ${dark ? "bg-zinc-900 border-zinc-800" : "bg-zinc-100 border-zinc-200"}
@@ -215,7 +212,6 @@ export default function Profile({ dark }: ProfilePageProps) {
                 ))}
             </div>
 
-            {/* Filters */}
             {(activeTab === 0 || activeTab === 1) && (
                 <div className="flex flex-wrap gap-2 mb-5">
                     <FilterDropdown
@@ -254,7 +250,6 @@ export default function Profile({ dark }: ProfilePageProps) {
                 </div>
             )}
 
-            {/* Tab Content */}
             <div key={activeTab} style={{ animation: "fadeUp 0.3s ease" }}>
                 {activeTab === 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

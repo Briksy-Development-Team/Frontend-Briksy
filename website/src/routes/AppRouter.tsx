@@ -13,7 +13,6 @@ const AppRouter = ({ dark, setDark }: AppRouterProps) => {
     return (
         <div className={`min-h-screen transition-colors duration-300 ${dark ? "bg-black text-white" : "bg-zinc-50 text-black"}`}>
 
-            {/* ── Navbar shown on ALL pages ── */}
             <Navbar
                 dark={dark}
                 setDark={setDark}
@@ -21,7 +20,6 @@ const AppRouter = ({ dark, setDark }: AppRouterProps) => {
                 name={profileData.seeker.name}
             />
 
-            {/* ── Page Routes ── */}
             <Routes>
                 <Route path='/' element={<Home dark={dark} />} />
                 <Route path='/profile' element={<Profile dark={dark} />} />
