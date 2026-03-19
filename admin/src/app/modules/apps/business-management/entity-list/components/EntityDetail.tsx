@@ -19,7 +19,7 @@ const UserDetail = () => {
 
     return (
         <div className="card p-5">
-            <h2 className="mb-5">User Details</h2>
+            <h2 className="mb-5">Agency Details</h2>
 
             <table className="table table-bordered">
                 <tbody>

@@ -155,22 +155,22 @@ const SidebarMenuMain = () => {
         fontIcon="bi-layers"
       >
         <SidebarMenuItem
-          to="/apps/user-management/user"
+          to="/apps/seeker-management/seeker"
           icon="abstract-28"
-          title="User management"
+          title="Seekers"
           fontIcon="bi-layers"
         />
 
         <SidebarMenuItem
           to="/apps/staff-management/staff"
           icon="abstract-28"
-          title="Staff management"
+          title="Staff "
           fontIcon="bi-layers"
         />
         <SidebarMenuItem
           to="/apps/business-management/agencies"
           icon="abstract-28"
-          title="Business Management"
+          title="Service Provider"
           fontIcon="bi-layers"
         />
       </SidebarMenuItemWithSub>

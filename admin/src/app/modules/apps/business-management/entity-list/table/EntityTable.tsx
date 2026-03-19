@@ -40,7 +40,7 @@ const EntityTable = <T extends { id?: number }>({
 
   return (
     <KTCardBody>
-      <table className='table' {...getTableProps()}>
+      <table className='table ' {...getTableProps()}>
         <thead>
           {headerGroups.map((hg) => (
             <tr {...hg.getHeaderGroupProps()}>
