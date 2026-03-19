@@ -1,11 +1,22 @@
-import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
-import { PageLink, PageTitle } from '../../../_metronic/layout/core'
+import { Route, Routes, Outlet, Navigate, useParams } from 'react-router-dom'
+import { PageLink } from '../../../_metronic/layout/core'
 import { EntityList } from '../../modules/apps/business-management/entity-list/EntityList'
-import UserDetail from '../../modules/apps/business-management/entity-list/components/EntityDetail'
 import { PageHeader } from '../../modules/apps/business-management/entity-list/components/header/PageHeader'
 import { Content } from '../../../_metronic/layout/components/content'
+import EntityDetail from '../../modules/apps/business-management/entity-list/components/EntityDetail'
+
 const Blank = "/media/avatars/blank.png"
-const agencies = [
+
+type Agency = {
+  id: number
+  image: string
+  name: string
+  email: string
+  status: string
+  type: string
+}
+
+const agencies: Agency[] = [
   { id: 1, image: Blank, name: 'ABC Realty', email: 'abc@realty.com', status: 'Active', type: 'Agency' },
   { id: 2, image: Blank, name: 'Skyline Estates', email: 'skyline@realty.com', status: 'Blocked', type: 'Agency' },
   { id: 3, image: Blank, name: 'Prime Properties', email: 'prime@realty.com', status: 'Active', type: 'Agency' },
@@ -27,33 +38,16 @@ const agencies = [
   { id: 18, image: Blank, name: 'Horizon Estates', email: 'horizon@realty.com', status: 'Blocked', type: 'Agency' },
   { id: 19, image: Blank, name: 'BrickLane Realty', email: 'bricklane@realty.com', status: 'Active', type: 'Agency' },
   { id: 20, image: Blank, name: 'Royal Keys', email: 'royalkeys@realty.com', status: 'Active', type: 'Agency' },
-
-  { id: 21, image: Blank, name: 'Elite Nest Realty', email: 'elitenest@realty.com', status: 'Active', type: 'Agency' },
-  { id: 22, image: Blank, name: 'Sunrise Homes', email: 'sunrise@realty.com', status: 'Blocked', type: 'Agency' },
-  { id: 23, image: Blank, name: 'TrueSpace Realty', email: 'truespace@realty.com', status: 'Active', type: 'Agency' },
-  { id: 24, image: Blank, name: 'SkyHigh Estates', email: 'skyhigh@realty.com', status: 'Active', type: 'Agency' },
-  { id: 25, image: Blank, name: 'PrimeNest Realty', email: 'primenest@realty.com', status: 'Blocked', type: 'Agency' },
-  { id: 26, image: Blank, name: 'UrbanKey Realty', email: 'urbankey@realty.com', status: 'Active', type: 'Agency' },
-  { id: 27, image: Blank, name: 'HomeHive Realty', email: 'homehive@realty.com', status: 'Active', type: 'Agency' },
-  { id: 28, image: Blank, name: 'CityNest Realty', email: 'citynest@realty.com', status: 'Blocked', type: 'Agency' },
-  { id: 29, image: Blank, name: 'NextDoor Realty', email: 'nextdoor@realty.com', status: 'Active', type: 'Agency' },
-  { id: 30, image: Blank, name: 'EliteKey Estates', email: 'elitekey@realty.com', status: 'Active', type: 'Agency' },
 ]
 
 const agencyColumns = [
   {
     Header: 'Image',
     accessor: 'image',
-    Cell: ({ value }: any) => (
+    Cell: ({ value }: { value: string }) => (
       <img
         src={value}
-        alt="avatar"
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: '50%',
-          objectFit: 'cover',
-        }}
+        style={{ width: 40, height: 40, borderRadius: '50%' }}
       />
     ),
   },
@@ -75,15 +69,30 @@ const agencyFilters = [
   },
 ]
 
-const breadcrumbs: Array<PageLink> = [
-  {
-    title: 'Service Provider',
-    path: '/apps/business-management/agencies',
-    isSeparator: false,
-    isActive: false,
-  },
-  { title: '', path: '', isSeparator: true, isActive: false },
+const detailFields = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'status', label: 'Status' },
+  { key: 'type', label: 'Type' },
 ]
+
+const AgencyDetail = () => {
+  const { id } = useParams()
+  const data = agencies.find((item) => item.id === Number(id))
+
+  return (
+    <Content>
+      <PageHeader title="Agency Details" />
+
+      <EntityDetail
+        title="Agency Details"
+        data={data || null}
+        fields={detailFields}
+      />
+    </Content>
+  )
+}
 
 const ServicePage = () => {
   return (
@@ -103,8 +112,9 @@ const ServicePage = () => {
                 data={agencies}
                 columns={agencyColumns}
                 filtersConfig={agencyFilters}
+                searchableKeys={['name', 'email']} 
                 enableRowClick
-                getRowLink={(row) =>
+                getRowLink={(row: Agency) =>
                   `/apps/business-management/agencies/${row.id}`
                 }
               />
@@ -112,17 +122,7 @@ const ServicePage = () => {
           }
         />
 
-        <Route
-          path="agencies/:id"
-          element={
-            <>
-              <PageHeader
-                title="Agencies"
-              />
-              <UserDetail />
-            </>
-          }
-        />
+        <Route path="agencies/:id" element={<AgencyDetail />} />
 
       </Route>
 

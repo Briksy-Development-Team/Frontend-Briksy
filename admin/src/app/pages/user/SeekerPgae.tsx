@@ -1,12 +1,21 @@
-import { Route, Routes, Outlet, Navigate } from 'react-router-dom'
-import { PageLink, PageTitle } from '../../../_metronic/layout/core'
+import { Route, Routes, Outlet, Navigate, useParams } from 'react-router-dom'
 import { EntityList } from '../../modules/apps/business-management/entity-list/EntityList'
 import { PageHeader } from '../../modules/apps/business-management/entity-list/components/header/PageHeader'
 import { Content } from '../../../_metronic/layout/components/content'
 import EntityDetail from '../../modules/apps/business-management/entity-list/components/EntityDetail'
+
 const Blank = "/media/avatars/blank.png"
 
-const agencies = [
+type Seeker = {
+    id: number
+    image: string
+    name: string
+    email: string
+    status: string
+    last_login: string
+}
+
+const seekers: Seeker[] = [
     { id: 1, image: Blank, name: 'Aryan Singh', email: 'aryan@brisky.com', status: 'Active', last_login: '2026-03-10' },
     { id: 2, image: Blank, name: 'Rahul Patel', email: 'rahul@brisky.com', status: 'Inactive', last_login: '2026-03-12' },
     { id: 3, image: Blank, name: 'Sneha Shah', email: 'sneha@brisky.com', status: 'Blocked', last_login: '2026-03-13' },
@@ -27,20 +36,14 @@ const agencies = [
     { id: 18, image: Blank, name: 'Neha Jain', email: 'neha@brisky.com', status: 'Inactive', last_login: '2026-03-15' },
 ]
 
-const agencyColumns = [
+const columns = [
     {
         Header: 'Image',
         accessor: 'image',
-        Cell: ({ value }: any) => (
+        Cell: ({ value }: { value: string }) => (
             <img
                 src={value}
-                alt="avatar"
-                style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                }}
+                style={{ width: 40, height: 40, borderRadius: '50%' }}
             />
         ),
     },
@@ -50,24 +53,38 @@ const agencyColumns = [
     { Header: 'Last Login', accessor: 'last_login' },
 ]
 
-const agencyFilters = [
+const filters = [
     {
         key: 'status',
         label: 'Status',
         options: ['Active', 'Blocked'],
     },
-
 ]
 
-const breadcrumbs: Array<PageLink> = [
-    {
-        title: 'Seeker',
-        path: '/apps/seeker-management/seeker',
-        isSeparator: false,
-        isActive: false,
-    },
-    { title: '', path: '', isSeparator: true, isActive: false },
+const detailFields = [
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'status', label: 'Status' },
+    { key: 'last_login', label: 'Last Login' },
 ]
+
+const SeekerDetail = () => {
+    const { id } = useParams()
+    const data = seekers.find((item) => item.id === Number(id))
+
+    return (
+        <Content>
+            <PageHeader title="Seeker Details" />
+
+            <EntityDetail
+                title="Seeker Details"
+                data={data || null}
+                fields={detailFields}
+            />
+        </Content>
+    )
+}
 
 const SeekerPage = () => {
     return (
@@ -80,14 +97,16 @@ const SeekerPage = () => {
                         <Content>
                             <PageHeader
                                 title="Seeker"
-                                subtitle="Manage all seekers on the platform" />
+                                subtitle="Manage all seekers"
+                            />
 
                             <EntityList
-                                data={agencies}
-                                columns={agencyColumns}
-                                filtersConfig={agencyFilters}
+                                data={seekers}
+                                columns={columns}
+                                filtersConfig={filters}
+                                searchableKeys={['name', 'email']}
                                 enableRowClick
-                                getRowLink={(row) =>
+                                getRowLink={(row: Seeker) =>
                                     `/apps/seeker-management/seeker/${row.id}`
                                 }
                             />
@@ -95,15 +114,7 @@ const SeekerPage = () => {
                     }
                 />
 
-                <Route
-                    path="seeker/:id"
-                    element={
-                        <Content>
-                            <PageHeader title="Seeker Details" />
-                            <EntityDetail />
-                        </Content>
-                    }
-                />
+                <Route path="seeker/:id" element={<SeekerDetail />} />
 
             </Route>
 
@@ -116,18 +127,3 @@ const SeekerPage = () => {
 }
 
 export default SeekerPage
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,52 +1,40 @@
-import { useLocation } from 'react-router-dom'
-
-type User = {
-    id: number
-    image?: string
-    name: string
-    email: string
-    status: string
-    last_login: string
+type FieldConfig = {
+    key: string
+    label: string
 }
 
-const UserDetail = () => {
-    const location = useLocation()
-    const user = location.state as User
+type Props = {
+    title: string
+    data: Record<string, any> | null
+    fields: FieldConfig[]
+    loading?: boolean
+}
 
-    if (!user) {
-        return <div className="p-5">No user data found</div>
+const EntityDetail = ({ title, data, fields, loading }: Props) => {
+    if (loading) {
+        return <div className="p-5">Loading...</div>
+    }
+
+    if (!data) {
+        return <div className="p-5">No data found</div>
     }
 
     return (
         <div className="card p-5">
-            <h2 className="mb-5">Agency Details</h2>
+            <h2 className="mb-5">{title}</h2>
 
             <table className="table table-bordered">
                 <tbody>
-                    <tr>
-                        <th>ID</th>
-                        <td>{user.id}</td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>{user.name}</td>
-                    </tr>
-                    <tr>
-                        <th>Email</th>
-                        <td>{user.email}</td>
-                    </tr>
-                    <tr>
-                        <th>Status</th>
-                        <td>{user.status}</td>
-                    </tr>
-                    <tr>
-                        <th>Last Login</th>
-                        <td>{user.last_login}</td>
-                    </tr>
+                    {fields.map((field) => (
+                        <tr key={field.key}>
+                            <th>{field.label}</th>
+                            <td>{data[field.key] ?? '-'}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
     )
 }
 
-export default UserDetail
+export default EntityDetail
