@@ -14,7 +14,7 @@ type Props<T extends { id?: number }> = {
 const EntityTable = <T extends { id?: number }>({
   data,
   columns,
-  pageSize = 10,
+  pageSize = 3,
   enableRowClick = false,
   getRowLink,
 }: Props<T>) => {
@@ -95,7 +95,6 @@ const EntityTable = <T extends { id?: number }>({
           </tbody>
         </table>
       </div>
-      {/* 👆 Closed table-responsive wrapper — pagination stays outside */}
 
       <div className='d-flex justify-content-between align-items-center mt-5'>
         <button

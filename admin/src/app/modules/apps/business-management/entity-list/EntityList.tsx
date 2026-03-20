@@ -29,23 +29,19 @@ const EntityList = ({
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<any>({})
 
-  // ✅ Column visibility state
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     columns.map((col) => col.accessor)
   )
 
-  // ✅ Load saved columns
   useEffect(() => {
     const saved = localStorage.getItem('visibleColumns')
     if (saved) setVisibleColumns(JSON.parse(saved))
   }, [])
 
-  // ✅ Persist columns
   useEffect(() => {
     localStorage.setItem('visibleColumns', JSON.stringify(visibleColumns))
   }, [visibleColumns])
 
-  // ✅ Filter data
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const matchSearch =
