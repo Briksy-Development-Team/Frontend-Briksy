@@ -1,5 +1,8 @@
+import { useEffect } from 'react'
 import { KTIcon } from '../../../../../../../_metronic/helpers'
+import { MenuComponent } from '../../../../../../../_metronic/assets/ts/components'
 import { DynamicFilter } from './DynamicFilter'
+import { ColumnSelector } from './ColumnSelector'
 
 type FilterConfig = {
   key: string
@@ -12,6 +15,10 @@ type Props = {
   onSearchChange: (value: string) => void
   filters: FilterConfig[]
   onFilterChange: (filters: any) => void
+
+  columns: any[]
+  visibleColumns: string[]
+  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const EntityHeader = ({
@@ -19,10 +26,17 @@ const EntityHeader = ({
   onSearchChange,
   filters,
   onFilterChange,
+  columns,
+  visibleColumns,
+  setVisibleColumns,
 }: Props) => {
+
+  useEffect(() => {
+    MenuComponent.createInstances()
+  }, [])
+
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
-
       <div className='card-title'>
         <div className='d-flex align-items-center position-relative my-1'>
           <KTIcon iconName='magnifier' className='fs-1 position-absolute ms-6' />
@@ -37,11 +51,19 @@ const EntityHeader = ({
         </div>
       </div>
 
-      <div className='card-toolbar'>
+      <div className='card-toolbar d-flex align-items-center gap-4'>
+
         <DynamicFilter
           filters={filters}
           onFilterChange={onFilterChange}
         />
+
+        <ColumnSelector
+          columns={columns}
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
+        />
+
       </div>
     </div>
   )

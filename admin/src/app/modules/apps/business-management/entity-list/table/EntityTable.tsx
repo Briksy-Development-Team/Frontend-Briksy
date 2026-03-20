@@ -49,7 +49,7 @@ const EntityTable = <T extends { id?: number }>({
             {headerGroups.map((hg) => (
               <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0' {...hg.getHeaderGroupProps()}>
                 {hg.headers.map((col) => (
-                  <th className='text-nowrap' {...col.getHeaderProps()}> 
+                  <th className='text-nowrap' {...col.getHeaderProps()}>
                     {col.render('Header')}
                   </th>
                 ))}
@@ -78,7 +78,7 @@ const EntityTable = <T extends { id?: number }>({
                     }}
                   >
                     {row.cells.map((cell) => (
-                      <td className='text-nowrap' {...cell.getCellProps()}> 
+                      <td className='text-nowrap' {...cell.getCellProps()}>
                         {cell.render('Cell')}
                       </td>
                     ))}
