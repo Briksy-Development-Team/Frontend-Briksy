@@ -43,7 +43,7 @@ const columns = [
         Cell: ({ value }: { value: string }) => (
             <img
                 src={value}
-                style={{ width: 40, height: 40, borderRadius: '50%' }}
+                style={{ width: 30, height: 30, borderRadius: '50%' }}
             />
         ),
     },

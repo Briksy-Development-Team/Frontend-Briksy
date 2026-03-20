@@ -150,7 +150,7 @@ const SidebarMenuMain = () => {
 
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
-        title="Management"
+        title=" User Management"
         icon="element-7"
         fontIcon="bi-layers"
       >

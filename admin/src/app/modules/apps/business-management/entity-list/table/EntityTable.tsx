@@ -40,56 +40,62 @@ const EntityTable = <T extends { id?: number }>({
 
   return (
     <KTCardBody>
-      <table className='table ' {...getTableProps()}>
-        <thead>
-          {headerGroups.map((hg) => (
-            <tr {...hg.getHeaderGroupProps()}>
-              {hg.headers.map((col) => (
-                <th {...col.getHeaderProps()}>
-                  {col.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
+      <div className='table-responsive'>
+        <table
+          className='table align-middle table-row-bordered table-row-gray-300 fs-6 gy-5'
+          {...getTableProps()}
+        >
+          <thead>
+            {headerGroups.map((hg) => (
+              <tr className='text-start text-muted fw-bolder fs-7 text-uppercase gs-0' {...hg.getHeaderGroupProps()}>
+                {hg.headers.map((col) => (
+                  <th className='text-nowrap' {...col.getHeaderProps()}> 
+                    {col.render('Header')}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
 
-        <tbody {...getTableBodyProps()}>
-          {rows.length > 0 ? (
-            rows.map((row) => {
-              prepareRow(row)
-              const rowData = row.original
+          <tbody className='text-gray-600 fw-bold' {...getTableBodyProps()}>
+            {rows.length > 0 ? (
+              rows.map((row) => {
+                prepareRow(row)
+                const rowData = row.original
 
-              return (
-                <tr
-                  {...row.getRowProps()}
-                  style={{
-                    cursor: enableRowClick ? 'pointer' : 'default',
-                  }}
-                  onClick={() => {
-                    if (enableRowClick && getRowLink) {
-                      navigate(getRowLink(rowData), {
-                        state: rowData,
-                      })
-                    }
-                  }}
-                >
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>
-                      {cell.render('Cell')}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })
-          ) : (
-            <tr>
-              <td colSpan={columns.length} className='text-center'>
-                No data found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    style={{
+                      cursor: enableRowClick ? 'pointer' : 'default',
+                    }}
+                    onClick={() => {
+                      if (enableRowClick && getRowLink) {
+                        navigate(getRowLink(rowData), {
+                          state: rowData,
+                        })
+                      }
+                    }}
+                  >
+                    {row.cells.map((cell) => (
+                      <td className='text-nowrap' {...cell.getCellProps()}> 
+                        {cell.render('Cell')}
+                      </td>
+                    ))}
+                  </tr>
+                )
+              })
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className='text-center'>
+                  No data found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* 👆 Closed table-responsive wrapper — pagination stays outside */}
 
       <div className='d-flex justify-content-between align-items-center mt-5'>
         <button
