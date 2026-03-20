@@ -213,8 +213,9 @@ export const columns: Column<Seeker>[] = [
                         ? 'gray'
                         : 'red'
 
-            return <span style={{ color, fontWeight: 600 }}>{value}</span>
+            return <span style={{ color }}>{value}</span>
         },
+
     },
 
     {
