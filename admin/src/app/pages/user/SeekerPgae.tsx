@@ -208,10 +208,10 @@ export const columns: Column<Seeker>[] = [
         Cell: ({ value }) => {
             const color =
                 value === 'Active'
-                    ? 'green'
+                    ? 'gray'
                     : value === 'Inactive'
                         ? 'gray'
-                        : 'red'
+                        : 'gray'
 
             return <span style={{ color }}>{value}</span>
         },

@@ -6,6 +6,7 @@ import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
 import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
+import Subscription from '../pages/Subscription/Subscription'
 
 
 const PrivateRoutes = () => {
@@ -88,7 +89,14 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-        {/* Page Not Found */}
+        <Route
+          path='/apps/subscription-plans'
+          element={
+            <SuspensedView>
+              <Subscription />
+            </SuspensedView>
+          }
+        />
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
     </Routes>

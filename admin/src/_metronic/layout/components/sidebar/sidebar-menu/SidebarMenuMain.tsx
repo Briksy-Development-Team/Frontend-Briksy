@@ -174,6 +174,12 @@ const SidebarMenuMain = () => {
           fontIcon="bi-layers"
         />
       </SidebarMenuItemWithSub>
+      <SidebarMenuItem
+        to="/apps/subscription-plans"
+        icon="abstract-28"
+        title="Subscription Plans"
+        fontIcon="bi-layers"
+      />
     </>
   );
 };
