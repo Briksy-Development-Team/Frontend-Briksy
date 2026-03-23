@@ -6,6 +6,8 @@ import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
 import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
+import Subscription from '../pages/Subscription/Subscription'
+
 
 const PrivateRoutes = () => {
   const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
@@ -13,7 +15,9 @@ const PrivateRoutes = () => {
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
   const StaffPage = lazy(() => import('../modules/apps/staff-management/StaffPage'))
-  const UserPage = lazy(() => import('../modules/apps/user-managements/UserPage'))
+  const SeekerPage = lazy(() => import('../pages/user/SeekerPgae'))
+  const AgencyPage = lazy(() => import('../pages/user/ServicePage'))
+
 
 
   return (
@@ -60,10 +64,10 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path='/apps/user-management/*'
+          path='/apps/seeker-management/*'
           element={
             <SuspensedView>
-              <UserPage />
+              <SeekerPage />
             </SuspensedView>
           }
         />
@@ -76,7 +80,23 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
-        {/* Page Not Found */}
+
+        <Route
+          path='/apps/business-management/*'
+          element={
+            <SuspensedView>
+              <AgencyPage />
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='/apps/subscription-plans'
+          element={
+            <SuspensedView>
+              <Subscription />
+            </SuspensedView>
+          }
+        />
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
     </Routes>

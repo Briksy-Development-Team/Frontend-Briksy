@@ -150,24 +150,36 @@ const SidebarMenuMain = () => {
 
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
-        title="Management"
+        title=" User Management"
         icon="element-7"
         fontIcon="bi-layers"
       >
         <SidebarMenuItem
-          to="/apps/user-management/user"
+          to="/apps/seeker-management/seeker"
           icon="abstract-28"
-          title="User management"
+          title="Seekers"
           fontIcon="bi-layers"
         />
 
         <SidebarMenuItem
           to="/apps/staff-management/staff"
           icon="abstract-28"
-          title="Staff management"
+          title="Staff "
+          fontIcon="bi-layers"
+        />
+        <SidebarMenuItem
+          to="/apps/business-management/agencies"
+          icon="abstract-28"
+          title="Service Provider"
           fontIcon="bi-layers"
         />
       </SidebarMenuItemWithSub>
+      <SidebarMenuItem
+        to="/apps/subscription-plans"
+        icon="abstract-28"
+        title="Subscription Plans"
+        fontIcon="bi-layers"
+      />
     </>
   );
 };
