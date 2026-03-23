@@ -55,7 +55,7 @@ const EntityList = ({
       const matchFilters = Object.entries(filters).every(
         ([key, value]) =>
           !value ||
-          String(item[key] || '').toLowerCase() === value.toLowerCase()
+          String(item[key] || '').toLowerCase() === String(value).toLowerCase()
       )
 
       return matchSearch && matchFilters

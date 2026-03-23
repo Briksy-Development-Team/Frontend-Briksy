@@ -32,7 +32,7 @@ const EntityHeader = ({
 }: Props) => {
 
   useEffect(() => {
-    MenuComponent.createInstances()
+    MenuComponent.createInstances('[data-kt-menu="true"]')
   }, [])
 
   return (
