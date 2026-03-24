@@ -1,14 +1,24 @@
-import React from 'react'
 import { KTIcon } from '../../../../../../../_metronic/helpers'
 
-type Props = {
-    columns: any[]
-    visibleColumns: string[]
-    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
+type Props<T extends Record<string, any>> = {
+    columns: {
+        accessor: keyof T
+        Header: string
+        alwaysVisible?: boolean
+    }[]
+    visibleColumns: (keyof T)[]
+    setVisibleColumns: React.Dispatch<
+        React.SetStateAction<(keyof T)[]>
+    >
 }
 
-const ColumnSelector = ({ columns, visibleColumns, setVisibleColumns }: Props) => {
-    const toggle = (accessor: string) => {
+const ColumnSelector = <T extends Record<string, any>>({
+    columns,
+    visibleColumns,
+    setVisibleColumns,
+}: Props<T>) => {
+
+    const toggle = (accessor: keyof T) => {
         setVisibleColumns((prev) => {
             if (prev.includes(accessor)) {
                 if (prev.length === 1) return prev
@@ -45,7 +55,7 @@ const ColumnSelector = ({ columns, visibleColumns, setVisibleColumns }: Props) =
                 <div className="px-5 py-4 mh-250px overflow-auto">
                     {columns.map((col) => (
                         <label
-                            key={col.accessor}
+                            key={String(col.accessor)}
                             className="form-check form-check-sm form-check-custom form-check-solid d-flex align-items-center justify-content-between mb-3"
                         >
                             <div className="d-flex align-items-center gap-2">
