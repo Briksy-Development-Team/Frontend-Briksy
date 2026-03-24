@@ -1,8 +1,8 @@
 import { Route, Routes, Outlet, Navigate, useParams } from 'react-router-dom'
-import { EntityList } from '../../modules/apps/business-management/entity-list/EntityList'
-import { PageHeader } from '../../modules/apps/business-management/entity-list/components/header/PageHeader'
+import { EntityList } from '../../modules/apps/shared_table/entity-list/EntityList'
+import { PageHeader } from '../../modules/apps/shared_table/entity-list/components/header/PageHeader'
 import { Content } from '../../../_metronic/layout/components/content'
-import EntityDetail from '../../modules/apps/business-management/entity-list/components/EntityDetail'
+import EntityDetail from '../../modules/apps/shared_table/entity-list/components/EntityDetail'
 import { Column } from 'react-table'
 
 const Blank = "/media/avatars/blank.png"
@@ -188,6 +188,12 @@ const seekers: Seeker[] = [
 
 export const columns: Column<Seeker>[] = [
     {
+        Header: 'ID',
+        accessor: 'id',
+        alwaysVisible: true,
+        sortable: true
+    },
+    {
         Header: 'Image',
         accessor: 'image',
         Cell: ({ value }) => (
@@ -199,8 +205,8 @@ export const columns: Column<Seeker>[] = [
         ),
     },
 
-    { Header: 'Name', accessor: 'name' },
-    { Header: 'Email', accessor: 'email' },
+    { Header: 'Name', accessor: 'name',sortable: true },
+    { Header: 'Email', accessor: 'email',sortable: true },
 
     {
         Header: 'Status',
@@ -223,6 +229,7 @@ export const columns: Column<Seeker>[] = [
         accessor: 'last_login',
         Cell: ({ value }) =>
             value ? new Date(value).toLocaleDateString() : '—',
+        sortable: true
     },
 
     {
@@ -230,6 +237,7 @@ export const columns: Column<Seeker>[] = [
         accessor: 'current_login',
         Cell: ({ value }) =>
             new Date(value).toLocaleDateString(),
+        sortable: true
     },
 
     // 🔥 NEW FIELDS START HERE
@@ -238,30 +246,35 @@ export const columns: Column<Seeker>[] = [
         Header: 'Phone',
         accessor: 'phone',
         Cell: ({ value }) => value || '—',
+        sortable: true
     },
 
     {
         Header: 'Age',
         accessor: 'age',
         Cell: ({ value }) => value ?? '—',
+        sortable: true
     },
 
     {
         Header: 'Gender',
         accessor: 'gender',
         Cell: ({ value }) => value || '—',
+        sortable: true
     },
 
     {
         Header: 'Location',
         accessor: 'location',
         Cell: ({ value }) => value || '—',
+        sortable: true
     },
 
     {
         Header: 'Verified',
         accessor: 'is_verified',
         Cell: ({ value }) => (value ? 'yes' : 'no'),
+        sortable: true
     },
 
     {
@@ -269,6 +282,7 @@ export const columns: Column<Seeker>[] = [
         accessor: 'profile_completed',
         Cell: ({ value }) =>
             value ? `${value}%` : '0%',
+        sortable: true
     },
 
     {
@@ -276,6 +290,7 @@ export const columns: Column<Seeker>[] = [
         accessor: 'created_at',
         Cell: ({ value }) =>
             value ? new Date(value).toLocaleDateString() : '—',
+        sortable: true
     },
 
     {
@@ -283,83 +298,11 @@ export const columns: Column<Seeker>[] = [
         accessor: 'updated_at',
         Cell: ({ value }) =>
             value ? new Date(value).toLocaleDateString() : '—',
+        sortable: true
     },
 
-    {
-        Header: 'Experience',
-        accessor: 'experience_years',
-        Cell: ({ value }) =>
-            value ? `${value} yrs` : '—',
-    },
+   
 
-    {
-        Header: 'Salary',
-        accessor: 'expected_salary',
-        Cell: ({ value }) =>
-            value ? `₹${value.toLocaleString()}` : '—',
-    },
-
-    {
-        Header: 'Skills',
-        accessor: 'skills',
-        Cell: ({ value }) =>
-            value?.length ? value.join(', ') : '—',
-    },
-
-    {
-        Header: 'Company',
-        accessor: 'company',
-        Cell: ({ value }) => value || '—',
-    },
-
-    {
-        Header: 'Education',
-        accessor: 'education',
-        Cell: ({ value }) => value || '—',
-    },
-
-    {
-        Header: 'Bio',
-        accessor: 'bio',
-        Cell: ({ value }) =>
-            value
-                ? value.length > 30
-                    ? value.slice(0, 30) + '...'
-                    : value
-                : '—',
-    },
-    {
-        Header: 'Resume',
-        accessor: 'resume_url',
-        Cell: ({ value }) =>
-            value ? (
-                <a href={value} target="_blank" rel="noreferrer">View</a>
-            ) : '—',
-    },
-
-    {
-        Header: 'Job Type',
-        accessor: 'job_type',
-        Cell: ({ value }) => value || '—',
-    },
-
-    {
-        Header: 'Availability',
-        accessor: 'availability',
-        Cell: ({ value }) => value || '—',
-    },
-
-    {
-        Header: 'Rating',
-        accessor: 'rating',
-        Cell: ({ value }) => value ? `⭐ ${value}` : '—',
-    },
-
-    {
-        Header: 'Applied Jobs',
-        accessor: 'applied_jobs',
-        Cell: ({ value }) => value ?? '—',
-    },
 ]
 
 const filters = [
