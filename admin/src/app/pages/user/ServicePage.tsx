@@ -1,9 +1,9 @@
 import { Route, Routes, Outlet, Navigate, useParams } from 'react-router-dom'
 import { PageLink } from '../../../_metronic/layout/core'
-import { EntityList } from '../../modules/apps/business-management/entity-list/EntityList'
-import { PageHeader } from '../../modules/apps/business-management/entity-list/components/header/PageHeader'
+import { EntityList } from '../../modules/apps/shared_table/entity-list/EntityList'
+import { PageHeader } from '../../modules/apps/shared_table/entity-list/components/header/PageHeader'
 import { Content } from '../../../_metronic/layout/components/content'
-import EntityDetail from '../../modules/apps/business-management/entity-list/components/EntityDetail'
+import EntityDetail from '../../modules/apps/shared_table/entity-list/components/EntityDetail'
 
 const Blank = "/media/avatars/blank.png"
 
@@ -42,6 +42,12 @@ const agencies: Agency[] = [
 
 const agencyColumns = [
   {
+    Header: 'ID',
+    accessor: 'id',
+    alwaysVisible: true,
+  },
+  {
+
     Header: 'Image',
     accessor: 'image',
     Cell: ({ value }: { value: string }) => (
@@ -54,6 +60,7 @@ const agencyColumns = [
   { Header: 'Name', accessor: 'name' },
   { Header: 'Email', accessor: 'email' },
   { Header: 'Status', accessor: 'status' },
+
 ]
 
 const agencyFilters = [
@@ -112,7 +119,7 @@ const ServicePage = () => {
                 data={agencies}
                 columns={agencyColumns}
                 filtersConfig={agencyFilters}
-                searchableKeys={['name', 'email']} 
+                searchableKeys={['name', 'email']}
                 enableRowClick
                 getRowLink={(row: Agency) =>
                   `/apps/business-management/agencies/${row.id}`

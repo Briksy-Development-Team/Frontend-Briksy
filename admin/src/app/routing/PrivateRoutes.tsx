@@ -97,6 +97,23 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
+        <Route
+          path='/apps/property-management/*'
+          element={
+            <SuspensedView>
+              {/* <Subscription /> */}
+            </SuspensedView>
+          }
+        />
+        <Route
+          path='/apps/service-management/*'
+          element={
+            <SuspensedView>
+              {/* <Subscription /> */}
+            </SuspensedView>
+          }
+        />
+
         <Route path='*' element={<Navigate to='/error/404' />} />
       </Route>
     </Routes>

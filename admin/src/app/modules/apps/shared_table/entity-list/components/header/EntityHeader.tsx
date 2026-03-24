@@ -1,42 +1,30 @@
-import { useEffect } from 'react'
 import { KTIcon } from '../../../../../../../_metronic/helpers'
-import { MenuComponent } from '../../../../../../../_metronic/assets/ts/components'
-import { DynamicFilter } from './DynamicFilter'
 import { ColumnSelector } from './ColumnSelector'
-
-type FilterConfig = {
-  key: string
-  label: string
-  options: string[]
-}
 
 type Props = {
   search: string
   onSearchChange: (value: string) => void
-  filters: FilterConfig[]
-  onFilterChange: (filters: any) => void
 
   columns: any[]
   visibleColumns: string[]
   setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
+
+  isMobile: boolean
+  onOpenFilter: () => void
 }
 
 const EntityHeader = ({
   search,
   onSearchChange,
-  filters,
-  onFilterChange,
   columns,
   visibleColumns,
   setVisibleColumns,
+  isMobile,
+  onOpenFilter,
 }: Props) => {
-
-  useEffect(() => {
-    MenuComponent.createInstances('[data-kt-menu="true"]')
-  }, [])
-
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
+
       <div className='card-title'>
         <div className='d-flex align-items-center position-relative my-1'>
           <KTIcon iconName='magnifier' className='fs-1 position-absolute ms-6' />
@@ -51,12 +39,13 @@ const EntityHeader = ({
         </div>
       </div>
 
-      <div className='card-toolbar d-flex align-items-center gap-4'>
+      <div className='card-toolbar d-flex gap-3'>
 
-        <DynamicFilter
-          filters={filters}
-          onFilterChange={onFilterChange}
-        />
+        {isMobile && (
+          <button className='btn btn-light-primary' onClick={onOpenFilter}>
+            Filter
+          </button>
+        )}
 
         <ColumnSelector
           columns={columns}

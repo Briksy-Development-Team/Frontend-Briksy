@@ -174,6 +174,49 @@ const SidebarMenuMain = () => {
           fontIcon="bi-layers"
         />
       </SidebarMenuItemWithSub>
+      <SidebarMenuItemWithSub
+        to="/crafted/widgets"
+        title=" Property Management"
+        icon="element-7"
+        fontIcon="bi-layers"
+      >
+        <SidebarMenuItem
+          to="/apps/property-management/listing"
+          icon="abstract-28"
+          title="Property Listing"
+          fontIcon="bi-layers"
+        />
+
+        <SidebarMenuItem
+          to="/apps/property-management/features"
+          icon="abstract-28"
+          title="Property Features "
+          fontIcon="bi-layers"
+        />
+
+      </SidebarMenuItemWithSub>
+      <SidebarMenuItemWithSub
+        to="/crafted/widgets"
+        title=" Property Management"
+        icon="element-7"
+        fontIcon="bi-layers"
+      >
+        <SidebarMenuItem
+          to="/apps/service-management/group"
+          icon="abstract-28"
+          title="Service Group"
+          fontIcon="bi-layers"
+        />
+
+        <SidebarMenuItem
+          to="/apps/service-management/listing"
+          icon="abstract-28"
+          title="Service Features "
+          fontIcon="bi-layers"
+        />
+
+      </SidebarMenuItemWithSub>
+
       <SidebarMenuItem
         to="/apps/subscription-plans"
         icon="abstract-28"
