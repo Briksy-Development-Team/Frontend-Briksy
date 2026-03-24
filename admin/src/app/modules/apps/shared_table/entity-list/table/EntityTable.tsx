@@ -1,19 +1,25 @@
-import { useTable } from 'react-table'
+import { useTable, Column } from 'react-table'
 import { useNavigate } from 'react-router-dom'
 import { KTCardBody } from '../../../../../../_metronic/helpers'
 
-type SortConfig = {
-  key: any
+// ✅ Extend react-table column
+type CustomColumn<T extends object> = Column<T> & {
+  sortable?: boolean
+}
+
+// ✅ Proper sort config (NO null)
+type SortConfig<T> = {
+  key: keyof T
   direction: 'asc' | 'desc'
-} | null
+}
 
 type Props<T extends { id?: number }> = {
   data: T[]
-  columns: any[]
+  columns: CustomColumn<T>[]
   enableRowClick?: boolean
   getRowLink?: (row: T) => string
-  sortConfig: SortConfig
-  setSortConfig: React.Dispatch<any>
+  sortConfig: SortConfig<T>
+  setSortConfig: React.Dispatch<React.SetStateAction<SortConfig<T>>>
 }
 
 const EntityTable = <T extends { id?: number }>({
@@ -24,62 +30,76 @@ const EntityTable = <T extends { id?: number }>({
   sortConfig,
   setSortConfig,
 }: Props<T>) => {
+
   const navigate = useNavigate()
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({
-      columns,
-      data,
-    })
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable<T>({
+    columns,
+    data,
+  })
 
-  const handleSort = (col: any, sortable: boolean) => {
-    if (!sortable) return
+  // ✅ Clean sort handler
+  const handleSort = (col: CustomColumn<T>) => {
+    if (col.sortable === false) return
 
-    setSortConfig((prev: SortConfig) => {
-      if (prev?.key === col.accessor) {
-        if (prev.direction === 'asc') {
-          return { key: col.accessor, direction: 'desc' }
+    setSortConfig((prev) => {
+      if (prev.key === col.accessor) {
+        return {
+          key: col.accessor as keyof T,
+          direction: prev.direction === 'asc' ? 'desc' : 'asc',
         }
-        return null
       }
-      return { key: col.accessor, direction: 'asc' }
+
+      return {
+        key: col.accessor as keyof T,
+        direction: 'asc',
+      }
     })
   }
 
   return (
     <KTCardBody>
-      <div className='table-responsive'>
+      <div className="table-responsive">
         <table
-          className='table align-middle table-row-bordered table-row-gray-300 fs-6 g-9'
+          className="table align-middle table-row-bordered table-row-gray-300 fs-6 g-9"
           {...getTableProps()}
         >
           <thead>
             {headerGroups.map((hg) => (
               <tr {...hg.getHeaderGroupProps()}>
-                {hg.headers.map((col: any) => (
-                  <th
-                    key={col.id}
-                    {...col.getHeaderProps()}
-                    onClick={() =>
-                      handleSort(col, col.sortable !== false)
-                    }
-                    style={{
-                      cursor:
-                        col.sortable === false ? 'default' : 'pointer',
-                      whiteSpace: "nowrap",
-                      fontWeight: 800,
-                      fontSize: "16px"
-                    }}
-                  >
-                    {col.render('Header')}
+                {hg.headers.map((col) => {
+                  const column = col as CustomColumn<T>
 
-                    {sortConfig?.key === col.accessor && (
-                      <span style={{ marginLeft: 6 }}>
-                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </th>
-                ))}
+                  return (
+                    <th
+                      {...col.getHeaderProps()}
+                      onClick={() => handleSort(column)}
+                      style={{
+                        cursor:
+                          column.sortable === false
+                            ? 'default'
+                            : 'pointer',
+                        whiteSpace: 'nowrap',
+                        fontWeight: 800,
+                        fontSize: '16px',
+                      }}
+                    >
+                      {col.render('Header')}
+
+                      {sortConfig.key === column.accessor && (
+                        <span style={{ marginLeft: 6 }}>
+                          {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </th>
+                  )
+                })}
               </tr>
             ))}
           </thead>
@@ -92,8 +112,7 @@ const EntityTable = <T extends { id?: number }>({
 
                 return (
                   <tr
-                    key={row.id}
-                    {...row.getRowProps()}
+                    {...row.getRowProps()} // ✅ removed duplicate key
                     onClick={() => {
                       if (enableRowClick && getRowLink) {
                         navigate(getRowLink(rowData), {
@@ -101,12 +120,10 @@ const EntityTable = <T extends { id?: number }>({
                         })
                       }
                     }}
-                    style={{
-                      whiteSpace: "nowrap"
-                    }}
+                    style={{ whiteSpace: 'nowrap' }}
                   >
                     {row.cells.map((cell) => (
-                      <td key={cell.column.id} {...cell.getCellProps()}>
+                      <td {...cell.getCellProps()}>
                         {cell.render('Cell')}
                       </td>
                     ))}
@@ -115,7 +132,7 @@ const EntityTable = <T extends { id?: number }>({
               })
             ) : (
               <tr>
-                <td colSpan={columns.length} className='text-center'>
+                <td colSpan={columns.length} className="text-center">
                   No data found
                 </td>
               </tr>

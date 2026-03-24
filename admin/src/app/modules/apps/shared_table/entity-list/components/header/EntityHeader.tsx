@@ -1,19 +1,17 @@
 import { KTIcon } from '../../../../../../../_metronic/helpers'
 import { ColumnSelector } from './ColumnSelector'
 
-type Props = {
+type Props<T extends Record<string, any>> = {
+  columns: { accessor: keyof T; Header: string }[]
+  visibleColumns: (keyof T)[]
+  setVisibleColumns: React.Dispatch<React.SetStateAction<(keyof T)[]>>
   search: string
-  onSearchChange: (value: string) => void
-
-  columns: any[]
-  visibleColumns: string[]
-  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
-
+  onSearchChange: (val: string) => void
   isMobile: boolean
   onOpenFilter: () => void
 }
 
-const EntityHeader = ({
+const EntityHeader = <T extends Record<string, any>>({
   search,
   onSearchChange,
   columns,
@@ -21,7 +19,7 @@ const EntityHeader = ({
   setVisibleColumns,
   isMobile,
   onOpenFilter,
-}: Props) => {
+}: Props<T>) => {
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
 

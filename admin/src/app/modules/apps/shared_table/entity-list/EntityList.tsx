@@ -5,7 +5,29 @@ import { EntityHeader } from "./components/header/EntityHeader"
 import { SideFilter } from "./components/header/SideFilter"
 import Paginations from "./components/Pagination"
 
-const EntityList = ({
+type Column<T> = {
+  Header: string
+  accessor: keyof T
+  sortable?: boolean
+  alwaysVisible?: boolean
+}
+
+type EntityListProps<T extends Record<string, any>> = {
+  data: T[]
+  columns: any[]
+  filtersConfig?: any
+  enableRowClick?: boolean
+  getRowLink?: (row: T) => string
+  searchableKeys?: (keyof T)[]
+  storageKey?: string
+}
+
+type SortConfig<T> = {
+  key: keyof T
+  direction: "asc" | "desc"
+}
+
+const EntityList = <T extends Record<string, any>>({
   data,
   columns,
   filtersConfig,
@@ -13,26 +35,26 @@ const EntityList = ({
   getRowLink,
   searchableKeys = [],
   storageKey = "visibleColumns",
-}: any) => {
+}: EntityListProps<T>) => {
 
   const [search, setSearch] = useState("")
   const [filters, setFilters] = useState<Record<string, string[]>>({})
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const [sortConfig, setSortConfig] = useState<{
-    key: string
-    direction: "asc" | "desc"
-  } | null>({
-    key: "id",
+
+  const [sortConfig, setSortConfig] = useState<SortConfig<T>>({
+    key: columns[0]?.accessor as keyof T,
     direction: "asc",
   })
 
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
+  const [visibleColumns, setVisibleColumns] = useState<(keyof T)[]>(() => {
     try {
       const saved = localStorage.getItem(storageKey)
-      return saved ? JSON.parse(saved) : columns.map((c: any) => c.accessor)
+      return saved
+        ? JSON.parse(saved)
+        : columns.map((c) => c.accessor)
     } catch {
-      return columns.map((c: any) => c.accessor)
+      return columns.map((c) => c.accessor)
     }
   })
 
@@ -40,8 +62,8 @@ const EntityList = ({
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
     const handleResize = () => setIsMobile(window.innerWidth < 768)
+    handleResize()
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
@@ -50,11 +72,12 @@ const EntityList = ({
     localStorage.setItem(storageKey, JSON.stringify(visibleColumns))
   }, [visibleColumns, storageKey])
 
-  // RESET PAGE when data / filters / search / sort changes
+  // ✅ Reset page only when needed
   useEffect(() => {
     setPage(1)
-  }, [data, search, filters, sortConfig])
+  }, [search, filters])
 
+  // ✅ FILTER + SEARCH + SORT
   const filteredData = useMemo(() => {
     let result = [...data]
 
@@ -62,112 +85,107 @@ const EntityList = ({
     result = result.filter((item) => {
       const matchSearch =
         !search ||
-        searchableKeys.some((key) =>
-          String(item[key] || "")
+        searchableKeys.some((key) => {
+          const value = item[key]
+          return String(value ?? "")
             .toLowerCase()
             .includes(search.toLowerCase())
-        )
+        })
 
       const matchFilters = Object.entries(filters).every(([key, values]) => {
         if (!values.length) return true
-        return values.includes(String(item[key]))
+        return values.includes(String(item[key as keyof T]))
       })
 
       return matchSearch && matchFilters
     })
 
     // SORT
-    if (sortConfig) {
-      const getValue = (row: any, key: any) => {
-        if (typeof key === "function") return key(row)
-        return row[key]
+    result.sort((a, b) => {
+      let valA = a[sortConfig.key]
+      let valB = b[sortConfig.key]
+
+      if (valA == null) return 1
+      if (valB == null) return -1
+
+      // number sort
+      if (typeof valA === "number" && typeof valB === "number") {
+        return sortConfig.direction === "asc"
+          ? valA - valB
+          : valB - valA
       }
 
-      result = [...result].sort((a, b) => {
-        let valA = getValue(a, sortConfig.key)
-        let valB = getValue(b, sortConfig.key)
-
-        if (valA == null) return 1
-        if (valB == null) return -1
-
-        if (typeof valA === "string") valA = valA.toLowerCase()
-        if (typeof valB === "string") valB = valB.toLowerCase()
-
-        if (!isNaN(valA) && !isNaN(valB)) {
-          return sortConfig.direction === "asc"
-            ? Number(valA) - Number(valB)
-            : Number(valB) - Number(valA)
-        }
-
-        return sortConfig.direction === "asc"
-          ? String(valA).localeCompare(String(valB))
-          : String(valB).localeCompare(String(valA))
-      })
-    }
+      // string sort
+      return sortConfig.direction === "asc"
+        ? String(valA).localeCompare(String(valB))
+        : String(valB).localeCompare(String(valA))
+    })
 
     return result
   }, [data, search, filters, sortConfig, searchableKeys])
 
+  // ✅ PAGINATION
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize
     return filteredData.slice(start, start + pageSize)
   }, [filteredData, page, pageSize])
 
+  // ✅ COLUMN VISIBILITY
   const filteredColumns = useMemo(() => {
     return columns.filter(
-      (col: any) => col.alwaysVisible || visibleColumns.includes(col.accessor)
+      (col) =>
+        col.alwaysVisible ||
+        visibleColumns.includes(col.accessor)
     )
   }, [columns, visibleColumns])
 
   return (
-    <>
-      <div className="d-flex gap-5">
-        <div className="flex-grow-1" style={{ minWidth: 0 }}>
-          <KTCard>
+    <div className="d-flex gap-5">
+      <div className="flex-grow-1" style={{ minWidth: 0 }}>
+        <KTCard>
 
-            <EntityHeader
-              search={search}
-              onSearchChange={setSearch}
-              columns={columns}
-              visibleColumns={visibleColumns}
-              setVisibleColumns={setVisibleColumns}
-              isMobile={isMobile}
-              onOpenFilter={() => setShowFilters(true)}
-            />
+          <EntityHeader
+            search={search}
+            onSearchChange={setSearch}
+            columns={columns}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+            isMobile={isMobile}
+            onOpenFilter={() => setShowFilters(true)}
+          />
 
-            <EntityTable
-              data={paginatedData}
-              columns={filteredColumns}
-              enableRowClick={enableRowClick}
-              getRowLink={getRowLink}
-              sortConfig={sortConfig}
-              setSortConfig={setSortConfig}
-            />
+          <EntityTable
+            data={paginatedData}
+            columns={filteredColumns}
+            enableRowClick={enableRowClick}
+            getRowLink={getRowLink}
+            sortConfig={sortConfig}
+            setSortConfig={setSortConfig}
+          />
 
-            <Paginations
-              page={page}
-              pageSize={pageSize}
-              total={filteredData.length}
-              onChange={setPage}
-              onPageSizeChange={(size) => {
-                setPage(1)       
-                setPageSize(size)
-              }}
-            />
+          <Paginations
+            page={page}
+            pageSize={pageSize}
+            total={filteredData.length}
+            onChange={setPage}
+            onPageSizeChange={(size) => {
+              setPage(1)
+              setPageSize(size)
+            }}
+          />
 
-          </KTCard>
-        </div>
-
-        {!isMobile && (
-          <div style={{ width: 280 }}>
-            <SideFilter
-              filters={filtersConfig}
-              onFilterChange={setFilters}
-            />
-          </div>
-        )}
+        </KTCard>
       </div>
-    </>
+
+      {!isMobile && (
+        <div style={{ width: 280 }}>
+          <SideFilter
+            filters={filtersConfig}
+            onFilterChange={setFilters}
+          />
+        </div>
+      )}
+    </div>
   )
 }
 

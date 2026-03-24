@@ -40,7 +40,7 @@ const agencies: Agency[] = [
   { id: 20, image: Blank, name: 'Royal Keys', email: 'royalkeys@realty.com', status: 'Active', type: 'Agency' },
 ]
 
-const agencyColumns = [
+const agencyColumns: any = [
   {
     Header: 'ID',
     accessor: 'id',

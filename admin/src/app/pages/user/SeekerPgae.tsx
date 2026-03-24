@@ -7,6 +7,10 @@ import { Column } from 'react-table'
 
 const Blank = "/media/avatars/blank.png"
 
+type CustomColumn<T extends object> = Column<T> & {
+    sortable?: boolean
+    alwaysVisible?: boolean
+}
 type Seeker = {
     id: number
     image: string
@@ -186,7 +190,7 @@ const seekers: Seeker[] = [
 
 
 
-export const columns: Column<Seeker>[] = [
+export const columns: CustomColumn<Seeker>[] = [
     {
         Header: 'ID',
         accessor: 'id',
@@ -205,8 +209,8 @@ export const columns: Column<Seeker>[] = [
         ),
     },
 
-    { Header: 'Name', accessor: 'name',sortable: true },
-    { Header: 'Email', accessor: 'email',sortable: true },
+    { Header: 'Name', accessor: 'name', sortable: true },
+    { Header: 'Email', accessor: 'email', sortable: true },
 
     {
         Header: 'Status',
@@ -301,7 +305,7 @@ export const columns: Column<Seeker>[] = [
         sortable: true
     },
 
-   
+
 
 ]
 
