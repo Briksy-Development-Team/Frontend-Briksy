@@ -85,7 +85,7 @@ const SideFilter = ({ filters, onFilterChange }: {
   }
 
   return (
-    <div className="card shadow-sm">
+    <div className="card shadow-sm px-4">
       <div className="card-header">
         <h5 className="card-title m-0">Filters</h5>
       </div>
@@ -113,13 +113,13 @@ const SideFilter = ({ filters, onFilterChange }: {
             </div>
 
             {open === f.key && (
-              <div className="px-5 pb-4">
+              <div className="  pb-4">
 
                 {/* SELECT */}
                 {f.type === 'select' && (
-                  <div className="mh-200px overflow-auto">
+                  <div className="mh-200px  overflow-auto">
                     {f.options.map((opt) => (
-                      <label key={opt} className="form-check mb-2">
+                      <label key={opt} className="form-check   mb-2">
                         <input
                           type="checkbox"
                           checked={
@@ -127,7 +127,7 @@ const SideFilter = ({ filters, onFilterChange }: {
                           }
                           onChange={() => toggleValue(f.key, opt)}
                         />
-                        <span>{opt}</span>
+                        <span className='mx-3'>{opt}</span>
                       </label>
                     ))}
                   </div>
