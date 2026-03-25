@@ -1,12 +1,11 @@
 import { useMemo, useState, useEffect } from "react"
-import { KTCard } from "../../../../../_metronic/helpers"
+import { KTCard, KTIcon } from "../../../../../_metronic/helpers"
 import { EntityTable } from "./table/EntityTable"
 import { EntityHeader } from "./components/header/EntityHeader"
 import { SideFilter } from "./components/header/SideFilter"
 import Paginations from "./components/Pagination"
 import { exportToExcel } from '../utils/exportToExcel'
 
-// 🔥 TYPES
 type Range = {
   min?: number
   max?: number
@@ -55,6 +54,7 @@ const EntityList = <T extends Record<string, any>,>({
   const [filters, setFilters] = useState<Record<string, FilterValue>>({})
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [showFilter, setShowFilter] = useState(false)
 
   const [sortConfig, setSortConfig] = useState<SortConfig<T>>({
     key: columns[0]?.accessor as keyof T,
@@ -89,11 +89,9 @@ const EntityList = <T extends Record<string, any>,>({
     setPage(1)
   }, [search, filters])
 
-  // ✅ FILTER + SEARCH + SORT (CLEAN)
   const filteredData = useMemo(() => {
     let result = [...data]
 
-    // FILTER
     result = result.filter((item) => {
       const matchSearch =
         !search ||
@@ -109,38 +107,29 @@ const EntityList = <T extends Record<string, any>,>({
 
         if (!value) return true
 
-        // SELECT
         if (Array.isArray(value)) {
           if (!value.length) return true
           return value.includes(String(field))
         }
 
-        // NUMBER RANGE
         if ('min' in value || 'max' in value) {
           const num = Number(field ?? 0)
-
           if (value.min !== undefined && num < value.min) return false
           if (value.max !== undefined && num > value.max) return false
-
           return true
         }
 
-        // DATE RANGE
         if ('from' in value || 'to' in value) {
           if (!field) return false
-
           const itemDate = new Date(field as string).getTime()
-
           if (value.from) {
             const from = new Date(value.from).getTime()
             if (itemDate < from) return false
           }
-
           if (value.to) {
             const to = new Date(value.to).getTime()
             if (itemDate > to) return false
           }
-
           return true
         }
 
@@ -150,7 +139,6 @@ const EntityList = <T extends Record<string, any>,>({
       return matchSearch && matchFilters
     })
 
-    // SORT (OUTSIDE FILTER — FIXED)
     result.sort((a, b) => {
       let valA = a[sortConfig.key]
       let valB = b[sortConfig.key]
@@ -159,9 +147,7 @@ const EntityList = <T extends Record<string, any>,>({
       if (valB == null) return -1
 
       if (typeof valA === "number" && typeof valB === "number") {
-        return sortConfig.direction === "asc"
-          ? valA - valB
-          : valB - valA
+        return sortConfig.direction === "asc" ? valA - valB : valB - valA
       }
 
       return sortConfig.direction === "asc"
@@ -172,18 +158,14 @@ const EntityList = <T extends Record<string, any>,>({
     return result
   }, [data, search, filters, sortConfig, searchableKeys])
 
-  // PAGINATION
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize
     return filteredData.slice(start, start + pageSize)
   }, [filteredData, page, pageSize])
 
-  // COLUMN VISIBILITY
   const filteredColumns = useMemo(() => {
     return columns.filter(
-      (col) =>
-        col.alwaysVisible ||
-        visibleColumns.includes(col.accessor)
+      (col) => col.alwaysVisible || visibleColumns.includes(col.accessor)
     )
   }, [columns, visibleColumns])
 
@@ -199,9 +181,8 @@ const EntityList = <T extends Record<string, any>,>({
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}
-            onOpenFilter={() => { }}
+            onOpenFilter={() => setShowFilter(true)}
             onExport={() => exportToExcel(paginatedData, filteredColumns)}
-
           />
 
           <EntityTable
@@ -227,12 +208,55 @@ const EntityList = <T extends Record<string, any>,>({
         </KTCard>
       </div>
 
-      {!isMobile && (
+      {!isMobile && filtersConfig && (
         <div style={{ width: 280 }}>
           <SideFilter
             filters={filtersConfig}
             onFilterChange={setFilters}
           />
+        </div>
+      )}
+
+      {isMobile && showFilter && filtersConfig && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1050,
+            background: 'rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'flex-end',
+          }}
+          onClick={() => setShowFilter(false)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              borderRadius: '16px 16px 0 0',
+              background: 'var(--kt-card-bg)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="d-flex justify-content-between align-items-center px-5 pt-4 pb-2">
+              <span className="fw-bold fs-5">Filters</span>
+              <button
+                className="btn btn-sm btn-icon btn-light"
+                onClick={() => setShowFilter(false)}
+              >
+                <KTIcon iconName="cross" className="fs-2" />
+              </button>
+            </div>
+
+            <SideFilter
+              filters={filtersConfig}
+              onFilterChange={(f) => {
+                setFilters(f)
+                setShowFilter(false)
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
