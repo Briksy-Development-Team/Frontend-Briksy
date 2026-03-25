@@ -85,7 +85,7 @@ const SideFilter = ({ filters, onFilterChange }: {
   }
 
   return (
-    <div className="card shadow-sm px-4">
+    <div className="card shadow-sm p  x-4">
       <div className="card-header">
         <h5 className="card-title m-0">Filters</h5>
       </div>
