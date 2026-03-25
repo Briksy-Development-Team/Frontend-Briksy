@@ -44,20 +44,21 @@ const EntityTable = <T extends { id?: number }>({
     data,
   })
 
-  // ✅ Clean sort handler
   const handleSort = (col: CustomColumn<T>) => {
     if (col.sortable === false) return
 
+    const key = col.id as keyof T
+
     setSortConfig((prev) => {
-      if (prev.key === col.accessor) {
+      if (prev.key === key) {
         return {
-          key: col.accessor as keyof T,
+          key,
           direction: prev.direction === 'asc' ? 'desc' : 'asc',
         }
       }
 
       return {
-        key: col.accessor as keyof T,
+        key,
         direction: 'asc',
       }
     })
@@ -79,8 +80,7 @@ const EntityTable = <T extends { id?: number }>({
                   return (
                     <th
                       {...col.getHeaderProps()}
-                      onClick={() => handleSort(column)}
-                      style={{
+                      onClick={() => handleSort(column)} style={{
                         cursor:
                           column.sortable === false
                             ? 'default'

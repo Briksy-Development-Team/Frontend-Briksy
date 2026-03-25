@@ -4,6 +4,20 @@ import { EntityTable } from "./table/EntityTable"
 import { EntityHeader } from "./components/header/EntityHeader"
 import { SideFilter } from "./components/header/SideFilter"
 import Paginations from "./components/Pagination"
+import { exportToExcel } from '../utils/exportToExcel'
+
+// 🔥 TYPES
+type Range = {
+  min?: number
+  max?: number
+}
+
+type DateRange = {
+  from?: string
+  to?: string
+}
+
+type FilterValue = string[] | Range | DateRange
 
 type Column<T> = {
   Header: string
@@ -27,7 +41,7 @@ type SortConfig<T> = {
   direction: "asc" | "desc"
 }
 
-const EntityList = <T extends Record<string, any>>({
+const EntityList = <T extends Record<string, any>,>({
   data,
   columns,
   filtersConfig,
@@ -38,7 +52,7 @@ const EntityList = <T extends Record<string, any>>({
 }: EntityListProps<T>) => {
 
   const [search, setSearch] = useState("")
-  const [filters, setFilters] = useState<Record<string, string[]>>({})
+  const [filters, setFilters] = useState<Record<string, FilterValue>>({})
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -59,7 +73,6 @@ const EntityList = <T extends Record<string, any>>({
   })
 
   const [isMobile, setIsMobile] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768)
@@ -72,16 +85,15 @@ const EntityList = <T extends Record<string, any>>({
     localStorage.setItem(storageKey, JSON.stringify(visibleColumns))
   }, [visibleColumns, storageKey])
 
-  // ✅ Reset page only when needed
   useEffect(() => {
     setPage(1)
   }, [search, filters])
 
-  // ✅ FILTER + SEARCH + SORT
+  // ✅ FILTER + SEARCH + SORT (CLEAN)
   const filteredData = useMemo(() => {
     let result = [...data]
 
-    // SEARCH + FILTER
+    // FILTER
     result = result.filter((item) => {
       const matchSearch =
         !search ||
@@ -92,15 +104,53 @@ const EntityList = <T extends Record<string, any>>({
             .includes(search.toLowerCase())
         })
 
-      const matchFilters = Object.entries(filters).every(([key, values]) => {
-        if (!values.length) return true
-        return values.includes(String(item[key as keyof T]))
+      const matchFilters = Object.entries(filters).every(([key, value]) => {
+        const field = item[key as keyof T]
+
+        if (!value) return true
+
+        // SELECT
+        if (Array.isArray(value)) {
+          if (!value.length) return true
+          return value.includes(String(field))
+        }
+
+        // NUMBER RANGE
+        if ('min' in value || 'max' in value) {
+          const num = Number(field ?? 0)
+
+          if (value.min !== undefined && num < value.min) return false
+          if (value.max !== undefined && num > value.max) return false
+
+          return true
+        }
+
+        // DATE RANGE
+        if ('from' in value || 'to' in value) {
+          if (!field) return false
+
+          const itemDate = new Date(field as string).getTime()
+
+          if (value.from) {
+            const from = new Date(value.from).getTime()
+            if (itemDate < from) return false
+          }
+
+          if (value.to) {
+            const to = new Date(value.to).getTime()
+            if (itemDate > to) return false
+          }
+
+          return true
+        }
+
+        return true
       })
 
       return matchSearch && matchFilters
     })
 
-    // SORT
+    // SORT (OUTSIDE FILTER — FIXED)
     result.sort((a, b) => {
       let valA = a[sortConfig.key]
       let valB = b[sortConfig.key]
@@ -108,14 +158,12 @@ const EntityList = <T extends Record<string, any>>({
       if (valA == null) return 1
       if (valB == null) return -1
 
-      // number sort
       if (typeof valA === "number" && typeof valB === "number") {
         return sortConfig.direction === "asc"
           ? valA - valB
           : valB - valA
       }
 
-      // string sort
       return sortConfig.direction === "asc"
         ? String(valA).localeCompare(String(valB))
         : String(valB).localeCompare(String(valA))
@@ -124,13 +172,13 @@ const EntityList = <T extends Record<string, any>>({
     return result
   }, [data, search, filters, sortConfig, searchableKeys])
 
-  // ✅ PAGINATION
+  // PAGINATION
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize
     return filteredData.slice(start, start + pageSize)
   }, [filteredData, page, pageSize])
 
-  // ✅ COLUMN VISIBILITY
+  // COLUMN VISIBILITY
   const filteredColumns = useMemo(() => {
     return columns.filter(
       (col) =>
@@ -151,7 +199,9 @@ const EntityList = <T extends Record<string, any>>({
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}
-            onOpenFilter={() => setShowFilters(true)}
+            onOpenFilter={() => { }}
+            onExport={() => exportToExcel(paginatedData, filteredColumns)}
+
           />
 
           <EntityTable
