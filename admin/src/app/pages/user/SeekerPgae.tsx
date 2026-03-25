@@ -313,7 +313,34 @@ const filters = [
     {
         key: 'status',
         label: 'Status',
-        options: ['Active', 'Blocked'],
+        type: 'select',
+        options: ['Active', 'Inactive', 'Blocked'],
+    },
+    {
+        key: 'gender',
+        label: 'Gender',
+        type: 'select',
+        options: ['Male', 'Female'],
+    },
+    {
+        key: 'age',
+        label: 'Age',
+        type: 'range',
+    },
+    {
+        key: 'expected_salary',
+        label: 'Salary',
+        type: 'range',
+    },
+    {
+        key: 'created_at',
+        label: 'Created Date',
+        type: 'dateRange',
+    },
+      {
+        key: 'updated_at',
+        label: 'Updated Date',
+        type: 'dateRange',
     },
 ]
 

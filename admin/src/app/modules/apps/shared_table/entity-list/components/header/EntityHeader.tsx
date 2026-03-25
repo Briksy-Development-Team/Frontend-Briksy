@@ -9,6 +9,7 @@ type Props<T extends Record<string, any>> = {
   onSearchChange: (val: string) => void
   isMobile: boolean
   onOpenFilter: () => void
+  onExport?: () => void
 }
 
 const EntityHeader = <T extends Record<string, any>>({
@@ -19,6 +20,8 @@ const EntityHeader = <T extends Record<string, any>>({
   setVisibleColumns,
   isMobile,
   onOpenFilter,
+  onExport,
+
 }: Props<T>) => {
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
@@ -45,6 +48,12 @@ const EntityHeader = <T extends Record<string, any>>({
           </button>
         )}
 
+        <button
+          onClick={onExport}
+          disabled={!onExport} type='button' className='btn btn-light-primary me-3'>
+          <KTIcon iconName='exit-up' className='fs-2' />
+          Export
+        </button>
         <ColumnSelector
           columns={columns}
           visibleColumns={visibleColumns}
