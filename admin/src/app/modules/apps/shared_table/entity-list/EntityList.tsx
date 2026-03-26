@@ -74,6 +74,8 @@ const EntityList = <T extends Record<string, any>,>({
 
   const [isMobile, setIsMobile] = useState(false)
 
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768)
     handleResize()
@@ -88,6 +90,33 @@ const EntityList = <T extends Record<string, any>,>({
   useEffect(() => {
     setPage(1)
   }, [search, filters])
+
+  useEffect(() => {
+    setSelectedRows(new Set())
+  }, [page, search, filters])
+
+  const handleRowSelect = (id: number) => {
+    setSelectedRows((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectedRows(
+      checked ? new Set(paginatedData.map((r: any) => r.id)) : new Set()
+    )
+  }
+
+  const handleExport = () => {
+    const rowsToExport =
+      selectedRows.size > 0
+        ? paginatedData.filter((r: any) => selectedRows.has(r.id))
+        : paginatedData
+
+    exportToExcel(rowsToExport, filteredColumns)
+  }
 
   const filteredData = useMemo(() => {
     let result = [...data]
@@ -182,7 +211,8 @@ const EntityList = <T extends Record<string, any>,>({
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}
             onOpenFilter={() => setShowFilter(true)}
-            onExport={() => exportToExcel(paginatedData, filteredColumns)}
+            onExport={handleExport}
+            selectedCount={selectedRows.size} 
           />
 
           <EntityTable
@@ -192,6 +222,9 @@ const EntityList = <T extends Record<string, any>,>({
             getRowLink={getRowLink}
             sortConfig={sortConfig}
             setSortConfig={setSortConfig}
+            selectedRows={selectedRows}   
+            onRowSelect={handleRowSelect} 
+            onSelectAll={handleSelectAll} 
           />
 
           <Paginations

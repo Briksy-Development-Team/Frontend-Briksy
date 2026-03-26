@@ -10,6 +10,7 @@ type Props<T extends Record<string, any>> = {
   isMobile: boolean
   onOpenFilter: () => void
   onExport?: () => void
+  selectedCount?: number
 }
 
 const EntityHeader = <T extends Record<string, any>>({
@@ -21,8 +22,12 @@ const EntityHeader = <T extends Record<string, any>>({
   isMobile,
   onOpenFilter,
   onExport,
+  selectedCount = 0,
+
 
 }: Props<T>) => {
+  const hasSelection = selectedCount > 0
+
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
 
@@ -50,9 +55,18 @@ const EntityHeader = <T extends Record<string, any>>({
 
         <button
           onClick={onExport}
-          disabled={!onExport} type='button' className='btn btn-light-primary me-3'>
+          disabled={!onExport}
+          type='button'
+          className={`btn me-3 d-flex align-items-center gap-2 ${hasSelection ? 'btn-primary' : 'btn-light-primary'
+            }`}
+        >
           <KTIcon iconName='exit-up' className='fs-2' />
           Export
+          {hasSelection && (
+            <span >
+              {selectedCount}
+            </span>
+          )}
         </button>
         <ColumnSelector
           columns={columns}
