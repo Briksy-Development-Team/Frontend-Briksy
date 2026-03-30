@@ -27,7 +27,7 @@ type Column<T> = {
 
 type EntityListProps<T extends Record<string, any>> = {
   data: T[]
-  columns: any[]
+  columns: Column<T>[]
   filtersConfig?: any
   enableRowClick?: boolean
   getRowLink?: (row: T) => string
@@ -55,6 +55,7 @@ const EntityList = <T extends Record<string, any>,>({
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [showFilter, setShowFilter] = useState(false)
+
 
   const [sortConfig, setSortConfig] = useState<SortConfig<T>>({
     key: columns[0]?.accessor as keyof T,
@@ -212,7 +213,7 @@ const EntityList = <T extends Record<string, any>,>({
             isMobile={isMobile}
             onOpenFilter={() => setShowFilter(true)}
             onExport={handleExport}
-            selectedCount={selectedRows.size} 
+            selectedCount={selectedRows.size}
           />
 
           <EntityTable
@@ -222,9 +223,9 @@ const EntityList = <T extends Record<string, any>,>({
             getRowLink={getRowLink}
             sortConfig={sortConfig}
             setSortConfig={setSortConfig}
-            selectedRows={selectedRows}   
-            onRowSelect={handleRowSelect} 
-            onSelectAll={handleSelectAll} 
+            selectedRows={selectedRows}
+            onRowSelect={handleRowSelect}
+            onSelectAll={handleSelectAll}
           />
 
           <Paginations
