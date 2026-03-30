@@ -1,31 +1,26 @@
 import { Route, Routes } from 'react-router-dom'
 import Profile from '../profile/Profile'
 import Home from '../home/Home'
-import Navbar from '../navbar/Navbar'
-import { profileData } from '../data/profileDummydata'
-
-interface AppRouterProps {
-    dark: boolean
-    setDark: (value: boolean) => void
-}
+import Login from '../login-signup/login/Login'
+import MainLayout from './MainLayout'
+import SignUp from '../login-signup/signup/SignUp'
+import Forgot from '../login-signup/forgot/Forgot'
 
 const AppRouter = ({ dark, setDark }: AppRouterProps) => {
     return (
-        <div className={`min-h-screen transition-colors duration-300 ${dark ? "bg-black text-white" : "bg-zinc-50 text-black"}`}>
-
-            <Navbar
-                dark={dark}
-                setDark={setDark}
-                avatar={profileData.seeker.avatar}
-                name={profileData.seeker.name}
-            />
-
-            <Routes>
+        <Routes>
+            <Route element={<MainLayout dark={dark} setDark={setDark} />}>
                 <Route path='/' element={<Home dark={dark} />} />
                 <Route path='/profile' element={<Profile dark={dark} />} />
-            </Routes>
+            </Route>
 
-        </div>
+            {/* Routes WITHOUT Navbar */}
+            <Route path='/login' element={<Login dark={dark} />} />
+            <Route path='/sign-up' element={<SignUp dark={dark} />} />
+            <Route path='/forgot' element={<Forgot dark={dark} />} />
+
+
+        </Routes>
     )
 }
 
