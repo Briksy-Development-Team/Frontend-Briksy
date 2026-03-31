@@ -6,6 +6,9 @@ import { SideFilter } from "./components/header/SideFilter"
 import Paginations from "./components/Pagination"
 import { exportToExcel } from '../utils/exportToExcel'
 
+
+import { ReactNode } from "react"
+
 type Range = {
   min?: number
   max?: number
@@ -18,11 +21,12 @@ type DateRange = {
 
 type FilterValue = string[] | Range | DateRange
 
-type Column<T> = {
+ export type Column<T> = {
   Header: string
   accessor: keyof T
   sortable?: boolean
   alwaysVisible?: boolean
+  Cell?: (value: T[keyof T], row: T) => ReactNode
 }
 
 type EntityListProps<T extends Record<string, any>> = {
@@ -33,6 +37,7 @@ type EntityListProps<T extends Record<string, any>> = {
   getRowLink?: (row: T) => string
   searchableKeys?: (keyof T)[]
   storageKey?: string
+
 }
 
 type SortConfig<T> = {
@@ -48,6 +53,7 @@ const EntityList = <T extends Record<string, any>,>({
   getRowLink,
   searchableKeys = [],
   storageKey = "visibleColumns",
+
 }: EntityListProps<T>) => {
 
   const [search, setSearch] = useState("")

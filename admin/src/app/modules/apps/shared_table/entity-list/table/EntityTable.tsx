@@ -2,9 +2,7 @@ import { useTable, Column } from 'react-table'
 import { useNavigate } from 'react-router-dom'
 import { KTCardBody } from '../../../../../../_metronic/helpers'
 
-type CustomColumn<T extends object> = Column<T> & {
-  sortable?: boolean
-}
+import { Column as CustomColumn } from "../EntityList"
 
 // type SortConfig<T> = {
 //   key: keyof T
@@ -43,7 +41,7 @@ const EntityTable = <T extends { id?: number }>({
     rows,
     prepareRow,
   } = useTable<T>({
-    columns,
+    columns: columns as any,
     data,
   })
 
@@ -88,8 +86,7 @@ const EntityTable = <T extends { id?: number }>({
                 )}
 
                 {hg.headers.map((col) => {
-                  const column = col as CustomColumn<T>
-
+                  const column = col as unknown as CustomColumn<T>
                   return (
                     <th
                       {...col.getHeaderProps()}
