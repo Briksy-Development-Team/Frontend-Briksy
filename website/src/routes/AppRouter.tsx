@@ -16,7 +16,7 @@ const AppRouter = ({ dark, setDark }: AppRouterProps) => {
 
             {/* Routes WITHOUT Navbar */}
             <Route path='/login' element={<Login dark={dark} />} />
-            <Route path='/sign-up' element={<SignUp dark={dark} />} />
+            <Route path='/register' element={<SignUp dark={dark} />} />
             <Route path='/forgot' element={<Forgot dark={dark} />} />
 
 
