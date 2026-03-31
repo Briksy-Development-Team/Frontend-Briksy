@@ -4,6 +4,7 @@ type Seeker = {
   id: number;
   name: string;
   email: string;
+  status: string;
   last_login?: string;
   current_login?: string;
   age?: number;
@@ -23,6 +24,8 @@ export const seekerColumns: Column<Seeker>[] = [
   { Header: "ID", accessor: "id", sortable: true, alwaysVisible: true },
   { Header: "Name", accessor: "name", sortable: true },
   { Header: "Email", accessor: "email", sortable: true },
+  { Header: "Status", accessor: "status", sortable: true },
+
   {
     Header: "Last Login",
     accessor: "last_login",

@@ -29,14 +29,14 @@ const initialState: SeekerState = {
 
 export const fetchSeekers = createAsyncThunk(
   "seeker/fetch",
-  async (params: any) => {
+  async (params: GetSeekersParams) => {
     const res = await fetchSeekersApi(params);
 
     return {
       data: res.data.map(mapSeeker),
       total: res.total,
     };
-  },
+  }
 );
 
 const seekerSlice = createSlice({

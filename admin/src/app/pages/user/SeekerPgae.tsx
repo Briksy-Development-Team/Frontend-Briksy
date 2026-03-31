@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSeekers } from "../../services/features/seeker/seekerSlice";
 import { RootState, AppDispatch } from "../../services/store";
@@ -12,18 +12,22 @@ import { Content } from "../../../_metronic/layout/components/content";
 const SeekerPage = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { data, loading, error } = useSelector(
+  const { data, total, loading, error } = useSelector(
     (state: RootState) => state.seeker
   );
 
+  const [params, setParams] = useState({
+    page: 1,
+    pageSize: 10,
+    search: "",
+    filters: {},
+    sortBy: "",
+    sortOrder: "asc" as "asc" | "desc",
+  });
+
   useEffect(() => {
-    dispatch(
-      fetchSeekers({
-        page: 1,
-        pageSize: 10,
-      })
-    );
-  }, [dispatch]);
+    dispatch(fetchSeekers(params));
+  }, [params, dispatch]);
 
   if (error) {
     return (
@@ -36,15 +40,16 @@ const SeekerPage = () => {
 
   return (
     <Content>
-      <PageHeader
-        title="Seeker"
-        subtitle="Manage all seekers"
-      />
+      <PageHeader title="Seeker" subtitle="Manage all seekers" />
+
       {loading ? (
         <div>Loading...</div>
       ) : (
         <EntityList
           data={data}
+          total={total}
+          params={params}
+          onParamsChange={setParams}
           columns={seekerColumns}
           filtersConfig={seekerFilters}
           searchableKeys={["name", "email"]}
