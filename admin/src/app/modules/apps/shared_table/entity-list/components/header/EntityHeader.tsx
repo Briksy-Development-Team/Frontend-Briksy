@@ -1,5 +1,6 @@
 import { KTIcon } from '../../../../../../../_metronic/helpers'
 import { ColumnSelector } from './ColumnSelector'
+import SortSelector from './SortSelector'
 
 type Props<T extends Record<string, any>> = {
   columns: { accessor: keyof T; Header: string }[]
@@ -11,6 +12,7 @@ type Props<T extends Record<string, any>> = {
   onOpenFilter: () => void
   onExport?: () => void
   selectedCount?: number
+  onSortChange: (config: { key: keyof T; direction: 'asc' | 'desc' }) => void
 }
 
 const EntityHeader = <T extends Record<string, any>>({
@@ -23,14 +25,14 @@ const EntityHeader = <T extends Record<string, any>>({
   onOpenFilter,
   onExport,
   selectedCount = 0,
-
-
+  onSortChange,
 }: Props<T>) => {
   const hasSelection = selectedCount > 0
 
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
 
+      {/* SEARCH */}
       <div className='card-title'>
         <div className='d-flex align-items-center position-relative my-1'>
           <KTIcon iconName='magnifier' className='fs-1 position-absolute ms-6' />
@@ -47,6 +49,8 @@ const EntityHeader = <T extends Record<string, any>>({
 
       <div className='card-toolbar d-flex gap-3'>
 
+        <SortSelector columns={columns} onSortChange={onSortChange} />
+
         {isMobile && (
           <button className='btn btn-light-primary' onClick={onOpenFilter}>
             Filter
@@ -57,23 +61,19 @@ const EntityHeader = <T extends Record<string, any>>({
           onClick={onExport}
           disabled={!onExport}
           type='button'
-          className={`btn me-3 d-flex align-items-center gap-2 ${hasSelection ? 'btn-primary' : 'btn-light-primary'
+          className={`btn d-flex align-items-center gap-2 ${hasSelection ? 'btn-primary' : 'btn-light-primary'
             }`}
         >
           <KTIcon iconName='exit-up' className='fs-2' />
           Export
-          {hasSelection && (
-            <span >
-              {selectedCount}
-            </span>
-          )}
+          {hasSelection && <span>{selectedCount}</span>}
         </button>
+
         <ColumnSelector
           columns={columns}
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
         />
-
       </div>
     </div>
   )

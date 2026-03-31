@@ -214,6 +214,12 @@ const EntityList = <T extends Record<string, any>,>({
             onOpenFilter={() => setShowFilter(true)}
             onExport={handleExport}
             selectedCount={selectedRows.size}
+            onSortChange={(config) =>
+              setSortConfig({
+                key: config.key as keyof T,
+                direction: config.direction,
+              })
+            }
           />
 
           <EntityTable

@@ -52,8 +52,8 @@ export function HeaderWrapper() {
                   <Link to='/dashboard' className='d-lg-none'>
                       <img
                         alt='Logo'
-                        src={toAbsoluteUrl('media/logos/default-small.svg')}
-                        className='h-30px'
+                        src={toAbsoluteUrl('media/logos/custom-3.svg')}
+                        className='h-25px'
                       />
                   </Link>
                 </div>
@@ -68,19 +68,19 @@ export function HeaderWrapper() {
               {config.layoutType === 'dark-header' ? (
                 <img
                   alt='Logo'
-                  src={toAbsoluteUrl('media/logos/default-dark.svg')}
+                  src={toAbsoluteUrl('media/logos/custom-3.svg')}
                   className='h-20px h-lg-30px app-sidebar-logo-default'
                 />
               ) : (
                 <>
                   <img
                     alt='Logo'
-                    src={toAbsoluteUrl('media/logos/default.svg')}
+                    src={toAbsoluteUrl('media/logos/custom-3.svg')}
                     className='h-20px h-lg-30px app-sidebar-logo-default theme-light-show'
                   />
                   <img
                     alt='Logo'
-                    src={toAbsoluteUrl('media/logos/default-dark.svg')}
+                    src={toAbsoluteUrl('media/logos/custom-3.svg')}
                     className='h-20px h-lg-30px app-sidebar-logo-default theme-dark-show'
                   />
                 </>
