@@ -2,12 +2,10 @@ import { useTable, Column } from 'react-table'
 import { useNavigate } from 'react-router-dom'
 import { KTCardBody } from '../../../../../../_metronic/helpers'
 
-// ✅ Extend react-table column
 type CustomColumn<T extends object> = Column<T> & {
   sortable?: boolean
 }
 
-// ✅ Proper sort config
 // type SortConfig<T> = {
 //   key: keyof T
 //   direction: 'asc' | 'desc'
@@ -20,7 +18,6 @@ type Props<T extends { id?: number }> = {
   getRowLink?: (row: T) => string
   // sortConfig: SortConfig<T>
   // setSortConfig: React.Dispatch<React.SetStateAction<SortConfig<T>>>
-  // ✅ Selection props
   selectedRows?: Set<number>
   onRowSelect?: (id: number) => void
   onSelectAll?: (checked: boolean) => void
