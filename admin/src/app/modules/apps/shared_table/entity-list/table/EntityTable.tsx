@@ -74,8 +74,10 @@ const EntityTable = <T extends { id?: number }>({
           {...getTableProps()}
         >
           <thead>
-            {headerGroups.map((hg) => (
-              <tr {...hg.getHeaderGroupProps()}>
+            {headerGroups.map((hg) => {
+              const { key: hgKey, ...hgRest } = hg.getHeaderGroupProps()
+              return (
+                <tr key={hgKey} {...hgRest}>
 
                 {onRowSelect && (
                   <th style={{ width: 40 }}>
@@ -92,10 +94,12 @@ const EntityTable = <T extends { id?: number }>({
 
                 {hg.headers.map((col) => {
                   const column = col as CustomColumn<T>
+                  const { key: colKey, ...colRest } = col.getHeaderProps()
 
                   return (
                     <th
-                      {...col.getHeaderProps()}
+                      key={colKey}
+                      {...colRest}
                       onClick={() => handleSort(column)}
                       style={{
                         cursor: column.sortable === false ? 'default' : 'pointer',
@@ -115,7 +119,8 @@ const EntityTable = <T extends { id?: number }>({
                   )
                 })}
               </tr>
-            ))}
+              )
+            })}
           </thead>
 
           <tbody {...getTableBodyProps()}>
@@ -125,10 +130,12 @@ const EntityTable = <T extends { id?: number }>({
                 const rowData = row.original
                 const rowId = rowData.id ?? -1
                 const isSelected = selectedRows.has(rowId)
+                const { key: rowKey, ...rowRest } = row.getRowProps()
 
                 return (
                   <tr
-                    {...row.getRowProps()}
+                    key={rowKey}
+                    {...rowRest}
                     onClick={() => {
                       if (enableRowClick && getRowLink) {
                         navigate(getRowLink(rowData), { state: rowData })
@@ -149,9 +156,12 @@ const EntityTable = <T extends { id?: number }>({
                       </td>
                     )}
 
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                    ))}
+                    {row.cells.map((cell) => {
+                      const { key: cellKey, ...cellRest } = cell.getCellProps()
+                      return (
+                        <td key={cellKey} {...cellRest}>{cell.render('Cell')}</td>
+                      )
+                    })}
                   </tr>
                 )
               })

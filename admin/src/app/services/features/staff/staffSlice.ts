@@ -1,27 +1,23 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { fetchSeekers as fetchSeekersApi, SuperAdminListResponse } from "../../api/superAdminApi";
+import { fetchStaff as fetchStaffApi, SuperAdminListResponse, ApiFilterValue } from "../../api/superAdminApi";
 
-export type Seeker = {
+type Staff = {
   id: number;
   name: string;
   email: string;
   status?: string;
-  last_login?: string | null;
-  current_login?: string | null;
-  age?: number;
-  gender?: string;
-  location?: string;
+  organization?: { id?: string; name?: string };
   created_at?: string;
   updated_at?: string;
 };
 
-type SeekersQuery = {
+type StaffQuery = {
   search?: string;
   sort?: string;
   direction?: "asc" | "desc";
   page?: number;
   per_page?: number;
-  filter?: Record<string, any>;
+  filter?: Record<string, ApiFilterValue>;
 };
 
 type PaginationState = {
@@ -34,26 +30,26 @@ type PaginationState = {
   has_more_pages: boolean;
 };
 
-type SeekerState = {
-  data: Seeker[];
+type StaffState = {
+  data: Staff[];
   loading: boolean;
   error: string | null;
   pagination: PaginationState | null;
-  query: SeekersQuery;
+  query: StaffQuery;
 };
 
-export const fetchSeekers = createAsyncThunk<
-  SuperAdminListResponse<Seeker>,
-  SeekersQuery | undefined
+export const fetchStaff = createAsyncThunk<
+  SuperAdminListResponse<Staff>,
+  StaffQuery | undefined
 >(
-  "seeker/fetch",
-  async (query: SeekersQuery | undefined = {}) => {
-    const response = await fetchSeekersApi<Seeker>(query);
+  "staff/fetch",
+  async (query: StaffQuery | undefined = {}) => {
+    const response = await fetchStaffApi<Staff>(query);
     return response;
   }
 );
 
-const initialState: SeekerState = {
+const initialState: StaffState = {
   data: [],
   loading: false,
   error: null,
@@ -61,35 +57,35 @@ const initialState: SeekerState = {
   query: { page: 1, per_page: 10, direction: "desc" },
 };
 
-const seekerSlice = createSlice({
-  name: "seeker",
+const staffSlice = createSlice({
+  name: "staff",
   initialState,
   reducers: {
-    setSeekerQuery(state, action: PayloadAction<SeekersQuery>) {
+    setStaffQuery(state, action: PayloadAction<StaffQuery>) {
       state.query = { ...state.query, ...action.payload };
     },
-    resetSeekerError(state) {
+    resetStaffError(state) {
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchSeekers.pending, (state) => {
+      .addCase(fetchStaff.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchSeekers.fulfilled, (state, action) => {
+      .addCase(fetchStaff.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.data;
         state.pagination = action.payload.pagination;
       })
-      .addCase(fetchSeekers.rejected, (state, action) => {
+      .addCase(fetchStaff.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message ?? "Error fetching seekers";
+        state.error = action.error.message ?? "Error fetching staff";
       });
   },
 });
 
-export const { setSeekerQuery, resetSeekerError } = seekerSlice.actions;
+export const { setStaffQuery, resetStaffError } = staffSlice.actions;
 
-export default seekerSlice.reducer;
+export default staffSlice.reducer;

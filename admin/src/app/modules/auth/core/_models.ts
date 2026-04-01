@@ -1,6 +1,7 @@
 export interface AuthModel {
-  api_token: string
-  refreshToken?: string
+  token: string
+  token_type: string
+  abilities: string[]
 }
 
 export interface UserAddressModel {
@@ -45,17 +46,17 @@ export interface UserSocialNetworksModel {
 
 export interface UserModel {
   id: number
-  username: string
-  password: string | undefined
+  name: string
   email: string
-  first_name: string
-  last_name: string
+  organization_id: string | null
+  id_verified: boolean
+  email_verified_at: string | null
+  roles: string[]
+  created_at: string
   fullname?: string
   occupation?: string
   companyName?: string
   phone?: string
-  roles?: Array<number>
-  pic?: string
   language?: 'en' | 'de' | 'es' | 'fr' | 'ja' | 'zh' | 'ru'
   timeZone?: string
   website?: 'https://keenthemes.com'

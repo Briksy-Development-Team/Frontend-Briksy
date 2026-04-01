@@ -1,10 +1,16 @@
 import { useMemo, useState, useEffect } from "react"
+import { Column as ReactTableColumn } from "react-table"
 import { KTCard, KTIcon } from "../../../../../_metronic/helpers"
 import { EntityTable } from "./table/EntityTable"
 import { EntityHeader } from "./components/header/EntityHeader"
 import { SideFilter } from "./components/header/SideFilter"
 import Paginations from "./components/Pagination"
 import { exportToExcel } from '../utils/exportToExcel'
+
+export type EntityColumn<T extends object = object> = ReactTableColumn<T> & {
+  sortable?: boolean
+  alwaysVisible?: boolean
+}
 
 type Range = {
   min?: number
@@ -16,23 +22,20 @@ type DateRange = {
   to?: string
 }
 
-type FilterValue = string[] | Range | DateRange
+export type FilterValue = string[] | Range | DateRange
 
-type Column<T> = {
-  Header: string
-  accessor: keyof T
-  sortable?: boolean
-  alwaysVisible?: boolean
-}
-
-type EntityListProps<T extends Record<string, any>> = {
+type EntityListProps<T extends object> = {
   data: T[]
-  columns: Column<T>[]
+  columns: EntityColumn<T>[]
   filtersConfig?: any
   enableRowClick?: boolean
   getRowLink?: (row: T) => string
   searchableKeys?: (keyof T)[]
   storageKey?: string
+  onSearch?: (search: string) => void
+  onFiltersChange?: (filters: Record<string, FilterValue>) => void
+  onSortChange?: (sortConfig: SortConfig<T>) => void
+  onPaginationChange?: (page: number, pageSize: number) => void
 }
 
 type SortConfig<T> = {
@@ -48,6 +51,10 @@ const EntityList = <T extends Record<string, any>,>({
   getRowLink,
   searchableKeys = [],
   storageKey = "visibleColumns",
+  onSearch,
+  onFiltersChange,
+  onSortChange,
+  onPaginationChange,
 }: EntityListProps<T>) => {
 
   const [search, setSearch] = useState("")
@@ -62,14 +69,32 @@ const EntityList = <T extends Record<string, any>,>({
     direction: "asc",
   })
 
-  const [visibleColumns, setVisibleColumns] = useState<(keyof T)[]>(() => {
+  const [hasSortInitialized, setHasSortInitialized] = useState(false)
+
+  useEffect(() => {
+    if (!hasSortInitialized) {
+      setHasSortInitialized(true)
+      return
+    }
+
+    if (onSortChange) {
+      onSortChange(sortConfig)
+    }
+  }, [sortConfig, onSortChange, hasSortInitialized])
+
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem(storageKey)
-      return saved
-        ? JSON.parse(saved)
-        : columns.map((c) => c.accessor)
+      const defaultVisible = columns
+        .filter((c) => c.alwaysVisible)
+        .map((c) =>
+          typeof c.accessor === "string" ? c.accessor : String(c.id)
+        )
+      return saved ? JSON.parse(saved) : defaultVisible
     } catch {
-      return columns.map((c) => c.accessor)
+      return columns.map((c) =>
+        typeof c.accessor === "string" ? c.accessor : String(c.id)
+      )
     }
   })
 
@@ -91,6 +116,24 @@ const EntityList = <T extends Record<string, any>,>({
   useEffect(() => {
     setPage(1)
   }, [search, filters])
+
+  useEffect(() => {
+    if (onSearch) {
+      onSearch(search)
+    }
+  }, [search, onSearch])
+
+  useEffect(() => {
+    if (onFiltersChange) {
+      onFiltersChange(filters)
+    }
+  }, [filters, onFiltersChange])
+
+  useEffect(() => {
+    if (onPaginationChange) {
+      onPaginationChange(page, pageSize)
+    }
+  }, [page, pageSize, onPaginationChange])
 
   useEffect(() => {
     setSelectedRows(new Set())
@@ -193,9 +236,20 @@ const EntityList = <T extends Record<string, any>,>({
     return filteredData.slice(start, start + pageSize)
   }, [filteredData, page, pageSize])
 
+  const getColumnKey = (col: EntityColumn<T>) =>
+    typeof col.accessor === "string" ? col.accessor : String(col.id)
+
+  const headerColumns = useMemo(() => {
+    return columns.map((col) => ({
+      Header: typeof col.Header === "string" ? col.Header : String(col.Header),
+      accessor: getColumnKey(col),
+      alwaysVisible: col.alwaysVisible,
+    }))
+  }, [columns])
+
   const filteredColumns = useMemo(() => {
     return columns.filter(
-      (col) => col.alwaysVisible || visibleColumns.includes(col.accessor)
+      (col) => col.alwaysVisible || visibleColumns.includes(getColumnKey(col))
     )
   }, [columns, visibleColumns])
 
@@ -207,7 +261,7 @@ const EntityList = <T extends Record<string, any>,>({
           <EntityHeader
             search={search}
             onSearchChange={setSearch}
-            columns={columns}
+            columns={headerColumns}
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}

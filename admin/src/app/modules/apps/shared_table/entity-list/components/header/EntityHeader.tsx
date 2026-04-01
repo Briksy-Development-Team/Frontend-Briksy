@@ -2,9 +2,9 @@ import { KTIcon } from '../../../../../../../_metronic/helpers'
 import { ColumnSelector } from './ColumnSelector'
 
 type Props<T extends Record<string, any>> = {
-  columns: { accessor: keyof T; Header: string }[]
-  visibleColumns: (keyof T)[]
-  setVisibleColumns: React.Dispatch<React.SetStateAction<(keyof T)[]>>
+  columns: { accessor: string; Header: string; alwaysVisible?: boolean }[]
+  visibleColumns: string[]
+  setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
   search: string
   onSearchChange: (val: string) => void
   isMobile: boolean

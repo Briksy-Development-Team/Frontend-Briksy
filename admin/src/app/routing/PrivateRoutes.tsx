@@ -14,8 +14,8 @@ const PrivateRoutes = () => {
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
-  const StaffPage = lazy(() => import('../modules/apps/staff-management/StaffPage'))
-  const SeekerPage = lazy(() => import('../pages/user/SeekerPgae'))
+  const StaffPage = lazy(() => import('../pages/user/StaffPage'))
+  const SeekerPage = lazy(() => import('../pages/user/SeekerPage'))
   const AgencyPage = lazy(() => import('../pages/user/ServicePage'))
 
 

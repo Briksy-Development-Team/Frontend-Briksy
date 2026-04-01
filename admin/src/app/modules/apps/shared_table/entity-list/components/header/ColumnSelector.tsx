@@ -4,13 +4,13 @@ import { MenuComponent } from "../../../../../../../_metronic/assets/ts/componen
 
 type Props<T extends Record<string, any>> = {
   columns: {
-    accessor: keyof T
+    accessor: string
     Header: string
     alwaysVisible?: boolean
   }[]
-  visibleColumns: (keyof T)[]
+  visibleColumns: string[]
   setVisibleColumns: React.Dispatch<
-    React.SetStateAction<(keyof T)[]>
+    React.SetStateAction<string[]>
   >
 }
 
@@ -26,7 +26,7 @@ const ColumnSelector = <T extends Record<string, any>>({
     }, 0)
   }, [columns, visibleColumns])
 
-  const toggle = (accessor: keyof T) => {
+  const toggle = (accessor: string) => {
     setVisibleColumns((prev) => {
       if (prev.includes(accessor)) {
         if (prev.length === 1) return prev

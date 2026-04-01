@@ -18,11 +18,15 @@ const loginSchema = Yup.object().shape({
     .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
+  userType: Yup.string()
+    .oneOf(['super-admin', 'admin', 'seeker'], 'Invalid user type')
+    .required('User type is required'),
 })
 
 const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
+  email: '',
+  password: '',
+  userType: 'super-admin' as 'super-admin' | 'admin' | 'seeker',
 }
 
 /*
@@ -38,45 +42,26 @@ export function Login() {
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
-    // onSubmit: async (values, {setStatus, setSubmitting}) => {
-    //   setLoading(true)
-    //   try {
-    //     const {data: auth} = await login(values.email, values.password)
-    //     saveAuth(auth)
-    //     const {data: user} = await getUserByToken(auth.api_token)
-    //     setCurrentUser(user)
-    //   } catch (error) {
-    //     console.error(error)
-    //     saveAuth(undefined)
-    //     setStatus('The login details are incorrect')
-    //     setSubmitting(false)
-    //     setLoading(false)
-    //   }
-    // },
     onSubmit: async (values, { setStatus, setSubmitting }) => {
       setLoading(true)
       try {
-        if (values.email === 'admin@demo.com' && values.password === 'demo') {
-          const fakeAuth = { api_token: 'fake-token-123' }
-          const fakeUser = {
-            id: 1,
-            email: 'admin@demo.com',
-            first_name: 'Admin',
-            last_name: 'User',
-            fullname: 'Admin User',
-            pic: '/media/avatars/300-1.jpg',
-            roles: [1],
+        const { data: response } = await login(values.email, values.password, values.userType)
+        if (response.success) {
+          const authData = {
+            token: response.data.token,
+            token_type: response.data.token_type,
+            abilities: response.data.abilities,
           }
-          saveAuth(fakeAuth)
-          setCurrentUser(fakeUser as any)
+          saveAuth(authData)
+          setCurrentUser(response.data.user)
         } else {
-          setStatus('The login details are incorrect')
-          setSubmitting(false)
-          setLoading(false)
+          setStatus('Login failed. Please check your credentials.')
         }
-      } catch (error) {
+      } catch (error: any) {
+        console.error('Login error:', error)
         saveAuth(undefined)
-        setStatus('The login details are incorrect')
+        const errorMessage = error?.response?.data?.message || 'The login details are incorrect'
+        setStatus(errorMessage)
         setSubmitting(false)
         setLoading(false)
       }
@@ -148,16 +133,9 @@ export function Login() {
       </div>
       {/* end::Separator */}
 
-      {formik.status ? (
+      {formik.status && (
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>{formik.status}</div>
-        </div>
-      ) : (
-        <div className='mb-10 bg-light-info p-8 rounded'>
-          <div className='text-info'>
-            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
-            continue.
-          </div>
         </div>
       )}
 
@@ -181,6 +159,32 @@ export function Login() {
         {formik.touched.email && formik.errors.email && (
           <div className='fv-plugins-message-container'>
             <span role='alert'>{formik.errors.email}</span>
+          </div>
+        )}
+      </div>
+      {/* end::Form group */}
+
+      {/* begin::Form group - User Type */}
+      <div className='fv-row mb-8'>
+        <label className='form-label fs-6 fw-bolder text-gray-900'>User Type</label>
+        <select
+          {...formik.getFieldProps('userType')}
+          className={clsx(
+            'form-control bg-transparent',
+            { 'is-invalid': formik.touched.userType && formik.errors.userType },
+            {
+              'is-valid': formik.touched.userType && !formik.errors.userType,
+            }
+          )}
+          name='userType'
+        >
+          <option value='super-admin'>Super Admin</option>
+          <option value='admin'>Admin</option>
+          <option value='seeker'>Seeker</option>
+        </select>
+        {formik.touched.userType && formik.errors.userType && (
+          <div className='fv-plugins-message-container'>
+            <span role='alert'>{formik.errors.userType}</span>
           </div>
         )}
       </div>

@@ -1,26 +1,21 @@
 import { EntityColumn } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import { Seeker } from "./seekerSlice";
 
-export const seekerColumns: EntityColumn<Seeker>[] = [
+export type Staff = {
+  id: number;
+  name: string;
+  email: string;
+  status?: string;
+  organization?: { name?: string };
+  created_at?: string;
+  updated_at?: string;
+};
+
+export const staffColumns: EntityColumn<Staff>[] = [
   { Header: "ID", accessor: "id", sortable: true, alwaysVisible: true },
   { Header: "Name", accessor: "name", sortable: true },
   { Header: "Email", accessor: "email", sortable: true },
-  {
-    Header: "Last Login",
-    accessor: "last_login",
-    Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "—"),
-    sortable: true,
-  },
-
-  {
-    Header: "Current Login",
-    accessor: "current_login",
-    Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "—"),
-    sortable: true,
-  },
-  { Header: "Age", accessor: "age", sortable: true },
-  { Header: "Gender", accessor: "gender", sortable: true },
-  { Header: "Location", accessor: "location", sortable: true },
+  { Header: "Status", accessor: "status", sortable: true },
+  { Header: "Organization", accessor: (row: Staff) => row.organization?.name ?? "", sortable: false },
   {
     Header: "Created At",
     accessor: "created_at",
