@@ -7,6 +7,17 @@ import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
 import Subscription from '../pages/Subscription/Subscription'
+import { RoleBasedRedirect } from './RoleBasedRedirect'
+import { AuthorizedRoute } from './AuthorizedRoute'
+import {
+  canAccessDashboard,
+  canManageBusinesses,
+  canManageProperties,
+  canManageSeekers,
+  canManageServices,
+  canManageStaff,
+  canManageSubscriptions,
+} from '../modules/auth/core/roleRoutes'
 
 
 const PrivateRoutes = () => {
@@ -24,9 +35,14 @@ const PrivateRoutes = () => {
     <Routes>
       <Route element={<MasterLayout />}>
         {/* Redirect to Dashboard after success login/registartion */}
-        <Route path='auth/*' element={<Navigate to='/dashboard' />} />
+        <Route path='auth/*' element={<RoleBasedRedirect />} />
+        <Route index element={<RoleBasedRedirect />} />
         {/* Pages */}
-        <Route path='dashboard' element={<DashboardWrapper />} />
+        <Route path='dashboard' element={<RoleBasedRedirect requireDashboardAccess />} />
+        <Route
+          path='dashboard/home'
+          element={<AuthorizedRoute canAccess={canAccessDashboard} element={<DashboardWrapper />} />}
+        />
         {/* <Route path='builder' element={<BuilderPageWrapper />} /> */}
         <Route path='menu-test' element={<MenuTestPage />} />
         {/* Lazy Modules */}
@@ -66,51 +82,81 @@ const PrivateRoutes = () => {
         <Route
           path='/apps/seeker-management/*'
           element={
-            <SuspensedView>
-              <SeekerPage />
-            </SuspensedView>
+            <AuthorizedRoute
+              canAccess={canManageSeekers}
+              element={
+                <SuspensedView>
+                  <SeekerPage />
+                </SuspensedView>
+              }
+            />
           }
         />
 
         <Route
           path='/apps/staff-management/*'
           element={
-            <SuspensedView>
-              <StaffPage />
-            </SuspensedView>
+            <AuthorizedRoute
+              canAccess={canManageStaff}
+              element={
+                <SuspensedView>
+                  <StaffPage />
+                </SuspensedView>
+              }
+            />
           }
         />
 
         <Route
           path='/apps/business-management/*'
           element={
-            <SuspensedView>
-              <AgencyPage />
-            </SuspensedView>
+            <AuthorizedRoute
+              canAccess={canManageBusinesses}
+              element={
+                <SuspensedView>
+                  <AgencyPage />
+                </SuspensedView>
+              }
+            />
           }
         />
         <Route
           path='/apps/subscription-plans'
           element={
-            <SuspensedView>
-              <Subscription />
-            </SuspensedView>
+            <AuthorizedRoute
+              canAccess={canManageSubscriptions}
+              element={
+                <SuspensedView>
+                  <Subscription />
+                </SuspensedView>
+              }
+            />
           }
         />
         <Route
           path='/apps/property-management/*'
           element={
-            <SuspensedView>
-              {/* <Subscription /> */}
-            </SuspensedView>
+            <AuthorizedRoute
+              canAccess={canManageProperties}
+              element={
+                <SuspensedView>
+                  {/* <Subscription /> */}
+                </SuspensedView>
+              }
+            />
           }
         />
         <Route
           path='/apps/service-management/*'
           element={
-            <SuspensedView>
-              {/* <Subscription /> */}
-            </SuspensedView>
+            <AuthorizedRoute
+              canAccess={canManageServices}
+              element={
+                <SuspensedView>
+                  {/* <Subscription /> */}
+                </SuspensedView>
+              }
+            />
           }
         />
 

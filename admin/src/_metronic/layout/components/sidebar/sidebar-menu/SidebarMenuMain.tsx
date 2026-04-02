@@ -2,18 +2,31 @@ import { useIntl } from "react-intl";
 // import {KTIcon} from '../../../../helpers'
 import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
+import { useAuth } from "../../../../../app/modules/auth";
+import {
+  canAccessDashboard,
+  canManageBusinesses,
+  canManageProperties,
+  canManageSeekers,
+  canManageServices,
+  canManageStaff,
+  canManageSubscriptions,
+} from "../../../../../app/modules/auth/core/roleRoutes";
 
 const SidebarMenuMain = () => {
   const intl = useIntl();
+  const { currentUser } = useAuth();
 
   return (
     <>
-      <SidebarMenuItem
-        to="/dashboard"
-        icon="element-11"
-        title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
-        fontIcon="bi-app-indicator"
-      />
+      {canAccessDashboard(currentUser) && (
+        <SidebarMenuItem
+          to="/dashboard/home"
+          icon="element-11"
+          title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
+          fontIcon="bi-app-indicator"
+        />
+      )}
       {/* <SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' /> */}
       <div className="menu-item">
         <div className="menu-content pt-8 pb-2">
@@ -148,81 +161,95 @@ const SidebarMenuMain = () => {
         </div>
       </div>
 
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title=" User Management"
-        icon="element-7"
-        fontIcon="bi-layers"
-      >
-        <SidebarMenuItem
-          to="/apps/seeker-management/seeker"
-          icon="abstract-28"
-          title="Seekers"
+      {(canManageSeekers(currentUser) || canManageStaff(currentUser) || canManageBusinesses(currentUser)) && (
+        <SidebarMenuItemWithSub
+          to="/crafted/widgets"
+          title=" User Management"
+          icon="element-7"
           fontIcon="bi-layers"
-        />
+        >
+          {canManageSeekers(currentUser) && (
+            <SidebarMenuItem
+              to="/apps/seeker-management/seeker"
+              icon="abstract-28"
+              title="Seekers"
+              fontIcon="bi-layers"
+            />
+          )}
 
-        <SidebarMenuItem
-          to="/apps/staff-management/staff"
-          icon="abstract-28"
-          title="Staff "
+          {canManageStaff(currentUser) && (
+            <SidebarMenuItem
+              to="/apps/staff-management/staff"
+              icon="abstract-28"
+              title="Staff "
+              fontIcon="bi-layers"
+            />
+          )}
+          {canManageBusinesses(currentUser) && (
+            <SidebarMenuItem
+              to="/apps/business-management/agencies"
+              icon="abstract-28"
+              title="Service Provider"
+              fontIcon="bi-layers"
+            />
+          )}
+        </SidebarMenuItemWithSub>
+      )}
+      {canManageProperties(currentUser) && (
+        <SidebarMenuItemWithSub
+          to="/crafted/widgets"
+          title=" Property Management"
+          icon="element-7"
           fontIcon="bi-layers"
-        />
-        <SidebarMenuItem
-          to="/apps/business-management/agencies"
-          icon="abstract-28"
-          title="Service Provider"
-          fontIcon="bi-layers"
-        />
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title=" Property Management"
-        icon="element-7"
-        fontIcon="bi-layers"
-      >
-        <SidebarMenuItem
-          to="/apps/property-management/listing"
-          icon="abstract-28"
-          title="Property Listing"
-          fontIcon="bi-layers"
-        />
+        >
+          <SidebarMenuItem
+            to="/apps/property-management/listing"
+            icon="abstract-28"
+            title="Property Listing"
+            fontIcon="bi-layers"
+          />
 
+          <SidebarMenuItem
+            to="/apps/property-management/features"
+            icon="abstract-28"
+            title="Property Features "
+            fontIcon="bi-layers"
+          />
+
+        </SidebarMenuItemWithSub>
+      )}
+      {canManageServices(currentUser) && (
+        <SidebarMenuItemWithSub
+          to="/crafted/widgets"
+          title=" Service Management"
+          icon="element-7"
+          fontIcon="bi-layers"
+        >
+          <SidebarMenuItem
+            to="/apps/service-management/group"
+            icon="abstract-28"
+            title="Service Group"
+            fontIcon="bi-layers"
+          />
+
+          <SidebarMenuItem
+            to="/apps/service-management/listing"
+            icon="abstract-28"
+            title="Service Features "
+            fontIcon="bi-layers"
+          />
+
+        </SidebarMenuItemWithSub>
+      )}
+
+      {canManageSubscriptions(currentUser) && (
         <SidebarMenuItem
-          to="/apps/property-management/features"
+          to="/apps/subscription-plans"
           icon="abstract-28"
-          title="Property Features "
+          title="Subscription Plans"
           fontIcon="bi-layers"
         />
-
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title=" Service Management"
-        icon="element-7"
-        fontIcon="bi-layers"
-      >
-        <SidebarMenuItem
-          to="/apps/service-management/group"
-          icon="abstract-28"
-          title="Service Group"
-          fontIcon="bi-layers"
-        />
-
-        <SidebarMenuItem
-          to="/apps/service-management/listing"
-          icon="abstract-28"
-          title="Service Features "
-          fontIcon="bi-layers"
-        />
-
-      </SidebarMenuItemWithSub>
-
-      <SidebarMenuItem
-        to="/apps/subscription-plans"
-        icon="abstract-28"
-        title="Subscription Plans"
-        fontIcon="bi-layers"
-      />
+      )}
     </>
   );
 };

@@ -6,6 +6,7 @@ import {ID, KTIcon, QUERIES} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
 import {deleteUser} from '../../core/_requests'
+import { useRoleAccess } from '../../../../../auth'
 
 type Props = {
   id: ID
@@ -15,12 +16,17 @@ const UserActionsCell: FC<Props> = ({id}) => {
   const {setItemIdForUpdate} = useListView()
   const {query} = useQueryResponse()
   const queryClient = useQueryClient()
+  const { canManageStaff } = useRoleAccess()
 
   useEffect(() => {
     MenuComponent.reinitialization()
   }, [])
 
   const openEditModal = () => {
+    if (!canManageStaff) {
+      return
+    }
+
     setItemIdForUpdate(id)
   }
 
@@ -34,6 +40,8 @@ const UserActionsCell: FC<Props> = ({id}) => {
 
   return (
     <>
+      {!canManageStaff ? null : (
+      <>
       <a
         href='#'
         className='btn btn-light btn-active-light-primary btn-sm'
@@ -69,6 +77,8 @@ const UserActionsCell: FC<Props> = ({id}) => {
         {/* end::Menu item */}
       </div>
       {/* end::Menu */}
+      </>
+      )}
     </>
   )
 }

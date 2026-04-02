@@ -1,5 +1,6 @@
 import { Sun, Moon } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
+import { useAuth } from "../auth/AuthContext"
 
 interface NavbarProps {
     dark: boolean
@@ -16,6 +17,8 @@ const NAV_LINKS = [
 
 const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
     const location = useLocation()
+    const { isAuthenticated, logout, user } = useAuth()
+    const displayName = user?.name ?? name ?? "User"
 
     return (
         <nav className={`
@@ -76,7 +79,7 @@ const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
                     <Link to="/profile">
                         <img
                             src={avatar}
-                            alt={name ?? "User"}
+                            alt={displayName}
                             className={`
                                 w-8 h-8 rounded-full object-cover ring-2 ring-offset-2 cursor-pointer
                                 ${dark ? "ring-zinc-700 ring-offset-black" : "ring-zinc-300 ring-offset-white"}
@@ -84,7 +87,26 @@ const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
                         />
                     </Link>
                 )}
+<<<<<<< Updated upstream
 
+=======
+                {isAuthenticated ? (
+                    <button
+                        onClick={() => void logout()}
+                        className={`py-1 px-3 rounded-4xl border transition-colors ${dark
+                            ? "border-zinc-700 text-zinc-200 hover:bg-white hover:text-black"
+                            : "border-zinc-300 text-zinc-700 hover:bg-black hover:text-white"
+                            }`}
+                    >
+                        Logout
+                    </button>
+                ) : (
+                    <Link to="/login"
+                        className="hover:bg-white hover:text-black py-1 px-3 rounded-4xl">
+                        Login
+                    </Link>
+                )}
+>>>>>>> Stashed changes
             </div>
         </nav>
     )

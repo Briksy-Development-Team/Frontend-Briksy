@@ -3,10 +3,9 @@ import * as Yup from 'yup'
 import clsx from 'clsx'
 import {Link} from 'react-router-dom'
 import {useFormik} from 'formik'
-import {requestPassword} from '../core/_requests'
 
 const initialValues = {
-  email: 'admin@demo.com',
+  email: '',
 }
 
 const forgotPasswordSchema = Yup.object().shape({
@@ -26,19 +25,12 @@ export function ForgotPassword() {
     onSubmit: (values, {setStatus, setSubmitting}) => {
       setLoading(true)
       setHasErrors(undefined)
-      setTimeout(() => {
-        requestPassword(values.email)
-          .then(() => {
-            setHasErrors(false)
-            setLoading(false)
-          })
-          .catch(() => {
-            setHasErrors(true)
-            setLoading(false)
-            setSubmitting(false)
-            setStatus('The login detail is incorrect')
-          })
-      }, 1000)
+      window.setTimeout(() => {
+        setHasErrors(true)
+        setLoading(false)
+        setSubmitting(false)
+        setStatus(`Password reset is not configured yet for ${values.email}.`)
+      }, 400)
     },
   })
 
@@ -65,7 +57,7 @@ export function ForgotPassword() {
       {hasErrors === true && (
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>
-            Sorry, looks like there are some errors detected, please try again.
+            {formik.status ?? 'Password reset is not configured yet.'}
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import React from 'react'
 import { KTCard } from '../../../_metronic/helpers'
+import { useRoleAccess } from '../auth'
 
 type Props = {
   data: any
@@ -7,6 +8,7 @@ type Props = {
 
 const SubscriptionList = ({ data }: Props) => {
   const { currentPlan, plans, features } = data
+  const { canManageSubscriptions } = useRoleAccess()
 
   const isLimitReached =
     currentPlan.usedProperties >= currentPlan.propertyLimit
@@ -92,9 +94,9 @@ const SubscriptionList = ({ data }: Props) => {
                     <button
                       className={`btn w-100 mb-4 ${plan.popular ? 'btn-light' : 'btn-light-primary'
                         }`}
-                      disabled={isCurrent}
+                      disabled={isCurrent || !canManageSubscriptions}
                     >
-                      {isCurrent ? 'Current Plan' : 'Get Started Now'}
+                      {isCurrent ? 'Current Plan' : canManageSubscriptions ? 'Get Started Now' : 'Admin Only'}
                     </button>
 
                     {/* Features */}

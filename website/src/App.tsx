@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { testConnection } from "./api/clients.api"
 import { BrowserRouter } from "react-router-dom";
 import AppRouter from './routes/AppRouter';
+import { AuthProvider } from './auth/AuthContext';
 
 function App() {
   const [dark, setDark] = useState<boolean>(true)
@@ -12,9 +13,11 @@ function App() {
   }, [])
 
   return (
-    <BrowserRouter>
-      <AppRouter dark={dark} setDark={setDark} />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRouter dark={dark} setDark={setDark} />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

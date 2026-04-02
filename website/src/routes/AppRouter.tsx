@@ -1,8 +1,16 @@
 import { Route, Routes } from 'react-router-dom'
 import Profile from '../profile/Profile'
 import Home from '../home/Home'
+<<<<<<< Updated upstream
 import Navbar from '../navbar/Navbar'
 import { profileData } from '../data/profileDummydata'
+=======
+import Login from '../login-signup/login/Login'
+import MainLayout from './MainLayout'
+import SignUp from '../login-signup/signup/SignUp'
+import Forgot from '../login-signup/forgot/Forgot'
+import ProtectedRoute from './ProtectedRoute'
+>>>>>>> Stashed changes
 
 interface AppRouterProps {
     dark: boolean
@@ -22,8 +30,18 @@ const AppRouter = ({ dark, setDark }: AppRouterProps) => {
 
             <Routes>
                 <Route path='/' element={<Home dark={dark} />} />
+<<<<<<< Updated upstream
                 <Route path='/profile' element={<Profile dark={dark} />} />
             </Routes>
+=======
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout dark={dark} setDark={setDark} />}>
+                    <Route path='/profile' element={<Profile dark={dark} />} />
+                </Route>
+            </Route>
+>>>>>>> Stashed changes
 
         </div>
     )

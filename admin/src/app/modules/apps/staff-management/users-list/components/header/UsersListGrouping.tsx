@@ -3,11 +3,13 @@ import {QUERIES} from '../../../../../../../_metronic/helpers'
 import {useListView} from '../../core/ListViewProvider'
 import {useQueryResponse} from '../../core/QueryResponseProvider'
 import {deleteSelectedUsers} from '../../core/_requests'
+import { useRoleAccess } from '../../../../../auth'
 
 const UsersListGrouping = () => {
   const {selected, clearSelected} = useListView()
   const queryClient = useQueryClient()
   const {query} = useQueryResponse()
+  const { canManageStaff } = useRoleAccess()
 
   const deleteSelectedItems = useMutation(() => deleteSelectedUsers(selected), {
     // 💡 response of the mutation is passed to onSuccess
@@ -24,13 +26,15 @@ const UsersListGrouping = () => {
         <span className='me-2'>{selected.length}</span> Selected
       </div>
 
-      <button
-        type='button'
-        className='btn btn-danger'
-        onClick={async () => await deleteSelectedItems.mutateAsync()}
-      >
-        Delete Selected
-      </button>
+      {canManageStaff && (
+        <button
+          type='button'
+          className='btn btn-danger'
+          onClick={async () => await deleteSelectedItems.mutateAsync()}
+        >
+          Delete Selected
+        </button>
+      )}
     </div>
   )
 }
