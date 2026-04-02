@@ -8,7 +8,6 @@
 import {FC} from 'react'
 import {Routes, Route, BrowserRouter, Navigate} from 'react-router-dom'
 import {PrivateRoutes} from './PrivateRoutes'
-import {RoleBasedRedirect} from './RoleBasedRedirect'
 import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {Logout, AuthPage, useAuth} from '../modules/auth'
 import {App} from '../App'
@@ -31,7 +30,7 @@ const AppRoutes: FC = () => {
           {currentUser ? (
             <>
               <Route path='/*' element={<PrivateRoutes />} />
-              <Route index element={<RoleBasedRedirect />} />
+              <Route index element={<Navigate to='/dashboard' />} />
             </>
           ) : (
             <>

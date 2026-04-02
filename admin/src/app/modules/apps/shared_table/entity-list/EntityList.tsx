@@ -33,10 +33,6 @@ type EntityListProps<T extends Record<string, any>> = {
   getRowLink?: (row: T) => string
   searchableKeys?: (keyof T)[]
   storageKey?: string
-<<<<<<< Updated upstream
-=======
-  canExport?: boolean
->>>>>>> Stashed changes
 }
 
 type SortConfig<T> = {
@@ -52,10 +48,6 @@ const EntityList = <T extends Record<string, any>,>({
   getRowLink,
   searchableKeys = [],
   storageKey = "visibleColumns",
-<<<<<<< Updated upstream
-=======
-  canExport = true,
->>>>>>> Stashed changes
 }: EntityListProps<T>) => {
 
   const [search, setSearch] = useState("")
@@ -219,19 +211,8 @@ const EntityList = <T extends Record<string, any>,>({
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}
             onOpenFilter={() => setShowFilter(true)}
-<<<<<<< Updated upstream
             onExport={handleExport}
             selectedCount={selectedRows.size} 
-=======
-            onExport={canExport ? handleExport : undefined}
-            selectedCount={selectedRows.size}
-            onSortChange={(config) =>
-              setSortConfig({
-                key: config.key as keyof T,
-                direction: config.direction,
-              })
-            }
->>>>>>> Stashed changes
           />
 
           <EntityTable

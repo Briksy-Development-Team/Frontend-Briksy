@@ -1,97 +1,47 @@
 import axios from "axios";
 import { AuthModel, UserModel } from "./_models";
 
-const API_URL = import.meta.env.VITE_APP_API_URL ?? "http://127.0.0.1:8000/api/admin";
+const API_URL = import.meta.env.VITE_APP_API_URL;
 
-interface ApiEnvelope<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
+export const GET_USER_BY_ACCESSTOKEN_URL = `${API_URL}/verify_token`;
+export const LOGIN_URL = `${API_URL}/login`;
+export const REGISTER_URL = `${API_URL}/register`;
+export const REQUEST_PASSWORD_URL = `${API_URL}/forgot_password`;
 
-interface ApiUser {
-  id: string;
-  name: string;
-  email: string;
-  organization_id: string | null;
-  id_verified: boolean;
-  roles?: string[];
-}
-
-interface LoginResponse {
-  user: ApiUser;
-  token: string;
-  token_type: string;
-  abilities: string[];
-}
-
-const buildUserModel = (user: ApiUser): UserModel => {
-  const nameParts = user.name.trim().split(/\s+/);
-  const firstName = nameParts[0] ?? "";
-  const lastName = nameParts.slice(1).join(" ");
-
-  return {
-    id: user.id,
-    username: user.email,
-    password: undefined,
-    email: user.email,
-    first_name: firstName,
-    last_name: lastName,
-    fullname: user.name,
-    roles: user.roles?.map((_, index) => index + 1) ?? [],
-    role_names: user.roles ?? [],
-    organization_id: user.organization_id,
-    id_verified: user.id_verified,
-    pic: "/media/avatars/300-3.jpg",
-  };
-};
-
-export async function login(email: string, password: string): Promise<AuthModel> {
-  const response = await axios.post<ApiEnvelope<LoginResponse>>(`${API_URL}/auth/login`, {
+// Server should return AuthModel
+export function login(email: string, password: string) {
+  return axios.post<AuthModel>(LOGIN_URL, {
     email,
     password,
   });
-
-  return {
-    api_token: response.data.data.token,
-    token_type: response.data.data.token_type,
-    abilities: response.data.data.abilities,
-  };
 }
 
-export async function register(
+// Server should return AuthModel
+export function register(
   email: string,
   firstname: string,
   lastname: string,
   password: string,
   password_confirmation: string
-): Promise<AuthModel> {
-  const fullName = [firstname, lastname].filter(Boolean).join(" ").trim();
-
-  const response = await axios.post<ApiEnvelope<LoginResponse>>(`${API_URL}/auth/register`, {
-    name: fullName,
+) {
+  return axios.post(REGISTER_URL, {
     email,
+    first_name: firstname,
+    last_name: lastname,
     password,
     password_confirmation,
   });
-
-  return {
-    api_token: response.data.data.token,
-    token_type: response.data.data.token_type,
-    abilities: response.data.data.abilities,
-  };
 }
 
-export async function requestPassword(): Promise<never> {
-  throw new Error("Password reset is not configured for the admin app yet.");
+// Server should return object => { result: boolean } (Is Email in DB)
+export function requestPassword(email: string) {
+  return axios.post<{ result: boolean }>(REQUEST_PASSWORD_URL, {
+    email,
+  });
 }
 
-export async function getUserByToken(): Promise<UserModel> {
-  const response = await axios.get<ApiEnvelope<{ user: ApiUser }>>(`${API_URL}/auth/me`);
-
-  return buildUserModel(response.data.data.user);
-}
-
-export async function logoutCurrentUser(): Promise<void> {
-  await axios.post(`${API_URL}/auth/logout`);
+export function getUserByToken(token: string) {
+  return axios.post<UserModel>(GET_USER_BY_ACCESSTOKEN_URL, {
+    api_token: token,
+  });
 }

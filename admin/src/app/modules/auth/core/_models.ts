@@ -1,7 +1,6 @@
 export interface AuthModel {
   api_token: string
-  token_type?: string
-  abilities?: string[]
+  refreshToken?: string
 }
 
 export interface UserAddressModel {
@@ -45,7 +44,7 @@ export interface UserSocialNetworksModel {
 }
 
 export interface UserModel {
-  id: string
+  id: number
   username: string
   password: string | undefined
   email: string
@@ -56,9 +55,6 @@ export interface UserModel {
   companyName?: string
   phone?: string
   roles?: Array<number>
-  role_names?: string[]
-  organization_id?: string | null
-  id_verified?: boolean
   pic?: string
   language?: 'en' | 'de' | 'es' | 'fr' | 'ja' | 'zh' | 'ru'
   timeZone?: string

@@ -1,9 +1,9 @@
+
 import { useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import { Link } from 'react-router-dom'
 import { useFormik } from 'formik'
-import axios from 'axios'
 import { getUserByToken, login } from '../core/_requests'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { useAuth } from '../core/Auth'
@@ -21,8 +21,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: '',
-  password: '',
+  email: 'admin@demo.com',
+  password: 'demo',
 }
 
 /*
@@ -38,28 +38,48 @@ export function Login() {
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
+    // onSubmit: async (values, {setStatus, setSubmitting}) => {
+    //   setLoading(true)
+    //   try {
+    //     const {data: auth} = await login(values.email, values.password)
+    //     saveAuth(auth)
+    //     const {data: user} = await getUserByToken(auth.api_token)
+    //     setCurrentUser(user)
+    //   } catch (error) {
+    //     console.error(error)
+    //     saveAuth(undefined)
+    //     setStatus('The login details are incorrect')
+    //     setSubmitting(false)
+    //     setLoading(false)
+    //   }
+    // },
     onSubmit: async (values, { setStatus, setSubmitting }) => {
       setLoading(true)
       try {
-        const auth = await login(values.email, values.password)
-        saveAuth(auth)
-        const user = await getUserByToken()
-        setCurrentUser(user)
-      } catch (error) {
-        console.error(error)
-        saveAuth(undefined)
-        if (axios.isAxiosError(error)) {
-          setStatus((error.response?.data as {message?: string} | undefined)?.message ?? 'The login details are incorrect')
+        if (values.email === 'admin@demo.com' && values.password === 'demo') {
+          const fakeAuth = { api_token: 'fake-token-123' }
+          const fakeUser = {
+            id: 1,
+            email: 'admin@demo.com',
+            first_name: 'Admin',
+            last_name: 'User',
+            fullname: 'Admin User',
+            pic: '/media/avatars/300-1.jpg',
+            roles: [1],
+          }
+          saveAuth(fakeAuth)
+          setCurrentUser(fakeUser as any)
         } else {
           setStatus('The login details are incorrect')
+          setSubmitting(false)
+          setLoading(false)
         }
+      } catch (error) {
+        saveAuth(undefined)
+        setStatus('The login details are incorrect')
         setSubmitting(false)
         setLoading(false)
-        return
       }
-
-      setSubmitting(false)
-      setLoading(false)
     },
   })
 
@@ -132,7 +152,14 @@ export function Login() {
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>{formik.status}</div>
         </div>
-      ) : null}
+      ) : (
+        <div className='mb-10 bg-light-info p-8 rounded'>
+          <div className='text-info'>
+            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
+            continue.
+          </div>
+        </div>
+      )}
 
       {/* begin::Form group */}
       <div className='fv-row mb-8'>

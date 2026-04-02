@@ -5,7 +5,6 @@ import { Content } from '../../../_metronic/layout/components/content'
 import EntityDetail from '../../modules/apps/shared_table/entity-list/components/EntityDetail'
 import { Column } from 'react-table'
 
-<<<<<<< Updated upstream
 const Blank = "/media/avatars/blank.png"
 
 type CustomColumn<T extends object> = Column<T> & {
@@ -411,71 +410,3 @@ const SeekerPage = () => {
 }
 
 export default SeekerPage
-=======
-import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
-import { seekerColumns } from "../../services/features/seeker/seekerColumns";
-import { seekerFilters } from "../../services/features/seeker/SeekerFilter";
-import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-import { Content } from "../../../_metronic/layout/components/content";
-import { useRoleAccess } from "../../modules/auth";
-import { ReadOnlyNotice } from "../../components/ReadOnlyNotice";
-
-const SeekerPage = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isAdminStaff, canAccessDashboard } = useRoleAccess();
-
-  const { data, loading, error } = useSelector(
-    (state: RootState) => state.seeker
-  );
-
-  useEffect(() => {
-    dispatch(
-      fetchSeekers({
-        page: 1,
-        pageSize: 10,
-      })
-    );
-  }, [dispatch]);
-
-  if (error) {
-    return (
-      <Content>
-        <PageHeader title="Seeker" subtitle="Manage all seekers" />
-        {isAdminStaff && (
-          <ReadOnlyNotice message="Admin staff has read-only access in seeker management." />
-        )}
-        <div>{error}</div>
-      </Content>
-    );
-  }
-
-  return (
-    <Content>
-      <PageHeader
-        title="Seeker"
-        subtitle="Manage all seekers"
-      />
-      {isAdminStaff && (
-        <ReadOnlyNotice message="Admin staff can browse seekers here, but editing and restricted admin actions are disabled." />
-      )}
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <EntityList
-          data={data}
-          columns={seekerColumns}
-          filtersConfig={seekerFilters}
-          searchableKeys={["name", "email"]}
-          enableRowClick
-          canExport={canAccessDashboard}
-          getRowLink={(row: any) =>
-            `/apps/seeker-management/seeker/${row.id}`
-          }
-        />
-      )}
-    </Content>
-  );
-};
-
-export default SeekerPage;
->>>>>>> Stashed changes

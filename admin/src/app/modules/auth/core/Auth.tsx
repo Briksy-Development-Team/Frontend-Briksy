@@ -3,7 +3,7 @@ import {FC, useState, useEffect, createContext, useContext, Dispatch, SetStateAc
 import {LayoutSplashScreen} from '../../../../_metronic/layout/core'
 import {AuthModel, UserModel} from './_models'
 import * as authHelper from './AuthHelpers'
-import {getUserByToken, logoutCurrentUser} from './_requests'
+import {getUserByToken} from './_requests'
 import {WithChildren} from '../../../../_metronic/helpers'
 
 type AuthContextProps = {
@@ -41,11 +41,6 @@ const AuthProvider: FC<WithChildren> = ({children}) => {
   }
 
   const logout = () => {
-    if (auth?.api_token) {
-      void logoutCurrentUser().catch((error) => {
-        console.error('Logout request failed', error)
-      })
-    }
     saveAuth(undefined)
     setCurrentUser(undefined)
   }
@@ -63,24 +58,26 @@ const AuthInit: FC<WithChildren> = ({children}) => {
 
   // We should request user by authToken (IN OUR EXAMPLE IT'S API_TOKEN) before rendering the application
   useEffect(() => {
-    const requestUser = async () => {
+    const requestUser = async (apiToken: string) => {
       try {
         if (!currentUser) {
-          const user = await getUserByToken()
-          if (user) {
-            setCurrentUser(user)
+          const {data} = await getUserByToken(apiToken)
+          if (data) {
+            setCurrentUser(data)
           }
         }
       } catch (error) {
         console.error(error)
-        logout()
+        if (currentUser) {
+          logout()
+        }
       } finally {
         setShowSplashScreen(false)
       }
     }
 
     if (auth && auth.api_token) {
-      requestUser()
+      requestUser(auth.api_token)
     } else {
       logout()
       setShowSplashScreen(false)

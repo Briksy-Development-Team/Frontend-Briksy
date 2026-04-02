@@ -1,8 +1,9 @@
+
+
 import {useState, useEffect} from 'react'
 import {useFormik} from 'formik'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import axios from 'axios'
 import {getUserByToken, register} from '../core/_requests'
 import {Link} from 'react-router-dom'
 import {toAbsoluteUrl} from '../../../../_metronic/helpers'
@@ -33,11 +34,11 @@ const registrationSchema = Yup.object().shape({
     .max(50, 'Maximum 50 symbols')
     .required('Last name is required'),
   password: Yup.string()
-    .min(8, 'Minimum 8 symbols')
+    .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password is required'),
   changepassword: Yup.string()
-    .min(8, 'Minimum 8 symbols')
+    .min(3, 'Minimum 3 symbols')
     .max(50, 'Maximum 50 symbols')
     .required('Password confirmation is required')
     .oneOf([Yup.ref('password')], "Password and Confirm Password didn't match"),
@@ -53,7 +54,7 @@ export function Registration() {
     onSubmit: async (values, {setStatus, setSubmitting}) => {
       setLoading(true)
       try {
-        const auth = await register(
+        const {data: auth} = await register(
           values.email,
           values.firstname,
           values.lastname,
@@ -61,23 +62,15 @@ export function Registration() {
           values.changepassword
         )
         saveAuth(auth)
-        const user = await getUserByToken()
+        const {data: user} = await getUserByToken(auth.api_token)
         setCurrentUser(user)
       } catch (error) {
         console.error(error)
         saveAuth(undefined)
-        if (axios.isAxiosError(error)) {
-          setStatus((error.response?.data as {message?: string} | undefined)?.message ?? 'The registration details are incorrect')
-        } else {
-          setStatus('The registration details are incorrect')
-        }
+        setStatus('The registration details is incorrect')
         setSubmitting(false)
         setLoading(false)
-        return
       }
-
-      setSubmitting(false)
-      setLoading(false)
     },
   })
 
