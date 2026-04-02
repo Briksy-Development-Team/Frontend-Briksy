@@ -1,18 +1,5 @@
 import { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
-
-type Seeker = {
-  id: number;
-  name: string;
-  email: string;
-  status: string;
-  last_login?: string;
-  current_login?: string;
-  age?: number;
-  gender?: string;
-  location?: string;
-  created_at?: string;
-  updated_at?: string;
-};
+import type {Seeker} from './seeker.types'
 
 const formatDate = (value?: string) => {
   if (!value) return "—";

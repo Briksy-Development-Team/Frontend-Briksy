@@ -1,11 +1,5 @@
-type GetSeekersParams = {
-  page?: number;
-  pageSize?: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  filters?: Record<string, any>;
-};
+import type {GetSeekersParams} from './seeker.types'
+export type {GetSeekersParams}
 
 const baseData = [
   {
@@ -129,13 +123,14 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
           if (!val) return;
 
           data = data.filter((item) => {
-            const field = item[key];
+            const field = (item as Record<string, any>)[key];
 
             if (Array.isArray(val)) return val.includes(field);
 
-            if ("min" in val || "max" in val) {
-              if (val.min && field < val.min) return false;
-              if (val.max && field > val.max) return false;
+            if (typeof val === 'object' && val !== null && ('min' in val || 'max' in val)) {
+              const range = val as {min?: number; max?: number}
+              if (range.min && field < range.min) return false;
+              if (range.max && field > range.max) return false;
             }
 
             return true;
@@ -145,8 +140,8 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
 
       if (params.sortBy) {
         data.sort((a, b) => {
-          const A = a[params.sortBy!];
-          const B = b[params.sortBy!];
+          const A = (a as Record<string, any>)[params.sortBy!];
+          const B = (b as Record<string, any>)[params.sortBy!];
 
           if (A > B) return params.sortOrder === "desc" ? -1 : 1;
           if (A < B) return params.sortOrder === "desc" ? 1 : -1;

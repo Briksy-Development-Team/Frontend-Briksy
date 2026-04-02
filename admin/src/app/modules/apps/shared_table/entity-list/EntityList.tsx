@@ -22,6 +22,7 @@ type EntityListProps<T extends Record<string, any>> = {
   onParamsChange: (params: any) => void;
   columns: Column<T>[];
   filtersConfig?: any;
+  searchableKeys?: (keyof T)[];
   enableRowClick?: boolean;
   getRowLink?: (row: T) => string;
   storageKey?: string;
