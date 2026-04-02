@@ -84,7 +84,10 @@ const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
                         />
                     </Link>
                 )}
-
+                <Link to="/login"
+                    className="hover:bg-white hover:text-black py-1 px-3  rounded-4xl">
+                    Login
+                </Link>
             </div>
         </nav>
     )
