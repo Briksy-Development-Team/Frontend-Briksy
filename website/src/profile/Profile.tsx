@@ -16,6 +16,7 @@ import {
     Pencil,
     ChevronDown,
 } from "lucide-react";
+import { useAuth } from "../auth/AuthContext";
 
 interface ProfilePageProps {
     dark: boolean
@@ -37,8 +38,14 @@ export default function Profile({ dark }: ProfilePageProps) {
     const [activeTab, setActiveTab] = useState<number>(0);
     const [locationFilter, setLocationFilter] = useState<string>("all");
     const [priceRangeFilter, setPriceRangeFilter] = useState<string>("all");
+    const { user } = useAuth();
 
     const { seeker, stats, favouriteProperties, viewedProperties, scheduledVisits, enquiries }: ProfileData = profileData;
+    const profileSeeker = {
+        ...seeker,
+        name: user?.name ?? seeker.name,
+        email: user?.email ?? seeker.email,
+    };
 
     const statItems = [
         { label: "Favourites", value: stats.favourites, icon: <Heart size={14} fill="currentColor" /> },
@@ -124,7 +131,7 @@ export default function Profile({ dark }: ProfilePageProps) {
                         <div className={`p-1 rounded-full ${dark ? "bg-white" : "bg-black"}`}>
                             <img
                                 src={seeker.avatar}
-                                alt={seeker.name}
+                                alt={profileSeeker.name}
                                 className="w-24 h-24 rounded-full object-cover block"
                             />
                         </div>
@@ -138,12 +145,12 @@ export default function Profile({ dark }: ProfilePageProps) {
                         </p>
                         <h1 className={`text-3xl font-bold tracking-tight mb-3 ${dark ? "text-white" : "text-black"
                             }`}>
-                            {seeker.name}
+                            {profileSeeker.name}
                         </h1>
                         <div className="flex flex-wrap gap-x-6 gap-y-2">
                             <span className={`text-sm flex items-center gap-1.5 ${dark ? "text-zinc-400" : "text-zinc-500"
                                 }`}>
-                                <Mail size={13} className="opacity-50" /> {seeker.email}
+                                <Mail size={13} className="opacity-50" /> {profileSeeker.email}
                             </span>
                             <span className={`text-sm flex items-center gap-1.5 ${dark ? "text-zinc-400" : "text-zinc-500"
                                 }`}>

@@ -7,6 +7,8 @@ import {toAbsoluteUrl} from '../../../helpers'
 
 const HeaderUserMenu: FC = () => {
   const {currentUser, logout} = useAuth()
+  const displayName =
+    currentUser?.name || `${currentUser?.first_name ?? ''} ${currentUser?.last_name ?? ''}`.trim() || 'User'
   return (
     <div
       className='menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px'
@@ -20,7 +22,7 @@ const HeaderUserMenu: FC = () => {
 
           <div className='d-flex flex-column'>
             <div className='fw-bolder d-flex align-items-center fs-5'>
-              {currentUser?.first_name} {currentUser?.first_name}
+              {displayName}
               <span className='badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2'>Pro</span>
             </div>
             <a href='#' className='fw-bold text-muted text-hover-primary fs-7'>
@@ -124,7 +126,14 @@ const HeaderUserMenu: FC = () => {
       </div>
 
       <div className='menu-item px-5'>
-        <a onClick={logout} className='menu-link px-5'>
+        <a
+          href='#'
+          onClick={(event) => {
+            event.preventDefault()
+            void logout()
+          }}
+          className='menu-link px-5'
+        >
           Sign Out
         </a>
       </div>

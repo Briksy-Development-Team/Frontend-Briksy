@@ -5,13 +5,16 @@ import Login from '../login-signup/login/Login'
 import MainLayout from './MainLayout'
 import SignUp from '../login-signup/signup/SignUp'
 import Forgot from '../login-signup/forgot/Forgot'
+import ProtectedRoute from './ProtectedRoute'
 
 const AppRouter = ({ dark, setDark }: AppRouterProps) => {
     return (
         <Routes>
             <Route element={<MainLayout dark={dark} setDark={setDark} />}>
                 <Route path='/' element={<Home dark={dark} />} />
-                <Route path='/profile' element={<Profile dark={dark} />} />
+                <Route element={<ProtectedRoute />}>
+                    <Route path='/profile' element={<Profile dark={dark} />} />
+                </Route>
             </Route>
 
             {/* Routes WITHOUT Navbar */}
