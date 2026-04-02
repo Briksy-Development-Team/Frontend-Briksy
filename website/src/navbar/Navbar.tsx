@@ -1,5 +1,6 @@
 import { Sun, Moon } from "lucide-react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "../auth/AuthContext"
 
 interface NavbarProps {
     dark: boolean
@@ -16,6 +17,9 @@ const NAV_LINKS = [
 
 const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
     const location = useLocation()
+    const navigate = useNavigate()
+    const { user, isAuthenticated, logout } = useAuth()
+    const displayName = user?.name ?? name ?? "User"
 
     return (
         <nav className={`
@@ -72,11 +76,11 @@ const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
                     {dark ? "Light" : "Dark"}
                 </button>
 
-                {avatar && (
+                {avatar && isAuthenticated && (
                     <Link to="/profile">
                         <img
                             src={avatar}
-                            alt={name ?? "User"}
+                            alt={displayName}
                             className={`
                                 w-8 h-8 rounded-full object-cover ring-2 ring-offset-2 cursor-pointer
                                 ${dark ? "ring-zinc-700 ring-offset-black" : "ring-zinc-300 ring-offset-white"}
@@ -84,10 +88,22 @@ const Navbar = ({ dark, setDark, avatar, name }: NavbarProps) => {
                         />
                     </Link>
                 )}
-                <Link to="/login"
-                    className="hover:bg-white hover:text-black py-1 px-3  rounded-4xl">
-                    Login
-                </Link>
+                {isAuthenticated ? (
+                    <button
+                        type='button'
+                        onClick={async () => {
+                            await logout()
+                            navigate('/login', {replace: true})
+                        }}
+                        className='hover:bg-white hover:text-black py-1 px-3 rounded-4xl'
+                    >
+                        {displayName}
+                    </button>
+                ) : (
+                    <Link to="/login" className="hover:bg-white hover:text-black py-1 px-3 rounded-4xl">
+                        Login
+                    </Link>
+                )}
             </div>
         </nav>
     )

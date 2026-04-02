@@ -1,6 +1,15 @@
 export interface AuthModel {
   api_token: string
   refreshToken?: string
+  token_type?: string
+  abilities?: string[]
+}
+
+export interface AuthResponse {
+  user: UserModel
+  token: string
+  token_type: string
+  abilities: string[]
 }
 
 export interface UserAddressModel {
@@ -47,6 +56,7 @@ export interface UserModel {
   id: number
   username: string
   password: string | undefined
+  name?: string
   email: string
   first_name: string
   last_name: string
