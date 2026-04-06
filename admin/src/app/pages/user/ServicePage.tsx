@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Route, Routes, Outlet, Navigate, useParams } from 'react-router-dom'
 import { PageLink } from '../../../_metronic/layout/core'
 import { EntityList } from '../../modules/apps/shared_table/entity-list/EntityList'
@@ -102,6 +103,15 @@ const AgencyDetail = () => {
 }
 
 const ServicePage = () => {
+  const [params, setParams] = useState({
+    page: 1,
+    pageSize: 10,
+    search: '',
+    filters: {},
+    sortBy: '',
+    sortOrder: 'asc' as 'asc' | 'desc',
+  })
+
   return (
     <Routes>
       <Route element={<Outlet />}>
@@ -117,11 +127,14 @@ const ServicePage = () => {
 
               <EntityList
                 data={agencies}
+                total={agencies.length}
+                params={params}
+                onParamsChange={setParams}
                 columns={agencyColumns}
                 filtersConfig={agencyFilters}
                 searchableKeys={['name', 'email']}
                 enableRowClick
-                getRowLink={(row: Agency) =>
+                getRowLink={(row) =>
                   `/apps/business-management/agencies/${row.id}`
                 }
               />

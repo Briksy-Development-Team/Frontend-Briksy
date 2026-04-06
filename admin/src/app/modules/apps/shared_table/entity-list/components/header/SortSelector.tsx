@@ -13,7 +13,7 @@ const SortSelector = <T extends Record<string, any>>({
     return (
         <div className="position-relative">
             <button
-                type="button"A
+                type="button"
                 className="btn btn-light-primary d-flex align-items-center gap-2"
                 data-kt-menu-trigger="click"
                 data-kt-menu-placement="bottom-end"
