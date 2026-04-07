@@ -1,47 +1,58 @@
-import axios from "axios";
-import { AuthModel, UserModel } from "./_models";
+import api from "../../../services/api/axiosInstance";
+import type { AuthResponse, UserModel } from "./_models";
 
-const API_URL = import.meta.env.VITE_APP_API_URL;
+type AdminAuthEnvelope<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+};
 
-export const GET_USER_BY_ACCESSTOKEN_URL = `${API_URL}/verify_token`;
-export const LOGIN_URL = `${API_URL}/login`;
-export const REGISTER_URL = `${API_URL}/register`;
-export const REQUEST_PASSWORD_URL = `${API_URL}/forgot_password`;
+type AdminAuthPayload = {
+  first: string;
+  last: string;
 
-// Server should return AuthModel
-export function login(email: string, password: string) {
-  return axios.post<AuthModel>(LOGIN_URL, {
-    email,
-    password,
-  });
+  email: string;
+  password: string;
+  password_confirmation: string;
+};
+
+export async function login(email: string, password: string) {
+  const response = await api.post<AdminAuthEnvelope<AuthResponse>>(
+    "/admin/auth/login",
+    {
+      email,
+      password,
+    },
+  );
+
+  return response.data;
 }
 
-// Server should return AuthModel
-export function register(
-  email: string,
-  firstname: string,
-  lastname: string,
-  password: string,
-  password_confirmation: string
-) {
-  return axios.post(REGISTER_URL, {
-    email,
-    first_name: firstname,
-    last_name: lastname,
-    password,
-    password_confirmation,
-  });
+export async function register(payload: AdminAuthPayload) {
+  const response = await api.post<AdminAuthEnvelope<AuthResponse>>(
+    "/admin/auth/register",
+    payload,
+  );
+
+  return response.data;
 }
 
-// Server should return object => { result: boolean } (Is Email in DB)
-export function requestPassword(email: string) {
-  return axios.post<{ result: boolean }>(REQUEST_PASSWORD_URL, {
-    email,
-  });
+export async function getUserByToken() {
+  const response =
+    await api.get<AdminAuthEnvelope<{ user: UserModel }>>("/admin/auth/me");
+
+  return response.data;
 }
 
-export function getUserByToken(token: string) {
-  return axios.post<UserModel>(GET_USER_BY_ACCESSTOKEN_URL, {
-    api_token: token,
+export async function logout() {
+  const response =
+    await api.post<AdminAuthEnvelope<unknown>>("/admin/auth/logout");
+
+  return response.data;
+}
+
+export async function requestPassword(email: string) {
+  return api.post("/admin/auth/forgot-password", {
+    email,
   });
 }

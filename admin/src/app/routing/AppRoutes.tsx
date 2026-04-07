@@ -20,7 +20,16 @@ import {App} from '../App'
 const {BASE_URL} = import.meta.env
 
 const AppRoutes: FC = () => {
-  const {currentUser} = useAuth()
+  const {currentUser, isBootstrapping} = useAuth()
+
+  if (isBootstrapping) {
+    return (
+      <div className='d-flex align-items-center justify-content-center min-vh-100'>
+        <span className='text-muted fw-semibold'>Loading account...</span>
+      </div>
+    )
+  }
+
   return (
     <BrowserRouter basename={BASE_URL}>
       <Routes>

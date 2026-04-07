@@ -1,17 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchSeekersApi } from "./seekerApi";
+import { fetchSeekersApi, type GetSeekersParams } from "./seekerApi";
 import { mapSeeker } from "./seekerMapper";
-
-type Seeker = {
-  id: number;
-  name: string;
-  email: string;
-  status?: string;
-  last_login?: string;
-  age?: number;
-  gender?: string;
-  location?: string;
-};
+import type {Seeker} from './seeker.types'
 
 type SeekerState = {
   data: Seeker[];
