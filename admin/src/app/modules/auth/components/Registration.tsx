@@ -1,14 +1,15 @@
-import {AxiosError} from 'axios'
-import {useState} from 'react'
+import { AxiosError } from 'axios'
+import { useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import {Link, useNavigate} from 'react-router-dom'
-import {useFormik} from 'formik'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
-import {useAuth} from '../core/Auth'
+import { Link, useNavigate } from 'react-router-dom'
+import { useFormik } from 'formik'
+import { toAbsoluteUrl } from '../../../../_metronic/helpers'
+import { useAuth } from '../core/Auth'
 
 const initialValues = {
-  name: '',
+  first: '',
+  last: '',
   email: '',
   password: '',
   password_confirmation: '',
@@ -16,10 +17,14 @@ const initialValues = {
 }
 
 const registrationSchema = Yup.object().shape({
-  name: Yup.string()
+  first: Yup.string()
     .min(3, 'Minimum 3 symbols')
     .max(120, 'Maximum 120 symbols')
-    .required('Name is required'),
+    .required('First is required'),
+  last: Yup.string()
+    .min(3, 'Minimum 3 symbols')
+    .max(120, 'Maximum 120 symbols')
+    .required('Last is required'),
   email: Yup.string()
     .email('Wrong email format')
     .min(3, 'Minimum 3 symbols')
@@ -37,29 +42,33 @@ const registrationSchema = Yup.object().shape({
 
 export function Registration() {
   const [loading, setLoading] = useState(false)
-  const {register} = useAuth()
+  const { register } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const navigate = useNavigate()
 
   const formik = useFormik({
     initialValues,
     validationSchema: registrationSchema,
-    onSubmit: async (values, {setStatus, setSubmitting}) => {
+    onSubmit: async (values, { setStatus, setSubmitting }) => {
       setLoading(true)
       setStatus(undefined)
 
       try {
         await register({
-          name: values.name,
+          first: values.first,
+          last: values.last,
+
           email: values.email,
           password: values.password,
           password_confirmation: values.password_confirmation,
         })
-        navigate('/dashboard', {replace: true})
+        navigate('/dashboard', { replace: true })
       } catch (error) {
         const message =
           error instanceof AxiosError
-            ? (error.response?.data as {message?: string})?.message ??
-              'The registration details are incorrect'
+            ? (error.response?.data as { message?: string })?.message ??
+            'The registration details are incorrect'
             : 'The registration details are incorrect'
 
         setStatus(message)
@@ -127,22 +136,45 @@ export function Registration() {
       ) : null}
 
       <div className='fv-row mb-8'>
-        <label className='form-label fw-bolder text-gray-900 fs-6'>Full name</label>
+        <label className='form-label fw-bolder text-gray-900 fs-6'>First name</label>
         <input
-          placeholder='Full name'
+          placeholder='First name'
           type='text'
           autoComplete='off'
-          {...formik.getFieldProps('name')}
+          {...formik.getFieldProps('first')}
           className={clsx(
             'form-control bg-transparent',
-            { 'is-invalid': formik.touched.name && formik.errors.name },
-            { 'is-valid': formik.touched.name && !formik.errors.name }
+            { 'is-invalid': formik.touched.first && formik.errors.first },
+            { 'is-valid': formik.touched.first && !formik.errors.first }
           )}
         />
-        {formik.touched.name && formik.errors.name && (
+
+        {formik.touched.first && formik.errors.first && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
-              <span role='alert'>{formik.errors.name}</span>
+              <span role='alert'>{formik.errors.first}</span>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className='fv-row mb-8'>
+        <label className='form-label fw-bolder text-gray-900 fs-6'>Last name</label>
+
+        <input
+          placeholder='Last name'
+          type='text'
+          autoComplete='off'
+          {...formik.getFieldProps('last')}
+          className={clsx(
+            'form-control bg-transparent',
+            { 'is-invalid': formik.touched.last && formik.errors.last },
+            { 'is-valid': formik.touched.last && !formik.errors.last }
+          )}
+        />
+        {formik.touched.last && formik.errors.last && (
+          <div className='fv-plugins-message-container'>
+            <div className='fv-help-block'>
+              <span role='alert'>{formik.errors.last}</span>
             </div>
           </div>
         )}
@@ -157,8 +189,8 @@ export function Registration() {
           {...formik.getFieldProps('email')}
           className={clsx(
             'form-control bg-transparent',
-            {'is-invalid': formik.touched.email && formik.errors.email},
-            {'is-valid': formik.touched.email && !formik.errors.email}
+            { 'is-invalid': formik.touched.email && formik.errors.email },
+            { 'is-valid': formik.touched.email && !formik.errors.email }
           )}
         />
         {formik.touched.email && formik.errors.email && (
@@ -169,20 +201,31 @@ export function Registration() {
           </div>
         )}
       </div>
-
       <div className='fv-row mb-8'>
         <label className='form-label fw-bolder text-gray-900 fs-6'>Password</label>
-        <input
-          type='password'
-          placeholder='Password'
-          autoComplete='off'
-          {...formik.getFieldProps('password')}
-          className={clsx(
-            'form-control bg-transparent',
-            {'is-invalid': formik.touched.password && formik.errors.password},
-            {'is-valid': formik.touched.password && !formik.errors.password}
-          )}
-        />
+
+        <div className='input-group'>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder='Password'
+            autoComplete='off'
+            {...formik.getFieldProps('password')}
+            className={clsx(
+              'form-control bg-transparent',
+              { 'is-invalid': formik.touched.password && formik.errors.password },
+              { 'is-valid': formik.touched.password && !formik.errors.password }
+            )}
+          />
+
+          <span
+            className='input-group-text'
+            onClick={() => setShowPassword(!showPassword)}
+            style={{ cursor: 'pointer' }}
+          >
+            <i className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'}`}></i>
+          </span>
+        </div>
+
         {formik.touched.password && formik.errors.password && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
@@ -194,23 +237,35 @@ export function Registration() {
 
       <div className='fv-row mb-5'>
         <label className='form-label fw-bolder text-gray-900 fs-6'>Confirm Password</label>
-        <input
-          type='password'
-          placeholder='Password confirmation'
-          autoComplete='off'
-          {...formik.getFieldProps('password_confirmation')}
-          className={clsx(
-            'form-control bg-transparent',
-            {
-              'is-invalid':
-                formik.touched.password_confirmation && formik.errors.password_confirmation,
-            },
-            {
-              'is-valid':
-                formik.touched.password_confirmation && !formik.errors.password_confirmation,
-            }
-          )}
-        />
+
+        <div className='input-group'>
+          <input
+            type={showConfirm ? 'text' : 'password'}
+            placeholder='Password confirmation'
+            autoComplete='off'
+            {...formik.getFieldProps('password_confirmation')}
+            className={clsx(
+              'form-control bg-transparent',
+              {
+                'is-invalid':
+                  formik.touched.password_confirmation && formik.errors.password_confirmation,
+              },
+              {
+                'is-valid':
+                  formik.touched.password_confirmation && !formik.errors.password_confirmation,
+              }
+            )}
+          />
+
+          <span
+            className='input-group-text'
+            onClick={() => setShowConfirm(!showConfirm)}
+            style={{ cursor: 'pointer' }}
+          >
+            <i className={`bi ${showConfirm ? 'bi-eye' : 'bi-eye-slash'}`}></i>
+          </span>
+        </div>
+
         {formik.touched.password_confirmation && formik.errors.password_confirmation && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
@@ -254,7 +309,7 @@ export function Registration() {
         >
           {!loading && <span className='indicator-label'>Submit</span>}
           {loading && (
-            <span className='indicator-progress' style={{display: 'block'}}>
+            <span className='indicator-progress' style={{ display: 'block' }}>
               Please wait...
               <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
             </span>

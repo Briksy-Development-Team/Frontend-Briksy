@@ -1,12 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import {type FC, useEffect} from 'react'
-import {type TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux'
-import {WithChildren} from '../../../../_metronic/helpers'
-import {clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser} from './auth.store'
-import {getAuth, removeAuth, setAuth as persistAuth} from './AuthHelpers'
-import {getUserByToken, login as loginRequest, logout as logoutRequest, register as registerRequest} from './_requests'
-import type {AuthModel, AuthResponse, UserModel} from './_models'
-import type {AppDispatch, RootState} from '../../../services/store'
+import { type FC, useEffect } from 'react'
+import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import { WithChildren } from '../../../../_metronic/helpers'
+import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser } from './auth.store'
+import { getAuth, removeAuth, setAuth as persistAuth } from './AuthHelpers'
+import { getUserByToken, login as loginRequest, logout as logoutRequest, register as registerRequest } from './_requests'
+import type { AuthModel, AuthResponse, UserModel } from './_models'
+import type { AppDispatch, RootState } from '../../../services/store'
 
 type AuthContextProps = {
   auth: AuthModel | undefined
@@ -17,7 +17,8 @@ type AuthContextProps = {
   logout: () => Promise<void>
   login: (email: string, password: string) => Promise<void>
   register: (payload: {
-    name: string
+    first: string
+    last: string
     email: string
     password: string
     password_confirmation: string
@@ -57,7 +58,7 @@ const bootstrapSession = async (dispatch: AppDispatch): Promise<void> => {
   }
 }
 
-const AuthInit: FC<WithChildren> = ({children}) => {
+const AuthInit: FC<WithChildren> = ({ children }) => {
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
@@ -67,7 +68,7 @@ const AuthInit: FC<WithChildren> = ({children}) => {
   return <>{children}</>
 }
 
-const AuthProvider: FC<WithChildren> = ({children}) => {
+const AuthProvider: FC<WithChildren> = ({ children }) => {
   return <>{children}</>
 }
 
@@ -109,13 +110,15 @@ const useAuth = (): AuthContextProps => {
   }
 
   const register = async (payload: {
-    name: string
+    first: string
+    last: string
     email: string
     password: string
     password_confirmation: string
   }) => {
     const normalizedPayload = {
-      name: payload.name.trim(),
+      first: payload.first.trim(),
+      last: payload.last.trim(),
       email: payload.email.trim(),
       password: payload.password,
       password_confirmation: payload.password_confirmation,
@@ -140,4 +143,4 @@ const useAuth = (): AuthContextProps => {
   }
 }
 
-export {AuthProvider, AuthInit, useAuth}
+export { AuthProvider, AuthInit, useAuth }

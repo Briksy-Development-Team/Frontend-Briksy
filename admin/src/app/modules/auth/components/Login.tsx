@@ -1,11 +1,11 @@
-import {AxiosError} from 'axios'
-import {useState} from 'react'
+import { AxiosError } from 'axios'
+import { useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
-import {Link, useNavigate} from 'react-router-dom'
-import {useFormik} from 'formik'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
-import {useAuth} from '../core/Auth'
+import { Link, useNavigate } from 'react-router-dom'
+import { useFormik } from 'formik'
+import { toAbsoluteUrl } from '../../../../_metronic/helpers'
+import { useAuth } from '../core/Auth'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -26,23 +26,25 @@ const initialValues = {
 
 export function Login() {
   const [loading, setLoading] = useState(false)
-  const {login} = useAuth()
+  const { login } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+
   const navigate = useNavigate()
 
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
-    onSubmit: async (values, {setStatus, setSubmitting}) => {
+    onSubmit: async (values, { setStatus, setSubmitting }) => {
       setLoading(true)
       setStatus(undefined)
 
       try {
         await login(values.email, values.password)
-        navigate('/dashboard', {replace: true})
+        navigate('/dashboard', { replace: true })
       } catch (error) {
         const message =
           error instanceof AxiosError
-            ? (error.response?.data as {message?: string})?.message ?? 'The login details are incorrect'
+            ? (error.response?.data as { message?: string })?.message ?? 'The login details are incorrect'
             : 'The login details are incorrect'
 
         setStatus(message)
@@ -115,8 +117,8 @@ export function Login() {
           {...formik.getFieldProps('email')}
           className={clsx(
             'form-control bg-transparent',
-            {'is-invalid': formik.touched.email && formik.errors.email},
-            {'is-valid': formik.touched.email && !formik.errors.email}
+            { 'is-invalid': formik.touched.email && formik.errors.email },
+            { 'is-valid': formik.touched.email && !formik.errors.email }
           )}
           type='email'
           name='email'
@@ -129,18 +131,31 @@ export function Login() {
         )}
       </div>
 
-      <div className='fv-row mb-3'>
-        <label className='form-label fw-bolder text-gray-900 fs-6 mb-0'>Password</label>
-        <input
-          type='password'
-          autoComplete='off'
-          {...formik.getFieldProps('password')}
-          className={clsx(
-            'form-control bg-transparent',
-            {'is-invalid': formik.touched.password && formik.errors.password},
-            {'is-valid': formik.touched.password && !formik.errors.password}
-          )}
-        />
+      <div className='fv-row mb-8'>
+        <label className='form-label fw-bolder text-gray-900 fs-6'>Password</label>
+
+        <div className='input-group'>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder='Password'
+            autoComplete='off'
+            {...formik.getFieldProps('password')}
+            className={clsx(
+              'form-control bg-transparent',
+              { 'is-invalid': formik.touched.password && formik.errors.password },
+              { 'is-valid': formik.touched.password && !formik.errors.password }
+            )}
+          />
+
+          <span
+            className='input-group-text'
+            onClick={() => setShowPassword(!showPassword)}
+            style={{ cursor: 'pointer' }}
+          >
+            <i className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'}`}></i>
+          </span>
+        </div>
+
         {formik.touched.password && formik.errors.password && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
@@ -161,7 +176,7 @@ export function Login() {
         <button type='submit' id='kt_sign_in_submit' className='btn btn-primary' disabled={formik.isSubmitting || !formik.isValid}>
           {!loading && <span className='indicator-label'>Continue</span>}
           {loading && (
-            <span className='indicator-progress' style={{display: 'block'}}>
+            <span className='indicator-progress' style={{ display: 'block' }}>
               Please wait...
               <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
             </span>
