@@ -6,6 +6,7 @@ import { SideFilter } from "./components/header/SideFilter";
 import Paginations from "./components/Pagination";
 import { exportToExcel } from "../utils/exportToExcel";
 import { ReactNode } from "react";
+import UserEditModal from "./components/header/UserEditModal";
 
 export type Column<T> = {
   Header: string;
@@ -49,7 +50,9 @@ const EntityList = <T extends { id?: number }>({
       return columns.map((c) => c.accessor);
     }
   });
-
+  const [users, setUsers] = useState<T[]>(data)
+  const [showModal, setShowModal] = useState(false)
+  const [editingUser, setEditingUser] = useState<T | null>(null)
   const [isMobile, setIsMobile] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
 
@@ -87,7 +90,7 @@ const EntityList = <T extends { id?: number }>({
   const handleExport = () => {
     const rowsToExport =
       selectedRows.size > 0
-        ? data.filter((r: any) => selectedRows.has(r.id))
+        ? data.filter((r) => selectedRows.has(r.id))
         : data;
 
     exportToExcel(rowsToExport, columns);
@@ -109,6 +112,8 @@ const EntityList = <T extends { id?: number }>({
             columns={columns}
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
+            onAddUser={() => setShowModal(true)}
+
             isMobile={isMobile}
             onOpenFilter={() => setShowFilter(true)}
             onExport={handleExport}
@@ -123,13 +128,17 @@ const EntityList = <T extends { id?: number }>({
           />
 
           <EntityTable
-            data={data}
+            data={users}
             columns={filteredColumns}
             enableRowClick={enableRowClick}
             getRowLink={getRowLink}
             selectedRows={selectedRows}
             onRowSelect={handleRowSelect}
             onSelectAll={handleSelectAll}
+            onEdit={(user) => {
+              setEditingUser(user)
+              setShowModal(true)
+            }}
           />
 
           <Paginations
@@ -149,6 +158,33 @@ const EntityList = <T extends { id?: number }>({
           />
         </KTCard>
       </div>
+      {(showModal || editingUser) && (
+        <UserEditModal
+          user={editingUser}
+          onSave={(updatedUser: any) => {
+            if (editingUser) {
+              setUsers((prev) =>
+                prev.map((u) =>
+                  u.id === editingUser.id ? { ...updatedUser, id: u.id } : u
+                )
+              )
+            } else {
+              setUsers((prev) => [
+                ...prev,
+                { ...updatedUser, id: Date.now() },
+              ])
+            }
+
+            setEditingUser(null)
+            setShowModal(false)
+          }}
+          onClose={() => {
+            setEditingUser(null)
+            setShowModal(false)
+          }}
+        />
+      )}
+
 
       {!isMobile && filtersConfig && (
         <div style={{ width: 280 }}>

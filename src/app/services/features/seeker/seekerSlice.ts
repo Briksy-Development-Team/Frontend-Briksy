@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchSeekersApi, type GetSeekersParams } from "./seekerApi";
 import { mapSeeker } from "./seekerMapper";
-import type {Seeker} from './seeker.types'
+import type { Seeker } from "./seeker.types";
 
 type SeekerState = {
   data: Seeker[];
@@ -22,11 +22,13 @@ export const fetchSeekers = createAsyncThunk(
   async (params: GetSeekersParams) => {
     const res = await fetchSeekersApi(params);
 
+    console.log("API RAW RESPONSE:", res);
+
     return {
       data: res.data.map(mapSeeker),
       total: res.total,
     };
-  }
+  },
 );
 
 const seekerSlice = createSlice({
@@ -44,9 +46,9 @@ const seekerSlice = createSlice({
         state.data = action.payload.data;
         state.total = action.payload.total;
       })
-      .addCase(fetchSeekers.rejected, (state) => {
+      .addCase(fetchSeekers.rejected, (state, action) => {
         state.loading = false;
-        state.error = "Failed to fetch seekers";
+        state.error = action.error.message || "Failed to fetch seekers";
       });
   },
 });

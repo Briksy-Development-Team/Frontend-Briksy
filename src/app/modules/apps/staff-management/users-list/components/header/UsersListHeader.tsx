@@ -10,7 +10,6 @@ const UsersListHeader = () => {
       <UsersListSearchComponent />
       {/* begin::Card toolbar */}
       <div className='card-toolbar'>
-        {/* begin::Group actions */}
         {selected.length > 0 ? <UsersListGrouping /> : <UsersListToolbar />}
         {/* end::Group actions */}
       </div>

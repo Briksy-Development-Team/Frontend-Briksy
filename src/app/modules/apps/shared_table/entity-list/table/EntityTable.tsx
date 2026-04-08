@@ -14,6 +14,7 @@ type Props<T extends { id?: number }> = {
   columns: CustomColumn<T>[]
   enableRowClick?: boolean
   getRowLink?: (row: T) => string
+  onEdit?: (row: T) => void
   // sortConfig: SortConfig<T>
   // setSortConfig: React.Dispatch<React.SetStateAction<SortConfig<T>>>
   selectedRows?: Set<number>
@@ -26,6 +27,7 @@ const EntityTable = <T extends { id?: number }>({
   columns,
   enableRowClick = false,
   getRowLink,
+  onEdit,
   // sortConfig,
   // setSortConfig,
   selectedRows = new Set(),
@@ -108,6 +110,9 @@ const EntityTable = <T extends { id?: number }>({
                     </th>
                   )
                 })}
+                <th style={{ width: 120, textAlign: 'center' }}>
+                  Action
+                </th>
               </tr>
             ))}
           </thead>
@@ -146,6 +151,35 @@ const EntityTable = <T extends { id?: number }>({
                     {row.cells.map((cell) => (
                       <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <div className="dropdown">
+                        <button
+                          className="btn btn-sm btn-light btn-active-light-primary"
+                          data-bs-toggle="dropdown"
+                        >
+                          Actions
+                        </button>
+
+                        <ul className="dropdown-menu">
+                          <li>
+                            <button
+                              className="dropdown-item"
+                              onClick={() => onEdit?.(rowData)}                            >
+                              Edit
+                            </button>
+                          </li>
+
+                          <li>
+                            <button
+                              className="dropdown-item text-danger"
+                              onClick={() => console.log('Delete', rowData)}
+                            >
+                              Delete
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
                   </tr>
                 )
               })

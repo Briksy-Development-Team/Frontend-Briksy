@@ -1,6 +1,7 @@
 import { KTIcon } from '../../../../../../../_metronic/helpers'
 import { ColumnSelector } from './ColumnSelector'
 import SortSelector from './SortSelector'
+// import { useListView } from '../../../../../../../core/ListViewProvider'
 
 type Props<T extends Record<string, any>> = {
   columns: { accessor: keyof T; Header: string }[]
@@ -11,6 +12,7 @@ type Props<T extends Record<string, any>> = {
   isMobile: boolean
   onOpenFilter: () => void
   onExport?: () => void
+  onAddUser?: () => void
   selectedCount?: number
   onSortChange: (config: { key: keyof T; direction: 'asc' | 'desc' }) => void
 }
@@ -26,9 +28,12 @@ const EntityHeader = <T extends Record<string, any>>({
   onExport,
   selectedCount = 0,
   onSortChange,
+   onAddUser, 
 }: Props<T>) => {
   const hasSelection = selectedCount > 0
-
+  // const openAddUserModal = () => {
+  //   setItemIdForUpdate(null)
+  // }
   return (
     <div className='card-header border-0 pt-6 d-flex justify-content-between'>
 
@@ -74,6 +79,14 @@ const EntityHeader = <T extends Record<string, any>>({
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
         />
+        <button
+          type='button'
+          onClick={onAddUser}
+          className='btn d-flex align-items-center gap-2 btn-light-primary'
+        >
+          <KTIcon iconName='plus' className='fs-2' />
+          Add User
+        </button>
       </div>
     </div>
   )

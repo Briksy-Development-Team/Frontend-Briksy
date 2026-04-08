@@ -1,10 +1,7 @@
 export const mapSeeker = (item: any) => ({
   id: item.id,
-  name: item.full_name,
-  email: item.email_address,
-  status: item.status,
-  last_login: item.last_login,
-  age: item.age,
-  gender: item.gender,
-  location: item.location,
+  name: item.name,
+  email: item.email,
+  status: item.roles?.[0] || "", // backend gives roles[]
+  created_at: item.created_at,
 });
