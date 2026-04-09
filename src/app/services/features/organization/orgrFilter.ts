@@ -5,8 +5,6 @@ export const OrganizationFilters = [
     type: "select",
     options: ["Active", "Inactive", "Blocked"],
   },
-
- 
   {
     key: "created_at",
     label: "Created Date",
