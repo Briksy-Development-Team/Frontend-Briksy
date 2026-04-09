@@ -151,8 +151,8 @@ const SidebarMenuMain = () => {
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
         title=" User Management"
-        icon="element-7"
-        fontIcon="bi-layers"
+        fontIcon="bi-archive"
+        icon="element-plus"
       >
         <SidebarMenuItem
           to="/apps/seeker-management/seeker"
@@ -167,18 +167,39 @@ const SidebarMenuMain = () => {
           title="Staff "
           fontIcon="bi-layers"
         />
-        <SidebarMenuItem
+        <SidebarMenuItemWithSub
+          to="/crafted/widgets"
+          title=" User "
+          icon="element-7"
+          fontIcon="bi-layers"
+        >
+          <SidebarMenuItem
+            to="/apps/user/organization"
+            icon="abstract-28"
+            title="Organizations"
+            fontIcon="bi-layers"
+          />
+
+          <SidebarMenuItem
+            to="/apps/user/solo"
+            icon="abstract-28"
+            title="Solo Traders "
+            fontIcon="bi-layers"
+          />
+        
+        </SidebarMenuItemWithSub>
+        {/* <SidebarMenuItem
           to="/apps/business-management/agencies"
           icon="abstract-28"
           title="Service Provider"
           fontIcon="bi-layers"
-        />
+        /> */}
       </SidebarMenuItemWithSub>
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
         title=" Property Management"
-        icon="element-7"
-        fontIcon="bi-layers"
+        fontIcon="bi-archive"
+        icon="element-plus"
       >
         <SidebarMenuItem
           to="/apps/property-management/listing"
@@ -198,8 +219,8 @@ const SidebarMenuMain = () => {
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
         title=" Service Management"
-        icon="element-7"
-        fontIcon="bi-layers"
+        fontIcon="bi-archive"
+        icon="element-plus"
       >
         <SidebarMenuItem
           to="/apps/service-management/group"
@@ -219,10 +240,9 @@ const SidebarMenuMain = () => {
 
       <SidebarMenuItem
         to="/apps/subscription-plans"
-        icon="abstract-28"
         title="Subscription Plans"
-        fontIcon="bi-layers"
-      />
+        fontIcon="bi-archive"
+        icon="element-plus" />
     </>
   );
 };
