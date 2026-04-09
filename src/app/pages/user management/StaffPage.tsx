@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStaff } from "../../services/features/staff/staffSlice";
 import { RootState, AppDispatch } from "../../services/store";
@@ -8,8 +9,9 @@ import { StaffColumns } from "../../services/features/staff/staffColumns";
 import { StaffFilters } from "../../services/features/staff/staffFilter";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 
-const StaffPage = () => {
+const StaffList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { data, total, loading, error } = useSelector(
@@ -41,7 +43,6 @@ const StaffPage = () => {
   return (
     <Content>
       <PageHeader title="Staff" subtitle="Manage all Staff" />
-
       {loading ? (
         <div>Loading...</div>
       ) : (
@@ -54,12 +55,19 @@ const StaffPage = () => {
           filtersConfig={StaffFilters}
           searchableKeys={["name", "email"]}
           enableRowClick
-          getRowLink={(row: any) =>
-            `/apps/staff-management/staff/${row.id}`
-          }
+          getRowLink={(row: any) => `/apps/staff-management/staff/${row.id}`}
         />
       )}
     </Content>
+  );
+};
+
+const StaffPage = () => {
+  return (
+    <Routes>
+      <Route index element={<StaffList />} />
+      <Route path=":id" element={<GenericDetailPage />} />
+    </Routes>
   );
 };
 

@@ -104,7 +104,7 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path='/apps/staff-management/staff'
+          path='/apps/staff-management/staff/*'
           element={
             <SuspensedView>
               <StaffPage />

@@ -130,7 +130,15 @@ const EntityTable = <T extends { id?: number }>({
                     {...row.getRowProps()}
                     onClick={() => {
                       if (enableRowClick && getRowLink) {
-                        navigate(getRowLink(rowData), { state: rowData })
+                        navigate(getRowLink(rowData), {
+                          state: {
+                            data: rowData,
+                            columns: columns.map((col) => ({
+                              key: col.accessor,
+                              label: col.Header
+                            }))
+                          }
+                        })
                       }
                     }}
                     style={{
