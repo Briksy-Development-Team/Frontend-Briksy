@@ -68,6 +68,15 @@ const SeekerPage = () => {
                                     columns={seekerColumns}
                                     filtersConfig={seekerFilters}
                                     searchableKeys={["name", "email"]}
+                                    pagination={
+                                        pagination
+                                            ? {
+                                                page: pagination.current_page,
+                                                pageSize: pagination.per_page,
+                                                total: pagination.total,
+                                            }
+                                            : undefined
+                                    }
                                     enableRowClick
                                     getRowLink={(row: { id: number }) =>
                                         `/apps/seeker-management/seeker/${row.id}`

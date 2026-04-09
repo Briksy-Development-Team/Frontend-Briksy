@@ -36,6 +36,11 @@ type EntityListProps<T extends object> = {
   onFiltersChange?: (filters: Record<string, FilterValue>) => void
   onSortChange?: (sortConfig: SortConfig<T>) => void
   onPaginationChange?: (page: number, pageSize: number) => void
+  pagination?: {
+    page: number
+    pageSize: number
+    total: number
+  }
 }
 
 type SortConfig<T> = {
@@ -55,14 +60,19 @@ const EntityList = <T extends Record<string, any>,>({
   onFiltersChange,
   onSortChange,
   onPaginationChange,
+  pagination,
 }: EntityListProps<T>) => {
 
   const [search, setSearch] = useState("")
   const [filters, setFilters] = useState<Record<string, FilterValue>>({})
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [internalPage, setInternalPage] = useState(1)
+  const [internalPageSize, setInternalPageSize] = useState(10)
   const [showFilter, setShowFilter] = useState(false)
 
+  const isServerSide = Boolean(pagination)
+  const page = pagination?.page ?? internalPage
+  const pageSize = pagination?.pageSize ?? internalPageSize
+  const total = pagination?.total
 
   const [sortConfig, setSortConfig] = useState<SortConfig<T>>({
     key: columns[0]?.accessor as keyof T,
@@ -114,8 +124,10 @@ const EntityList = <T extends Record<string, any>,>({
   }, [visibleColumns, storageKey])
 
   useEffect(() => {
-    setPage(1)
-  }, [search, filters])
+    if (!isServerSide) {
+      setInternalPage(1)
+    }
+  }, [search, filters, isServerSide])
 
   useEffect(() => {
     if (onSearch) {
@@ -130,14 +142,14 @@ const EntityList = <T extends Record<string, any>,>({
   }, [filters, onFiltersChange])
 
   useEffect(() => {
-    if (onPaginationChange) {
-      onPaginationChange(page, pageSize)
+    if (!isServerSide && onPaginationChange) {
+      onPaginationChange(internalPage, internalPageSize)
     }
-  }, [page, pageSize, onPaginationChange])
+  }, [internalPage, internalPageSize, onPaginationChange, isServerSide])
 
   useEffect(() => {
     setSelectedRows(new Set())
-  }, [page, search, filters])
+  }, [page, search, filters, data])
 
   const handleRowSelect = (id: number) => {
     setSelectedRows((prev) => {
@@ -163,6 +175,10 @@ const EntityList = <T extends Record<string, any>,>({
   }
 
   const filteredData = useMemo(() => {
+    if (isServerSide) {
+      return [...data]
+    }
+
     let result = [...data]
 
     result = result.filter((item) => {
@@ -229,12 +245,16 @@ const EntityList = <T extends Record<string, any>,>({
     })
 
     return result
-  }, [data, search, filters, sortConfig, searchableKeys])
+  }, [data, isServerSide, search, filters, sortConfig, searchableKeys])
 
   const paginatedData = useMemo(() => {
+    if (isServerSide) {
+      return filteredData
+    }
+
     const start = (page - 1) * pageSize
     return filteredData.slice(start, start + pageSize)
-  }, [filteredData, page, pageSize])
+  }, [filteredData, isServerSide, page, pageSize])
 
   const getColumnKey = (col: EntityColumn<T>) =>
     typeof col.accessor === "string" ? col.accessor : String(col.id)
@@ -285,11 +305,21 @@ const EntityList = <T extends Record<string, any>,>({
           <Paginations
             page={page}
             pageSize={pageSize}
-            total={filteredData.length}
-            onChange={setPage}
+            total={isServerSide ? total ?? filteredData.length : filteredData.length}
+            onChange={(nextPage) => {
+              if (isServerSide) {
+                onPaginationChange?.(nextPage, pageSize)
+              } else {
+                setInternalPage(nextPage)
+              }
+            }}
             onPageSizeChange={(size) => {
-              setPage(1)
-              setPageSize(size)
+              if (isServerSide) {
+                onPaginationChange?.(1, size)
+              } else {
+                setInternalPage(1)
+                setInternalPageSize(size)
+              }
             }}
           />
 

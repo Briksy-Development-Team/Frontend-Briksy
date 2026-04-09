@@ -3,7 +3,7 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStaff, setStaffQuery } from "../../services/features/staff/staffSlice";
 import { RootState, AppDispatch } from "../../services/store";
@@ -19,24 +19,34 @@ const StaffPage = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchStaff(query));
-  }, [dispatch, query]);
+    // Avoid repeated fetch loops caused by object identity changes in query.
+    dispatch(
+      fetchStaff({
+        page: query.page ?? 1,
+        per_page: query.per_page ?? 10,
+        search: query.search,
+        sort: query.sort,
+        direction: query.direction,
+        filter: query.filter,
+      })
+    );
+  }, [dispatch, query.page, query.per_page, query.search, query.sort, query.direction, JSON.stringify(query.filter)]);
 
-  const handleSearch = (search: string) => {
+  const handleSearch = useCallback((search: string) => {
     dispatch(setStaffQuery({ search, page: 1 }));
-  };
+  }, [dispatch]);
 
-  const handleFiltersChange = (filters: Record<string, FilterValue>) => {
+  const handleFiltersChange = useCallback((filters: Record<string, FilterValue>) => {
     dispatch(setStaffQuery({ filter: filters, page: 1 }));
-  };
+  }, [dispatch]);
 
-  const handleSortChange = ({ key, direction }: { key: string; direction: "asc" | "desc" }) => {
+  const handleSortChange = useCallback(({ key, direction }: { key: string; direction: "asc" | "desc" }) => {
     dispatch(setStaffQuery({ sort: key, direction, page: 1 }));
-  };
+  }, [dispatch]);
 
-  const handlePaginationChange = (page: number, per_page: number) => {
+  const handlePaginationChange = useCallback((page: number, per_page: number) => {
     dispatch(setStaffQuery({ page, per_page }));
-  };
+  }, [dispatch]);
 
   return (
     <Routes>
@@ -54,6 +64,15 @@ const StaffPage = () => {
                   columns={staffColumns}
                   filtersConfig={staffFilters}
                   searchableKeys={["name", "email"]}
+                  pagination={
+                    pagination
+                      ? {
+                          page: pagination.current_page,
+                          pageSize: pagination.per_page,
+                          total: pagination.total,
+                        }
+                      : undefined
+                  }
                   enableRowClick
                   getRowLink={(row: { id: number }) => `/apps/staff-management/staff/${row.id}`}
                   onSearch={handleSearch}
