@@ -16,6 +16,7 @@ export const store = configureStore({
     staff: staffReducer,
 
     auth: authReducer,
+    
   },
 });
 

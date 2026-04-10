@@ -18,7 +18,7 @@ type AdminAuthPayload = {
 
 export async function login(email: string, password: string) {
   const response = await api.post<AdminAuthEnvelope<AuthResponse>>(
-    "/admin/auth/login",
+    "/super-admin/auth/login",
     {
       email,
       password,
@@ -30,7 +30,7 @@ export async function login(email: string, password: string) {
 
 export async function register(payload: AdminAuthPayload) {
   const response = await api.post<AdminAuthEnvelope<AuthResponse>>(
-    "/admin/auth/register",
+    "/super-admin/auth/register",
     payload,
   );
 
@@ -39,7 +39,7 @@ export async function register(payload: AdminAuthPayload) {
 
 export async function getUserByToken() {
   const response =
-    await api.get<AdminAuthEnvelope<{ user: UserModel }>>("/admin/auth/me");
+    await api.get<AdminAuthEnvelope<{ user: UserModel }>>("/super-admin/auth/me");
 
   return response.data;
 }

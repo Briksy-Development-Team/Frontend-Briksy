@@ -23,6 +23,7 @@ export const fetchSeekers = createAsyncThunk(
     const res = await fetchSeekersApi(params);
 
     console.log("API RAW RESPONSE:", res);
+    
 
     return {
       data: res.data.map(mapSeeker),
