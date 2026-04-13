@@ -9,10 +9,7 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
     },
   });
 
-  console.log("AXIOS FULL RESPONSE:", res);
-  console.log("AXIOS DATA:", res.data);
-  console.log("SEEKERS ARRAY:", res.data.data);
-  console.log("PAGINATION:", res.data.meta);
+
   const { data, meta } = res.data || {};
 
   return {

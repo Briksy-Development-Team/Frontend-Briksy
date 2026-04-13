@@ -20,7 +20,7 @@ const StaffList = () => {
 
   const [params, setParams] = useState({
     page: 1,
-    pageSize: 10,
+    per_page: 10,
     search: "",
     filters: {},
     sortBy: "",

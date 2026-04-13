@@ -1,26 +1,68 @@
 import { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { Staff } from "./staff.types";
-
-// const formatDate = (value?: string) => {
-//   if (!value) return "—";
-//   const date = new Date(value);
-//   return isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
-// };
+import { formatDateTime } from "../../utils/dateFormat";
 
 export const StaffColumns: Column<Staff>[] = [
   {
     Header: "ID",
     accessor: "id",
+    sortable: true,
     alwaysVisible: true,
   },
 
-  { Header: "Name", accessor: "name" },
-  { Header: "Email", accessor: "email" },
-  { Header: "Status", accessor: "status" },
-  // {
-  //   Header: "Updated At",
-  //   accessor: "updated_at",
-  //   sortable: true,
-  //   Cell: ({ value }: any) => formatDate(value),
-  // },
+  {
+    Header: "Name",
+    accessor: "name",
+    sortable: true,
+  },
+
+  {
+    Header: "Display Name",
+    accessor: "display_name",
+    sortable: true,
+  },
+    {
+    Header: "Organization ID",
+    accessor: "organization_id",
+  },
+
+  {
+    Header: "Email",
+    accessor: "email",
+    sortable: true,
+  },
+
+  {
+    Header: "Mobile",
+    accessor: "mobile_number",
+  },
+
+
+  {
+    Header: "Roles",
+    accessor: "roles",
+    Cell: ({ value }: { value: string[] }) =>
+      Array.isArray(value) ? value.join(", ") : "—",
+  },
+
+  {
+    Header: "Email Verified",
+    accessor: "email_verified_at",
+    sortable: true,
+    Cell: ({ value }) => formatDateTime(value),
+  },
+
+  {
+    Header: "Mobile Verified",
+    accessor: "mobile_verified_at",
+    sortable: true,
+    Cell: ({ value }) => formatDateTime(value),
+  },
+
+  {
+    Header: "Created At",
+    accessor: "created_at",
+    sortable: true,
+    Cell: ({ value }) => formatDateTime(value),
+  },
 ];

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchOrganizationApi, type GetOrganizationParams } from "./orgrApi";
-import { mapSeeker } from "./orgrMapper";
+import { mapOrganization } from "./orgrMapper";
 import type { Organization } from "./orgr.types";
 
 type OrganizationState = {
@@ -25,7 +25,7 @@ export const fetchOrganization = createAsyncThunk(
     console.log("API RAW RESPONSE:", res);
 
     return {
-      data: res.data.map(mapSeeker),
+      data: res.data.map(mapOrganization),
       total: res.total,
     };
   },

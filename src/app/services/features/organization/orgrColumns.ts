@@ -1,41 +1,64 @@
 import { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { Organization } from "./orgr.types";
-
-const formatDate = (value?: string) => {
-  if (!value) return "—";
-  const date = new Date(value);
-  return isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
-};
+import { formatDateTime } from "../../utils/dateFormat";
 
 export const OrganizationColumns: Column<Organization>[] = [
-  { Header: "ID", accessor: "id", sortable: true, alwaysVisible: true },
-  { Header: "Organization", accessor: "name", sortable: true },
-  { Header: "Email", accessor: "email", sortable: true },
-  { Header: "Status", accessor: "status", sortable: true },
+  {
+    Header: "ID",
+    accessor: "id",
+    sortable: true,
+    alwaysVisible: true,
+  },
 
   {
-    Header: "Last Login",
-    accessor: "last_login",
+    Header: "Organization",
+    accessor: "name",
     sortable: true,
-    Cell: ({ value }: any) => formatDate(value),
+    Cell: ({ value }) => value ?? "—",
   },
+
   {
-    Header: "Current Login",
-    accessor: "current_login",
+    Header: "Email",
+    accessor: "contact_email",
     sortable: true,
-    Cell: ({ value }: any) => formatDate(value),
+    Cell: ({ value }) => value ?? "—",
   },
-  { Header: "Location", accessor: "location", sortable: true },
+
+  {
+    Header: "Phone",
+    accessor: "contact_phone",
+    Cell: ({ value }) => value ?? "—",
+  },
+
+  {
+    Header: "ABN",
+    accessor: "abn",
+    Cell: ({ value }) => value ?? "—",
+  },
+
+  {
+    Header: "ACN",
+    accessor: "acn",
+    Cell: ({ value }) => value ?? "—",
+  },
+
+  {
+    Header: "Verified",
+    accessor: "is_verified",
+    Cell: ({ value }: { value: boolean }) =>
+      value ? "✔ Verified" : "✖ Not Verified",
+  },
+
+  {
+    Header: "Rating",
+    accessor: "avg_org_rating",
+    Cell: ({ value }) => value ?? "—",
+  },
+
   {
     Header: "Created At",
     accessor: "created_at",
     sortable: true,
-    Cell: ({ value }: any) => formatDate(value),
-  },
-  {
-    Header: "Updated At",
-    accessor: "updated_at",
-    sortable: true,
-    Cell: ({ value }: any) => formatDate(value),
+    Cell: ({ value }) => formatDateTime(value),
   },
 ];
