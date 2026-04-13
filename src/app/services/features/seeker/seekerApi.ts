@@ -5,7 +5,7 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
   const res = await axiosInstance.get("/super-admin/seekers", {
     params: {
       page: params.page,
-      per_page: params.pageSize,
+      per_page: params.per_page,
     },
   });
 

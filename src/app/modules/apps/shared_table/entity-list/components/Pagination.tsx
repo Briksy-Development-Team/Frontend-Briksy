@@ -6,7 +6,7 @@ const getPageSizeOptions = () => {
 
 type Props = {
   page: number
-  pageSize: number
+  per_page: number
   total: number
   onChange: (page: number) => void
   onPageSizeChange: (size: number) => void
@@ -14,12 +14,12 @@ type Props = {
 
 const Pagination = ({
   page,
-  pageSize,
+  per_page,
   total,
   onChange,
   onPageSizeChange,
 }: Props) => {
-  const totalPages = Math.ceil(total / pageSize)
+  const totalPages = Math.ceil(total / per_page)
 
   const getVisiblePages = () => {
     const pages: number[] = []
@@ -44,7 +44,7 @@ const Pagination = ({
 
         <select
           className="form-select form-select-sm w-auto"
-          value={pageSize}
+          value={per_page}
           onChange={(e) => onPageSizeChange(Number(e.target.value))}
         >
           {getPageSizeOptions().map((size) => (
@@ -60,8 +60,8 @@ const Pagination = ({
         <div className="text-muted fs-5">
           {total === 0
             ? '0 of 0'
-            : `${(page - 1) * pageSize + 1} – ${Math.min(
-              page * pageSize,
+            : `${(page - 1) * per_page + 1} – ${Math.min(
+              page * per_page,
               total
             )} of ${total}`}
         </div>

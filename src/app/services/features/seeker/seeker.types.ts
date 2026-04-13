@@ -1,22 +1,27 @@
 export type Seeker = {
-  id: number
-  name: string
-  email: string
-  status?: string
-  last_login?: string
-  current_login?: string
-  age?: number
-  gender?: string
-  location?: string
-  created_at?: string
-  updated_at?: string
-}
+  id: string;
+
+  name: string;
+  display_name?: string;
+
+  email: string;
+  mobile_number?: string;
+
+  organization_id?: string;
+
+  roles: string[];
+
+  email_verified_at?: string | null;
+  mobile_verified_at?: string | null;
+
+  created_at?: string;
+};
 
 export type GetSeekersParams = {
-  page?: number
-  pageSize?: number
-  search?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-  filters?: Record<string, any>
-}
+  page?: number;
+  per_page?: number;
+  search?: string;
+  sort_by?: string;
+  order?: "asc" | "desc";
+  filters?: Record<string, any>;
+};

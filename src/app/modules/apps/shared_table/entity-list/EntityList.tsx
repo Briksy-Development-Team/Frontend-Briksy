@@ -135,11 +135,10 @@ const EntityList = <T extends { id?: number }>({
 
           <Paginations
             page={params.page}
-            pageSize={params.pageSize}
+            per_page={params.per_page}
             total={total}
             onChange={(page) => onParamsChange({ ...params, page })}
-            onPageSizeChange={(size) => onParamsChange({ ...params, pageSize: size, page: 1 })}
-          />
+            onPageSizeChange={(size) => onParamsChange({ ...params, per_page: size, page: 1 })} />
         </KTCard>
       </div>
 
