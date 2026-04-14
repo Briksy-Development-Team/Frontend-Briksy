@@ -22,7 +22,7 @@ export const fetchSeekers = createAsyncThunk(
   async (params: GetSeekersParams) => {
     const res = await fetchSeekersApi(params);
 
-    console.log("API RAW RESPONSE:", res);
+    if (!res.data) throw new Error("Invalid API response");
 
     return {
       data: res.data.map(mapSeeker),

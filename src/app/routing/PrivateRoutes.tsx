@@ -14,9 +14,14 @@ const PrivateRoutes = () => {
   const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
   const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
-  const StaffPage = lazy(() => import('../modules/apps/staff-management/StaffPage'))
-  const SeekerPage = lazy(() => import('../pages/user/SeekerPgae'))
-  const AgencyPage = lazy(() => import('../pages/user/ServicePage'))
+  const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
+  const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
+  // const AgencyPage = lazy(() => import('../pages/user management/ServicePage'))
+  // const ServicePage = lazy(() => import('../pages/user management/ServicePage'))
+  // const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
+  const UserPage = lazy(() => import('../pages/user management/UserPage'))
+
+
 
 
 
@@ -71,24 +76,51 @@ const PrivateRoutes = () => {
             </SuspensedView>
           }
         />
+        {/* <Route
+          path='/apps/user/*'
+          element={
+            <SuspensedView>
+              <OrganizationPage />
+            </SuspensedView>
+          }
+        /> 
+         <Route
+          path='/apps/user/*'
+          element={
+            <SuspensedView>
+              <SoloPage />
+            </SuspensedView>
+          }
+        /> */}
+
 
         <Route
-          path='/apps/staff-management/*'
+          path='/apps/user/*'
+          element={
+            <SuspensedView>
+              <UserPage />
+            </SuspensedView>
+          }
+        />
+
+        <Route
+          path='/apps/staff-management/staff/*'
           element={
             <SuspensedView>
               <StaffPage />
             </SuspensedView>
           }
         />
+      
 
-        <Route
+        {/* <Route
           path='/apps/business-management/*'
           element={
             <SuspensedView>
               <AgencyPage />
             </SuspensedView>
           }
-        />
+        /> */}
         <Route
           path='/apps/subscription-plans'
           element={

@@ -1,4 +1,4 @@
-export type Seeker = {
+export type Staff = {
   id: string;
 
   name: string;
@@ -14,10 +14,10 @@ export type Seeker = {
   email_verified_at?: string | null;
   mobile_verified_at?: string | null;
 
-  created_at?: string;
+  created_at?: string;  
 };
 
-export type GetSeekersParams = {
+export type GetStaffParams = {
   page?: number;
   per_page?: number;
   search?: string;

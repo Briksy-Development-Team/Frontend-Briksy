@@ -1,6 +1,6 @@
-import type { Seeker } from "./seeker.types";
+import type { Staff } from "./staff.types";
 
-type SeekerApi = {
+type StaffApi = {
   id: string;
   name: string;
   display_name?: string;
@@ -13,7 +13,7 @@ type SeekerApi = {
   created_at?: string;
 };
 
-export const mapSeeker = (item: SeekerApi): Seeker => ({
+export const mapStaff = (item: StaffApi): Staff => ({
   id: item.id,
   name: item.name,
   display_name: item.display_name,

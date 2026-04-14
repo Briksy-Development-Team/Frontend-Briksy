@@ -9,8 +9,8 @@ export const useRoleAccess = () => {
 
     return {
       roles,
-      isAdmin: roles.includes('admin'),
-      isAdminStaff: roles.includes('admin_staff'),
+      isAdmin: roles.includes('super_admin'),
+      // isAdminStaff: roles.includes('admin_staff'),
       hasAnyRole: roles.length > 0,
     }
   }, [auth?.abilities, currentUser?.roles])

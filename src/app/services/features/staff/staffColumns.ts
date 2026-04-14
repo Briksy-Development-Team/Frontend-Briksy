@@ -1,8 +1,8 @@
 import { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import type { Seeker } from "./seeker.types";
+import type { Staff } from "./staff.types";
 import { formatDateTime } from "../../utils/dateFormat";
 
-export const seekerColumns: Column<Seeker>[] = [
+export const StaffColumns: Column<Staff>[] = [
   {
     Header: "ID",
     accessor: "id",
@@ -21,6 +21,10 @@ export const seekerColumns: Column<Seeker>[] = [
     accessor: "display_name",
     sortable: true,
   },
+    {
+    Header: "Organization ID",
+    accessor: "organization_id",
+  },
 
   {
     Header: "Email",
@@ -32,10 +36,7 @@ export const seekerColumns: Column<Seeker>[] = [
     Header: "Mobile",
     accessor: "mobile_number",
   },
-  {
-    Header: "Organization ID",
-    accessor: "organization_id",
-  },
+
 
   {
     Header: "Roles",
