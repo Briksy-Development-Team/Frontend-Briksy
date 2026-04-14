@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchSeekersApi, type GetSeekersParams } from "./seekerApi";
+import { fetchSeekersApi } from "./seekerApi";
 import { mapSeeker } from "./seekerMapper";
-import type { Seeker } from "./seeker.types";
+import type { Seeker, GetSeekersParams } from "./seeker.types";
 
 type SeekerState = {
   data: Seeker[];
@@ -21,8 +21,6 @@ export const fetchSeekers = createAsyncThunk(
   "seeker/fetch",
   async (params: GetSeekersParams) => {
     const res = await fetchSeekersApi(params);
-
-    if (!res.data) throw new Error("Invalid API response");
 
     return {
       data: res.data.map(mapSeeker),

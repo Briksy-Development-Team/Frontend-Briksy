@@ -1,39 +1,68 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchSeekers } from "../../services/features/seeker/seekerSlice";
-import { RootState, AppDispatch } from "../../services/store";
+import { useDebounce } from "use-debounce";
 
-import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { fetchSeekers } from "../../services/features/seeker/seekerSlice";
+import type { RootState, AppDispatch } from "../../services/store";
+import type { Seeker } from "../../services/features/seeker/seeker.types";
+
+import {
+  EntityList,
+  QueryParams,
+} from "../../modules/apps/shared_table/entity-list/EntityList";
+
 import { seekerColumns } from "../../services/features/seeker/seekerColumns";
 import { seekerFilters } from "../../services/features/seeker/SeekerFilter";
+
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 
 const SeekerPage = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { data, total, loading, error } = useSelector(
+  const { data, total, error } = useSelector(
     (state: RootState) => state.seeker
   );
 
-  const [params, setParams] = useState({
+  const [search, setSearch] = useState("");
+
+  const [debouncedSearch] = useDebounce(search, 400);
+
+  const [params, setParams] = useState<QueryParams>({
     page: 1,
     per_page: 10,
     search: "",
     filters: {},
-    sortBy: "",
-    sortOrder: "asc" as "asc" | "desc",
+    sort: "",
+    direction: "asc",
   });
 
   useEffect(() => {
+    setParams((prev) => ({
+      ...prev,
+      search: debouncedSearch,
+      page: 1,
+    }));
+  }, [debouncedSearch]);
+
+  useEffect(() => {
     dispatch(fetchSeekers(params));
-  }, [params, dispatch]);
+  }, [params]);
+
+  const handleParamsChange = (next: QueryParams) => {
+    if (next.search !== params.search) {
+      setSearch(next.search);
+      return;
+    }
+
+    setParams(next);
+  };
 
   if (error) {
     return (
       <Content>
         <PageHeader title="Seeker" subtitle="Manage all seekers" />
-        <div>{error}</div>
+        <div className="text-danger">{error}</div>
       </Content>
     );
   }
@@ -42,23 +71,18 @@ const SeekerPage = () => {
     <Content>
       <PageHeader title="Seeker" subtitle="Manage all seekers" />
 
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <EntityList
-          data={data}
-          total={total}
-          params={params}
-          onParamsChange={setParams}
-          columns={seekerColumns}
-          filtersConfig={seekerFilters}
-          searchableKeys={["name", "email"]}
-          enableRowClick
-          getRowLink={(row: any) =>
-            `/apps/seeker-management/seeker/${row.id}`
-          }
-        />
-      )}
+      <EntityList<Seeker>
+        data={data}
+        total={total}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={seekerColumns}
+        filtersConfig={seekerFilters}
+        enableRowClick
+        getRowLink={(row: Seeker) =>
+          `/apps/seeker-management/seeker/${row.id}`
+        }
+      />
     </Content>
   );
 };

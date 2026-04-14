@@ -33,11 +33,10 @@ export const mapOrganization = (item: OrganizationApi) => ({
 
   logo_url: item.logo_url ?? null,
 
-  licensed_staff_seats: item.licensed_staff_seats ?? 0,
-
+  licensed_staff_seats: item.licensed_staff_seats ?? null,  
   plan_id: item.plan_id ?? null,
 
-  ranking_priority: item.ranking_priority ?? 0,
+  ranking_priority: item.ranking_priority ?? null,
 
   slug: item.slug ?? null,
 

@@ -2,6 +2,9 @@ import { Column } from "../../../modules/apps/shared_table/entity-list/EntityLis
 import type { Seeker } from "./seeker.types";
 import { formatDateTime } from "../../utils/dateFormat";
 
+const safeDate = (value: unknown) =>
+  typeof value === "string" ? formatDateTime(value) : "—";
+
 export const seekerColumns: Column<Seeker>[] = [
   {
     Header: "ID",
@@ -32,6 +35,7 @@ export const seekerColumns: Column<Seeker>[] = [
     Header: "Mobile",
     accessor: "mobile_number",
   },
+
   {
     Header: "Organization ID",
     accessor: "organization_id",
@@ -40,28 +44,27 @@ export const seekerColumns: Column<Seeker>[] = [
   {
     Header: "Roles",
     accessor: "roles",
-    Cell: ({ value }: { value: string[] }) =>
-      Array.isArray(value) ? value.join(", ") : "—",
+    Cell: (value) => (Array.isArray(value) ? value.join(", ") : "—"),
   },
 
   {
     Header: "Email Verified",
     accessor: "email_verified_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 
   {
     Header: "Mobile Verified",
     accessor: "mobile_verified_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 
   {
     Header: "Created At",
     accessor: "created_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 ];

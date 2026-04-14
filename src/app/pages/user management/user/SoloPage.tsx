@@ -1,32 +1,55 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchOrganization } from "../../../services/features/organization/orgrSlice";
 import { RootState, AppDispatch } from "../../../services/store";
-import { EntityList } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import { SoloColumns } from "../../../services/features/solo/soloColumns";
-import { SoloFilters } from "../../../services/features/solo/soloFilter";
+import { useDebounce } from "use-debounce";
+
+import { EntityList, QueryParams } from "../../../modules/apps/shared_table/entity-list/EntityList";
+import { OrganizationColumns } from "../../../services/features/organization/orgrColumns";
+import { OrganizationFilters } from "../../../services/features/organization/orgrFilter";
 import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../../_metronic/layout/components/content";
-import { fetchSolo } from "../../../services/features/solo/soloSlice";
 
 const SoloPage = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const { data, total, loading, error } = useSelector(
-        (state: RootState) => state.solo
+    const { data, total, error } = useSelector(
+        (state: RootState) => state.seeker
     );
 
-    const [params, setParams] = useState({
+    const [search, setSearch] = useState("");
+
+    const [debouncedSearch] = useDebounce(search, 400);
+
+    const [params, setParams] = useState<QueryParams>({
         page: 1,
-        pageSize: 10,
+        per_page: 10,
         search: "",
         filters: {},
-        sortBy: "",
-        sortOrder: "asc" as "asc" | "desc",
+        sort: "",
+        direction: "asc",
     });
 
     useEffect(() => {
-        dispatch(fetchSolo(params));
-    }, [params, dispatch]);
+        setParams((prev) => ({
+            ...prev,
+            search: debouncedSearch,
+            page: 1,
+        }));
+    }, [debouncedSearch]);
+
+    useEffect(() => {
+        dispatch(fetchOrganization(params));
+    }, [params]);
+
+    const handleParamsChange = (next: QueryParams) => {
+        if (next.search !== params.search) {
+            setSearch(next.search);
+            return;
+        }
+
+        setParams(next);
+    };
 
     if (error) {
         return (
@@ -44,26 +67,23 @@ const SoloPage = () => {
         <Content>
             <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
 
-            {loading ? (
-                <div>Loading...</div>
-            ) : (
-                <EntityList
-                    data={data}
-                    total={total}
-                    params={params}
-                    onParamsChange={setParams}
-                    columns={SoloColumns}
-                    filtersConfig={SoloFilters}
-                    searchableKeys={["solo_name", "email"]}
-                    enableRowClick
-                    getRowLink={(row: any) =>
-                        `/apps/user/solo/${row.id}`
-                    }
-                />
-            )}
+
+            <EntityList
+                data={data}
+                total={total}
+                params={params}
+                onParamsChange={handleParamsChange}
+                columns={OrganizationColumns}
+                filtersConfig={OrganizationFilters}
+                enableRowClick
+                getRowLink={(row: any) =>
+                    `/apps/user/solo/${row.id}`
+                }
+            />
+
         </Content>
-                    
-       
+
+
 
 
     );

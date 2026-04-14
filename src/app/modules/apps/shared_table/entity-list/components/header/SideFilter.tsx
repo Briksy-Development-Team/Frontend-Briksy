@@ -13,23 +13,16 @@ type DateRange = {
 
 type FilterValue = string[] | Range | DateRange
 
+// Change the type
 type FilterConfig =
   | {
     key: string
     label: string
     type: 'select'
-    options: string[]
+    options: string[] | { label: string; value: string | number }[]
   }
-  | {
-    key: string
-    label: string
-    type: 'range'
-  }
-  | {
-    key: string
-    label: string
-    type: 'dateRange'
-  }
+  | { key: string; label: string; type: 'range' }
+  | { key: string; label: string; type: 'dateRange' }
 
 type Props = {
   filters: FilterConfig[]
@@ -115,21 +108,23 @@ const SideFilter = ({ filters, onFilterChange }: {
             {open === f.key && (
               <div className="  pb-4">
 
-                {/* SELECT */}
                 {f.type === 'select' && (
-                  <div className="mh-200px  overflow-auto">
-                    {f.options.map((opt) => (
-                      <label key={opt} className="form-check   mb-2">
-                        <input
-                          type="checkbox"
-                          checked={
-                            (values[f.key] as string[] || []).includes(opt)
-                          }
-                          onChange={() => toggleValue(f.key, opt)}
-                        />
-                        <span className='mx-3'>{opt}</span>
-                      </label>
-                    ))}
+                  <div className="mh-200px overflow-auto">
+                    {f.options.map((opt) => {
+                      const optLabel = typeof opt === 'object' ? opt.label : opt
+                      const optValue = typeof opt === 'object' ? String(opt.value) : opt
+
+                      return (
+                        <label key={optValue} className="form-check mb-2">
+                          <input
+                            type="checkbox"
+                            checked={(values[f.key] as string[] || []).includes(optValue)}
+                            onChange={() => toggleValue(f.key, optValue)}
+                          />
+                          <span className="mx-3">{optLabel}</span>
+                        </label>
+                      )
+                    })}
                   </div>
                 )}
 

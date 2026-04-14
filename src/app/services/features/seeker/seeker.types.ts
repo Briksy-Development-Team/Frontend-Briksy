@@ -21,7 +21,7 @@ export type GetSeekersParams = {
   page?: number;
   per_page?: number;
   search?: string;
-  sort_by?: string;
-  order?: "asc" | "desc";
+  sort?: string;
+  direction?: "asc" | "desc";
   filters?: Record<string, any>;
 };

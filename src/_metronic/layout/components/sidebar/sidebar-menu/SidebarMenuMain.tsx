@@ -186,7 +186,7 @@ const SidebarMenuMain = () => {
             title="Solo Traders "
             fontIcon="bi-layers"
           />
-        
+
         </SidebarMenuItemWithSub>
         {/* <SidebarMenuItem
           to="/apps/business-management/agencies"

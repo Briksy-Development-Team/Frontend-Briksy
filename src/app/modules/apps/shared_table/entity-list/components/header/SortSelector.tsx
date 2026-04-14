@@ -1,15 +1,17 @@
 import React from 'react'
 import { KTIcon } from '../../../../../../../_metronic/helpers'
 
-type Props<T> = {
-    columns: { accessor: keyof T; Header: string }[]
-    onSortChange: (config: { key: keyof T; direction: 'asc' | 'desc' }) => void
+type ColumnKey = string
+
+type Props = {
+    columns: { accessor: ColumnKey; Header: string }[]
+    onSortChange: (config: { key: ColumnKey; direction: 'asc' | 'desc' }) => void
 }
 
-const SortSelector = <T extends Record<string, any>>({
+const SortSelector = ({
     columns,
     onSortChange,
-}: Props<T>) => {
+}: Props) => {
     return (
         <div className="position-relative">
             <button
