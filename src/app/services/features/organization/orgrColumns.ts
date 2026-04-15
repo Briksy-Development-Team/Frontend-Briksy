@@ -12,51 +12,53 @@ export const OrganizationColumns: Column<Organization>[] = [
     sortable: true,
     alwaysVisible: true,
   },
-
   {
     Header: "Organization",
     accessor: "name",
     sortable: true,
-    Cell: ({ value }) => value ?? "—",
+    Cell: ({ value }) => (value ? String(value) : "—"),
   },
-
+  {
+    Header: "Type",
+    accessor: "type",
+    Cell: ({ value }) => (value as Organization["type"])?.name ?? "—",
+  },
   {
     Header: "Email",
     accessor: "contact_email",
     sortable: true,
-    Cell: ({ value }) => value ?? "—",
+    Cell: ({ value }) => (value ? String(value) : "—"),
   },
-
   {
     Header: "Phone",
     accessor: "contact_phone",
-    Cell: ({ value }) => value ?? "—",
+    Cell: ({ value }) => (value ? String(value) : "—"),
   },
-
   {
     Header: "ABN",
     accessor: "abn",
-    Cell: ({ value }) => value ?? "—",
+    Cell: ({ value }) => (value ? String(value) : "—"),
   },
-
   {
     Header: "ACN",
     accessor: "acn",
-    Cell: ({ value }) => value ?? "—",
+    Cell: ({ value }) => (value ? String(value) : "—"),
   },
-
   {
     Header: "Verified",
     accessor: "is_verified",
     Cell: ({ value }) => (value ? "✔ Verified" : "✖ Not Verified"),
   },
-
   {
     Header: "Rating",
     accessor: "avg_org_rating",
-    Cell: ({ value }) => value ?? "—",
+    Cell: ({ value }) => (value ? `⭐ ${value}` : "—"),
   },
-
+  {
+    Header: "Seats",
+    accessor: "licensed_staff_seats",
+    Cell: ({ value }) => (value ? String(value) : "—"),
+  },
   {
     Header: "Created At",
     accessor: "created_at",

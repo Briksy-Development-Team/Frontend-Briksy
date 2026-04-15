@@ -44,7 +44,8 @@ export const seekerColumns: Column<Seeker>[] = [
   {
     Header: "Roles",
     accessor: "roles",
-    Cell: (value) => (Array.isArray(value) ? value.join(", ") : "—"),
+    Cell: ({ value }) =>
+      Array.isArray(value) ? (value as string[]).join(", ") : "—",
   },
 
   {

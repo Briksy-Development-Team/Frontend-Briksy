@@ -19,7 +19,7 @@ const StaffList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { data, total, error } = useSelector(
-    (state: RootState) => state.seeker
+    (state: RootState) => state.staff
   );
 
   const [search, setSearch] = useState("");

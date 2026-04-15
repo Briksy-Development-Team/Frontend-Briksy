@@ -14,7 +14,7 @@ const ServiceGroup = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { data, total, error } = useSelector(
-        (state: RootState) => state.seeker
+        (state: RootState) => state.ServiceGroup
     );
 
     const [search, setSearch] = useState("");

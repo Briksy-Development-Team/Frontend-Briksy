@@ -14,7 +14,7 @@ const OrganizationPage = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { data, total, error } = useSelector(
-        (state: RootState) => state.seeker
+        (state: RootState) => state.organization
     );
 
     const [search, setSearch] = useState("");
