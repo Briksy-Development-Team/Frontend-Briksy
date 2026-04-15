@@ -11,9 +11,8 @@ type DateRange = {
   to?: string
 }
 
-type FilterValue = string[] | Range | DateRange
+type FilterValue = (string | number)[] | Range | DateRange
 
-// Change the type
 type FilterConfig =
   | {
     key: string
@@ -24,22 +23,19 @@ type FilterConfig =
   | { key: string; label: string; type: 'range' }
   | { key: string; label: string; type: 'dateRange' }
 
-type Props = {
-  filters: FilterConfig[]
-  onFilterChange: (filters: Record<string, FilterValue>) => void
-}
-
-const SideFilter = ({ filters, onFilterChange }: {
+const SideFilter = ({
+  filters,
+  onFilterChange,
+}: {
   filters: FilterConfig[]
   onFilterChange: (filters: Record<string, FilterValue>) => void
 }) => {
   const [values, setValues] = useState<Record<string, FilterValue>>({})
   const [open, setOpen] = useState<string | null>(null)
 
-  const toggleValue = (key: string, value: string) => {
+  const toggleValue = (key: string, value: string | number) => {
     setValues((prev) => {
-      const current = (prev[key] as string[]) || []
-
+      const current = (prev[key] as (string | number)[]) || []
       return {
         ...prev,
         [key]: current.includes(value)
@@ -63,22 +59,14 @@ const SideFilter = ({ filters, onFilterChange }: {
   const getCount = (key: string) => {
     const val = values[key]
     if (!val) return 0
-
     if (Array.isArray(val)) return val.length
-
-    if ('min' in val || 'max' in val) {
-      return val.min || val.max ? 1 : 0
-    }
-
-    if ('from' in val || 'to' in val) {
-      return val.from || val.to ? 1 : 0
-    }
-
+    if ('min' in val || 'max' in val) return val.min || val.max ? 1 : 0
+    if ('from' in val || 'to' in val) return val.from || val.to ? 1 : 0
     return 0
   }
 
   return (
-    <div className="card shadow-sm p  x-4">
+    <div className="card shadow-sm px-4">
       <div className="card-header">
         <h5 className="card-title m-0">Filters</h5>
       </div>
@@ -98,7 +86,6 @@ const SideFilter = ({ filters, onFilterChange }: {
                   </span>
                 )}
               </div>
-
               <KTIcon
                 iconName={open === f.key ? 'minus' : 'plus'}
                 className="fs-2"
@@ -106,19 +93,20 @@ const SideFilter = ({ filters, onFilterChange }: {
             </div>
 
             {open === f.key && (
-              <div className="  pb-4">
-
+              <div className="pb-4">
                 {f.type === 'select' && (
                   <div className="mh-200px overflow-auto">
                     {f.options.map((opt) => {
                       const optLabel = typeof opt === 'object' ? opt.label : opt
-                      const optValue = typeof opt === 'object' ? String(opt.value) : opt
+                      const optValue = typeof opt === 'object' ? opt.value : opt // ← no String()
 
                       return (
-                        <label key={optValue} className="form-check mb-2">
+                        <label key={String(optValue)} className="form-check mb-2">
                           <input
                             type="checkbox"
-                            checked={(values[f.key] as string[] || []).includes(optValue)}
+                            checked={(
+                              (values[f.key] as (string | number)[]) || []
+                            ).includes(optValue)}
                             onChange={() => toggleValue(f.key, optValue)}
                           />
                           <span className="mx-3">{optLabel}</span>
@@ -128,7 +116,6 @@ const SideFilter = ({ filters, onFilterChange }: {
                   </div>
                 )}
 
-                {/* NUMBER RANGE */}
                 {f.type === 'range' && (
                   <div className="d-flex gap-2">
                     <input
@@ -147,7 +134,6 @@ const SideFilter = ({ filters, onFilterChange }: {
                         }))
                       }}
                     />
-
                     <input
                       type="number"
                       placeholder="Max"
@@ -167,9 +153,8 @@ const SideFilter = ({ filters, onFilterChange }: {
                   </div>
                 )}
 
-                {/* DATE RANGE */}
                 {f.type === 'dateRange' && (
-                  <div className=" gap-2">
+                  <div className="gap-2">
                     <input
                       type="date"
                       className="form-control"
@@ -185,7 +170,6 @@ const SideFilter = ({ filters, onFilterChange }: {
                         }))
                       }}
                     />
-
                     <input
                       type="date"
                       className="form-control"
@@ -203,7 +187,6 @@ const SideFilter = ({ filters, onFilterChange }: {
                     />
                   </div>
                 )}
-
               </div>
             )}
           </div>

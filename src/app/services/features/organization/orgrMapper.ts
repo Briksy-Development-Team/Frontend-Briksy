@@ -1,3 +1,5 @@
+import type { Organization } from "./orgr.types";
+
 type OrganizationApi = {
   id: string;
   name: string;
@@ -13,34 +15,33 @@ type OrganizationApi = {
   ranking_priority?: number;
   slug?: string;
   stripe_customer_id?: string;
+  brand_primary_color?: string;
+  brand_secondary_color?: string;
   created_at?: string;
+  type?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 };
 
-export const mapOrganization = (item: OrganizationApi) => ({
+export const mapOrganization = (item: OrganizationApi): Organization => ({
   id: item.id,
-
-  name: item.name ?? null,
-
-  contact_email: item.contact_email ?? null,
-  contact_phone: item.contact_phone ?? null,
-
-  abn: item.abn ?? null,
-  acn: item.acn ?? null,
-
+  name: item.name ?? "",
+  slug: item.slug ?? undefined,
+  abn: item.abn ?? undefined,
+  acn: item.acn ?? undefined,
   is_verified: Boolean(item.is_verified),
-
-  avg_org_rating: item.avg_org_rating ? Number(item.avg_org_rating) : null,
-
-  logo_url: item.logo_url ?? null,
-
-  licensed_staff_seats: item.licensed_staff_seats ?? null,  
+  avg_org_rating: item.avg_org_rating ?? undefined, // ← keep as string, don't convert to Number
+  logo_url: item.logo_url ?? undefined,
+  licensed_staff_seats: item.licensed_staff_seats ?? undefined,
   plan_id: item.plan_id ?? null,
-
-  ranking_priority: item.ranking_priority ?? null,
-
-  slug: item.slug ?? null,
-
+  ranking_priority: item.ranking_priority ?? undefined,
   stripe_customer_id: item.stripe_customer_id ?? null,
-
-  created_at: item.created_at ?? null,
+  brand_primary_color: item.brand_primary_color ?? undefined,
+  brand_secondary_color: item.brand_secondary_color ?? undefined,
+  contact_email: item.contact_email ?? undefined,
+  contact_phone: item.contact_phone ?? undefined,
+  created_at: item.created_at ?? undefined,
+  type: item.type ?? undefined, // ← was missing entirely
 });

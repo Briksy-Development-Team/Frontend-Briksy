@@ -44,7 +44,8 @@ export const StaffColumns: Column<Staff>[] = [
   {
     Header: "Roles",
     accessor: "roles",
-    Cell: (value) => (Array.isArray(value) ? value.join(", ") : "—"),
+    Cell: ({ value }) =>
+      Array.isArray(value) ? (value as string[]).join(", ") : "—",
   },
 
   {
