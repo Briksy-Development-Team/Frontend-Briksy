@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchStaffApi, type GetStaffParams } from "./staffApi";
+import { fetchStaffApi } from "./staffApi";
+import { GetStaffParams } from "./staff.types";
 import { mapStaff } from "./staffMapper";
 import type { Staff } from "./staff.types";
 

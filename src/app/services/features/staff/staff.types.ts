@@ -14,14 +14,14 @@ export type Staff = {
   email_verified_at?: string | null;
   mobile_verified_at?: string | null;
 
-  created_at?: string;  
+  created_at?: string;
 };
 
 export type GetStaffParams = {
   page?: number;
   per_page?: number;
   search?: string;
-  sort_by?: string;
-  order?: "asc" | "desc";
+  sort?: string;
+  direction?: "asc" | "desc";
   filters?: Record<string, any>;
 };

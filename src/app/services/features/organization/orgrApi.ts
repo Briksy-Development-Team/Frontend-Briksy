@@ -1,18 +1,36 @@
 import type { GetOrganizationParams } from "./orgr.types";
 import axiosInstance from "../../api/axiosInstance";
 
+type QueryObject = Record<string, string | number | boolean>;
+
 export const fetchOrganizationApi = async (params: GetOrganizationParams) => {
+  const query: QueryObject = {
+    page: params.page ?? 1,
+    per_page: params.per_page ?? 10,
+  };
+
+  if (params.search?.trim()) query.search = params.search.trim();
+  if (params.sort) query.sort = params.sort;
+  if (params.direction) query.direction = params.direction;
+
+  if (params.filters) {
+    Object.entries(params.filters).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
+
+      if (Array.isArray(value)) {
+        value.forEach((v, i) => {
+          query[`filter[${key}][${i}]`] = v;
+        });
+      } else {
+        query[`filter[${key}]`] = value;
+      }
+    });
+  }
+
   const res = await axiosInstance.get("/super-admin/organizations", {
-    params: {
-      page: params.page,
-      per_page: params.per_page,
-    },
+    params: query,
   });
 
-  console.log("AXIOS FULL RESPONSE:", res);
-  console.log("AXIOS DATA:", res.data);
-  console.log("SEEKERS ARRAY:", res.data.data);
-  console.log("PAGINATION:", res.data.meta);
   const { data, meta } = res.data || {};
 
   return {

@@ -2,6 +2,9 @@ import { Column } from "../../../modules/apps/shared_table/entity-list/EntityLis
 import type { Staff } from "./staff.types";
 import { formatDateTime } from "../../utils/dateFormat";
 
+const safeDate = (value: unknown) =>
+  typeof value === "string" ? formatDateTime(value) : "—";
+
 export const StaffColumns: Column<Staff>[] = [
   {
     Header: "ID",
@@ -21,7 +24,8 @@ export const StaffColumns: Column<Staff>[] = [
     accessor: "display_name",
     sortable: true,
   },
-    {
+
+  {
     Header: "Organization ID",
     accessor: "organization_id",
   },
@@ -37,32 +41,30 @@ export const StaffColumns: Column<Staff>[] = [
     accessor: "mobile_number",
   },
 
-
   {
     Header: "Roles",
     accessor: "roles",
-    Cell: ({ value }: { value: string[] }) =>
-      Array.isArray(value) ? value.join(", ") : "—",
+    Cell: (value) => (Array.isArray(value) ? value.join(", ") : "—"),
   },
 
   {
     Header: "Email Verified",
     accessor: "email_verified_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 
   {
     Header: "Mobile Verified",
     accessor: "mobile_verified_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 
   {
     Header: "Created At",
     accessor: "created_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 ];

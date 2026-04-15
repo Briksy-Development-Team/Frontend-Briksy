@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchOrganizationApi, type GetOrganizationParams } from "./orgrApi";
+import { fetchOrganizationApi } from "./orgrApi";
 import { mapOrganization } from "./orgrMapper";
-import type { Organization } from "./orgr.types";
+import type { Organization, GetOrganizationParams } from "./orgr.types";
 
 type OrganizationState = {
   data: Organization[];

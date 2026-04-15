@@ -1,29 +1,34 @@
 export const seekerFilters = [
   {
-    key: "status",
-    label: "Status",
+    key: "email_verified",
+    label: "Email Status",
     type: "select",
-    options: ["Active", "Inactive", "Blocked"],
+    options: [
+      { label: "Verified", value: 1 },
+      { label: "Not Verified", value: 0 },
+    ],
   },
   {
-    key: "gender",
-    label: "Gender",
+    key: "mobile_verified",
+    label: "Mobile Status",
     type: "select",
-    options: ["Male", "Female"],
+    options: [
+      { label: "Verified", value: 1 },
+      { label: "Not Verified", value: 0 },
+    ],
   },
   {
-    key: "age",
-    label: "Age",
-    type: "range",
+    key: "role",
+    label: "Role",
+    type: "select",
+    options: [
+      { label: "Seeker", value: "seeker" },
+      { label: "Admin", value: "admin" },
+    ],
   },
   {
     key: "created_at",
     label: "Created Date",
-    type: "dateRange",
-  },
-  {
-    key: "updated_at",
-    label: "Updated Date",
     type: "dateRange",
   },
 ];

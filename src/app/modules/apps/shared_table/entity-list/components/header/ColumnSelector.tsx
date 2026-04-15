@@ -2,23 +2,25 @@ import { KTIcon } from '../../../../../../../_metronic/helpers'
 import { useEffect } from "react"
 import { MenuComponent } from "../../../../../../../_metronic/assets/ts/components"
 
-type Props<T extends Record<string, any>> = {
+type ColumnKey = string
+
+type Props = {
   columns: {
-    accessor: keyof T
+    accessor: ColumnKey
     Header: string
     alwaysVisible?: boolean
   }[]
-  visibleColumns: (keyof T)[]
+  visibleColumns: ColumnKey[]
   setVisibleColumns: React.Dispatch<
-    React.SetStateAction<(keyof T)[]>
+    React.SetStateAction<ColumnKey[]>
   >
 }
 
-const ColumnSelector = <T extends Record<string, any>>({
+const ColumnSelector = ({
   columns,
   visibleColumns,
   setVisibleColumns,
-}: Props<T>) => {
+}: Props) => {
 
   useEffect(() => {
     setTimeout(() => {
@@ -26,7 +28,7 @@ const ColumnSelector = <T extends Record<string, any>>({
     }, 0)
   }, [columns, visibleColumns])
 
-  const toggle = (accessor: keyof T) => {
+  const toggle = (accessor: ColumnKey) => {
     setVisibleColumns((prev) => {
       if (prev.includes(accessor)) {
         if (prev.length === 1) return prev

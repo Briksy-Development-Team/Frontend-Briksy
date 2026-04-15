@@ -1,9 +1,10 @@
-import type { GetStaffParams } from "./staff.types";
 import axiosInstance from "../../api/axiosInstance";
+import type { GetServiceGroupParams } from "./service_group.types";
+export type { GetServiceGroupParams };
 
-type QueryObject = Record<string, string | number | boolean>;
+type QueryObject = Record<string, string | number | boolean | undefined>;
 
-export const fetchStaffApi = async (params: GetStaffParams) => {
+export const fetchServiceGroupApi = async (params: GetServiceGroupParams) => {
   const query: QueryObject = {
     page: params.page ?? 1,
     per_page: params.per_page ?? 10,
@@ -27,7 +28,7 @@ export const fetchStaffApi = async (params: GetStaffParams) => {
     });
   }
 
-  const res = await axiosInstance.get("/super-admin/staff", {
+  const res = await axiosInstance.get("/super-admin/service-groups", {
     params: query,
   });
 

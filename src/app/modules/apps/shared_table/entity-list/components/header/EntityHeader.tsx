@@ -2,11 +2,12 @@ import { KTIcon } from '../../../../../../../_metronic/helpers'
 import { ColumnSelector } from './ColumnSelector'
 import SortSelector from './SortSelector'
 // import { useListView } from '../../../../../../../core/ListViewProvider'
+type ColumnKey = string
 
-type Props<T extends Record<string, any>> = {
-  columns: { accessor: keyof T; Header: string }[]
-  visibleColumns: (keyof T)[]
-  setVisibleColumns: React.Dispatch<React.SetStateAction<(keyof T)[]>>
+type Props = {
+  columns: { accessor: ColumnKey; Header: string }[]
+  visibleColumns: ColumnKey[]
+  setVisibleColumns: React.Dispatch<React.SetStateAction<ColumnKey[]>>
   search: string
   onSearchChange: (val: string) => void
   isMobile: boolean
@@ -14,10 +15,13 @@ type Props<T extends Record<string, any>> = {
   onExport?: () => void
   onAddUser?: () => void
   selectedCount?: number
-  onSortChange: (config: { key: keyof T; direction: 'asc' | 'desc' }) => void
+  onSortChange: (config: {
+    key: ColumnKey
+    direction: 'asc' | 'desc'
+  }) => void
 }
 
-const EntityHeader = <T extends Record<string, any>>({
+const EntityHeader = ({
   search,
   onSearchChange,
   columns,
@@ -28,8 +32,8 @@ const EntityHeader = <T extends Record<string, any>>({
   onExport,
   selectedCount = 0,
   onSortChange,
-   onAddUser, 
-}: Props<T>) => {
+  onAddUser,
+}: Props) => {
   const hasSelection = selectedCount > 0
   // const openAddUserModal = () => {
   //   setItemIdForUpdate(null)

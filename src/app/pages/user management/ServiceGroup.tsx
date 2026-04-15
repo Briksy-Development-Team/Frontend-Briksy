@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrganization } from "../../../services/features/organization/orgrSlice";
-import { RootState, AppDispatch } from "../../../services/store";
+import { fetchServiceGroup } from "../../services/features/service_group/service_groupSlice";
+import { RootState, AppDispatch } from "../../services/store";
 import { useDebounce } from "use-debounce";
 
-import { EntityList, QueryParams } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import { OrganizationColumns } from "../../../services/features/organization/orgrColumns";
-import { OrganizationFilters } from "../../../services/features/organization/orgrFilter";
-import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-import { Content } from "../../../../_metronic/layout/components/content";
+import { EntityList, QueryParams } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { ServiceGroupColumns } from "../../services/features/service_group/service_groupColumns";
+import { ServiceGroupFilters } from "../../services/features/service_group/service_groupFilter";
+import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { Content } from "../../../_metronic/layout/components/content";
 
-const OrganizationPage = () => {
+const ServiceGroup = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { data, total, error } = useSelector(
@@ -39,7 +39,7 @@ const OrganizationPage = () => {
     }, [debouncedSearch]);
 
     useEffect(() => {
-        dispatch(fetchOrganization(params));
+        dispatch(fetchServiceGroup(params));
     }, [params]);
 
     const handleParamsChange = (next: QueryParams) => {
@@ -54,7 +54,7 @@ const OrganizationPage = () => {
     if (error) {
         return (
             <Content>
-                <PageHeader title="Organization" subtitle="Manage all organizations" />
+                <PageHeader title="Service Group" subtitle="Manage all service group" />
                 <div>{error}</div>
             </Content>
         );
@@ -62,19 +62,18 @@ const OrganizationPage = () => {
 
     return (
         <Content>
-            <PageHeader title="Organization" subtitle="Manage all organizations" />
-
-
+            <PageHeader title="Service Group " subtitle="Manage all service group" />
+            
             <EntityList
                 data={data}
                 total={total}
                 params={params}
                 onParamsChange={handleParamsChange}
-                columns={OrganizationColumns}
-                filtersConfig={OrganizationFilters}
+                columns={ServiceGroupColumns}
+                filtersConfig={ServiceGroupFilters}
                 enableRowClick
                 getRowLink={(row: any) =>
-                    `/apps/user/organization/${row.id}`
+                    `/apps/service-management/group/${row.id}`
                 }
             />
 
@@ -82,4 +81,4 @@ const OrganizationPage = () => {
     );
 };
 
-export default OrganizationPage;
+export default ServiceGroup;

@@ -7,6 +7,7 @@ import { MenuTestPage } from '../pages/MenuTestPage'
 import { getCSSVariableValue } from '../../_metronic/assets/ts/_utils'
 import { WithChildren } from '../../_metronic/helpers'
 import Subscription from '../pages/Subscription/Subscription'
+import ServiceGroup from '../pages/user management/ServiceGroup'
 
 
 const PrivateRoutes = () => {
@@ -141,7 +142,7 @@ const PrivateRoutes = () => {
           path='/apps/service-management/*'
           element={
             <SuspensedView>
-              {/* <Subscription /> */}
+              <ServiceGroup />
             </SuspensedView>
           }
         />

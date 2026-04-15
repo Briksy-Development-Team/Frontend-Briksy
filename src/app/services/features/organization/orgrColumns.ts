@@ -2,6 +2,9 @@ import { Column } from "../../../modules/apps/shared_table/entity-list/EntityLis
 import type { Organization } from "./orgr.types";
 import { formatDateTime } from "../../utils/dateFormat";
 
+const safeDate = (value: unknown) =>
+  typeof value === "string" ? formatDateTime(value) : "—";
+
 export const OrganizationColumns: Column<Organization>[] = [
   {
     Header: "ID",
@@ -45,8 +48,7 @@ export const OrganizationColumns: Column<Organization>[] = [
   {
     Header: "Verified",
     accessor: "is_verified",
-    Cell: ({ value }: { value: boolean }) =>
-      value ? "✔ Verified" : "✖ Not Verified",
+    Cell: ({ value }) => (value ? "✔ Verified" : "✖ Not Verified"),
   },
 
   {
@@ -59,6 +61,6 @@ export const OrganizationColumns: Column<Organization>[] = [
     Header: "Created At",
     accessor: "created_at",
     sortable: true,
-    Cell: ({ value }) => formatDateTime(value),
+    Cell: ({ value }) => safeDate(value),
   },
 ];

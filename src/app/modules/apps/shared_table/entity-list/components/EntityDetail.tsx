@@ -28,8 +28,11 @@ const EntityDetail = ({ title, data, fields, loading }: Props) => {
                     {fields.map((field) => (
                         <tr key={field.key}>
                             <th>{field.label}</th>
-                            <td>{data[field.key] ?? '-'}</td>
-                        </tr>
+                            <td>
+                                {typeof data[field.key] === "object"
+                                    ? JSON.stringify(data[field.key])
+                                    : data[field.key] ?? "-"}
+                            </td>                        </tr>
                     ))}
                 </tbody>
             </table>

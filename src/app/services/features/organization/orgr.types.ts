@@ -32,7 +32,7 @@ export type GetOrganizationParams = {
   page?: number;
   per_page?: number;
   search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
+  sort?: string;
+  direction?: "asc" | "desc";
   filters?: Record<string, any>;
 };
