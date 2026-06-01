@@ -1,7 +1,10 @@
 import React from 'react'
 
-const getPageSizeOptions = () => {
-  return [5, 10, 25, 50, 100]
+const BASE_SIZES = [5, 10, 25, 50, 100]
+
+const getPageSizeOptions = (total: number) => {
+  const filtered = BASE_SIZES.filter((s) => s < total)
+  return [...filtered, total]
 }
 
 type Props = {
@@ -23,53 +26,50 @@ const Pagination = ({
 
   const getVisiblePages = () => {
     const pages: number[] = []
-
     const start = Math.max(1, page - 1)
     const end = Math.min(totalPages, page + 1)
-
     for (let i = start; i <= end; i++) {
       pages.push(i)
     }
-
     return pages
   }
 
   const visiblePages = getVisiblePages()
+  const sizeOptions = getPageSizeOptions(total)
 
   return (
-    <div className="d-flex justify-content-between align-items-center m-5">
+    <div className='d-flex justify-content-between align-items-center m-5'>
 
-      <div className="d-flex align-items-center gap-2">
-        <span className="text-muted fs-5">Rows per page</span>
+      <div className='d-flex align-items-center gap-2'>
+        <span className='text-muted fs-5'>Rows per page</span>
 
         <select
-          className="form-select form-select-sm w-auto"
+          className='form-select form-select-sm w-auto'
           value={per_page}
-          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          onChange={(e) => {
+            onPageSizeChange(Number(e.target.value))
+          }}
         >
-          {getPageSizeOptions().map((size) => (
+          {sizeOptions.map((size) => (
             <option key={size} value={size}>
-              {size}
+              {size === total ? `${total} (All)` : size}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="d-flex align-items-center gap-3">
+      <div className='d-flex align-items-center gap-3'>
 
-        <div className="text-muted fs-5">
+        <div className='text-muted fs-5'>
           {total === 0
             ? '0 of 0'
-            : `${(page - 1) * per_page + 1} – ${Math.min(
-              page * per_page,
-              total
-            )} of ${total}`}
+            : `${(page - 1) * per_page + 1} – ${Math.min(page * per_page, total)} of ${total}`}
         </div>
 
-        <div className="d-flex align-items-center gap-1">
+        <div className='d-flex align-items-center gap-1'>
 
           <button
-            className="btn btn-sm btn-icon"
+            className='btn btn-sm btn-icon'
             disabled={page === 1}
             onClick={() => onChange(page - 1)}
           >
@@ -79,7 +79,7 @@ const Pagination = ({
           {visiblePages.map((p) => (
             <button
               key={p}
-              className={`btn btn-sm btn-icon ${page === p ? ' btn-light' : 'btn-active-light-primary'
+              className={`btn btn-sm btn-icon ${page === p ? 'btn-light' : 'btn-active-light-primary'
                 }`}
               onClick={() => onChange(p)}
             >
@@ -88,7 +88,7 @@ const Pagination = ({
           ))}
 
           <button
-            className="btn btn-sm btn-icon "
+            className='btn btn-sm btn-icon'
             disabled={page === totalPages || totalPages === 0}
             onClick={() => onChange(page + 1)}
           >

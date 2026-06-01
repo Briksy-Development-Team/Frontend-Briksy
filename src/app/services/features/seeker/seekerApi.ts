@@ -10,6 +10,7 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
   });
 
   const { data, meta } = res.data || {};
+  console.log(data)
 
   return {
     data: data ?? [],
