@@ -1,10 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import seekerReducer from "../features/seeker/seekerSlice";
-import organizationReducer from "../features/organization/orgrSlice";
+import organizationReducer from "../features/organization/organization.slice";
 // import soloReducer from "../features/solo/soloSlice";
-import staffReducer from "../features/staff/staffSlice";
+import staffReducer from "../features/staff/staff.slice";
 import ServiceGroupReducer from "../features/service_group/service_groupSlice";
-
 
 import authReducer from "../../modules/auth/core/auth.store";
 

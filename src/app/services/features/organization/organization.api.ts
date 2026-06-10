@@ -1,5 +1,5 @@
 import axiosInstance from "../../api/axiosInstance";
-import type { GetOrganizationParams } from "./orgr.types";
+import type { GetOrganizationParams } from "./organization.types";
 import { buildApiParams } from "../../utils/buildApiParams";
 
 export const fetchOrganizationApi = async (params: GetOrganizationParams) => {

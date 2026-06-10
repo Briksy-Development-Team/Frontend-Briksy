@@ -1,4 +1,4 @@
-import type { Organization } from "./orgr.types";
+import type { Organization } from "./organization.types";
 
 type OrganizationApi = {
   id: string;

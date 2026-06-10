@@ -1,92 +1,92 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchOrganization } from "../../../services/features/organization/orgrSlice";
-import { RootState, AppDispatch } from "../../../services/store";
-import { useDebounce } from "use-debounce";
+    // import { useEffect, useState } from "react";
+    // import { useDispatch, useSelector } from "react-redux";
+    // import { fetchOrganization } from "../../../services/features/organization/organization.slice";
+    // import { RootState, AppDispatch } from "../../../services/store";
+    // import { useDebounce } from "use-debounce";
 
-import { EntityList, QueryParams } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import { OrganizationColumns } from "../../../services/features/organization/orgrColumns";
-import { OrganizationFilters } from "../../../services/features/organization/orgrFilter";
-import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-import { Content } from "../../../../_metronic/layout/components/content";
+    // import { EntityList, QueryParams } from "../../../modules/apps/shared_table/entity-list/EntityList";
+    // import { OrganizationColumns } from "../../../services/features/organization/orgrColumns";
+    // import { OrganizationFilters } from "../../../services/features/organization/orgrFilter";
+    // import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+    // import { Content } from "../../../../_metronic/layout/components/content";
 
-const SoloPage = () => {
-    const dispatch = useDispatch<AppDispatch>();
+    // const SoloPage = () => {
+    //     const dispatch = useDispatch<AppDispatch>();
 
-    const { data, total, error } = useSelector(
-        (state: RootState) => state.organization
-    );
+    //     const { data, total, error } = useSelector(
+    //         (state: RootState) => state.organization
+    //     );
 
-    const [search, setSearch] = useState("");
+    //     const [search, setSearch] = useState("");
 
-    const [debouncedSearch] = useDebounce(search, 400);
+    //     const [debouncedSearch] = useDebounce(search, 400);
 
-    const [params, setParams] = useState<QueryParams>({
-        page: 1,
-        per_page: 10,
-        search: "",
-        filters: {},
-        sort: "",
-        direction: "asc",
-    });
+    //     const [params, setParams] = useState<QueryParams>({
+    //         page: 1,
+    //         per_page: 10,
+    //         search: "",
+    //         filters: {},
+    //         sort: "",
+    //         direction: "asc",
+    //     });
 
-    useEffect(() => {
-        setParams((prev) => ({
-            ...prev,
-            search: debouncedSearch,
-            page: 1,
-        }));
-    }, [debouncedSearch]);
+    //     useEffect(() => {
+    //         setParams((prev) => ({
+    //             ...prev,
+    //             search: debouncedSearch,
+    //             page: 1,
+    //         }));
+    //     }, [debouncedSearch]);
 
-    useEffect(() => {
-        dispatch(fetchOrganization(params));
-    }, [params]);
+    //     useEffect(() => {
+    //         dispatch(fetchOrganization(params));
+    //     }, [params]);
 
-    const handleParamsChange = (next: QueryParams) => {
-        if (next.search !== params.search) {
-            setSearch(next.search);
-            return;
-        }
+    //     const handleParamsChange = (next: QueryParams) => {
+    //         if (next.search !== params.search) {
+    //             setSearch(next.search);
+    //             return;
+    //         }
 
-        setParams(next);
-    };
+    //         setParams(next);
+    //     };
 
-    if (error) {
-        return (
-            <Content>
-                <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
-                <div>{error}</div>
-            </Content>
-        );
-    }
+    //     if (error) {
+    //         return (
+    //             <Content>
+    //                 <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
+    //                 <div>{error}</div>
+    //             </Content>
+    //         );
+    //     }
 
-    return (
-
-
-
-        <Content>
-            <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
-
-
-            <EntityList
-                data={data}
-                total={total}
-                params={params}
-                onParamsChange={handleParamsChange}
-                columns={OrganizationColumns}
-                filtersConfig={OrganizationFilters}
-                enableRowClick
-                getRowLink={(row: any) =>
-                    `/apps/user/solo/${row.id}`
-                }
-            />
-
-        </Content>
+    //     return (
 
 
 
+    //         <Content>
+    //             <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
 
-    );
-};
 
-export default SoloPage;
+    //             <EntityList
+    //                 data={data}
+    //                 total={total}
+    //                 params={params}
+    //                 onParamsChange={handleParamsChange}
+    //                 columns={OrganizationColumns}
+    //                 filtersConfig={OrganizationFilters}
+    //                 enableRowClick
+    //                 getRowLink={(row: any) =>
+    //                     `/apps/user/solo/${row.id}`
+    //                 }
+    //             />
+
+    //         </Content>
+
+
+
+
+    //     );
+    // };
+
+    // export default SoloPage;

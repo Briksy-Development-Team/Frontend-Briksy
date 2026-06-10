@@ -1,83 +1,40 @@
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrganization } from "../../../services/features/organization/orgrSlice";
+import { fetchOrganization } from "../../../services/features/organization/organization.slice";
+import { organizationConfig } from "../../../services/features/organization/organization.config";
 import { RootState, AppDispatch } from "../../../services/store";
-import { useDebounce } from "use-debounce";
-
-import { EntityList, QueryParams } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import { OrganizationColumns } from "../../../services/features/organization/orgrColumns";
-import { OrganizationFilters } from "../../../services/features/organization/orgrFilter";
+import { useEntityTable } from "../../../modules/apps/shared_table/hooks/useEntityTable";
+import { EntityList } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../../_metronic/layout/components/content";
 
 const OrganizationPage = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const { data, total, error } = useSelector((s: RootState) => s.organization);
 
-    const { data, total, error } = useSelector(
-        (state: RootState) => state.organization
+    const { params, handleParamsChange } = useEntityTable(
+        (p) => dispatch(fetchOrganization(p))
     );
 
-    const [search, setSearch] = useState("");
-
-    const [debouncedSearch] = useDebounce(search, 400);
-
-    const [params, setParams] = useState<QueryParams>({
-        page: 1,
-        per_page: 10,
-        search: "",
-        filters: {},
-        sort: "",
-        direction: "asc",
-    });
-
-    useEffect(() => {
-        setParams((prev) => ({
-            ...prev,
-            search: debouncedSearch,
-            page: 1,
-        }));
-    }, [debouncedSearch]);
-
-    useEffect(() => {
-        dispatch(fetchOrganization(params));
-    }, [params]);
-
-    const handleParamsChange = (next: QueryParams) => {
-        if (next.search !== params.search) {
-            setSearch(next.search);
-            return;
-        }
-
-        setParams(next);
-    };
-
-    if (error) {
-        return (
-            <Content>
-                <PageHeader title="Organization" subtitle="Manage all organizations" />
-                <div>{error}</div>
-            </Content>
-        );
-    }
+    if (error) return (
+        <Content>
+            <PageHeader title="Organizations" subtitle="All registered organizations" />
+            <div>{error}</div>
+        </Content>
+    );
 
     return (
         <Content>
-            <PageHeader title="Organization" subtitle="Manage all organizations" />
-
-
+            <PageHeader title="Organizations" subtitle="All registered organizations" />
             <EntityList
                 data={data}
                 total={total}
                 params={params}
                 onParamsChange={handleParamsChange}
-                columns={OrganizationColumns}
-                filtersConfig={OrganizationFilters}
+                columns={organizationConfig.columns}
+                filtersConfig={organizationConfig.filters}
                 enableRowClick
-                getRowLink={(row: any) =>
-                    `/apps/user/organization/${row.id}`
-                }
+                getRowLink={(row) => `/organizations/${row.id}`}
             />
-
         </Content>
     );
 };

@@ -1,96 +1,95 @@
-import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import { useDebounce } from "use-debounce";
-
-import { useDispatch, useSelector } from "react-redux";
-import { fetchStaff } from "../../services/features/staff/staffSlice";
-import { RootState, AppDispatch } from "../../services/store";
+import { useDispatch, useSelector } from "react-redux"
+import { Route, Routes } from "react-router-dom"
+import { useEffect } from "react"
 
 import {
-  EntityList, QueryParams,
-} from "../../modules/apps/shared_table/entity-list/EntityList";
-import { StaffColumns } from "../../services/features/staff/staffColumns";
-import { StaffFilters } from "../../services/features/staff/staffFilter";
-import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-import { Content } from "../../../_metronic/layout/components/content";
-import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
+  fetchStaff,
+  saveStaff,
+  openStaffModal,
+  closeStaffModal,
+} from "../../services/features/staff/staff.slice"
+import { staffConfig } from "../../services/features/staff/staff.config"
+import type { RootState, AppDispatch } from "../../services/store/index"
+
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable"
+import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList"
+import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader"
+import { Content } from "../../../_metronic/layout/components/content"
+import { StaffModal } from "../../services/features/staff/component/StaffModal"
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage"
 
 const StaffList = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>()
 
-  const { data, total, error } = useSelector(
-    (state: RootState) => state.staff
-  );
+  const { data, total, error, isModalOpen, editingStaff, saving } =
+    useSelector((s: RootState) => s.staff)
 
-  const [search, setSearch] = useState("");
+  const { params, handleParamsChange } = useEntityTable(
+    (p) => dispatch(fetchStaff(p))
+  )
 
-  const [debouncedSearch] = useDebounce(search, 400);
-
-  const [params, setParams] = useState<QueryParams>({
-    page: 1,
-    per_page: 10,
-    search: "",
-    filters: {},
-    sort: "",
-    direction: "asc",
-  });
-
+  // refetch after save
   useEffect(() => {
-    setParams((prev) => ({
-      ...prev,
-      search: debouncedSearch,
-      page: 1,
-    }));
-  }, [debouncedSearch]);
-
-  useEffect(() => {
-    dispatch(fetchStaff(params));
-  }, [params]);
-
-  const handleParamsChange = (next: QueryParams) => {
-    if (next.search !== params.search) {
-      setSearch(next.search);
-      return;
+    if (!saving && !isModalOpen) {
+      dispatch(fetchStaff(params))
     }
+  }, [isModalOpen])
 
-    setParams(next);
-  };
-
-  if (error) {
-    return (
-      <Content>
-        <PageHeader title="Staff" subtitle="Manage all Staff" />
-        <div>{error}</div>
-      </Content>
-    );
-  }
-
-  return (
+  if (error) return (
     <Content>
-      <PageHeader title="Staff" subtitle="Manage all Staff" />
-
-      <EntityList
-        data={data}
-        total={total}
-        params={params}
-        onParamsChange={handleParamsChange}
-        columns={StaffColumns}
-        filtersConfig={StaffFilters}
-        enableRowClick
-        getRowLink={(row: any) => `/apps/staff-management/staff/${row.id}`}
-      />
-
+      <PageHeader title="Platform Staff" subtitle="Manage staff access and permissions" />
+      <div className="alert alert-danger">{error}</div>
     </Content>
-  );
-};
+  )
 
-const StaffPage = () => {
   return (
-    <Routes>
-      <Route index element={<StaffList />} />
-      <Route path=":id" element={<GenericDetailPage />} />
-    </Routes>
-  );
-};
+    <>
+      <Content>
+        <PageHeader
+          title="Platform Staff"
+          subtitle="Manage staff access and permissions"
+        />
 
-export default StaffPage;
+        <EntityList
+          data={data}
+          total={total}
+          params={params}
+          onParamsChange={handleParamsChange}
+          columns={staffConfig.columns}
+          filtersConfig={staffConfig.filters}
+          storageKey="staffColumns"
+          addAction={{
+            label: "Add Staff",
+            onClick: () => dispatch(openStaffModal(null)),
+          }}
+          rowActions={[
+            {
+              label: "Edit",
+              onClick: (row) => dispatch(openStaffModal(row)),
+            },
+          ]}
+        />
+      </Content>
+
+      {isModalOpen && (
+        <StaffModal
+          initialValues={editingStaff}
+          isSubmitting={saving}
+          onClose={() => dispatch(closeStaffModal())}
+          onSubmit={(values) =>
+            dispatch(saveStaff({ id: editingStaff?.id, values }))
+          }
+        />
+      )}
+    </>
+  )
+}
+
+const StaffPage = () => (
+  <Routes>
+    <Route index element={<StaffList />} />
+    <Route path=":id" element={<GenericDetailPage />} />
+  </Routes>
+)
+
+export default StaffPage

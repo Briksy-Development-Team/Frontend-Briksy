@@ -180,13 +180,12 @@ const SidebarMenuMain = () => {
             fontIcon="bi-layers"
           />
 
-          <SidebarMenuItem
+          {/* <SidebarMenuItem
             to="/apps/user/solo"
             icon="abstract-28"
             title="Solo Traders "
             fontIcon="bi-layers"
-          />
-
+          /> */}
         </SidebarMenuItemWithSub>
         {/* <SidebarMenuItem
           to="/apps/business-management/agencies"
@@ -214,7 +213,6 @@ const SidebarMenuMain = () => {
           title="Property Features "
           fontIcon="bi-layers"
         />
-
       </SidebarMenuItemWithSub>
       <SidebarMenuItemWithSub
         to="/crafted/widgets"
@@ -235,14 +233,45 @@ const SidebarMenuMain = () => {
           title="Service Features "
           fontIcon="bi-layers"
         />
-
       </SidebarMenuItemWithSub>
+
+      <SidebarMenuItem
+        to="/apps/order"
+        title="Orders"
+        fontIcon="bi-archive"
+        icon="element-plus"
+      />
+      <SidebarMenuItem
+        to="/apps/refreal"
+        title="Referral Programs"
+        fontIcon="bi-archive"
+        icon="element-plus"
+      />
+      <SidebarMenuItem
+        to="/apps/coupon"
+        title="Coupons"
+        fontIcon="bi-archive"
+        icon="element-plus"
+      />
+      <SidebarMenuItem
+        to="/apps/email-template"
+        title="Email Templates"
+        fontIcon="bi-archive"
+        icon="element-plus"
+      />
+
+      <SidebarMenuItem
+        to="/apps/plan-request"
+        title="Plan Request"
+        fontIcon="bi-archive"
+        icon="element-plus" />
 
       <SidebarMenuItem
         to="/apps/subscription-plans"
         title="Subscription Plans"
         fontIcon="bi-archive"
-        icon="element-plus" />
+        icon="element-plus"
+      />
     </>
   );
 };
