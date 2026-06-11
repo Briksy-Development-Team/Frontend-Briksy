@@ -119,6 +119,8 @@ const useAuth = (): AuthContextProps => {
     const normalizedPayload = {
       first: payload.first.trim(),
       last: payload.last.trim(),
+        // Add `name` so backend receives both formats
+        name: `${payload.first.trim()} ${payload.last.trim()}`,
       email: payload.email.trim(),
       password: payload.password,
       password_confirmation: payload.password_confirmation,

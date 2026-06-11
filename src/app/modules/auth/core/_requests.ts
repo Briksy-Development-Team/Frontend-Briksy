@@ -10,6 +10,7 @@ type AdminAuthEnvelope<T> = {
 type AdminAuthPayload = {
   first: string;
   last: string;
+  name?: string;
 
   email: string;
   password: string;
