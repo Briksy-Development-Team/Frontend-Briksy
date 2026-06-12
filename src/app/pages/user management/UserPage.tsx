@@ -13,7 +13,7 @@ const UserPage = () => {
         {/* <Route path="solo" element={<SoloPage />} /> */}
         <Route path="solo/:id" element={<GenericDetailPage />} />
 
-        <Route index element={<Navigate to="dashboard" />} />
+        <Route index element={<Navigate to="organization" />} />
       </Route>
     </Routes>
   )

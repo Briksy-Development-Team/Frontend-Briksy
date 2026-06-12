@@ -3,6 +3,7 @@ export interface AuthModel {
   refreshToken?: string;
   token_type?: string;
   abilities?: string[];
+  permissions?: string[];
 }
 
 export interface AuthResponse {
@@ -53,7 +54,7 @@ export interface UserSocialNetworksModel {
 }
 
 export interface UserModel {
-  id: number;
+  id: string;
   username: string;
   password: string | undefined;
   first?: string;
@@ -66,7 +67,8 @@ export interface UserModel {
   occupation?: string;
   companyName?: string;
   phone?: string;
-  roles?: Array<number>;
+  roles?: string[];
+  permissions?: string[];
   pic?: string;
   language?: "en" | "de" | "es" | "fr" | "ja" | "zh" | "ru";
   timeZone?: string;

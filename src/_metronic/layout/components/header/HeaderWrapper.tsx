@@ -5,9 +5,13 @@ import {KTIcon, toAbsoluteUrl} from '../../../helpers'
 import {LayoutSetup, useLayout} from '../../core'
 import {Header} from './Header'
 import {Navbar} from './Navbar'
+import {useAuth} from '../../../../app/modules/auth'
+import {getRoleHomeRoute} from '../../../../app/modules/auth/core/roleRoutes'
 
 export function HeaderWrapper() {
   const {config, classes} = useLayout()
+  const {currentUser} = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
   if (config.app?.header?.default?.container === 'fluid') {
     LayoutSetup.classes.headerContainer.push("container-fluid");
   } else {
@@ -49,7 +53,7 @@ export function HeaderWrapper() {
                   <KTIcon iconName='abstract-14' className=' fs-1' />
                 </div>
                 <div className='d-flex align-items-center flex-grow-1 flex-lg-grow-0'>
-                  <Link to='/dashboard' className='d-lg-none'>
+                  <Link to={homeRoute} className='d-lg-none'>
                       <img
                         alt='Logo'
                         src={toAbsoluteUrl('media/logos/custom-3.svg')}
@@ -64,7 +68,7 @@ export function HeaderWrapper() {
 
         {!(config.layoutType === 'dark-sidebar' || config.layoutType === 'light-sidebar') && (
           <div className='d-flex align-items-center flex-grow-1 flex-lg-grow-0 me-lg-15'>
-            <Link to='/dashboard'>
+            <Link to={homeRoute}>
               {config.layoutType === 'dark-header' ? (
                 <img
                   alt='Logo'

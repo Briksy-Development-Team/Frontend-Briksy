@@ -6,9 +6,13 @@ import { useEntityTable } from "../../../modules/apps/shared_table/hooks/useEnti
 import { EntityList } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../../_metronic/layout/components/content";
+import { useRoleAccess } from "../../../modules/auth";
+import { getRolePortalBaseRoute } from "../../../modules/auth/core/roleRoutes";
 
 const OrganizationPage = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const { isSuperAdmin } = useRoleAccess();
+    const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin']);
     const { data, total, error } = useSelector((s: RootState) => s.organization);
 
     const { params, handleParamsChange } = useEntityTable(
@@ -33,7 +37,7 @@ const OrganizationPage = () => {
                 columns={organizationConfig.columns}
                 filtersConfig={organizationConfig.filters}
                 enableRowClick
-                getRowLink={(row) => `/apps/user/organization/${row.id}`}
+                getRowLink={(row) => `${portalBase}/companies/${row.id}`}
             />
         </Content>
     );

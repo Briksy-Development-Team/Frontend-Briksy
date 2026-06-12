@@ -1,8 +1,13 @@
 import {FC} from 'react'
 import {KTIcon} from '../../../../../_metronic/helpers'
 import {Link} from 'react-router-dom'
+import {useAuth} from '../../../auth'
+import {getRoleHomeRoute} from '../../../auth/core/roleRoutes'
 
 const Step5: FC = () => {
+  const {currentUser} = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
+
   return (
     <div className='w-100'>
       <div className='pb-8 pb-lg-10'>
@@ -32,10 +37,10 @@ const Step5: FC = () => {
               <h4 className='text-gray-800 fw-bolder'>We need your attention!</h4>
               <div className='fs-6 text-gray-600'>
                 To start using great tools, please, please
-                <a href='/dashboard' className='fw-bolder'>
+                <Link to={homeRoute} className='fw-bolder'>
                   {' '}
                   Create Team Platform
-                </a>
+                </Link>
               </div>
             </div>
           </div>

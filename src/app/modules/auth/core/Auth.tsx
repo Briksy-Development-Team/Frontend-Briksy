@@ -2,27 +2,29 @@
 import { type FC, useEffect } from 'react'
 import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { WithChildren } from '../../../../_metronic/helpers'
-import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser } from './auth.store'
+import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser, setPermissions } from './auth.store'
 import { getAuth, removeAuth, setAuth as persistAuth } from './AuthHelpers'
-import { getUserByToken, login as loginRequest, logout as logoutRequest, register as registerRequest } from './_requests'
+import { getPermissionsByToken, getUserByToken, login as loginRequest, logout as logoutRequest, register as registerRequest } from './_requests'
 import type { AuthModel, AuthResponse, UserModel } from './_models'
 import type { AppDispatch, RootState } from '../../../services/store'
+import { getRoleHomeRoute } from './roleRoutes'
 
 type AuthContextProps = {
   auth: AuthModel | undefined
   currentUser: UserModel | undefined
+  permissions: string[]
   isBootstrapping: boolean
   saveAuth: (auth: AuthModel | undefined) => void
   setCurrentUser: (user: UserModel | undefined) => void
   logout: () => Promise<void>
-  login: (email: string, password: string) => Promise<void>
+  login: (email: string, password: string) => Promise<string>
   register: (payload: {
     first: string
     last: string
     email: string
     password: string
     password_confirmation: string
-  }) => Promise<void>
+  }) => Promise<string>
 }
 
 const useAuthSelector: TypedUseSelectorHook<RootState> = useSelector
@@ -46,9 +48,11 @@ const bootstrapSession = async (dispatch: AppDispatch): Promise<void> => {
 
   try {
     const data = await getUserByToken()
+    const permissions = await getPermissionsByToken()
 
     dispatch(setAuthState(storedAuth))
     dispatch(setCurrentUser(data.data.user))
+    dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
   } catch (error) {
     console.error('Failed to restore admin session.', error)
     removeAuth()
@@ -104,9 +108,14 @@ const useAuth = (): AuthContextProps => {
   const login = async (email: string, password: string) => {
     const data = await loginRequest(email.trim(), password)
     const auth = mapAuthResponse(data.data)
+    const homeRoute = getRoleHomeRoute(data.data.user?.roles ?? [])
 
     saveAuth(auth)
     updateCurrentUser(data.data.user)
+    const permissions = await getPermissionsByToken()
+    dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
+
+    return homeRoute
   }
 
   const register = async (payload: {
@@ -128,14 +137,20 @@ const useAuth = (): AuthContextProps => {
 
     const data = await registerRequest(normalizedPayload)
     const auth = mapAuthResponse(data.data)
+    const homeRoute = getRoleHomeRoute(data.data.user?.roles ?? [])
 
     saveAuth(auth)
     updateCurrentUser(data.data.user)
+    const permissions = await getPermissionsByToken()
+    dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
+
+    return homeRoute
   }
 
   return {
     auth: authState.auth,
     currentUser: authState.currentUser,
+    permissions: authState.permissions,
     isBootstrapping: authState.isBootstrapping,
     saveAuth,
     setCurrentUser: updateCurrentUser,

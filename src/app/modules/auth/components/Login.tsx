@@ -39,8 +39,8 @@ export function Login() {
       setStatus(undefined)
 
       try {
-        await login(values.email, values.password)
-        navigate('/dashboard', { replace: true })
+        const homeRoute = await login(values.email, values.password)
+        navigate(homeRoute, { replace: true })
       } catch (error) {
         const message =
           error instanceof AxiosError

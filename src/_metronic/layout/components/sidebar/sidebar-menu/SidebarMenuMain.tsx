@@ -1,279 +1,155 @@
-import { useIntl } from "react-intl";
-// import {KTIcon} from '../../../../helpers'
-import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
-import { SidebarMenuItem } from "./SidebarMenuItem";
+import { useIntl } from 'react-intl'
+import { usePermissionAccess, useRoleAccess } from '../../../../../app/modules/auth'
+import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
+import { SidebarMenuItem } from './SidebarMenuItem'
+import { getRolePortalBaseRoute } from '../../../../../app/modules/auth/core/roleRoutes'
 
 const SidebarMenuMain = () => {
-  const intl = useIntl();
+  const intl = useIntl()
+  const { isSuperAdmin, isAdmin } = useRoleAccess()
+  const { hasPermission } = usePermissionAccess()
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : isAdmin ? ['admin'] : [])
 
   return (
     <>
-      <SidebarMenuItem
-        to="/dashboard"
-        icon="element-11"
-        title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
-        fontIcon="bi-app-indicator"
-      />
-      {/* <SidebarMenuItem to='/builder' icon='switch' title='Layout Builder' fontIcon='bi-layers' /> */}
-      {/* <div className="menu-item">
-        <div className="menu-content pt-8 pb-2">
-          <span className="menu-section text-muted text-uppercase fs-8 ls-1">
-            Crafted
-          </span>
-        </div>
-      </div> */}
-      {/* <SidebarMenuItemWithSub
-        to="/crafted/pages"
-        title="Pages"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      >
-        <SidebarMenuItemWithSub
-          to="/crafted/pages/profile"
-          title="Profile"
-          hasBullet={true}
-        >
-          <SidebarMenuItem
-            to="/crafted/pages/profile/overview"
-            title="Overview"
-            hasBullet={true}
-          />
-          <SidebarMenuItem
-            to="/crafted/pages/profile/projects"
-            title="Projects"
-            hasBullet={true}
-          />
-          <SidebarMenuItem
-            to="/crafted/pages/profile/campaigns"
-            title="Campaigns"
-            hasBullet={true}
-          />
-          <SidebarMenuItem
-            to="/crafted/pages/profile/documents"
-            title="Documents"
-            hasBullet={true}
-          />
-          <SidebarMenuItem
-            to="/crafted/pages/profile/connections"
-            title="Connections"
-            hasBullet={true}
-          />
-        </SidebarMenuItemWithSub>
-
-        <SidebarMenuItemWithSub
-          to="/crafted/pages/wizards"
-          title="Wizards"
-          hasBullet={true}
-        >
-          <SidebarMenuItem
-            to="/crafted/pages/wizards/horizontal"
-            title="Horizontal"
-            hasBullet={true}
-          />
-          <SidebarMenuItem
-            to="/crafted/pages/wizards/vertical"
-            title="Vertical"
-            hasBullet={true}
-          />
-        </SidebarMenuItemWithSub>
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/crafted/accounts"
-        title="Accounts"
-        icon="profile-circle"
-        fontIcon="bi-person"
-      >
+      {hasPermission('dashboard.view') && (
         <SidebarMenuItem
-          to="/crafted/account/overview"
-          title="Overview"
-          hasBullet={true}
+          to={`${portalBase}/dashboard`}
+          icon="element-11"
+          title={intl.formatMessage({ id: 'MENU.DASHBOARD' })}
+          fontIcon="bi-app-indicator"
         />
+      )}
+
+      {isSuperAdmin && hasPermission('company.view') && (
+        <>
+          <SidebarMenuItemWithSub
+            to={`${portalBase}/companies`}
+            title="Companies / Organisations"
+            fontIcon="bi-archive"
+            icon="element-plus"
+          >
+            <SidebarMenuItem
+              to={`${portalBase}/companies`}
+              icon="abstract-28"
+              title="Companies"
+              fontIcon="bi-layers"
+            />
+            <SidebarMenuItem
+              to={`${portalBase}/seekers`}
+              icon="abstract-28"
+              title="Seekers"
+              fontIcon="bi-layers"
+            />
+          </SidebarMenuItemWithSub>
+
+          <SidebarMenuItem
+            to={`${portalBase}/staff`}
+            title="Platform Staff"
+            fontIcon="bi-archive"
+            icon="element-plus"
+          />
+
+          {hasPermission('plan.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/plans`}
+              title="Plans"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('plan_request.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/plan-requests`}
+              title="Plan Requests"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('referral.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/referral-programs`}
+              title="Referral Programs"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('coupon.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/coupons`}
+              title="Coupons"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('order.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/orders`}
+              title="Orders"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('email_template.view') && (
+            <SidebarMenuItem to={`${portalBase}/email-templates`} title="Email Templates" fontIcon="bi-archive" icon="element-plus" />
+          )}
+
+          {hasPermission('property.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/property-management`}
+              title="Property Management - At a Glance"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('permission.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/permissions`}
+              title="Permissions"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+        </>
+      )}
+
+      {isAdmin && (
+        <>
+          {hasPermission('property.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/property-management`}
+              title="Property Management"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+          {hasPermission('user.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/users`}
+              title="User Management"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+        </>
+      )}
+
+      {(isSuperAdmin || isAdmin) && hasPermission('settings.view') && (
         <SidebarMenuItem
-          to="/crafted/account/settings"
+          to={`${portalBase}/settings`}
           title="Settings"
-          hasBullet={true}
+          fontIcon="bi-archive"
+          icon="element-plus"
         />
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/error"
-        title="Errors"
-        fontIcon="bi-sticky"
-        icon="cross-circle"
-      >
-        <SidebarMenuItem to="/error/404" title="Error 404" hasBullet={true} />
-        <SidebarMenuItem to="/error/500" title="Error 500" hasBullet={true} />
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title="Widgets"
-        icon="element-7"
-        fontIcon="bi-layers"
-      >
-        <SidebarMenuItem
-          to="/crafted/widgets/lists"
-          title="Lists"
-          hasBullet={true}
-        />
-        <SidebarMenuItem
-          to="/crafted/widgets/statistics"
-          title="Statistics"
-          hasBullet={true}
-        />
-        <SidebarMenuItem
-          to="/crafted/widgets/charts"
-          title="Charts"
-          hasBullet={true}
-        />
-        <SidebarMenuItem
-          to="/crafted/widgets/mixed"
-          title="Mixed"
-          hasBullet={true}
-        />
-        <SidebarMenuItem
-          to="/crafted/widgets/tables"
-          title="Tables"
-          hasBullet={true}
-        />
-        <SidebarMenuItem
-          to="/crafted/widgets/feeds"
-          title="Feeds"
-          hasBullet={true}
-        />
-      </SidebarMenuItemWithSub> */}
-      {/* <div className="menu-item">
-        <div className="menu-content pt-8 pb-2">
-          <span className="menu-section text-muted text-uppercase fs-8 ls-1">
-            Apps
-          </span>
-        </div>
-      </div> */}
-
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title=" User Management"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      >
-        <SidebarMenuItem
-          to="/apps/seeker-management/seeker"
-          icon="abstract-28"
-          title="Seekers"
-          fontIcon="bi-layers"
-        />
-
-        <SidebarMenuItem
-          to="/apps/staff-management/staff"
-          icon="abstract-28"
-          title="Staff "
-          fontIcon="bi-layers"
-        />
-        <SidebarMenuItemWithSub
-          to="/crafted/widgets"
-          title=" User "
-          icon="element-7"
-          fontIcon="bi-layers"
-        >
-          <SidebarMenuItem
-            to="/apps/user/organization"
-            icon="abstract-28"
-            title="Organizations"
-            fontIcon="bi-layers"
-          />
-
-          {/* <SidebarMenuItem
-            to="/apps/user/solo"
-            icon="abstract-28"
-            title="Solo Traders "
-            fontIcon="bi-layers"
-          /> */}
-        </SidebarMenuItemWithSub>
-        {/* <SidebarMenuItem
-          to="/apps/business-management/agencies"
-          icon="abstract-28"
-          title="Service Provider"
-          fontIcon="bi-layers"
-        /> */}
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title=" Property Management"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      >
-        <SidebarMenuItem
-          to="/apps/property-management/listing"
-          icon="abstract-28"
-          title="Property Listing"
-          fontIcon="bi-layers"
-        />
-
-        {/* <SidebarMenuItem
-          to="/apps/property-management/features"
-          icon="abstract-28"
-          title="Property Features "
-          fontIcon="bi-layers"
-        /> */}
-      </SidebarMenuItemWithSub>
-      <SidebarMenuItemWithSub
-        to="/crafted/widgets"
-        title=" Service Management"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      >
-        {/* <SidebarMenuItem
-          to="/apps/service-management/group"
-          icon="abstract-28"
-          title="Service Group"
-          fontIcon="bi-layers"
-        /> */}
-
-        <SidebarMenuItem
-          to="/apps/service-management/listing"
-          icon="abstract-28"
-          title="Service listing "
-          fontIcon="bi-layers"
-        />
-      </SidebarMenuItemWithSub>
-
-      <SidebarMenuItem
-        to="/apps/orders"
-        title="Orders"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      />
-      <SidebarMenuItem
-        to="/apps/refreal"
-        title="Referral Programs"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      />
-      <SidebarMenuItem
-        to="/apps/coupons"
-        title="Coupons"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      />
-      <SidebarMenuItem
-        to="/apps/email-template"
-        title="Email Templates"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      />
-
-      <SidebarMenuItem
-        to="/apps/plan-request"
-        title="Plan Request"
-        fontIcon="bi-archive"
-        icon="element-plus" />
-
-      <SidebarMenuItem
-        to="/apps/subscription-plans"
-        title="Subscription Plans"
-        fontIcon="bi-archive"
-        icon="element-plus"
-      />
+      )}
     </>
-  );
-};
+  )
+}
 
-export { SidebarMenuMain };
+export { SidebarMenuMain }

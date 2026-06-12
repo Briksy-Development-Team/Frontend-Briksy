@@ -10,9 +10,13 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
+import { getRolePortalBaseRoute } from "../../modules/auth/core/roleRoutes";
+import { useRoleAccess } from "../../modules/auth";
 
 const SeekerList = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { isSuperAdmin } = useRoleAccess();
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin']);
   const { data, total, error } = useSelector((s: RootState) => s.seeker);
 
   const { params, handleParamsChange } = useEntityTable(
@@ -37,7 +41,7 @@ const SeekerList = () => {
         columns={seekerConfig.columns}
         filtersConfig={seekerConfig.filters}
         enableRowClick
-        getRowLink={(row) => `/apps/seeker-management/seeker/${row.id}`}
+        getRowLink={(row) => `${portalBase}/seekers/${row.id}`}
       />
     </Content>
   );

@@ -1,9 +1,17 @@
 import axiosInstance from "../../api/axiosInstance";
+import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
 import type { GetStaffParams, StaffFormValues } from "./staff.types";
 
+const getStaffBasePath = () => {
+  const auth = getAuth();
+  const abilities = auth?.abilities ?? [];
+
+  return abilities.includes("super_admin") ? "/super-admin" : "/admin";
+};
+
 export const fetchStaffApi = async (params: GetStaffParams) => {
-  const res = await axiosInstance.get("/super-admin/staff", {
+  const res = await axiosInstance.get(`${getStaffBasePath()}/staff`, {
     params: buildApiParams(params),
   });
   const { data, meta } = res.data || {};
@@ -14,11 +22,11 @@ export const fetchStaffApi = async (params: GetStaffParams) => {
 };
 
 export const createStaffApi = async (payload: StaffFormValues) => {
-  const res = await axiosInstance.post("/super-admin/staff", payload);
+  const res = await axiosInstance.post(`${getStaffBasePath()}/staff`, payload);
   return res.data;
 };
 
 export const updateStaffApi = async (id: string, payload: StaffFormValues) => {
-  const res = await axiosInstance.put(`/super-admin/staff/${id}`, payload);
+  const res = await axiosInstance.put(`${getStaffBasePath()}/staff/${id}`, payload);
   return res.data;
 };

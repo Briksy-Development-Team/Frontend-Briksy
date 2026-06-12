@@ -1,29 +1,38 @@
 import type { PropertyList } from "./property.types";
 
-type PropertyListApi = {
+type PropertyListingApi = {
   id: string;
-  name: string;
-  slug?: string;
-  description?: string;
-  organization_type?: {
+  title: string;
+  status: "Draft" | "Published" | "Archived";
+  description?: string | null;
+  rating?: number;
+  suburb?: string | null;
+  postcode?: string | null;
+  organization?: {
     id: string;
     name: string;
-    slug: string;
-  };
-  services_count?: number;
-  organization_count?: number;
-  created_at?: string;
-  updated_at?: string;
+    slug?: string;
+    is_verified?: boolean;
+  } | null;
+  creator?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
-export const mapPropertyGroup = (item: PropertyListApi): PropertyList => ({
+export const mapPropertyGroup = (item: PropertyListingApi): PropertyList => ({
   id: item.id,
-  name: item.name ?? null,
-  slug: item.slug ?? null,
+  title: item.title ?? "",
+  status: item.status,
   description: item.description ?? null,
-  organization_type: item.organization_type ?? null,
-  services_count: item.services_count ?? undefined,
-  organization_count: item.organization_count ?? undefined,
+  rating: item.rating ?? undefined,
+  suburb: item.suburb ?? null,
+  postcode: item.postcode ?? null,
+  organization: item.organization ?? null,
+  creator: item.creator ?? null,
   created_at: item.created_at ?? null,
   updated_at: item.updated_at ?? null,
 });

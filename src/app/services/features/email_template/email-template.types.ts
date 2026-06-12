@@ -1,35 +1,33 @@
+export type EmailTemplateStatus = "active" | "inactive";
+
 export type EmailTemplate = {
   id: string;
+  key: string;
   name: string;
   subject: string;
   body: string;
-  trigger: string;
-  status: "active" | "inactive";
-  created_at: string;
+  variables: string[];
+  status: EmailTemplateStatus;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type EmailTemplateFormValues = {
+  key: string;
   name: string;
   subject: string;
   body: string;
-  trigger: string;
-  status: "active" | "inactive";
+  variables: string[];
+  status: EmailTemplateStatus;
 };
 
-export const TEMPLATE_TRIGGERS = [
-  "user.registered",
-  "order.placed",
-  "order.completed",
-  "password.reset",
-  "subscription.expiring",
-  "staff.invited",
+export type EmailTemplatePreviewValues = {
+  variables?: Record<string, string | number | boolean>;
+};
+
+export const TEMPLATE_VARIABLES = [
+  "name",
+  "order_number",
+  "total_amount",
+  "currency",
 ] as const;
-
-export const TRIGGER_LABELS: Record<string, string> = {
-  "user.registered": "User Registered",
-  "order.placed": "Order Placed",
-  "order.completed": "Order Completed",
-  "password.reset": "Password Reset",
-  "subscription.expiring": "Subscription Expiring",
-  "staff.invited": "Staff Invited",
-};

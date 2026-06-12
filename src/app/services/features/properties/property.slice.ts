@@ -48,7 +48,7 @@ const PropertyListSlice = createSlice({
       })
       .addCase(fetchPropertyList.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch service groups";
+        state.error = action.error.message || "Failed to fetch property listings";
       });
   },
 });

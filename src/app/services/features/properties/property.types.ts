@@ -1,19 +1,22 @@
 export type PropertyList = {
   id: string;
-
-  name: string;
-  slug?: string | null;
+  title: string;
+  status: "Draft" | "Published" | "Archived";
   description?: string | null;
-
-  organization_type?: {
+  rating?: number;
+  suburb?: string | null;
+  postcode?: string | null;
+  organization?: {
     id: string;
     name: string;
-    slug: string;
+    slug?: string;
+    is_verified?: boolean;
   } | null;
-
-  services_count?: number;
-  organization_count?: number;
-
+  creator?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
   created_at?: string | null;
   updated_at?: string | null;
 };

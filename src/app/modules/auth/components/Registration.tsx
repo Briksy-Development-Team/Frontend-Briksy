@@ -55,7 +55,7 @@ export function Registration() {
       setStatus(undefined)
 
       try {
-        await register({
+        const homeRoute = await register({
           first: values.first,
           last: values.last,
 
@@ -63,7 +63,7 @@ export function Registration() {
           password: values.password,
           password_confirmation: values.password_confirmation,
         })
-        navigate('/dashboard', { replace: true })
+        navigate(homeRoute, { replace: true })
       } catch (error) {
         const message =
           error instanceof AxiosError
@@ -88,7 +88,7 @@ export function Registration() {
     >
       <div className='text-center mb-11'>
         <h1 className='text-gray-900 fw-bolder mb-3'>Sign Up</h1>
-        <div className='text-gray-500 fw-semibold fs-6'>Create your admin account</div>
+        <div className='text-gray-500 fw-semibold fs-6'>Create your company admin account</div>
       </div>
 
       <div className='row g-3 mb-9'>

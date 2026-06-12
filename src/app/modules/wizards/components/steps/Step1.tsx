@@ -1,8 +1,14 @@
 import {FC} from 'react'
 import {KTIcon} from '../../../../../_metronic/helpers'
 import {ErrorMessage, Field} from 'formik'
+import {Link} from 'react-router-dom'
+import {useAuth} from '../../../auth'
+import {getRoleHomeRoute} from '../../../auth/core/roleRoutes'
 
 const Step1: FC = () => {
+  const {currentUser} = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
+
   return (
     <div className='w-100'>
       <div className='pb-10 pb-lg-15'>
@@ -17,10 +23,10 @@ const Step1: FC = () => {
 
         <div className='text-gray-500 fw-bold fs-6'>
           If you need more info, please check out
-          <a href='/dashboard' className='link-primary fw-bolder'>
+          <Link to={homeRoute} className='link-primary fw-bolder'>
             {' '}
             Help Page
-          </a>
+          </Link>
           .
         </div>
       </div>

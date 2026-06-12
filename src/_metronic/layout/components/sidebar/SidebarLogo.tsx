@@ -4,6 +4,8 @@ import {KTIcon, toAbsoluteUrl} from '../../../helpers'
 import {useLayout} from '../../core'
 import {MutableRefObject, useEffect, useRef} from 'react'
 import {ToggleComponent} from '../../../assets/ts/components'
+import {useAuth} from '../../../../app/modules/auth'
+import {getRoleHomeRoute} from '../../../../app/modules/auth/core/roleRoutes'
 
 type PropsType = {
   sidebarRef: MutableRefObject<HTMLDivElement | null>
@@ -11,6 +13,8 @@ type PropsType = {
 
 const SidebarLogo = (props: PropsType) => {
   const {config} = useLayout()
+  const {currentUser} = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
   const toggleRef = useRef<HTMLDivElement>(null)
 
   const appSidebarDefaultMinimizeDesktopEnabled =
@@ -49,7 +53,7 @@ const SidebarLogo = (props: PropsType) => {
 
   return (
     <div className='app-sidebar-logo px-6' id='kt_app_sidebar_logo'>
-      <Link to='/dashboard'>
+      <Link to={homeRoute}>
         {config.layoutType === 'dark-sidebar' ? (
           <img
             alt='Logo'

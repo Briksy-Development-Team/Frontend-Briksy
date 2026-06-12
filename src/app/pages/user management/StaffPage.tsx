@@ -17,9 +17,13 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { Content } from "../../../_metronic/layout/components/content"
 import { StaffModal } from "../../services/features/staff/component/StaffModal"
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage"
+import { useRoleAccess } from "../../modules/auth"
+import { getRolePortalBaseRoute } from "../../modules/auth/core/roleRoutes"
 
 const StaffList = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const { isSuperAdmin } = useRoleAccess()
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin'])
 
   const { data, total, error, isModalOpen, editingStaff, saving } =
     useSelector((s: RootState) => s.staff)
@@ -37,7 +41,10 @@ const StaffList = () => {
 
   if (error) return (
     <Content>
-      <PageHeader title="Platform Staff" subtitle="Manage staff access and permissions" />
+      <PageHeader
+        title={isSuperAdmin ? "Platform Staff" : "User Management"}
+        subtitle={isSuperAdmin ? "Manage platform staff access and permissions" : "Manage company users"}
+      />
       <div className="alert alert-danger">{error}</div>
     </Content>
   )
@@ -46,8 +53,8 @@ const StaffList = () => {
     <>
       <Content>
         <PageHeader
-          title="Platform Staff"
-          subtitle="Manage staff access and permissions"
+          title={isSuperAdmin ? "Platform Staff" : "User Management"}
+          subtitle={isSuperAdmin ? "Manage platform staff access and permissions" : "Manage company users"}
         />
 
         <EntityList
@@ -58,7 +65,7 @@ const StaffList = () => {
           columns={staffConfig.columns}
           filtersConfig={staffConfig.filters}
           enableRowClick
-          getRowLink={(row) => `/apps/staff-management/staff/${row.id}`}
+          getRowLink={(row) => `${portalBase}/staff/${row.id}`}
           storageKey="staffColumns"
           addAction={{
             label: "Add Staff",

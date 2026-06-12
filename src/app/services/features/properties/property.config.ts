@@ -14,37 +14,37 @@ export const propertyListConfig = {
       alwaysVisible: true,
     },
     {
-      Header: "Name",
-      accessor: "name",
+      Header: "Title",
+      accessor: "title",
       sortable: true,
       Cell: ({ value }: { value: any }) => value || "—",
     },
     {
-      Header: "Slug",
-      accessor: "slug",
+      Header: "Status",
+      accessor: "status",
+      sortable: true,
       Cell: ({ value }: { value: any }) => value || "—",
     },
     {
-      Header: "Description",
-      accessor: "description",
-      Cell: ({ value }: { value: any }) => value || "—",
-    },
-    {
-      Header: "Organization Type",
-      accessor: "organization_type",
+      Header: "Organization",
+      accessor: "organization",
       Cell: ({ value }: { value: any }) => value?.name ?? "—",
     },
     {
-      Header: "Services Count",
-      accessor: "services_count",
-      sortable: true,
-      Cell: ({ value }: { value: any }) => value ?? 0,
+      Header: "Suburb",
+      accessor: "suburb",
+      Cell: ({ value }: { value: any }) => value || "—",
     },
     {
-      Header: "Organization Count",
-      accessor: "organization_count",
+      Header: "Postcode",
+      accessor: "postcode",
+      Cell: ({ value }: { value: any }) => value || "—",
+    },
+    {
+      Header: "Rating",
+      accessor: "rating",
       sortable: true,
-      Cell: ({ value }: { value: any }) => value ?? 0,
+      Cell: ({ value }: { value: any }) => (value !== undefined ? Number(value).toFixed(2) : "—"),
     },
     {
       Header: "Created At",
@@ -55,6 +55,12 @@ export const propertyListConfig = {
   ] satisfies Column<PropertyList>[],
 
   filters: [
+    {
+      key: "status",
+      label: "Status",
+      type: "select" as const,
+      options: ["Draft", "Published", "Archived"],
+    },
     {
       key: "created_at",
       label: "Created Date",

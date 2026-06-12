@@ -2,8 +2,7 @@ import { useState, useEffect } from "react"
 import clsx from "clsx"
 import { ModalShell } from "../../../../modules/apps/component/ModalShell"
 import {
-    TEMPLATE_TRIGGERS,
-    TRIGGER_LABELS,
+    TEMPLATE_VARIABLES,
     type EmailTemplate,
     type EmailTemplateFormValues,
 } from "../email-template.types"
@@ -19,10 +18,11 @@ const EmailTemplateModal = ({ initialValues, onClose, onSubmit, isSubmitting }: 
     const isEdit = !!initialValues
 
     const [form, setForm] = useState<EmailTemplateFormValues>({
+        key: "",
         name: "",
         subject: "",
         body: "",
-        trigger: TEMPLATE_TRIGGERS[0],
+        variables: [],
         status: "active",
     })
 
@@ -31,10 +31,11 @@ const EmailTemplateModal = ({ initialValues, onClose, onSubmit, isSubmitting }: 
     useEffect(() => {
         if (initialValues) {
             setForm({
+                key: initialValues.key,
                 name: initialValues.name,
                 subject: initialValues.subject,
                 body: initialValues.body,
-                trigger: initialValues.trigger as any,
+                variables: initialValues.variables ?? [],
                 status: initialValues.status,
             })
         }
@@ -44,7 +45,7 @@ const EmailTemplateModal = ({ initialValues, onClose, onSubmit, isSubmitting }: 
     const subjectError = touched.subject && !form.subject ? "Subject is required" : ""
     const bodyError = touched.body && !form.body ? "Body is required" : ""
 
-    const isValid = !!form.name && !!form.subject && !!form.body
+    const isValid = !!form.key && !!form.name && !!form.subject && !!form.body
 
     const handleSubmit = () => {
         setTouched({ name: true, subject: true, body: true })
@@ -62,34 +63,34 @@ const EmailTemplateModal = ({ initialValues, onClose, onSubmit, isSubmitting }: 
             isValid={isValid}
         >
             <div className="fv-row mb-7">
-                <label className="required fw-bold fs-6 mb-2">Template Name</label>
-                <input
+                    <label className="required fw-bold fs-6 mb-2">Template Key</label>
+                    <input
                     type="text"
                     className={clsx("form-control form-control-solid", {
                         "is-invalid": !!nameError,
                         "is-valid": touched.name && !nameError,
                     })}
-                    placeholder="e.g. Welcome Email"
-                    value={form.name}
-                    onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                    placeholder="e.g. welcome-email"
+                    value={form.key}
+                    onChange={(e) => setForm((p) => ({ ...p, key: e.target.value }))}
                     onBlur={() => setTouched((p) => ({ ...p, name: true }))}
                 />
                 {nameError && <div className="fv-plugins-message-container"><span className="fv-help-block">{nameError}</span></div>}
             </div>
 
             <div className="fv-row mb-7">
-                <label className="required fw-bold fs-6 mb-2">Trigger Event</label>
-                <select
-                    className="form-select form-select-solid"
-                    value={form.trigger}
-                    onChange={(e) => setForm((p) => ({ ...p, trigger: e.target.value as any }))}
-                >
-                    {TEMPLATE_TRIGGERS.map((trigger) => (
-                        <option key={trigger} value={trigger}>
-                            {TRIGGER_LABELS[trigger] ?? trigger}
-                        </option>
-                    ))}
-                </select>
+                    <label className="required fw-bold fs-6 mb-2">Template Name</label>
+                    <select
+                        className="form-select form-select-solid"
+                        value={form.name}
+                        onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                    >
+                        {TEMPLATE_VARIABLES.map((variable) => (
+                            <option key={variable} value={variable}>
+                                {variable}
+                            </option>
+                        ))}
+                    </select>
             </div>
 
             <div className="fv-row mb-7">
@@ -123,7 +124,7 @@ const EmailTemplateModal = ({ initialValues, onClose, onSubmit, isSubmitting }: 
                 />
                 {bodyError && <div className="fv-plugins-message-container"><span className="fv-help-block">{bodyError}</span></div>}
                 <div className="text-muted fs-7 mt-2">
-                    Use placeholders like <code>{"{{name}}"}</code>, <code>{"{{order_id}}"}</code>, <code>{"{{reset_link}}"}</code>
+                    Use placeholders like <code>{"{{name}}"}</code>, <code>{"{{order_number}}"}</code>, <code>{"{{total_amount}}"}</code>
                 </div>
             </div>
 

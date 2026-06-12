@@ -1,5 +1,5 @@
 import { KTCard, KTIcon } from '../../../../../_metronic/helpers'
-import { TRIGGER_LABELS, type EmailTemplate } from '../email-template.types'
+import type { EmailTemplate } from '../email-template.types'
 
 type Props = {
     templates: EmailTemplate[]
@@ -71,7 +71,7 @@ const EmailTemplateList = ({ templates, onAdd, onEdit, onDelete }: Props) => {
                                     {/* Trigger */}
                                     <div className="mb-4">
                                         <span className="badge badge-light-primary">
-                                            {TRIGGER_LABELS[template.trigger] ?? template.trigger}
+                                            {template.key}
                                         </span>
                                     </div>
 

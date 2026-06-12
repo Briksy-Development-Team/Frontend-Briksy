@@ -35,7 +35,7 @@ const initialState: EmailTemplateState = {
 export const fetchEmailTemplates = createAsyncThunk(
   "emailTemplates/fetch",
   async () => {
-    return await fetchEmailTemplatesApi();
+    return await fetchEmailTemplatesApi("super-admin");
   },
 );
 
@@ -43,16 +43,16 @@ export const saveEmailTemplate = createAsyncThunk(
   "emailTemplates/save",
   async (payload: { id?: string; values: EmailTemplateFormValues }) => {
     if (payload.id) {
-      return await updateEmailTemplateApi(payload.id, payload.values);
+      return await updateEmailTemplateApi("super-admin", payload.id, payload.values);
     }
-    return await createEmailTemplateApi(payload.values);
+    return await createEmailTemplateApi("super-admin", payload.values);
   },
 );
 
 export const removeEmailTemplate = createAsyncThunk(
   "emailTemplates/delete",
   async (id: string) => {
-    await deleteEmailTemplateApi(id);
+    await deleteEmailTemplateApi("super-admin", id);
     return id;
   },
 );

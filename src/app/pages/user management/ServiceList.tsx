@@ -33,8 +33,7 @@ const ServiceListPage = () => {
                 onParamsChange={handleParamsChange}
                 columns={serviceListConfig.columns}
                 filtersConfig={serviceListConfig.filters}
-                enableRowClick
-                getRowLink={(row) => `/apps/service-management/list/${row.id}`}
+                enableRowClick={false}
             />
         </Content>
     );

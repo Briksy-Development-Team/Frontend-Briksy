@@ -32,3 +32,5 @@ export const DEFAULT_FEATURES: string[] = [
   "Lead Management",
   "Custom Branding",
 ];
+
+export const ALL_FEATURES = DEFAULT_FEATURES;

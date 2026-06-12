@@ -2,12 +2,16 @@ import {useIntl} from 'react-intl'
 import {MenuItem} from './MenuItem'
 import {MenuInnerWithSub} from './MenuInnerWithSub'
 import {MegaMenu} from './MegaMenu'
+import {useAuth} from '../../../../../app/modules/auth'
+import {getRoleHomeRoute} from '../../../../../app/modules/auth/core/roleRoutes'
 
 export function MenuInner() {
   const intl = useIntl()
+  const {currentUser} = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
   return (
     <>
-      <MenuItem title={intl.formatMessage({id: 'MENU.DASHBOARD'})} to='/dashboard' />
+      <MenuItem title={intl.formatMessage({id: 'MENU.DASHBOARD'})} to={homeRoute} />
       {/* <MenuItem title='Layout Builder' to='/builder' /> */}
       {/* <MenuInnerWithSub
         title='Crafted'
