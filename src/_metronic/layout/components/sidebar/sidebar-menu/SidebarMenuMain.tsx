@@ -21,6 +21,28 @@ const SidebarMenuMain = () => {
         />
       )}
 
+      {isSuperAdmin && hasPermission('user.view') && (
+        <SidebarMenuItemWithSub
+          to={`${portalBase}/users`}
+          title="User Management"
+          fontIcon="bi-archive"
+          icon="element-plus"
+        >
+          <SidebarMenuItem
+            to={`${portalBase}/seekers`}
+            icon="abstract-28"
+            title="Seekers"
+            fontIcon="bi-layers"
+          />
+          <SidebarMenuItem
+            to={`${portalBase}/staff`}
+            icon="abstract-28"
+            title="Platform Staff"
+            fontIcon="bi-layers"
+          />
+        </SidebarMenuItemWithSub>
+      )}
+
       {isSuperAdmin && hasPermission('company.view') && (
         <>
           <SidebarMenuItemWithSub
@@ -35,20 +57,7 @@ const SidebarMenuMain = () => {
               title="Companies"
               fontIcon="bi-layers"
             />
-            <SidebarMenuItem
-              to={`${portalBase}/seekers`}
-              icon="abstract-28"
-              title="Seekers"
-              fontIcon="bi-layers"
-            />
           </SidebarMenuItemWithSub>
-
-          <SidebarMenuItem
-            to={`${portalBase}/staff`}
-            title="Platform Staff"
-            fontIcon="bi-archive"
-            icon="element-plus"
-          />
 
           {hasPermission('plan.view') && (
             <SidebarMenuItem

@@ -46,6 +46,8 @@ const PrivateRoutes = () => {
           }
         />
 
+        <Route path="/super-admin/users/*" element={<Navigate to="/super-admin/seekers" replace />} />
+
         <Route
           path="/admin/dashboard"
           element={
