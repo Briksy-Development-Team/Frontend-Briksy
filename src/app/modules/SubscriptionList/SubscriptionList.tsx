@@ -1,23 +1,17 @@
 import { KTCard, KTIcon } from '../../../_metronic/helpers'
 import type { Plan } from '../../services/features/subscriptions/plan.types'
 
-type CurrentPlan = {
-  id: string
-  name: string
-  propertyLimit: number
-  usedProperties: number
-}
-
 type Props = {
   plans: Plan[]
-  currentPlan: CurrentPlan
-  onAdd: () => void
-  onEdit: (plan: Plan) => void
-  onDelete: (plan: Plan) => void
+  canManage: boolean
+  onAdd?: () => void
+  onEdit?: (plan: Plan) => void
+  onDelete?: (plan: Plan) => void
+  onSelectPlan?: (plan: Plan) => void
 }
 
-const SubscriptionList = ({ plans, currentPlan, onAdd, onEdit, onDelete }: Props) => {
-  const isLimitReached = currentPlan.usedProperties >= currentPlan.propertyLimit
+export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, onSelectPlan }: Props) => {
+  const currentPlan = plans.find((p) => p.is_current)
 
   return (
     <KTCard>
@@ -26,24 +20,27 @@ const SubscriptionList = ({ plans, currentPlan, onAdd, onEdit, onDelete }: Props
         <div className="card mb-8">
           <div className="card-body d-flex justify-content-between align-items-center flex-wrap gap-4">
             <div>
-              <h3 className="fw-bold mb-1">{isLimitReached ? '⚠️ Limit Reached' : 'Active Plan'}</h3>
-              <span className="text-muted">Current plan: {currentPlan.name}</span>
+              <h3 className="fw-bold mb-1">
+                {canManage ? "Plan Catalog" : "Active Plan"}
+              </h3>
+              {!canManage && (
+                <span className="text-muted">
+                  Current plan: {currentPlan?.name ?? "No active plan"}
+                </span>
+              )}
             </div>
-            <div className="d-flex align-items-center gap-3">
-              <span className="badge badge-light-primary fs-6">
-                {currentPlan.usedProperties}/{currentPlan.propertyLimit} Properties
-              </span>
+            {canManage && (
               <button className="btn btn-primary d-flex align-items-center gap-2" onClick={onAdd}>
                 <KTIcon iconName="plus" className="fs-2" />
                 Add Plan
               </button>
-            </div>
+            )}
           </div>
         </div>
 
         <div className="row g-5 g-xl-8 align-items-stretch">
           {plans.map((plan) => {
-            const isCurrent = plan.id === currentPlan.id
+            const isCurrent = !!plan.is_current
 
             return (
               <div className="col-xl-4 col-md-6 col-sm-12" key={plan.id}>
@@ -60,41 +57,57 @@ const SubscriptionList = ({ plans, currentPlan, onAdd, onEdit, onDelete }: Props
                     </div>
                   )}
 
-                  <div className="position-absolute top-0 end-0 p-3 d-flex gap-2" style={{ zIndex: 3 }}>
-                    <button
-                      className={`btn btn-icon btn-sm ${plan.popular ? 'btn-light' : 'btn-light-primary'}`}
-                      onClick={() => onEdit(plan)}
-                      title="Edit plan"
-                    >
-                      <KTIcon iconName="pencil" className="fs-4" />
-                    </button>
-                    <button
-                      className="btn btn-icon btn-sm btn-light-danger"
-                      onClick={() => onDelete(plan)}
-                      title="Delete plan"
-                    >
-                      <KTIcon iconName="trash" className="fs-4" />
-                    </button>
-                  </div>
+                  {canManage && (
+                    <div className="position-absolute top-0 end-0 p-3 d-flex gap-2" style={{ zIndex: 3 }}>
+                      <button
+                        className={`btn btn-icon btn-sm ${plan.popular ? 'btn-light' : 'btn-light-primary'}`}
+                        onClick={() => onEdit?.(plan)}
+                        title="Edit plan"
+                      >
+                        <KTIcon iconName="pencil" className="fs-4" />
+                      </button>
+                      <button
+                        className="btn btn-icon btn-sm btn-light-danger"
+                        onClick={() => onDelete?.(plan)}
+                        title="Delete plan"
+                      >
+                        <KTIcon iconName="trash" className="fs-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {!canManage && isCurrent && (
+                    <div className="position-absolute top-0 end-0 p-3" style={{ zIndex: 3 }}>
+                      <span className="badge badge-light-success">Active</span>
+                    </div>
+                  )}
 
                   <div className="card-body d-flex flex-column pt-10">
                     <div className="mb-4">
                       <h4 className="fw-bold mb-2">{plan.name}</h4>
-                      <div className={plan.popular ? 'text-white opacity-75' : 'text-muted'}>
-                        Up to {plan.propertyLimit} properties
-                      </div>
                     </div>
 
                     <div className="fw-bold mb-4">
                       <span className="fs-1">₹{plan.price}</span>
                     </div>
 
-                    <button
-                      className={`btn w-100 mb-4 ${plan.popular ? 'btn-light' : 'btn-light-primary'}`}
-                      disabled={isCurrent}
-                    >
-                      {isCurrent ? 'Current Plan' : 'Get Started Now'}
-                    </button>
+                    {canManage ? (
+                      <button
+                        className={`btn w-100 mb-4 ${plan.popular ? 'btn-light' : 'btn-light-primary'}`}
+                        disabled
+                      >
+                        Preview
+                      </button>
+                    ) : (
+                      <button
+                        className={`btn w-100 mb-4 ${isCurrent ? 'btn-light' : plan.popular ? 'btn-light' : 'btn-light-primary'
+                          }`}
+                        disabled={isCurrent}
+                        onClick={() => onSelectPlan?.(plan)}
+                      >
+                        {isCurrent ? 'Current Plan' : 'Select Plan'}
+                      </button>
+                    )}
 
                     <ul className="list-unstyled mb-0">
                       {plan.features.map((feature) => (
@@ -110,6 +123,9 @@ const SubscriptionList = ({ plans, currentPlan, onAdd, onEdit, onDelete }: Props
                           </span>
                           <span className={feature.enabled ? (plan.popular ? 'text-white' : 'text-dark') : 'text-muted'}>
                             {feature.name}
+                            {feature.value !== undefined && (
+                              <span className="fw-semibold ms-1">: {feature.value}</span>
+                            )}
                           </span>
                         </li>
                       ))}
@@ -125,5 +141,3 @@ const SubscriptionList = ({ plans, currentPlan, onAdd, onEdit, onDelete }: Props
     </KTCard>
   )
 }
-
-export default SubscriptionList

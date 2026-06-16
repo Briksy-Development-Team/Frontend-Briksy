@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
-import type { QueryParams } from "..//entity-list/EntityList";
+import type { QueryParams } from "../entity-list/EntityList";
 
 type FetchFn = (params: QueryParams) => void;
 

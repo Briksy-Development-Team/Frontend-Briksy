@@ -1,4 +1,5 @@
 import axiosInstance from "../../api/axiosInstance";
+import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import type { Plan, PlanFormValues } from "./plan.types";
 
 type PlanEnvelope = {
@@ -12,17 +13,25 @@ type PlanEnvelope = {
   };
 };
 
-const BASE_PATH = "/super-admin/plans";
+const getPlanBasePath = () => {
+  const auth = getAuth();
+  const abilities = auth?.abilities ?? [];
+  return abilities.includes("super_admin") ? "/super-admin" : "/admin";
+};
 
 export const fetchPlansApi = async (): Promise<Plan[]> => {
-  const response = await axiosInstance.get<PlanEnvelope>(BASE_PATH);
+  const response = await axiosInstance.get<PlanEnvelope>(
+    `${getPlanBasePath()}/plans`,
+  );
   const { data } = response.data || {};
-
   return Array.isArray(data) ? data : [];
 };
 
 export const createPlanApi = async (payload: PlanFormValues): Promise<Plan> => {
-  const response = await axiosInstance.post<PlanEnvelope>(BASE_PATH, payload);
+  const response = await axiosInstance.post<PlanEnvelope>(
+    `${getPlanBasePath()}/plans`,
+    payload,
+  );
   return response.data.data as Plan;
 };
 
@@ -30,10 +39,21 @@ export const updatePlanApi = async (
   id: string,
   payload: PlanFormValues,
 ): Promise<Plan> => {
-  const response = await axiosInstance.put<PlanEnvelope>(`${BASE_PATH}/${id}`, payload);
+  const response = await axiosInstance.put<PlanEnvelope>(
+    `${getPlanBasePath()}/plans/${id}`,
+    payload,
+  );
   return response.data.data as Plan;
 };
 
 export const deletePlanApi = async (id: string): Promise<void> => {
-  await axiosInstance.delete(`${BASE_PATH}/${id}`);
+  await axiosInstance.delete(`${getPlanBasePath()}/plans/${id}`);
+};
+
+export const changePlanApi = async (planId: string): Promise<Plan> => {
+  const response = await axiosInstance.post<PlanEnvelope>(
+    `/admin/plans/${planId}/select`,
+    {},
+  );
+  return response.data.data as Plan;
 };

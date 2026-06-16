@@ -1,36 +1,35 @@
 export type PlanFeature = {
   name: string;
   enabled: boolean;
+  value?: number | null; 
 };
 
 export type Plan = {
   id: string;
   name: string;
   price: number;
-  propertyLimit: number;
   popular: boolean;
   features: PlanFeature[];
+  is_current?: boolean;
   created_at?: string;
 };
 
 export type PlanFormValues = {
   name: string;
   price: number;
-  propertyLimit: number;
   popular: boolean;
   features: PlanFeature[];
 };
 
-// Starter features shown for new plans — fully editable/removable
-export const DEFAULT_FEATURES: string[] = [
-  "Property Listings",
-  "Featured Listings",
-  "Agent Profiles",
-  "Advanced Analytics",
-  "Priority Support",
-  "CRM Integration",
-  "Lead Management",
-  "Custom Branding",
+export const DEFAULT_FEATURES: { name: string; numeric?: boolean }[] = [
+  { name: "Properties", numeric: true },
+  { name: "Services", numeric: true },
+  { name: "Staff Seats", numeric: true },
+  { name: "Featured Listings" },
+  { name: "Agent Profiles" },
+  { name: "Advanced Analytics" },
+  { name: "Priority Support" },
+  { name: "CRM Integration" },
+  { name: "Lead Management" },
+  { name: "Custom Branding" },
 ];
-
-export const ALL_FEATURES = DEFAULT_FEATURES;

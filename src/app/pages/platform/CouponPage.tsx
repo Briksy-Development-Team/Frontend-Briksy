@@ -14,7 +14,7 @@ import {
   closeValidationModal,
   openDeleteCouponModal,
   closeDeleteCouponModal,
-  validateCoupon
+  validateCoupon,
 } from "../../services/features/coupons/coupon.slice";
 
 import { couponConfig } from "../../services/features/coupons/coupon.config";
@@ -51,8 +51,8 @@ const CouponList = () => {
     deletingCoupon,
   } = useSelector((s: RootState) => s.coupons);
 
-  const { params, handleParamsChange } = useEntityTable(
-    (p) => dispatch(fetchCoupons(p))
+  const { params, handleParamsChange } = useEntityTable((p) =>
+    dispatch(fetchCoupons(p)),
   );
 
   useEffect(() => {
@@ -64,10 +64,7 @@ const CouponList = () => {
   if (error) {
     return (
       <Content>
-        <PageHeader
-          title="Coupons"
-          subtitle="Manage discount coupons"
-        />
+        <PageHeader title="Coupons" subtitle="Manage discount coupons" />
         <div className="alert alert-danger">{error}</div>
       </Content>
     );
@@ -76,10 +73,7 @@ const CouponList = () => {
   return (
     <>
       <Content>
-        <PageHeader
-          title="Coupons"
-          subtitle="Manage discount coupons"
-        />
+        <PageHeader title="Coupons" subtitle="Manage discount coupons" />
 
         <EntityList
           data={data}
@@ -90,7 +84,6 @@ const CouponList = () => {
           filtersConfig={couponConfig.filters}
           getRowLink={(row) => `${portalBase}/coupons/${row.id}`}
           enableRowClick
-
           storageKey="couponColumns"
           headerActions={[
             {
@@ -105,24 +98,20 @@ const CouponList = () => {
           rowActions={[
             {
               label: "Edit",
-              onClick: (row) =>
-                dispatch(openCouponModal(row)),
+              onClick: (row) => dispatch(openCouponModal(row)),
             },
             {
               label: "Activate",
-              onClick: (row) =>
-                dispatch(activateCoupon(row.id)),
+              onClick: (row) => dispatch(activateCoupon(row.id)),
             },
             {
               label: "Deactivate",
-              onClick: (row) =>
-                dispatch(deactivateCoupon(row.id)),
+              onClick: (row) => dispatch(deactivateCoupon(row.id)),
             },
             {
               label: "Delete",
               className: "text-danger",
-              onClick: (row) =>
-                dispatch(openDeleteCouponModal(row)),
+              onClick: (row) => dispatch(openDeleteCouponModal(row)),
             },
           ]}
         />
@@ -138,7 +127,7 @@ const CouponList = () => {
               saveCoupon({
                 id: editingCoupon?.id,
                 values,
-              })
+              }),
             )
           }
         />
@@ -146,24 +135,16 @@ const CouponList = () => {
 
       {isValidationModalOpen && (
         <CouponValidationModal
-          onClose={() =>
-            dispatch(closeValidationModal())
-          }
-          onSubmit={(values) =>
-            dispatch(validateCoupon(values))
-          }
+          onClose={() => dispatch(closeValidationModal())}
+          onSubmit={(values) => dispatch(validateCoupon(values))}
         />
       )}
       {deleteModalOpen && deletingCoupon && (
         <DeleteConfirmModal
           title="Delete Coupon"
           message={`Are you sure you want to delete coupon ${deletingCoupon.code}?`}
-          onClose={() =>
-            dispatch(closeDeleteCouponModal())
-          }
-          onConfirm={() =>
-            dispatch(deleteCoupon(deletingCoupon.id))
-          }
+          onClose={() => dispatch(closeDeleteCouponModal())}
+          onConfirm={() => dispatch(deleteCoupon(deletingCoupon.id))}
           isSubmitting={saving}
         />
       )}

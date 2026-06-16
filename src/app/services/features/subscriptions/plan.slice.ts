@@ -8,6 +8,7 @@ import {
   createPlanApi,
   updatePlanApi,
   deletePlanApi,
+  changePlanApi,
 } from "./plan.api";
 import type { Plan, PlanFormValues } from "./plan.types";
 
@@ -18,6 +19,7 @@ type PlanState = {
   isModalOpen: boolean;
   editingPlan: Plan | null;
   saving: boolean;
+  changing: boolean;
 };
 
 const initialState: PlanState = {
@@ -27,6 +29,7 @@ const initialState: PlanState = {
   isModalOpen: false,
   editingPlan: null,
   saving: false,
+  changing: false,
 };
 
 export const fetchPlans = createAsyncThunk("plans/fetch", async () => {
@@ -48,6 +51,15 @@ export const removePlan = createAsyncThunk(
   async (id: string) => {
     await deletePlanApi(id);
     return id;
+  },
+);
+
+// Admin selects/changes their plan
+export const changePlan = createAsyncThunk(
+  "plans/changePlan",
+  async (planId: string) => {
+    await changePlanApi(planId);
+    return planId;
   },
 );
 
@@ -96,6 +108,21 @@ const planSlice = createSlice({
 
       .addCase(removePlan.fulfilled, (state, action) => {
         state.data = state.data.filter((p) => p.id !== action.payload);
+      })
+
+      // mark the newly selected plan as current, unmark the rest
+      .addCase(changePlan.pending, (state) => {
+        state.changing = true;
+      })
+      .addCase(changePlan.fulfilled, (state, action) => {
+        state.changing = false;
+        state.data = state.data.map((p) => ({
+          ...p,
+          is_current: p.id === action.payload,
+        }));
+      })
+      .addCase(changePlan.rejected, (state) => {
+        state.changing = false;
       });
   },
 });
