@@ -10,8 +10,8 @@ import plansReducer from "../features/subscriptions/plan.slice";
 import propertyListReducer from "../features/properties/property.slice";
 import orderReducer from "../features/orders/order.slice";
 import planRequestReducer from "../features/plan_requests/plan-request.slice";
-import couponeducer from "../features/coupons/coupon.slice";
-
+import couponReducer from "../features/coupons/coupon.slice";
+// import propertiesReducer from "../features/properties/property.slice";
 export const store = configureStore({
   reducer: {
     seeker: seekerReducer,
@@ -24,7 +24,8 @@ export const store = configureStore({
     propertyList: propertyListReducer,
     orders: orderReducer,
     planRequests: planRequestReducer,
-    coupons: couponeducer,
+    coupons: couponReducer,
+    // coupons: couponReducer,
 
     auth: authReducer,
   },
