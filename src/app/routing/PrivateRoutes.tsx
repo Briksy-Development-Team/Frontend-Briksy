@@ -30,6 +30,8 @@ const PrivateRoutes = () => {
   const EmailTemplatePage = lazy(() => import('../pages/email/EmailTemplatePage'))
   const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
   const ServiceListPage = lazy(() => import('../pages/user management/ServiceList'))
+  const InquiryPage = lazy(() => import('../pages/platform/InquiryPage'))
+
 
   return (
     <Routes>
@@ -260,6 +262,30 @@ const PrivateRoutes = () => {
           }
         />
 
+
+        <Route
+          path="/admin/services/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <ServiceListPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+
+        <Route
+          path="/admin/inquiry/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <InquiryPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
         <Route
           path="/admin/property-management/*"
           element={
@@ -310,7 +336,7 @@ const PrivateRoutes = () => {
   )
 }
 
-const SuspensedView: FC<WithChildren> = ({children}) => {
+const SuspensedView: FC<WithChildren> = ({ children }) => {
   const baseColor = getCSSVariableValue('--bs-primary')
   TopBarProgress.config({
     barColors: {
@@ -323,4 +349,4 @@ const SuspensedView: FC<WithChildren> = ({children}) => {
   return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>
 }
 
-export {PrivateRoutes}
+export { PrivateRoutes }

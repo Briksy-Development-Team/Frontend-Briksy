@@ -3,7 +3,7 @@ import seekerReducer from "../features/seeker/seekerSlice";
 import organizationReducer from "../features/organization/organization.slice";
 // import soloReducer from "../features/solo/soloSlice";
 import staffReducer from "../features/staff/staff.slice";
-import serviceGroupReducer from "../features/service/service_service_list.slice";
+import servicesReducer from "../features/service/service_service_list.slice";
 import emailTemplatesReducer from "../features/email_template/email-template.slice";
 import authReducer from "../../modules/auth/core/auth.store";
 import plansReducer from "../features/subscriptions/plan.slice";
@@ -19,7 +19,7 @@ export const store = configureStore({
     // solo: soloReducer,
     staff: staffReducer,
     plans: plansReducer,
-    serviceGroup: serviceGroupReducer,
+    services: servicesReducer,
     emailTemplates: emailTemplatesReducer,
     propertyList: propertyListReducer,
     orders: orderReducer,

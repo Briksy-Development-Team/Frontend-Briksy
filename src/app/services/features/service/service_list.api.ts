@@ -1,26 +1,64 @@
 import axiosInstance from "../../api/axiosInstance";
-import type { GetServiceListParams } from "./service_list.types";
+import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
-import { API_ROUTES } from "../../api/routes";
 
-export type { GetServiceListParams };
+import type {
+  Service,
+  ServiceFormValues,
+  GetServiceListParams,
+} from "./service_list.types";
+
+const getBasePath = () => {
+  const auth = getAuth();
+
+  return auth?.abilities?.includes("super_admin")
+    ? "/super-admin/services"
+    : "/admin/services";
+};
+
+type ApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+  meta?: {
+    pagination?: {
+      total?: number;
+    };
+  };
+};
 
 export const fetchServiceGroupApi = async (params: GetServiceListParams) => {
-  try {
-    const res = await axiosInstance.get(API_ROUTES.services, {
-      params: buildApiParams(params),
-    });
+  const res = await axiosInstance.get<ApiResponse<Service[]>>(getBasePath(), {
+    params: buildApiParams(params),
+  });
 
-    const { data, meta } = res.data || {};
+  return {
+    data: res.data.data ?? [],
+    total: res.data.meta?.pagination?.total ?? 0,
+  };
+};
 
-    return {
-      data: data ?? [],
-      total: meta?.pagination?.total ?? 0,
-    };
-  } catch (error) {
-    return {
-      data: [],
-      total: 0,
-    };
-  }
+export const createServiceApi = async (payload: ServiceFormValues) => {
+  const res = await axiosInstance.post<ApiResponse<Service>>(
+    getBasePath(),
+    payload,
+  );
+
+  return res.data.data;
+};
+
+export const updateServiceApi = async (
+  id: string,
+  payload: ServiceFormValues,
+) => {
+  const res = await axiosInstance.put<ApiResponse<Service>>(
+    `${getBasePath()}/${id}`,
+    payload,
+  );
+
+  return res.data.data;
+};
+
+export const deleteServiceApi = async (id: string) => {
+  await axiosInstance.delete(`${getBasePath()}/${id}`);
 };

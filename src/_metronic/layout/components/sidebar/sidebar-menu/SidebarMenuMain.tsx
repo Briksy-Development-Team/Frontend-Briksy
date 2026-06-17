@@ -1,27 +1,32 @@
-import { useIntl } from 'react-intl'
-import { usePermissionAccess, useRoleAccess } from '../../../../../app/modules/auth'
-import { SidebarMenuItemWithSub } from './SidebarMenuItemWithSub'
-import { SidebarMenuItem } from './SidebarMenuItem'
-import { getRolePortalBaseRoute } from '../../../../../app/modules/auth/core/roleRoutes'
+import { useIntl } from "react-intl";
+import {
+  usePermissionAccess,
+  useRoleAccess,
+} from "../../../../../app/modules/auth";
+import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
+import { SidebarMenuItem } from "./SidebarMenuItem";
+import { getRolePortalBaseRoute } from "../../../../../app/modules/auth/core/roleRoutes";
 
 const SidebarMenuMain = () => {
-  const intl = useIntl()
-  const { isSuperAdmin, isAdmin } = useRoleAccess()
-  const { hasPermission } = usePermissionAccess()
-  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : isAdmin ? ['admin'] : [])
+  const intl = useIntl();
+  const { isSuperAdmin, isAdmin } = useRoleAccess();
+  const { hasPermission } = usePermissionAccess();
+  const portalBase = getRolePortalBaseRoute(
+    isSuperAdmin ? ["super_admin"] : isAdmin ? ["admin"] : [],
+  );
 
   return (
     <>
-      {hasPermission('dashboard.view') && (
+      {hasPermission("dashboard.view") && (
         <SidebarMenuItem
           to={`${portalBase}/dashboard`}
           icon="element-11"
-          title={intl.formatMessage({ id: 'MENU.DASHBOARD' })}
+          title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
           fontIcon="bi-app-indicator"
         />
       )}
 
-      {isSuperAdmin && hasPermission('user.view') && (
+      {isSuperAdmin && hasPermission("user.view") && (
         <SidebarMenuItemWithSub
           to={`${portalBase}/users`}
           title="User Management"
@@ -43,7 +48,7 @@ const SidebarMenuMain = () => {
         </SidebarMenuItemWithSub>
       )}
 
-      {isSuperAdmin && hasPermission('company.view') && (
+      {isSuperAdmin && hasPermission("company.view") && (
         <>
           <SidebarMenuItemWithSub
             to={`${portalBase}/companies`}
@@ -65,7 +70,7 @@ const SidebarMenuMain = () => {
             />
           </SidebarMenuItemWithSub>
 
-          {hasPermission('plan.view') && (
+          {hasPermission("plan.view") && (
             <SidebarMenuItem
               to={`${portalBase}/plans`}
               title="Plans"
@@ -74,7 +79,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('plan_request.view') && (
+          {hasPermission("plan_request.view") && (
             <SidebarMenuItem
               to={`${portalBase}/plan-requests`}
               title="Plan Requests"
@@ -83,7 +88,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('referral.view') && (
+          {hasPermission("referral.view") && (
             <SidebarMenuItem
               to={`${portalBase}/referral-programs`}
               title="Referral Programs"
@@ -92,7 +97,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('coupon.view') && (
+          {hasPermission("coupon.view") && (
             <SidebarMenuItem
               to={`${portalBase}/coupons`}
               title="Coupons"
@@ -101,7 +106,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('order.view') && (
+          {hasPermission("order.view") && (
             <SidebarMenuItem
               to={`${portalBase}/orders`}
               title="Orders"
@@ -110,11 +115,16 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('email_template.view') && (
-            <SidebarMenuItem to={`${portalBase}/email-templates`} title="Email Templates" fontIcon="bi-archive" icon="element-plus" />
+          {hasPermission("email_template.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/email-templates`}
+              title="Email Templates"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
           )}
 
-          {hasPermission('property.view') && (
+          {hasPermission("property.view") && (
             <SidebarMenuItem
               to={`${portalBase}/property-management`}
               title="Property Management - At a Glance"
@@ -123,7 +133,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('service.view') && (
+          {hasPermission("service.view") && (
             <SidebarMenuItem
               to={`${portalBase}/services`}
               title="Services Management"
@@ -132,7 +142,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasPermission('permission.view') && (
+          {hasPermission("permission.view") && (
             <SidebarMenuItem
               to={`${portalBase}/permissions`}
               title="Permissions"
@@ -140,12 +150,14 @@ const SidebarMenuMain = () => {
               icon="element-plus"
             />
           )}
+
+
         </>
       )}
 
       {isAdmin && (
         <>
-          {hasPermission('property.view') && (
+          {hasPermission("property.view") && (
             <SidebarMenuItem
               to={`${portalBase}/property-management`}
               title="Property Management"
@@ -153,7 +165,17 @@ const SidebarMenuMain = () => {
               icon="element-plus"
             />
           )}
-          {hasPermission('user.view') && (
+
+          {hasPermission("service.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/services-management`}
+              title="Services Management"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission("user.view") && (
             <SidebarMenuItem
               to={`${portalBase}/users`}
               title="User Management"
@@ -161,10 +183,19 @@ const SidebarMenuMain = () => {
               icon="element-plus"
             />
           )}
+
+          {/* {hasPermission("inquiry.view") && ( */}
+            <SidebarMenuItem
+              to={`${portalBase}/inquiry`}
+              title="Inquirys Management"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          {/* )} */}
         </>
       )}
 
-      {(isSuperAdmin || isAdmin) && hasPermission('settings.view') && (
+      {(isSuperAdmin || isAdmin) && hasPermission("settings.view") && (
         <SidebarMenuItem
           to={`${portalBase}/settings`}
           title="Settings"
@@ -173,7 +204,7 @@ const SidebarMenuMain = () => {
         />
       )}
     </>
-  )
-}
+  );
+};
 
-export { SidebarMenuMain }
+export { SidebarMenuMain };
