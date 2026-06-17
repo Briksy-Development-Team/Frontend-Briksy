@@ -4,17 +4,18 @@ import type { QueryParams } from "../entity-list/EntityList";
 
 type FetchFn = (params: QueryParams) => void;
 
-export const useEntityTable = (fetchFn: FetchFn) => {
+export const useEntityTable = (fetchFn: FetchFn, initialParams?: Partial<QueryParams>) => {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 400);
 
   const [params, setParams] = useState<QueryParams>({
     page: 1,
     per_page: 10,
-    search: "",
-    filters: {},
-    sort: "",
-    direction: "asc",
+    search: initialParams?.search ?? "",
+    filters: initialParams?.filters ?? {},
+    sort: initialParams?.sort ?? "",
+    direction: initialParams?.direction ?? "asc",
+    ...initialParams,
   });
 
   useEffect(() => {

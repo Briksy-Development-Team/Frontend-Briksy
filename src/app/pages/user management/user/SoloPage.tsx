@@ -1,92 +1,78 @@
-    // import { useEffect, useState } from "react";
-    // import { useDispatch, useSelector } from "react-redux";
-    // import { fetchOrganization } from "../../../services/features/organization/organization.slice";
-    // import { RootState, AppDispatch } from "../../../services/store";
-    // import { useDebounce } from "use-debounce";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrganization } from "../../../services/features/organization/organization.slice";
+import { organizationConfig } from "../../../services/features/organization/organization.config";
+import type { RootState, AppDispatch } from "../../../services/store";
+import { useEntityTable } from "../../../modules/apps/shared_table/hooks/useEntityTable";
+import { EntityList } from "../../../modules/apps/shared_table/entity-list/EntityList";
+import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { Content } from "../../../../_metronic/layout/components/content";
+import { useRoleAccess } from "../../../modules/auth";
+import { getRolePortalBaseRoute } from "../../../modules/auth/core/roleRoutes";
 
-    // import { EntityList, QueryParams } from "../../../modules/apps/shared_table/entity-list/EntityList";
-    // import { OrganizationColumns } from "../../../services/features/organization/orgrColumns";
-    // import { OrganizationFilters } from "../../../services/features/organization/orgrFilter";
-    // import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-    // import { Content } from "../../../../_metronic/layout/components/content";
+const SOLO_TRADER_SERVICES = [
+  { label: "Electrical", value: "electrical" },
+  { label: "Plumbing", value: "plumbing" },
+  { label: "Fencing", value: "fencing" },
+  { label: "Landscapers", value: "landscapers" },
+  { label: "Conveyancers", value: "conveyancers" },
+  { label: "Brokers", value: "brokers" },
+];
 
-    // const SoloPage = () => {
-    //     const dispatch = useDispatch<AppDispatch>();
+const SoloPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isSuperAdmin } = useRoleAccess();
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
+  const { data, total, error } = useSelector((s: RootState) => s.organization);
 
-    //     const { data, total, error } = useSelector(
-    //         (state: RootState) => state.organization
-    //     );
+  const { params, handleParamsChange } = useEntityTable(
+    (p) => dispatch(fetchOrganization(p)),
+    { filters: { type_slug: ["solo-traders"] } }
+  );
 
-    //     const [search, setSearch] = useState("");
+  const handleSoloParamsChange = (next: typeof params) => {
+    handleParamsChange({
+      ...next,
+      filters: {
+        ...(next.filters ?? {}),
+        type_slug: ["solo-traders"],
+      },
+    });
+  };
 
-    //     const [debouncedSearch] = useDebounce(search, 400);
+  const filtersConfig = [
+    ...organizationConfig.filters,
+    {
+      key: "service_slug",
+      label: "Service",
+      type: "select" as const,
+      options: SOLO_TRADER_SERVICES,
+    },
+  ];
 
-    //     const [params, setParams] = useState<QueryParams>({
-    //         page: 1,
-    //         per_page: 10,
-    //         search: "",
-    //         filters: {},
-    //         sort: "",
-    //         direction: "asc",
-    //     });
+  if (error) {
+    return (
+      <Content>
+        <PageHeader title="Solo Traders" subtitle="Filter and inspect solo trader organizations" />
+        <div className="text-danger">{error}</div>
+      </Content>
+    );
+  }
 
-    //     useEffect(() => {
-    //         setParams((prev) => ({
-    //             ...prev,
-    //             search: debouncedSearch,
-    //             page: 1,
-    //         }));
-    //     }, [debouncedSearch]);
+  return (
+    <Content>
+      <PageHeader title="Solo Traders" subtitle="Solo trader organizations and service tags" />
+      <EntityList
+        data={data}
+        total={total}
+        params={params}
+        onParamsChange={handleSoloParamsChange}
+        columns={organizationConfig.columns}
+        filtersConfig={filtersConfig}
+        enableRowClick
+        getRowLink={(row) => `${portalBase}/companies/${row.id}`}
+      />
+    </Content>
+  );
+};
 
-    //     useEffect(() => {
-    //         dispatch(fetchOrganization(params));
-    //     }, [params]);
-
-    //     const handleParamsChange = (next: QueryParams) => {
-    //         if (next.search !== params.search) {
-    //             setSearch(next.search);
-    //             return;
-    //         }
-
-    //         setParams(next);
-    //     };
-
-    //     if (error) {
-    //         return (
-    //             <Content>
-    //                 <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
-    //                 <div>{error}</div>
-    //             </Content>
-    //         );
-    //     }
-
-    //     return (
-
-
-
-    //         <Content>
-    //             <PageHeader title="Solo Trader" subtitle="Manage all Solo" />
-
-
-    //             <EntityList
-    //                 data={data}
-    //                 total={total}
-    //                 params={params}
-    //                 onParamsChange={handleParamsChange}
-    //                 columns={OrganizationColumns}
-    //                 filtersConfig={OrganizationFilters}
-    //                 enableRowClick
-    //                 getRowLink={(row: any) =>
-    //                     `/apps/user/solo/${row.id}`
-    //                 }
-    //             />
-
-    //         </Content>
-
-
-
-
-    //     );
-    // };
-
-    // export default SoloPage;
+export default SoloPage;

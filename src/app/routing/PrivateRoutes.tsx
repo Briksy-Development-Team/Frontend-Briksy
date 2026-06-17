@@ -24,10 +24,12 @@ const PrivateRoutes = () => {
   const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
   const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
   const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
+  const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
   const UserPage = lazy(() => import('../pages/user management/UserPage'))
   const Subscription = lazy(() => import('../pages/Subscription/Subscription'))
   const EmailTemplatePage = lazy(() => import('../pages/email/EmailTemplatePage'))
   const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
+  const ServiceListPage = lazy(() => import('../pages/user management/ServiceList'))
 
   return (
     <Routes>
@@ -84,6 +86,17 @@ const PrivateRoutes = () => {
             <RoleGuard allow={['super_admin']}>
               <SuspensedView>
                 <UserPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/companies/solo-traders/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <SoloPage />
               </SuspensedView>
             </RoleGuard>
           }
@@ -231,6 +244,17 @@ const PrivateRoutes = () => {
             <RoleGuard allow={['super_admin']}>
               <SuspensedView>
                 <PropertyListPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/services/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <ServiceListPage />
               </SuspensedView>
             </RoleGuard>
           }

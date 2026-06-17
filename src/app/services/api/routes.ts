@@ -9,6 +9,8 @@ export const API_ROUTES = {
 
   plans: "/super-admin/plans",
 
+  services: "/super-admin/services",
+
   coupons: "/super-admin/coupons",
 
   orders: "/super-admin/orders",

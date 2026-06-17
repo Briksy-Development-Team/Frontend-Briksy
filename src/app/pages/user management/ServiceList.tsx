@@ -18,14 +18,14 @@ const ServiceListPage = () => {
 
     if (error) return (
         <Content>
-            <PageHeader title="Service List" subtitle="All service List on the platform" />
+            <PageHeader title="Services Management" subtitle="All service groups on the platform" />
             <div className="text-danger">{error}</div>
         </Content>
     );
 
     return (
         <Content>
-            <PageHeader title="Service List" subtitle="All service List on the platform" />
+            <PageHeader title="Services Management" subtitle="All service groups on the platform" />
             <EntityList
                 data={data}
                 total={total}

@@ -57,6 +57,12 @@ const SidebarMenuMain = () => {
               title="Companies"
               fontIcon="bi-layers"
             />
+            <SidebarMenuItem
+              to={`${portalBase}/companies/solo-traders`}
+              icon="abstract-28"
+              title="Solo Traders"
+              fontIcon="bi-layers"
+            />
           </SidebarMenuItemWithSub>
 
           {hasPermission('plan.view') && (
@@ -112,6 +118,15 @@ const SidebarMenuMain = () => {
             <SidebarMenuItem
               to={`${portalBase}/property-management`}
               title="Property Management - At a Glance"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasPermission('service.view') && (
+            <SidebarMenuItem
+              to={`${portalBase}/services`}
+              title="Services Management"
               fontIcon="bi-archive"
               icon="element-plus"
             />
