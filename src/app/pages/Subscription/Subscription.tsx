@@ -24,6 +24,8 @@ const Subscription = () => {
 
     const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null)
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
+    const selectedPlanPropertyLimit =
+        selectedPlan?.features.find((feature) => feature.name === "Properties")?.value ?? "unlimited"
     useEffect(() => {
         dispatch(fetchPlans())
     }, [dispatch])
@@ -84,7 +86,7 @@ const Subscription = () => {
                     <div className="text-center py-4">
                         <h4 className="fw-bold mb-2">Switch to {selectedPlan.name}</h4>
                         <p className="text-gray-700 fs-5">
-                            ₹{selectedPlan.price}/month — up to {selectedPlan.propertyLimit} properties
+                            ₹{selectedPlan.price}/month - up to {selectedPlanPropertyLimit} properties
                         </p>
                         <p className="text-muted fs-6">
                             This change takes effect immediately and your billing will be updated.

@@ -254,17 +254,9 @@ function getChartOptions(
     },
 
     states: {
-      normal: {
-        filter: {
-          type: 'none',
-          value: 0,
-        },
-      },
-
       hover: {
         filter: {
           type: 'none',
-          value: 0,
         },
       },
 
@@ -272,7 +264,6 @@ function getChartOptions(
         allowMultipleDataPointsSelection: false,
         filter: {
           type: 'none',
-          value: 0,
         },
       },
     },

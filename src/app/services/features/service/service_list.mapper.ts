@@ -9,13 +9,13 @@ type ServiceApi = {
 
   name: string;
 
-  slug?: string;
+  slug?: string | null;
 
-  description?: string;
+  description?: string | null;
 
   category?: ServiceCategory;
 
-  image?: string;
+  image?: string | null;
 
   organization_type?: {
     id: string;
@@ -27,8 +27,8 @@ type ServiceApi = {
 
   organization_count?: number;
 
-  created_at?: string;
-  updated_at?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 export const mapServiceList = (item: ServiceApi): ServiceList => ({

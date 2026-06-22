@@ -14,7 +14,7 @@ export type { RowAction, AddAction };
 
 export type Column<T> = {
   Header: string;
-  accessor: Extract<keyof T, string>;
+  accessor: Extract<keyof T, string> | `${Extract<keyof T, string>}.${string}`;
   sortable?: boolean;
   alwaysVisible?: boolean;
   Cell?: (props: { value: T[keyof T]; row: T }) => ReactNode;
@@ -92,24 +92,33 @@ const EntityList = <T extends { id: number | string }>({
   const toggleAll = (checked: boolean) =>
     setSelectedRows(checked ? new Set(data.map((r) => r.id)) : new Set());
 
-  const exportAll = async () => {
+  const exportAll = async (): Promise<void> => {
     if (!onExportAll) return;
 
     const allRows = await onExportAll();
 
-    exportToExcel(allRows, columns);
+    await exportToExcel(
+      allRows as Record<string, unknown>[],
+      columns
+    );
   };
   const filteredColumns = columns.filter(
     (col) => col.alwaysVisible || visibleColumns.includes(col.accessor),
   );
-  const exportSelected = () => {
+  const exportSelected = async (): Promise<void> => {
     const rows = data.filter((r) => selectedRows.has(r.id));
 
-    exportToExcel(rows, columns);
+    await exportToExcel(
+      rows as Record<string, unknown>[],
+      columns
+    );
   };
 
-  const exportCurrentPage = () => {
-    exportToExcel(data, columns);
+  const exportCurrentPage = async (): Promise<void> => {
+    await exportToExcel(
+      data as Record<string, unknown>[],
+      columns
+    );
   };
   return (
     <div className="d-flex gap-5">

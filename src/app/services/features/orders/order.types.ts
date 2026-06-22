@@ -53,3 +53,12 @@ export type OrderFormValues = {
 export type OrderCancelValues = {
   reason?: string;
 };
+
+export type GetOrderParams = {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  sort?: string;
+  direction?: "asc" | "desc";
+  filters?: Record<string, unknown>;
+};

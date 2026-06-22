@@ -37,7 +37,7 @@ export function Account() {
             <div className='col-lg-9'>
               <div className='input-group input-group-lg input-group-solid'>
                 <span className='input-group-text pe-0'>
-                  <i className='la la-at fs-4'></i>
+                  <span className='fs-5 text-muted'>@</span>
                 </span>
                 <input
                   type='text'

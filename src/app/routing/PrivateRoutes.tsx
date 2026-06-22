@@ -7,7 +7,6 @@ import { MasterLayout } from '../../_metronic/layout/MasterLayout'
 import { PermissionGuard, RoleGuard, useAuth } from '../modules/auth'
 import { getRoleHomeRoute } from '../modules/auth/core/roleRoutes'
 import { DashboardWrapper } from '../pages/dashboard/DashboardWrapper'
-import { MenuTestPage } from '../pages/MenuTestPage'
 import { ComingSoonPage } from '../pages/ComingSoonPage'
 import PlanRequestPage from '../pages/platform/PlanRequestPage'
 import CouponPage from '../pages/platform/CouponPage'
@@ -18,10 +17,6 @@ import PermissionsPage from '../pages/platform/PermissionsPage'
 const PrivateRoutes = () => {
   const { currentUser } = useAuth()
   const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
-  const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
-  const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
-  const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
-  const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
   const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
   const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
   const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
@@ -31,7 +26,6 @@ const PrivateRoutes = () => {
   const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
   const ServiceListPage = lazy(() => import('../pages/user management/ServiceList'))
   const InquiryPage = lazy(() => import('../pages/platform/InquiryPage'))
-
 
   return (
     <Routes>
@@ -58,16 +52,6 @@ const PrivateRoutes = () => {
             <RoleGuard allow={['admin', 'admin_staff']}>
               <DashboardWrapper />
             </RoleGuard>
-          }
-        />
-        <Route path="menu-test" element={<MenuTestPage />} />
-
-        <Route
-          path="crafted/pages/profile/*"
-          element={
-            <SuspensedView>
-              <ProfilePage />
-            </SuspensedView>
           }
         />
 
@@ -320,15 +304,6 @@ const PrivateRoutes = () => {
         />
 
         <Route path="/apps/*" element={<Navigate to={homeRoute} replace />} />
-
-        <Route
-          path="crafted/account/*"
-          element={
-            <SuspensedView>
-              <AccountPage />
-            </SuspensedView>
-          }
-        />
 
         <Route path="*" element={<Navigate to="/error/404" />} />
       </Route>

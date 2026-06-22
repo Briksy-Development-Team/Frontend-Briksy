@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
+import { KTIcon } from '../../../../_metronic/helpers'
 import { useAuth } from '../core/Auth'
 
 const loginSchema = Yup.object().shape({
@@ -152,7 +153,7 @@ export function Login() {
             onClick={() => setShowPassword(!showPassword)}
             style={{ cursor: 'pointer' }}
           >
-            <i className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'}`}></i>
+            <KTIcon iconName={showPassword ? 'eye' : 'eye-slash'} className='fs-4' />
           </span>
         </div>
 

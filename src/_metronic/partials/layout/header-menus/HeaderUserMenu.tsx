@@ -2,11 +2,14 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../../../app/modules/auth'
-import { Languages } from './Languages'
 import { toAbsoluteUrl } from '../../../helpers'
+import { getRoleHomeRoute, getRolePortalBaseRoute } from '../../../../app/modules/auth/core/roleRoutes'
 
 const HeaderUserMenu: FC = () => {
   const { currentUser, logout } = useAuth()
+  const roles = currentUser?.roles ?? []
+  const homeRoute = getRoleHomeRoute(roles)
+  const portalBase = getRolePortalBaseRoute(roles)
   const displayName =
     `${currentUser?.first_name ?? ''} ${currentUser?.last_name ?? ''}`.trim() || 'User'
   return (
@@ -35,93 +38,14 @@ const HeaderUserMenu: FC = () => {
       <div className='separator my-2'></div>
 
       <div className='menu-item px-5'>
-        <Link to={'/crafted/pages/profile'} className='menu-link px-5'>
-          My Profile
+        <Link to={homeRoute} className='menu-link px-5'>
+          Dashboard
         </Link>
       </div>
 
       <div className='menu-item px-5'>
-        <a href='#' className='menu-link px-5'>
-          <span className='menu-text'>My Projects</span>
-          <span className='menu-badge'>
-            <span className='badge badge-light-danger badge-circle fw-bolder fs-7'>3</span>
-          </span>
-        </a>
-      </div>
-
-      <div
-        className='menu-item px-5'
-        data-kt-menu-trigger='hover'
-        data-kt-menu-placement='left-start'
-        data-kt-menu-flip='bottom'
-      >
-        <a href='#' className='menu-link px-5'>
-          <span className='menu-title'>My Subscription</span>
-          <span className='menu-arrow'></span>
-        </a>
-
-        <div className='menu-sub menu-sub-dropdown w-175px py-4'>
-          <div className='menu-item px-3'>
-            <a href='#' className='menu-link px-5'>
-              Referrals
-            </a>
-          </div>
-
-          <div className='menu-item px-3'>
-            <a href='#' className='menu-link px-5'>
-              Billing
-            </a>
-          </div>
-
-          <div className='menu-item px-3'>
-            <a href='#' className='menu-link px-5'>
-              Payments
-            </a>
-          </div>
-
-          <div className='menu-item px-3'>
-            <a href='#' className='menu-link d-flex flex-stack px-5'>
-              Statements
-              <i
-                className='fas fa-exclamation-circle ms-2 fs-7'
-                data-bs-toggle='tooltip'
-                title='View your statements'
-              ></i>
-            </a>
-          </div>
-
-          <div className='separator my-2'></div>
-
-          <div className='menu-item px-3'>
-            <div className='menu-content px-3'>
-              <label className='form-check form-switch form-check-custom form-check-solid'>
-                <input
-                  className='form-check-input w-30px h-20px'
-                  type='checkbox'
-                  value='1'
-                  defaultChecked={true}
-                  name='notifications'
-                />
-                <span className='form-check-label text-muted fs-7'>Notifications</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className='menu-item px-5'>
-        <a href='#' className='menu-link px-5'>
-          My Statements
-        </a>
-      </div>
-
-      <div className='separator my-2'></div>
-
-      <Languages />
-
-      <div className='menu-item px-5 my-1'>
-        <Link to='/crafted/account/settings' className='menu-link px-5'>
-          Account Settings
+        <Link to={`${portalBase}/settings`} className='menu-link px-5'>
+          Settings
         </Link>
       </div>
 

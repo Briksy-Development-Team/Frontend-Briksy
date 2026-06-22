@@ -94,7 +94,7 @@ const AccountHeader: FC = () => {
                         data-kt-menu-placement='bottom-end'
                         data-kt-menu-flip='top-end'
                       >
-                        <i className='bi bi-three-dots fs-3'></i>
+                        <KTIcon iconName='dots-vertical' className='fs-3' />
                       </button>
                       <Dropdown1 />
                     </div>

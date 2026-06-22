@@ -1,0 +1,149 @@
+src/_metronic/assets/ts/components/MenuComponent.ts(1,44): error TS2307: Cannot find module '@popperjs/core' or its corresponding type declarations.
+src/_metronic/layout/MasterInit.tsx(2,19): error TS7016: Could not find a declaration file for module 'bootstrap'. '/home/shin/Documents/Frontend-Briksy/node_modules/bootstrap/dist/js/bootstrap.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/bootstrap` if it exists or add a new declaration (.d.ts) file containing `declare module 'bootstrap';`
+src/_metronic/layout/components/header/Navbar.tsx(3,51): error TS2305: Module '"../../../partials"' has no exported member 'Search'.
+src/_metronic/layout/components/toolbar/toolbars/ToolbarClassic.tsx(5,9): error TS2305: Module '"../../../../partials"' has no exported member 'CreateAppModal'.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(3,31): error TS2307: Cannot find module 'react-copy-to-clipboard' or its corresponding type declarations.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(4,25): error TS2307: Cannot find module 'prism-react-renderer' or its corresponding type declarations.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(5,39): error TS2307: Cannot find module 'react-bootstrap' or its corresponding type declarations.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(52,16): error TS7031: Binding element 'className' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(52,27): error TS7031: Binding element 'style' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(52,34): error TS7031: Binding element 'tokens' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(52,42): error TS7031: Binding element 'getLineProps' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(52,56): error TS7031: Binding element 'getTokenProps' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(55,32): error TS7006: Parameter 'line' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(55,38): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(57,34): error TS7006: Parameter 'token' implicitly has an 'any' type.
+src/_metronic/partials/content/code-highlight/CodeBlock.tsx(57,41): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/_metronic/partials/layout/InboxCompose.tsx(3,21): error TS2307: Cannot find module 'react-bootstrap' or its corresponding type declarations.
+src/_metronic/partials/layout/SearchModal.tsx(3,21): error TS2307: Cannot find module 'react-bootstrap' or its corresponding type declarations.
+src/_metronic/partials/modals/create-app-stepper/CreateAppModal.tsx(5,21): error TS2307: Cannot find module 'react-bootstrap' or its corresponding type declarations.
+src/_metronic/partials/modals/select-location/SelectLocationModal.tsx(2,21): error TS2307: Cannot find module 'react-bootstrap' or its corresponding type declarations.
+src/_metronic/partials/widgets/charts/ChartsWidget1.tsx(263,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget1.tsx(271,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget2.tsx(168,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget2.tsx(175,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget3.tsx(267,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget3.tsx(275,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget5.tsx(172,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget5.tsx(179,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget6.tsx(172,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget6.tsx(179,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget7.tsx(205,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget7.tsx(212,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget8.tsx(208,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/charts/ChartsWidget8.tsx(215,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget10.tsx(162,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget10.tsx(169,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget11.tsx(143,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget11.tsx(150,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget13.tsx(192,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget13.tsx(199,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget2.tsx(226,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget2.tsx(233,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget3.tsx(207,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget3.tsx(214,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget6.tsx(243,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget6.tsx(250,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget8.tsx(293,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget8.tsx(300,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget9.tsx(267,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/mixed/MixedWidget9.tsx(274,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/statistics/StatisticsWidget3.tsx(178,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/statistics/StatisticsWidget3.tsx(185,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/statistics/StatisticsWidget4.tsx(175,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/_metronic/partials/widgets/statistics/StatisticsWidget4.tsx(182,11): error TS2353: Object literal may only specify known properties, and 'value' does not exist in type '{ type?: "none" | "lighten" | "darken" | undefined; }'.
+src/app/modules/accounts/components/Overview.tsx(5,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget5'. Did you mean 'ListsWidget3'?
+src/app/modules/accounts/components/Overview.tsx(6,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget1'. Did you mean 'TablesWidget10'?
+src/app/modules/profile/components/Overview.tsx(3,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget2'.
+src/app/modules/profile/components/Overview.tsx(4,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget3'.
+src/app/modules/profile/components/Overview.tsx(5,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget4'.
+src/app/modules/profile/components/Overview.tsx(6,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget5'.
+src/app/modules/profile/components/Overview.tsx(7,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget6'.
+src/app/modules/profile/components/Overview.tsx(9,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget5'. Did you mean 'ListsWidget3'?
+src/app/modules/profile/components/Overview.tsx(10,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget2'. Did you mean 'ListsWidget3'?
+src/app/modules/profile/components/UsersList.tsx(4,39): error TS2307: Cannot find module 'react-bootstrap' or its corresponding type declarations.
+src/app/modules/widgets/components/Charts.tsx(4,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ChartsWidget2'. Did you mean 'ChartsWidget1'?
+src/app/modules/widgets/components/Charts.tsx(7,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ChartsWidget5'. Did you mean 'ChartsWidget1'?
+src/app/modules/widgets/components/Charts.tsx(8,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ChartsWidget6'. Did you mean 'ChartsWidget1'?
+src/app/modules/widgets/components/Charts.tsx(9,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ChartsWidget7'. Did you mean 'ChartsWidget1'?
+src/app/modules/widgets/components/Charts.tsx(10,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ChartsWidget8'. Did you mean 'ChartsWidget1'?
+src/app/modules/widgets/components/Feeds.tsx(3,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget2'.
+src/app/modules/widgets/components/Feeds.tsx(4,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget3'.
+src/app/modules/widgets/components/Feeds.tsx(5,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget4'.
+src/app/modules/widgets/components/Feeds.tsx(6,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget5'.
+src/app/modules/widgets/components/Feeds.tsx(7,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'FeedsWidget6'.
+src/app/modules/widgets/components/Lists.tsx(3,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget1'. Did you mean 'ListsWidget3'?
+src/app/modules/widgets/components/Lists.tsx(4,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget2'. Did you mean 'ListsWidget3'?
+src/app/modules/widgets/components/Lists.tsx(6,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget4'. Did you mean 'ListsWidget3'?
+src/app/modules/widgets/components/Lists.tsx(7,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget5'. Did you mean 'ListsWidget3'?
+src/app/modules/widgets/components/Lists.tsx(8,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget6'. Did you mean 'ListsWidget3'?
+src/app/modules/widgets/components/Lists.tsx(9,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'ListsWidget7'. Did you mean 'ListsWidget3'?
+src/app/modules/widgets/components/Mixed.tsx(3,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget1'.
+src/app/modules/widgets/components/Mixed.tsx(4,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget2'.
+src/app/modules/widgets/components/Mixed.tsx(5,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget3'.
+src/app/modules/widgets/components/Mixed.tsx(6,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget4'.
+src/app/modules/widgets/components/Mixed.tsx(7,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget5'.
+src/app/modules/widgets/components/Mixed.tsx(8,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget6'.
+src/app/modules/widgets/components/Mixed.tsx(9,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget7'.
+src/app/modules/widgets/components/Mixed.tsx(10,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget8'.
+src/app/modules/widgets/components/Mixed.tsx(11,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget9'.
+src/app/modules/widgets/components/Mixed.tsx(12,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget10'.
+src/app/modules/widgets/components/Mixed.tsx(13,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'MixedWidget11'.
+src/app/modules/widgets/components/Statistics.tsx(3,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'StatisticsWidget1'.
+src/app/modules/widgets/components/Statistics.tsx(4,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'StatisticsWidget2'.
+src/app/modules/widgets/components/Statistics.tsx(5,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'StatisticsWidget3'.
+src/app/modules/widgets/components/Statistics.tsx(6,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'StatisticsWidget4'.
+src/app/modules/widgets/components/Statistics.tsx(7,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'StatisticsWidget5'.
+src/app/modules/widgets/components/Statistics.tsx(8,3): error TS2305: Module '"../../../../_metronic/partials/widgets"' has no exported member 'StatisticsWidget6'.
+src/app/modules/widgets/components/Tables.tsx(3,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget1'. Did you mean 'TablesWidget10'?
+src/app/modules/widgets/components/Tables.tsx(4,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget2'. Did you mean 'TablesWidget5'?
+src/app/modules/widgets/components/Tables.tsx(5,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget3'. Did you mean 'TablesWidget5'?
+src/app/modules/widgets/components/Tables.tsx(6,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget4'. Did you mean 'TablesWidget5'?
+src/app/modules/widgets/components/Tables.tsx(8,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget6'. Did you mean 'TablesWidget5'?
+src/app/modules/widgets/components/Tables.tsx(9,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget7'. Did you mean 'TablesWidget5'?
+src/app/modules/widgets/components/Tables.tsx(11,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget9'. Did you mean 'TablesWidget5'?
+src/app/modules/widgets/components/Tables.tsx(13,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget11'. Did you mean 'TablesWidget10'?
+src/app/modules/widgets/components/Tables.tsx(14,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget12'. Did you mean 'TablesWidget10'?
+src/app/modules/widgets/components/Tables.tsx(15,3): error TS2724: '"../../../../_metronic/partials/widgets"' has no exported member named 'TablesWidget13'. Did you mean 'TablesWidget10'?
+src/app/pages/Subscription/Subscription.tsx(87,79): error TS2339: Property 'propertyLimit' does not exist on type 'Plan'.
+src/app/pages/platform/OrderPage.tsx(82,11): error TS2322: Type '({ Header: string; accessor: "order_number"; sortable: true; } | { Header: string; accessor: "organization.name"; sortable?: undefined; } | { Header: string; accessor: "total_amount"; sortable: true; } | { ...; } | { ...; } | { ...; } | { ...; })[]' is not assignable to type 'Column<Order>[]'.
+  Type '{ Header: string; accessor: "order_number"; sortable: true; } | { Header: string; accessor: "organization.name"; sortable?: undefined; } | { Header: string; accessor: "total_amount"; sortable: true; } | { ...; } | { ...; } | { ...; } | { ...; }' is not assignable to type 'Column<Order>'.
+    Type '{ Header: string; accessor: "organization.name"; sortable?: undefined; }' is not assignable to type 'Column<Order>'.
+      Types of property 'accessor' are incompatible.
+        Type '"organization.name"' is not assignable to type 'keyof Order'. Did you mean '"organization"'?
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(3,57): error TS2307: Cannot find module '../plan-request.types' or its corresponding type declarations.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(47,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(62,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(77,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(92,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(107,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(122,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestModal.tsx(141,22): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/app/services/features/inquiry request/component/PlanRequestReviewModal.tsx(3,34): error TS2307: Cannot find module '../plan-request.types' or its corresponding type declarations.
+src/app/services/features/inquiry request/inquiry_request.slice.ts(95,52): error TS2345: Argument of type 'ReviewPayload' is not assignable to parameter of type '{ admin_notes?: string | undefined; create_order?: boolean | undefined; Inquiry_id?: string | null | undefined; organization_id?: string | null | undefined; }'.
+  Types of property 'admin_notes' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+src/app/services/features/inquiry request/inquiry_request.slice.ts(104,51): error TS2345: Argument of type 'ReviewPayload' is not assignable to parameter of type '{ admin_notes?: string | undefined; create_order?: boolean | undefined; Inquiry_id?: string | null | undefined; organization_id?: string | null | undefined; }'.
+  Types of property 'admin_notes' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+src/app/services/features/orders/order.api.ts(4,32): error TS2305: Module '"./order.types"' has no exported member 'GetOrderParams'.
+src/app/services/features/orders/order.config.ts(13,7): error TS2820: Type '"organization.name"' is not assignable to type 'keyof Order'. Did you mean '"organization"'?
+src/app/services/features/orders/order.slice.ts(18,39): error TS2305: Module '"./order.types"' has no exported member 'GetOrderParams'.
+src/app/services/features/plan_requests/plan-request.slice.ts(95,49): error TS2345: Argument of type 'ReviewPayload' is not assignable to parameter of type '{ admin_notes?: string | undefined; create_order?: boolean | undefined; plan_id?: string | null | undefined; organization_id?: string | null | undefined; }'.
+  Types of property 'admin_notes' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+src/app/services/features/plan_requests/plan-request.slice.ts(104,48): error TS2345: Argument of type 'ReviewPayload' is not assignable to parameter of type '{ admin_notes?: string | undefined; create_order?: boolean | undefined; plan_id?: string | null | undefined; organization_id?: string | null | undefined; }'.
+  Types of property 'admin_notes' are incompatible.
+    Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+src/app/services/features/service/service_service_list.slice.ts(12,8): error TS2459: Module '"./service_list.api"' declares 'GetServiceListParams' locally, but it is not exported.
+src/app/services/features/service/service_service_list.slice.ts(57,26): error TS2345: Argument of type '(item: ServiceApi) => ServiceList' is not assignable to parameter of type '(value: Service, index: number, array: Service[]) => ServiceList'.
+  Types of parameters 'item' and 'value' are incompatible.
+    Type 'Service' is not assignable to type 'ServiceApi'.
+      Types of property 'slug' are incompatible.
+        Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+          Type 'null' is not assignable to type 'string | undefined'.

@@ -61,7 +61,7 @@ export const deletePlanRequestApi = async (id: string) => {
 export const approvePlanRequestApi = async (
   id: string,
   payload: {
-    admin_notes?: string;
+    admin_notes?: string | null;
     create_order?: boolean;
     plan_id?: string | null;
     organization_id?: string | null;
@@ -78,7 +78,7 @@ export const approvePlanRequestApi = async (
 export const rejectPlanRequestApi = async (
   id: string,
   payload: {
-    admin_notes?: string;
+    admin_notes?: string | null;
     create_order?: boolean;
     plan_id?: string | null;
     organization_id?: string | null;
