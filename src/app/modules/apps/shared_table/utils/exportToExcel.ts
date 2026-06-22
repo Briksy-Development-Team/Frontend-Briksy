@@ -1,4 +1,5 @@
 import { saveAs } from "file-saver";
+import * as ExcelJS from "exceljs";
 
 type ExportColumn = {
   accessor: string;
@@ -11,30 +12,27 @@ export const exportToExcel = async (
 ): Promise<void> => {
   if (!data.length) return;
 
-  const XLSX = await import("xlsx");
+  // 1. Create a new workbook and worksheet
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Data");
 
-  const formatted = data.map((row) => {
-    const obj: Record<string, unknown> = {};
+  // 2. Define columns
+  worksheet.columns = columns.map((col) => ({
+    header: col.Header,
+    key: col.accessor,
+    width: 20, // Set a default width
+  }));
 
-    columns.forEach((col) => {
-      obj[col.Header] = row[col.accessor] ?? "";
-    });
+  // 3. Add rows
+  worksheet.addRows(data);
 
-    return obj;
-  });
+  // 4. Style the header row
+  worksheet.getRow(1).font = { bold: true };
 
-  const ws = XLSX.utils.json_to_sheet(formatted);
-  const wb = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(wb, ws, "Data");
-
-  const buffer = XLSX.write(wb, {
-    bookType: "xlsx",
-    type: "array",
-  });
-
+  // 5. Generate buffer and save
+  const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 
   saveAs(blob, "table_data.xlsx");
