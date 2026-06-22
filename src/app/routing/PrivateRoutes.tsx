@@ -31,6 +31,7 @@ const PrivateRoutes = () => {
   const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
   const ServiceListPage = lazy(() => import('../pages/user management/ServiceList'))
   const InquiryPage = lazy(() => import('../pages/platform/InquiryPage'))
+  const NotificationsPage = lazy(() => import('../pages/notifications/NotificationsPage'))
 
 
   return (
@@ -251,6 +252,17 @@ const PrivateRoutes = () => {
               </SuspensedView>
             </RoleGuard>
           }
+          />
+
+        <Route
+          path="/super-admin/notifications/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <NotificationsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
         />
 
         <Route
@@ -301,6 +313,17 @@ const PrivateRoutes = () => {
                   <PropertyListPage />
                 </SuspensedView>
               </ModuleGuard>
+            </RoleGuard>
+          }
+          />
+
+        <Route
+          path="/admin/notifications/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <NotificationsPage />
+              </SuspensedView>
             </RoleGuard>
           }
         />

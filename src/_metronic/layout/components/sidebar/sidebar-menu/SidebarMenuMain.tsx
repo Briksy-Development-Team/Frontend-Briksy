@@ -198,12 +198,20 @@ const SidebarMenuMain = () => {
       )}
 
       {(isSuperAdmin || isAdmin) && hasPermission("settings.view") && (
-        <SidebarMenuItem
-          to={`${portalBase}/settings`}
-          title="Settings"
-          fontIcon="bi-archive"
-          icon="element-plus"
-        />
+        <>
+          <SidebarMenuItem
+            to={`${portalBase}/notifications`}
+            title="Notifications"
+            fontIcon="bi-bell"
+            icon="notification-bing"
+          />
+          <SidebarMenuItem
+            to={`${portalBase}/settings`}
+            title="Settings"
+            fontIcon="bi-archive"
+            icon="element-plus"
+          />
+        </>
       )}
     </>
   );

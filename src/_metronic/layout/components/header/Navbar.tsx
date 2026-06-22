@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import { KTIcon, toAbsoluteUrl } from '../../../helpers'
-import { HeaderNotificationsMenu, HeaderUserMenu, Search, ThemeModeSwitcher } from '../../../partials'
+import { HeaderUserMenu, Search, ThemeModeSwitcher } from '../../../partials'
 import { useLayout } from '../../core'
+import { NotificationBell } from '../../../../app/services/features/notifications/NotificationBell'
 
 const itemClass = 'ms-1 ms-md-4'
 const btnClass =
@@ -23,17 +24,7 @@ const Navbar = () => {
         </div>
       </div> */}
 
-      <div className={clsx('app-navbar-item', itemClass)}>
-        <div
-          data-kt-menu-trigger="{default: 'click'}"
-          data-kt-menu-attach='parent'
-          data-kt-menu-placement='bottom-end'
-          className={btnClass}
-        >
-          <KTIcon iconName='element-plus' className={btnIconClass} />
-        </div>
-        <HeaderNotificationsMenu />
-      </div>
+      <NotificationBell />
 
 
 

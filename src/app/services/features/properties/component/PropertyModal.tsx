@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 import type { Property, PropertyFormValues } from "../property.types";
+import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 
 type Props = {
     initialValues?: Property | null;
@@ -20,11 +21,19 @@ const PropertyModal = ({
         description: initialValues?.description ?? "",
         status: initialValues?.status ?? "Draft",
         address: initialValues?.address ?? "",
+        address_line_1: initialValues?.address_line_1 ?? initialValues?.address ?? "",
+        address_line_2: initialValues?.address_line_2 ?? "",
         full_address: initialValues?.full_address ?? initialValues?.address ?? "",
+        formatted_address: initialValues?.formatted_address ?? initialValues?.full_address ?? "",
+        place_id: initialValues?.place_id ?? "",
         latitude: initialValues?.latitude ?? "",
         longitude: initialValues?.longitude ?? "",
         suburb: initialValues?.suburb ?? "",
+        state: initialValues?.state ?? "",
         postcode: initialValues?.postcode ?? "",
+        country: initialValues?.country ?? "Australia",
+        property_type_id: initialValues?.property_type_id ?? "",
+        location_verified: initialValues?.location_verified ?? false,
         images: [],
         videos: [],
     });
@@ -58,9 +67,29 @@ const PropertyModal = ({
     const handleSubmit = () => {
         onSubmit({
             ...form,
+            country: form.country || "Australia",
             images,
             videos,
         });
+    };
+
+    const handleLocationSelect = (selection: LocationSelection) => {
+        setForm((prev) => ({
+            ...prev,
+            address: selection.address ?? prev.address,
+            address_line_1: selection.address_line_1 ?? selection.address ?? prev.address_line_1,
+            address_line_2: selection.address_line_2 ?? prev.address_line_2,
+            full_address: selection.full_address ?? selection.formatted_address ?? prev.full_address,
+            formatted_address: selection.formatted_address ?? prev.formatted_address,
+            place_id: selection.place_id ?? prev.place_id,
+            latitude: selection.latitude ?? prev.latitude,
+            longitude: selection.longitude ?? prev.longitude,
+            suburb: selection.suburb ?? prev.suburb,
+            state: selection.state ?? prev.state,
+            postcode: selection.postcode ?? prev.postcode,
+            country: selection.country ?? prev.country ?? "Australia",
+            location_verified: selection.location_verified ?? prev.location_verified,
+        }));
     };
 
     return (
@@ -125,19 +154,55 @@ const PropertyModal = ({
             </div>
 
             {/* Address */}
-            <div className="fv-row mb-7">
-                <label className="form-label">Address</label>
+            <LocationAutocomplete
+                value={form.full_address ?? form.address ?? ""}
+                onChange={(value) =>
+                    setForm((prev) => ({
+                        ...prev,
+                        full_address: value,
+                        formatted_address: value,
+                    }))
+                }
+                onSelect={handleLocationSelect}
+                label="Address search"
+                placeholder="Start typing an Australian address"
+            />
 
-                <input
-                    className="form-control form-control-solid"
-                    value={form.address}
-                    onChange={(e) =>
-                        setForm((prev) => ({
-                            ...prev,
-                            address: e.target.value,
-                        }))
-                    }
-                />
+            <div className="row">
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Address Line 1</label>
+
+                        <input
+                            className="form-control form-control-solid"
+                            value={form.address_line_1}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    address_line_1: e.target.value,
+                                    address: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
+
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Address Line 2</label>
+
+                        <input
+                            className="form-control form-control-solid"
+                            value={form.address_line_2}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    address_line_2: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="fv-row mb-7">
@@ -176,6 +241,25 @@ const PropertyModal = ({
 
                 <div className="col-md-6">
                     <div className="fv-row mb-7">
+                        <label className="form-label">State</label>
+
+                        <input
+                            className="form-control form-control-solid"
+                            value={form.state}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    state: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
                         <label className="form-label">Postcode</label>
 
                         <input
@@ -185,6 +269,23 @@ const PropertyModal = ({
                                 setForm((prev) => ({
                                     ...prev,
                                     postcode: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
+
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Country</label>
+
+                        <input
+                            className="form-control form-control-solid"
+                            value={form.country}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    country: e.target.value,
                                 }))
                             }
                         />
@@ -228,6 +329,45 @@ const PropertyModal = ({
                                 }))
                             }
                         />
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Property Type ID</label>
+
+                        <input
+                            className="form-control form-control-solid"
+                            value={form.property_type_id}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    property_type_id: e.target.value,
+                                }))
+                            }
+                        />
+                    </div>
+                </div>
+
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Location Verified</label>
+
+                        <select
+                            className="form-select form-select-solid"
+                            value={String(form.location_verified)}
+                            onChange={(e) =>
+                                setForm((prev) => ({
+                                    ...prev,
+                                    location_verified: e.target.value === "true",
+                                }))
+                            }
+                        >
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
                     </div>
                 </div>
             </div>

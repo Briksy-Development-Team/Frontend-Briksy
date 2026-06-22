@@ -17,11 +17,24 @@ export type Property = {
   status: "Draft" | "Published" | "Archived";
 
   address?: string | null;
+  address_line_1?: string | null;
+  address_line_2?: string | null;
   full_address?: string | null;
+  formatted_address?: string | null;
+  place_id?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   suburb?: string | null;
+  state?: string | null;
   postcode?: string | null;
+  country?: string | null;
+  location_verified?: boolean;
+  property_type_id?: string | null;
+  property_type?: {
+    id: string;
+    name: string;
+    slug?: string;
+  } | null;
 
   rating?: number;
 
@@ -52,11 +65,19 @@ export type PropertyFormValues = {
   status: "Draft" | "Published" | "Archived";
 
   address?: string;
+  address_line_1?: string;
+  address_line_2?: string;
   full_address?: string;
+  formatted_address?: string;
+  place_id?: string;
   latitude?: string | number;
   longitude?: string | number;
   suburb?: string;
+  state?: string;
   postcode?: string;
+  country?: string;
+  location_verified?: boolean;
+  property_type_id?: string;
 
   images?: (File | string)[];
   videos?: (File | string)[];
@@ -74,12 +95,24 @@ export type PropertyList = {
   rating?: number;
 
   address?: string | null;
+  address_line_1?: string | null;
+  address_line_2?: string | null;
   full_address?: string | null;
+  formatted_address?: string | null;
+  place_id?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   suburb?: string | null;
-
+  state?: string | null;
   postcode?: string | null;
+  country?: string | null;
+  location_verified?: boolean;
+  property_type_id?: string | null;
+  property_type?: {
+    id: string;
+    name: string;
+    slug?: string;
+  } | null;
 
   organization?: {
     id: string;
