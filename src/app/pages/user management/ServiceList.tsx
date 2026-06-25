@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchServiceList,
@@ -8,6 +9,8 @@ import {
     openDeleteServiceModal,
     closeDeleteServiceModal,
 } from "../../services/features/service/service_service_list.slice";
+import { Routes, Route } from "react-router-dom";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 
 import ServiceModal from "../../services/features/service/component/ServiceModal";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
@@ -18,27 +21,32 @@ import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityT
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
-import { useRoleAccess } from "../../modules/auth";
+import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import { useNavigate } from "react-router-dom";
 
-const ServiceListPage = () => {
+const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const canManage = !isSuperAdmin;
   const {
         data,
         total,
         error,
         loading,
-        saving,
         isModalOpen,
-        editingService,
-        deleteModalOpen,
-        deletingService,
+        saving,
     } = useSelector((s: RootState) => s.services);
 
     const { params, handleParamsChange } = useEntityTable((p) =>
         dispatch(fetchServiceList(p)),
     );
+
+    useEffect(() => {
+        if (!saving && !isModalOpen) {
+            dispatch(fetchServiceList(params));
+        }
+    }, [isModalOpen, saving, params, dispatch]);
 
     const title = "Services";
     const subtitle = isSuperAdmin
@@ -64,44 +72,66 @@ const ServiceListPage = () => {
     }
 
     return (
-        <>
-            <Content>
-                <PageHeader title={title} subtitle={subtitle} />
+        <Content>
+            <PageHeader title={title} subtitle={subtitle} />
 
-                <EntityList
-                    data={data}
-                    total={total}
-                    params={params}
-                    onParamsChange={handleParamsChange}
-                    columns={serviceListConfig.columns}
-                    filtersConfig={serviceListConfig.filters}
-                    headerActions={
-                        !isSuperAdmin
-                            ? [
-                                {
-                                    label: "Add Service",
-                                    onClick: () => dispatch(openServiceModal(null)),
-                                },
-                            ]
-                            : undefined
-                    }
-                    rowActions={
-                        canManage
-                            ? [
-                                {
-                                    label: "Edit",
-                                    onClick: (row) => dispatch(openServiceModal(row)),
-                                },
-                                {
-                                    label: "Delete",
-                                    className: "text-danger",
-                                    onClick: (row) => dispatch(openDeleteServiceModal(row)),
-                                },
-                            ]
-                            : []
-                    }
-                />
-            </Content>
+            <EntityList
+                data={data}
+                total={total}
+                params={params}
+                onParamsChange={handleParamsChange}
+                columns={serviceListConfig.columns}
+                filtersConfig={serviceListConfig.filters}
+                enableRowClick={true}
+                getRowLink={(row) => `${portalBase}/services/detail/${row.id}`}
+                headerActions={
+                    !isSuperAdmin
+                        ? [
+                            {
+                                label: "Add Service",
+                                onClick: () => dispatch(openServiceModal(null)),
+                            },
+                        ]
+                        : undefined
+                }
+                rowActions={rowActions}
+            />
+        </Content>
+    );
+};
+
+const ServiceListPageWrapper = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const { isSuperAdmin } = useRoleAccess();
+    const canManage = !isSuperAdmin;
+    const {
+        saving,
+        isModalOpen,
+        editingService,
+        deleteModalOpen,
+        deletingService,
+    } = useSelector((s: RootState) => s.services);
+
+    const rowActions = canManage
+        ? [
+            {
+                label: "Edit",
+                onClick: (row: any) => dispatch(openServiceModal(row)),
+            },
+            {
+                label: "Delete",
+                className: "text-danger",
+                onClick: (row: any) => dispatch(openDeleteServiceModal(row)),
+            },
+        ]
+        : [];
+
+    return (
+        <>
+            <Routes>
+                <Route index element={<ServiceListPage rowActions={rowActions} />} />
+                <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} />} />
+            </Routes>
 
             {canManage && isModalOpen && (
                 <ServiceModal
@@ -127,4 +157,4 @@ const ServiceListPage = () => {
     );
 };
 
-export default ServiceListPage;
+export default ServiceListPageWrapper;

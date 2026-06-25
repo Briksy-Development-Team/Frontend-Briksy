@@ -61,7 +61,7 @@ const EntityTable = <T extends { id: string | number }>({
           {...getTableProps()}
         >
           <thead>
-            {headerGroups.map((hg) => {
+            {headerGroups.map((hg: any) => {
               const { key, ...rest } = hg.getHeaderGroupProps();
               return (
                 <tr key={key} {...rest}>
@@ -77,7 +77,7 @@ const EntityTable = <T extends { id: string | number }>({
                       />
                     </th>
                   )}
-                  {hg.headers.map((col) => {
+                  {hg.headers.map((col: any) => {
                     const { key, ...rest } = col.getHeaderProps();
                     return (
                       <th
@@ -116,7 +116,7 @@ const EntityTable = <T extends { id: string | number }>({
                 </td>
               </tr>
             ) : (
-              rows.map((row) => {
+              rows.map((row: any) => {
                 prepareRow(row);
                 const { key, ...rest } = row.getRowProps();
                 const isSelected = selectedRows.has(row.original.id);
@@ -144,7 +144,7 @@ const EntityTable = <T extends { id: string | number }>({
                         />
                       </td>
                     )}
-                    {row.cells.map((cell) => {
+                    {row.cells.map((cell: any) => {
                       const { key, ...rest } = cell.getCellProps();
                       return (
                         <td key={key} {...rest}>

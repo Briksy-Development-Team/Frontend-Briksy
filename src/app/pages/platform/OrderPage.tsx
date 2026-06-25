@@ -31,7 +31,7 @@ import GenericDetailPage from "../../modules/apps/shared_table/entity-list/compo
 import { useRoleAccess } from "../../modules/auth";
 import { getRolePortalBaseRoute } from "../../modules/auth/core/roleRoutes";
 
-const OrderList = () => {
+const OrderList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { isSuperAdmin } = useRoleAccess();
@@ -45,10 +45,7 @@ const OrderList = () => {
     total,
     error,
     isModalOpen,
-    editingOrder,
     saving,
-    deleteModalOpen,
-    deletingOrder,
   } = useSelector((s: RootState) => s.orders);
 
   const { params, handleParamsChange } = useEntityTable((p) =>
@@ -59,7 +56,7 @@ const OrderList = () => {
     if (!saving && !isModalOpen) {
       dispatch(fetchOrders(params));
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, saving, params, dispatch]);
 
   if (error)
     return (
@@ -70,47 +67,67 @@ const OrderList = () => {
     );
 
   return (
-    <>
-      <Content>
-        <PageHeader title="Orders" subtitle="Track plan and billing orders" />
+    <Content>
+      <PageHeader title="Orders" subtitle="Track plan and billing orders" />
 
-        <EntityList
-          data={data}
-          total={total}
-          params={params}
-          onParamsChange={handleParamsChange}
-          columns={orderConfig.columns}
-          filtersConfig={orderConfig.filters}
-          enableRowClick
-          getRowLink={(row) => `${portalBase}/orders/${row.id}`}
-          storageKey="orderColumns"
-          headerActions={[
-            {
-              label: "New Order",
-              onClick: () => dispatch(openOrderModal(null)),
-            },
-          ]}
-          rowActions={[
-            {
-              label: "Edit",
-              onClick: (row) => dispatch(openOrderModal(row)),
-            },
-            {
-              label: "Mark Paid",
-              onClick: (row) => dispatch(markOrderPaid(row.id)),
-            },
-            {
-              label: "Cancel",
-              onClick: (row) => dispatch(cancelOrder(row.id)),
-            },
-            {
-              label: "Delete",
-              className: "text-danger",
-              onClick: (row) => dispatch(openDeleteOrderModal(row)),
-            },
-          ]}
-        />
-      </Content>
+      <EntityList
+        data={data}
+        total={total}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={orderConfig.columns}
+        filtersConfig={orderConfig.filters}
+        enableRowClick
+        getRowLink={(row) => `${portalBase}/orders/${row.id}`}
+        storageKey="orderColumns"
+        headerActions={[
+          {
+            label: "New Order",
+            onClick: () => dispatch(openOrderModal(null)),
+          },
+        ]}
+        rowActions={rowActions}
+      />
+    </Content>
+  );
+};
+
+const OrderPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    isModalOpen,
+    editingOrder,
+    saving,
+    deleteModalOpen,
+    deletingOrder,
+  } = useSelector((s: RootState) => s.orders);
+
+  const rowActions = [
+    {
+      label: "Edit",
+      onClick: (row: any) => dispatch(openOrderModal(row)),
+    },
+    {
+      label: "Mark Paid",
+      onClick: (row: any) => dispatch(markOrderPaid(row.id)),
+    },
+    {
+      label: "Cancel",
+      onClick: (row: any) => dispatch(cancelOrder(row.id)),
+    },
+    {
+      label: "Delete",
+      className: "text-danger",
+      onClick: (row: any) => dispatch(openDeleteOrderModal(row)),
+    },
+  ];
+
+  return (
+    <>
+      <Routes>
+        <Route index element={<OrderList rowActions={rowActions} />} />
+        <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
+      </Routes>
 
       {isModalOpen && (
         <OrderModal
@@ -130,8 +147,8 @@ const OrderList = () => {
 
       {deleteModalOpen && deletingOrder && (
         <DeleteConfirmModal
-          title="Delete Coupon"
-          message={`Are you sure you want to delete coupon ${deletingOrder.order_number}?`}
+          title="Delete Order"
+          message={`Are you sure you want to delete order ${deletingOrder.order_number || deletingOrder.id}?`}
           onClose={() => dispatch(closeDeleteOrderModal())}
           onConfirm={() => dispatch(deleteOrder(deletingOrder.id))}
           isSubmitting={saving}
@@ -140,12 +157,5 @@ const OrderList = () => {
     </>
   );
 };
-
-const OrderPage = () => (
-  <Routes>
-    <Route index element={<OrderList />} />
-    <Route path=":id" element={<GenericDetailPage />} />
-  </Routes>
-);
 
 export default OrderPage;

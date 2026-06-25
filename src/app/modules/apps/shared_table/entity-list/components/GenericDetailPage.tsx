@@ -1,39 +1,58 @@
 import { useLocation, useParams } from 'react-router-dom'
-import EntityDetail from './EntityDetail'
 import { Content } from '../../../../../../_metronic/layout/components/content'
-import { PageHeader } from "../../../../../modules/apps/shared_table/entity-list/components/header/PageHeader"
+import DynamicWorkspace from '../../../shared_detail/DynamicWorkspace'
 
-type DetailState = {
-    data: Record<string, any>
-    columns?: { key: string; label: string }[]
+import { orderDetailConfig } from '../../../../../services/features/orders/order.detail.config'
+import { couponDetailConfig } from '../../../../../services/features/coupons/coupon.detail.config'
+import { seekerDetailConfig } from '../../../../../services/features/seeker/seeker.detail.config'
+import { propertyDetailConfig } from '../../../../../services/features/properties/property.detail.config'
+import { organizationDetailConfig } from '../../../../../services/features/organization/organization.detail.config'
+import { serviceDetailConfig } from '../../../../../services/features/service/service_list.detail.config'
+import { staffDetailConfig } from '../../../../../services/features/staff/staff.detail.config'
+import { planRequestDetailConfig } from '../../../../../services/features/plan_requests/plan-request.detail.config'
+
+const configMap: Record<string, any> = {
+  'orders': orderDetailConfig,
+  'coupons': couponDetailConfig,
+  'seekers': seekerDetailConfig,
+  'property-management': propertyDetailConfig,
+  'organization': organizationDetailConfig,
+  'solo-traders': organizationDetailConfig, // Use org config for solo traders too
+  'services': serviceDetailConfig,
+  'staff': staffDetailConfig,
+  'plan-requests': planRequestDetailConfig,
 }
 
-const GenericDetailPage = () => {
+const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
     const location = useLocation()
     const { id } = useParams()
-    const state = location.state as DetailState | null
+    const state = location.state as any
 
-    // derive title from URL: /seekers/123 → "Seekers"
     const pathParts = location.pathname.split('/').filter(Boolean)
-    const entitySegment = pathParts[pathParts.length - 2] ?? 'detail'
-    const title = entitySegment
-        .charAt(0).toUpperCase() + entitySegment.slice(1).replace(/-/g, ' ')
-
+    const segmentIndex = pathParts[pathParts.length - 2] === 'detail' ? pathParts.length - 3 : pathParts.length - 2
+    const entitySegment = pathParts[segmentIndex] ?? 'detail'
+    
+    const config = configMap[entitySegment]
     const data = state?.data ?? null
 
-    const fields = state?.columns
-        ? state.columns.map((col) => ({ key: col.key, label: col.label }))
-        : data
-            ? Object.keys(data).map((key) => ({
-                key,
-                label: key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-            }))
-            : []
+    if (!config) {
+        return (
+            <Content>
+                <div className="alert alert-warning m-5">
+                    No Detail Configuration found for module: {entitySegment}
+                </div>
+            </Content>
+        )
+    }
 
     return (
         <Content>
-            <PageHeader title={title} subtitle={`Viewing ${title} details`} />
-            <EntityDetail title={title} data={data} fields={fields} />
+            <DynamicWorkspace 
+              config={config} 
+              data={data} 
+              isLoading={false} 
+              rowActions={rowActions}
+            />
         </Content>
     )
 }

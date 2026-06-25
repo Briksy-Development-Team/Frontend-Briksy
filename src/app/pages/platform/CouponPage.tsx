@@ -32,7 +32,7 @@ import CouponModal from "../../services/features/coupons/component/CouponModal";
 import CouponValidationModal from "../../services/features/coupons/component/CouponValidationModal";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
-const CouponList = () => {
+const CouponList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
 
@@ -45,10 +45,6 @@ const CouponList = () => {
     error,
     saving,
     isModalOpen,
-    editingCoupon,
-    isValidationModalOpen,
-    deleteModalOpen,
-    deletingCoupon,
   } = useSelector((s: RootState) => s.coupons);
 
   const { params, handleParamsChange } = useEntityTable((p) =>
@@ -59,7 +55,7 @@ const CouponList = () => {
     if (!saving && !isModalOpen) {
       dispatch(fetchCoupons(params));
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, saving, params, dispatch]);
 
   if (error) {
     return (
@@ -71,51 +67,72 @@ const CouponList = () => {
   }
 
   return (
-    <>
-      <Content>
-        <PageHeader title="Coupons" subtitle="Manage discount coupons" />
+    <Content>
+      <PageHeader title="Coupons" subtitle="Manage discount coupons" />
 
-        <EntityList
-          data={data}
-          total={total}
-          params={params}
-          onParamsChange={handleParamsChange}
-          columns={couponConfig.columns}
-          filtersConfig={couponConfig.filters}
-          getRowLink={(row) => `${portalBase}/coupons/${row.id}`}
-          enableRowClick
-          storageKey="couponColumns"
-          headerActions={[
-            {
-              label: "Add Coupon",
-              onClick: () => dispatch(openCouponModal(null)),
-            },
-            {
-              label: "Validate Coupon",
-              onClick: () => dispatch(openValidationModal()),
-            },
-          ]}
-          rowActions={[
-            {
-              label: "Edit",
-              onClick: (row) => dispatch(openCouponModal(row)),
-            },
-            {
-              label: "Activate",
-              onClick: (row) => dispatch(activateCoupon(row.id)),
-            },
-            {
-              label: "Deactivate",
-              onClick: (row) => dispatch(deactivateCoupon(row.id)),
-            },
-            {
-              label: "Delete",
-              className: "text-danger",
-              onClick: (row) => dispatch(openDeleteCouponModal(row)),
-            },
-          ]}
-        />
-      </Content>
+      <EntityList
+        data={data}
+        total={total}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={couponConfig.columns}
+        filtersConfig={couponConfig.filters}
+        getRowLink={(row) => `${portalBase}/coupons/${row.id}`}
+        enableRowClick
+        storageKey="couponColumns"
+        headerActions={[
+          {
+            label: "Add Coupon",
+            onClick: () => dispatch(openCouponModal(null)),
+          },
+          {
+            label: "Validate Coupon",
+            onClick: () => dispatch(openValidationModal()),
+          },
+        ]}
+        rowActions={rowActions}
+      />
+    </Content>
+  );
+};
+
+const CouponPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    saving,
+    isModalOpen,
+    editingCoupon,
+    isValidationModalOpen,
+    deleteModalOpen,
+    deletingCoupon,
+  } = useSelector((s: RootState) => s.coupons);
+
+  const rowActions = [
+    {
+      label: "Edit",
+      onClick: (row: any) => dispatch(openCouponModal(row)),
+    },
+    {
+      label: "Activate",
+      onClick: (row: any) => dispatch(activateCoupon(row.id)),
+    },
+    {
+      label: "Deactivate",
+      onClick: (row: any) => dispatch(deactivateCoupon(row.id)),
+    },
+    {
+      label: "Delete",
+      className: "text-danger",
+      onClick: (row: any) => dispatch(openDeleteCouponModal(row)),
+    },
+  ];
+
+  return (
+    <>
+      <Routes>
+        <Route index element={<CouponList rowActions={rowActions} />} />
+        <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
+      </Routes>
 
       {isModalOpen && (
         <CouponModal
@@ -151,12 +168,5 @@ const CouponList = () => {
     </>
   );
 };
-
-const CouponPage = () => (
-  <Routes>
-    <Route index element={<CouponList />} />
-    <Route path=":id" element={<GenericDetailPage />} />
-  </Routes>
-);
 
 export default CouponPage;

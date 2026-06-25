@@ -19,6 +19,8 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "formik": "2.2.9",
+    "i": "^0.3.7",
+    "npm": "^11.17.0",
     "qs": "^6.15.2",
     "react": "^18.2.0",
     "react-apexcharts": "^2.1.1",
@@ -29,7 +31,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.30.4",
     "react-select": "^5.8.0",
-    "react-table": "^7.7.0",
+    "react-table": "^7.8.0",
     "react-topbar-progress-indicator": "4.1.1",
     "use-debounce": "^10.1.1",
     "yup": "^1.0.0"

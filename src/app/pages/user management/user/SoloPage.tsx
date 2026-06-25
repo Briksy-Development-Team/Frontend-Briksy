@@ -1,4 +1,6 @@
+import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import GenericDetailPage from "../../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import { fetchOrganization } from "../../../services/features/organization/organization.slice";
 import { organizationConfig } from "../../../services/features/organization/organization.config";
 import type { RootState, AppDispatch } from "../../../services/store";
@@ -6,8 +8,7 @@ import { useEntityTable } from "../../../modules/apps/shared_table/hooks/useEnti
 import { EntityList } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../../_metronic/layout/components/content";
-import { useRoleAccess } from "../../../modules/auth";
-import { getRolePortalBaseRoute } from "../../../modules/auth/core/roleRoutes";
+import { getRolePortalBaseRoute, useRoleAccess } from "../../../modules/auth";
 
 const SOLO_TRADER_SERVICES = [
   { label: "Electrical", value: "electrical" },
@@ -69,10 +70,17 @@ const SoloPage = () => {
         columns={organizationConfig.columns}
         filtersConfig={filtersConfig}
         enableRowClick
-        getRowLink={(row) => `${portalBase}/companies/${row.id}`}
+        getRowLink={(row) => `${portalBase}/companies/solo-traders/detail/${row.id}`}
       />
     </Content>
   );
 };
 
-export default SoloPage;
+const SoloPageWrapper = () => (
+    <Routes>
+        <Route index element={<SoloPage />} />
+        <Route path="detail/:id" element={<GenericDetailPage />} />
+    </Routes>
+);
+
+export default SoloPageWrapper;

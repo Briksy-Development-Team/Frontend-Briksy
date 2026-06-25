@@ -29,7 +29,7 @@ import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmMo
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
-const PlanRequestList = () => {
+const PlanRequestList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { isSuperAdmin } = useRoleAccess();
@@ -41,6 +41,40 @@ const PlanRequestList = () => {
   const {
     data,
     total,
+  } = useSelector((s: RootState) => s.planRequests);
+
+  const { params, handleParamsChange } = useEntityTable((p) =>
+    dispatch(fetchPlanRequests(p)),
+  );
+
+  return (
+    <Content>
+      <PageHeader title="Plan Requests" subtitle="Manage plan requests" />
+
+      <EntityList
+        data={data}
+        total={total}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={planRequestConfig.columns}
+        filtersConfig={planRequestConfig.filters}
+        getRowLink={(row) => `${portalBase}/plan-requests/${row.id}`}
+        enableRowClick
+        headerActions={[
+          {
+            label: "New Request",
+            onClick: () => dispatch(openPlanRequestModal(null)),
+          },
+        ]}
+        rowActions={rowActions}
+      />
+    </Content>
+  );
+};
+
+export default function PlanRequestPage() {
+  const dispatch = useDispatch<AppDispatch>();
+  const {
     isModalOpen,
     editingRequest,
     reviewingRequest,
@@ -50,59 +84,40 @@ const PlanRequestList = () => {
     deletingRequest,
   } = useSelector((s: RootState) => s.planRequests);
 
-  const { params, handleParamsChange } = useEntityTable((p) =>
-    dispatch(fetchPlanRequests(p)),
-  );
+  const rowActions = [
+    {
+      label: "Approve",
+      onClick: (row: any) =>
+        dispatch(
+          openReviewModal({
+            request: row,
+            actionType: "approve",
+          }),
+        ),
+    },
+    {
+      label: "Reject",
+      onClick: (row: any) =>
+        dispatch(
+          openReviewModal({
+            request: row,
+            actionType: "reject",
+          }),
+        ),
+    },
+    {
+      label: "Delete",
+      className: "text-danger",
+      onClick: (row: any) => dispatch(openDeletePlanRequestModal(row)),
+    },
+  ];
 
   return (
     <>
-      <Content>
-        <PageHeader title="Plan Requests" subtitle="Manage plan requests" />
-
-        <EntityList
-          data={data}
-          total={total}
-          params={params}
-          onParamsChange={handleParamsChange}
-          columns={planRequestConfig.columns}
-          filtersConfig={planRequestConfig.filters}
-          getRowLink={(row) => `${portalBase}/plan-requests/${row.id}`}
-          enableRowClick
-          headerActions={[
-            {
-              label: "New Request",
-              onClick: () => dispatch(openPlanRequestModal(null)),
-            },
-          ]}
-          rowActions={[
-            {
-              label: "Approve",
-              onClick: (row) =>
-                dispatch(
-                  openReviewModal({
-                    request: row,
-                    actionType: "approve",
-                  }),
-                ),
-            },
-            {
-              label: "Reject",
-              onClick: (row) =>
-                dispatch(
-                  openReviewModal({
-                    request: row,
-                    actionType: "reject",
-                  }),
-                ),
-            },
-            {
-              label: "Delete",
-              className: "text-danger",
-              onClick: (row) => dispatch(openDeletePlanRequestModal(row)),
-            },
-          ]}
-        />
-      </Content>
+      <Routes>
+        <Route index element={<PlanRequestList rowActions={rowActions} />} />
+        <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
+      </Routes>
 
       {isModalOpen && (
         <PlanRequestModal
@@ -155,14 +170,5 @@ const PlanRequestList = () => {
         />
       )}
     </>
-  );
-};
-
-export default function PlanRequestPage() {
-  return (
-    <Routes>
-      <Route index element={<PlanRequestList />} />
-      <Route path=":id" element={<GenericDetailPage />} />
-    </Routes>
   );
 }

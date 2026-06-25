@@ -29,7 +29,7 @@ import { Content } from "../../../_metronic/layout/components/content";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
-const InquiryList = () => {
+const InquiryList = ({ rowActions }: { rowActions: any[] }) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { isSuperAdmin } = useRoleAccess();
@@ -41,13 +41,6 @@ const InquiryList = () => {
     const {
         data,
         total,
-        // isModalOpen,
-        // editingRequest,
-        // reviewingRequest,
-        // reviewAction,
-        // saving,
-        // deleteModalOpen,
-        // deletingRequest,
     } = useSelector((s: RootState) => s.planRequests);
 
     const { params, handleParamsChange } = useEntityTable((p) =>
@@ -55,114 +48,65 @@ const InquiryList = () => {
     );
 
     return (
-        <>
-            <Content>
-                <PageHeader title="Inquiry Requests" subtitle="Manage Inquiry requests" />
+        <Content>
+            <PageHeader title="Inquiry Requests" subtitle="Manage Inquiry requests" />
 
-                <EntityList
-                    data={data}
-                    total={total}
-                    params={params}
-                    onParamsChange={handleParamsChange}
-                    columns={planRequestConfig.columns}
-                    filtersConfig={planRequestConfig.filters}
-                    getRowLink={(row) => `${portalBase}/inquiry/${row.id}`}
-                    enableRowClick
-                    headerActions={[
-                        {
-                            label: "New Request",
-                            onClick: () => dispatch(openPlanRequestModal(null)),
-                        },
-                    ]}
-                    rowActions={[
-                        {
-                            label: "Approve",
-                            onClick: (row) =>
-                                dispatch(
-                                    openReviewModal({
-                                        request: row,
-                                        actionType: "approve",
-                                    }),
-                                ),
-                        },
-                        {
-                            label: "Reject",
-                            onClick: (row) =>
-                                dispatch(
-                                    openReviewModal({
-                                        request: row,
-                                        actionType: "reject",
-                                    }),
-                                ),
-                        },
-                        {
-                            label: "Delete",
-                            className: "text-danger",
-                            onClick: (row) => dispatch(openDeletePlanRequestModal(row)),
-                        },
-                    ]}
-                />
-            </Content>
-
-            {/* {isModalOpen && (
-                <PlanRequestModal
-                    initialValues={editingRequest}
-                    isSubmitting={saving}
-                    onClose={() => dispatch(closePlanRequestModal())}
-                    onSubmit={(values) =>
-                        dispatch(
-                            savePlanRequest({
-                                id: editingRequest?.id,
-                                values,
-                            }),
-                        )
-                    }
-                />
-            )} */}
-
-            {/* {reviewingRequest && reviewAction && (
-                <PlanRequestReviewModal
-                    request={reviewingRequest}
-                    action={reviewAction}
-                    isSubmitting={saving}
-                    onClose={() => dispatch(closeReviewModal())}
-                    onSubmit={(payload) =>
-                        dispatch(
-                            reviewAction === "approve"
-                                ? approvePlanRequest({
-                                    id: reviewingRequest.id,
-                                    payload,
-                                })
-                                : rejectPlanRequest({
-                                    id: reviewingRequest.id,
-                                    payload,
-                                }),
-                        )
-                    }
-                />
-            )} */}
-{/* 
-            {deleteModalOpen && deletingRequest && (
-                <DeleteConfirmModal
-                    title="Delete Plan Request"
-                    message={`Are you sure you want to delete ${deletingRequest.company_name ??
-                        deletingRequest.contact_name ??
-                        "this request"
-                        }?`}
-                    onClose={() => dispatch(closeDeletePlanRequestModal())}
-                    onConfirm={() => dispatch(deletePlanRequest(deletingRequest.id))}
-                    isSubmitting={saving}
-                />
-            )} */}
-        </>
+            <EntityList
+                data={data}
+                total={total}
+                params={params}
+                onParamsChange={handleParamsChange}
+                columns={planRequestConfig.columns}
+                filtersConfig={planRequestConfig.filters}
+                getRowLink={(row) => `${portalBase}/inquiry/${row.id}`}
+                enableRowClick
+                headerActions={[
+                    {
+                        label: "New Request",
+                        onClick: () => dispatch(openPlanRequestModal(null)),
+                    },
+                ]}
+                rowActions={rowActions}
+            />
+        </Content>
     );
 };
 
 export default function InquiryPage() {
+    const dispatch = useDispatch<AppDispatch>();
+    
+    const rowActions = [
+        {
+            label: "Approve",
+            onClick: (row: any) =>
+                dispatch(
+                    openReviewModal({
+                        request: row,
+                        actionType: "approve",
+                    }),
+                ),
+        },
+        {
+            label: "Reject",
+            onClick: (row: any) =>
+                dispatch(
+                    openReviewModal({
+                        request: row,
+                        actionType: "reject",
+                    }),
+                ),
+        },
+        {
+            label: "Delete",
+            className: "text-danger",
+            onClick: (row: any) => dispatch(openDeletePlanRequestModal(row)),
+        },
+    ];
+
     return (
         <Routes>
-            <Route index element={<InquiryList />} />
-            <Route path=":id" element={<GenericDetailPage />} />
+            <Route index element={<InquiryList rowActions={rowActions} />} />
+            <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
         </Routes>
     );
 }
