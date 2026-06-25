@@ -25,8 +25,23 @@ const CouponPage = lazy(() => import("../pages/platform/CouponPage"));
 const PlanRequestPage = lazy(() => import("../pages/platform/PlanRequestPage"));
 
 const PrivateRoutes = () => {
-  const { currentUser } = useAuth();
-  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? []);
+  const { currentUser } = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
+  const ProfilePage = lazy(() => import('../modules/profile/ProfilePage'))
+  const WizardsPage = lazy(() => import('../modules/wizards/WizardsPage'))
+  const AccountPage = lazy(() => import('../modules/accounts/AccountPage'))
+  const WidgetsPage = lazy(() => import('../modules/widgets/WidgetsPage'))
+  const StaffPage = lazy(() => import('../pages/user management/StaffPage'))
+  const SeekerPage = lazy(() => import('../pages/user management/SeekerPgae'))
+  const SoloPage = lazy(() => import('../pages/user management/user/SoloPage'))
+  const UserPage = lazy(() => import('../pages/user management/UserPage'))
+  const Subscription = lazy(() => import('../pages/Subscription/Subscription'))
+  const EmailTemplatePage = lazy(() => import('../pages/email/EmailTemplatePage'))
+  const PropertyListPage = lazy(() => import('../pages/user management/PropertyList'))
+  const ServiceListPage = lazy(() => import('../pages/user management/ServiceList'))
+  const InquiryPage = lazy(() => import('../pages/platform/InquiryPage'))
+  const NotificationsPage = lazy(() => import('../pages/notifications/NotificationsPage'))
+
 
   return (
     <Routes>
@@ -252,6 +267,17 @@ const PrivateRoutes = () => {
               </SuspensedView>
             </RoleGuard>
           }
+          />
+
+        <Route
+          path="/super-admin/notifications/*"
+          element={
+            <RoleGuard allow={['super_admin']}>
+              <SuspensedView>
+                <NotificationsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
         />
 
         <Route
@@ -300,6 +326,17 @@ const PrivateRoutes = () => {
                   <PropertyListPage />
                 </SuspensedView>
               </ModuleGuard>
+            </RoleGuard>
+          }
+          />
+
+        <Route
+          path="/admin/notifications/*"
+          element={
+            <RoleGuard allow={['admin', 'admin_staff']}>
+              <SuspensedView>
+                <NotificationsPage />
+              </SuspensedView>
             </RoleGuard>
           }
         />

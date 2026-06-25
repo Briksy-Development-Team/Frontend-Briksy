@@ -61,7 +61,7 @@ export const deleteInquiryRequestApi = async (id: string) => {
 export const approveInquiryRequestApi = async (
   id: string,
   payload: {
-    admin_notes?: string;
+    admin_notes?: string | null;
     create_order?: boolean;
     Inquiry_id?: string | null;
     organization_id?: string | null;
@@ -78,7 +78,7 @@ export const approveInquiryRequestApi = async (
 export const rejectInquiryRequestApi = async (
   id: string,
   payload: {
-    admin_notes?: string;
+    admin_notes?: string | null;
     create_order?: boolean;
     Inquiry_id?: string | null;
     organization_id?: string | null;

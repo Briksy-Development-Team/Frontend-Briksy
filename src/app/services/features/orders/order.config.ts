@@ -10,7 +10,8 @@ export const orderConfig = {
     },
     {
       Header: "Company",
-      accessor: "organization.name",
+      accessor: "organization",
+      Cell: ({ value }: { value: any }) => value?.name ?? "—",
     },
     {
       Header: "Total",

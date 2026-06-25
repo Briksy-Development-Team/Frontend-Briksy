@@ -4,6 +4,7 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { KTCard } from "../../../_metronic/helpers";
 import { useRoleAccess } from "../../modules/auth";
 import type { SettingItem } from "../../services/features/settings/settings.types";
+import { NotificationPreferences } from "../../services/features/notifications/NotificationPreferences";
 import {
   fetchCompanySettingsApi,
   fetchPlatformSettingsApi,
@@ -100,6 +101,10 @@ const SettingsPage = () => {
           )}
         </div>
       </KTCard>
+
+      <div className="mt-5">
+        <NotificationPreferences />
+      </div>
     </Content>
   );
 };

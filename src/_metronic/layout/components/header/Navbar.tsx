@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import { KTIcon, toAbsoluteUrl } from '../../../helpers'
-import { HeaderUserMenu } from '../../../partials/layout/header-menus/HeaderUserMenu'
-import { ThemeModeSwitcher } from '../../../partials/layout/theme-mode/ThemeModeSwitcher'
+import { HeaderUserMenu, Search, ThemeModeSwitcher } from '../../../partials'
 import { useLayout } from '../../core'
+import { NotificationBell } from '../../../../app/services/features/notifications/NotificationBell'
 
 const itemClass = 'ms-1 ms-md-4'
 const btnClass =
@@ -23,6 +23,10 @@ const Navbar = () => {
           <KTIcon iconName='chart-simple' className={btnIconClass} />
         </div>
       </div> */}
+
+      <NotificationBell />
+
+
 
       {/* <div className={clsx('app-navbar-item', itemClass)}>
         <div className={clsx('position-relative', btnClass)} id='kt_drawer_chat_toggle'>
