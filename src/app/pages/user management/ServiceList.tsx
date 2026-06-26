@@ -22,13 +22,12 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
-import { useNavigate } from "react-router-dom";
 
 const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
-  const canManage = !isSuperAdmin;
+  const canManage = true;
   const {
         data,
         total,
@@ -75,25 +74,22 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
         <Content>
             <PageHeader title={title} subtitle={subtitle} />
 
-            <EntityList
-                data={data}
-                total={total}
-                params={params}
-                onParamsChange={handleParamsChange}
+        <EntityList
+            data={data}
+            total={total}
+            params={params}
+            onParamsChange={handleParamsChange}
                 columns={serviceListConfig.columns}
                 filtersConfig={serviceListConfig.filters}
-                enableRowClick={true}
-                getRowLink={(row) => `${portalBase}/services/detail/${row.id}`}
-                headerActions={
-                    !isSuperAdmin
-                        ? [
-                            {
-                                label: "Add Service",
-                                onClick: () => dispatch(openServiceModal(null)),
-                            },
-                        ]
-                        : undefined
-                }
+        enableRowClick={true}
+        getRowLink={(row) => `${portalBase}/services/detail/${row.id}`}
+        headerActions={[
+            {
+                label: "Add Service",
+                permission: "service.create",
+                onClick: () => dispatch(openServiceModal(null)),
+            },
+        ]}
                 rowActions={rowActions}
             />
         </Content>
@@ -102,8 +98,7 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
 const ServiceListPageWrapper = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { isSuperAdmin } = useRoleAccess();
-    const canManage = !isSuperAdmin;
+    const canManage = true;
     const {
         saving,
         isModalOpen,
@@ -116,11 +111,13 @@ const ServiceListPageWrapper = () => {
         ? [
             {
                 label: "Edit",
+                permission: "service.update",
                 onClick: (row: any) => dispatch(openServiceModal(row)),
             },
             {
                 label: "Delete",
                 className: "text-danger",
+                permission: "service.delete",
                 onClick: (row: any) => dispatch(openDeleteServiceModal(row)),
             },
         ]
@@ -131,6 +128,7 @@ const ServiceListPageWrapper = () => {
             <Routes>
                 <Route index element={<ServiceListPage rowActions={rowActions} />} />
                 <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} />} />
+                <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
             </Routes>
 
             {canManage && isModalOpen && (

@@ -383,6 +383,14 @@ function getBreakpoint(breakpoint: string) {
   let value: number | string = getCSSVariableValue('--bs-' + breakpoint)
   if (value) {
     value = parseInt(value.trim())
+  } else {
+    switch (breakpoint) {
+      case 'sm': return 576;
+      case 'md': return 768;
+      case 'lg': return 992;
+      case 'xl': return 1200;
+      case 'xxl': return 1400;
+    }
   }
 
   return value

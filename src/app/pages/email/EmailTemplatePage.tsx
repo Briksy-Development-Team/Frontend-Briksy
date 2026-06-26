@@ -5,6 +5,7 @@ import { KTCard, KTIcon } from "../../../_metronic/helpers";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { useRoleAccess } from "../../modules/auth";
+import { getAuth } from "../../modules/auth/core/AuthHelpers";
 import type { EmailTemplate, EmailTemplateFormValues } from "../../services/features/email_template/email-template.types";
 import {
   createEmailTemplateApi,
@@ -26,6 +27,11 @@ const emptyForm: EmailTemplateFormValues = {
 const EmailTemplatePage = () => {
   const { isSuperAdmin } = useRoleAccess();
   const scope = isSuperAdmin ? "super-admin" : "admin";
+  const auth = getAuth();
+  const abilities = auth?.abilities ?? [];
+  const canCreate = abilities.includes("email_template.create");
+  const canUpdate = abilities.includes("email_template.update");
+  const canDelete = abilities.includes("email_template.delete");
   const [items, setItems] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +156,7 @@ const EmailTemplatePage = () => {
               <h3 className="fw-bold mb-1">{title}</h3>
               <div className="text-muted">{items.length} templates configured</div>
             </div>
-            <button className="btn btn-primary" onClick={openCreate}>
+            <button className="btn btn-primary" onClick={openCreate} disabled={!canCreate}>
               <KTIcon iconName="plus" className="fs-2 me-2" />
               Add Template
             </button>
@@ -175,10 +181,10 @@ const EmailTemplatePage = () => {
                         <button className="btn btn-icon btn-sm btn-light" onClick={() => setPreviewItem(item)}>
                           <KTIcon iconName="eye" className="fs-4" />
                         </button>
-                        <button className="btn btn-icon btn-sm btn-light-primary" onClick={() => openEdit(item)}>
+                        <button className="btn btn-icon btn-sm btn-light-primary" onClick={() => openEdit(item)} disabled={!canUpdate}>
                           <KTIcon iconName="pencil" className="fs-4" />
                         </button>
-                        <button className="btn btn-icon btn-sm btn-light-danger" onClick={() => setDeleting(item)}>
+                        <button className="btn btn-icon btn-sm btn-light-danger" onClick={() => setDeleting(item)} disabled={!canDelete}>
                           <KTIcon iconName="trash" className="fs-4" />
                         </button>
                       </div>

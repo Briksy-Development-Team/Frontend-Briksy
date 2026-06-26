@@ -1,4 +1,5 @@
 import { KTCard, KTIcon } from '../../../../../_metronic/helpers'
+import { getAuth } from '../../../../auth/core/AuthHelpers'
 import type { EmailTemplate } from '../email-template.types'
 
 type Props = {
@@ -9,6 +10,12 @@ type Props = {
 }
 
 const EmailTemplateList = ({ templates, onAdd, onEdit, onDelete }: Props) => {
+    const auth = getAuth()
+    const abilities = auth?.abilities ?? []
+    const canCreate = abilities.includes('email_template.create')
+    const canUpdate = abilities.includes('email_template.update')
+    const canDelete = abilities.includes('email_template.delete')
+
     return (
         <KTCard>
             <div className="container-fluid py-6">
@@ -19,7 +26,7 @@ const EmailTemplateList = ({ templates, onAdd, onEdit, onDelete }: Props) => {
                         <h3 className="fw-bold mb-1">Email Templates</h3>
                         <span className="text-muted">{templates.length} templates configured</span>
                     </div>
-                    <button className="btn btn-primary d-flex align-items-center gap-2" onClick={onAdd}>
+                    <button className="btn btn-primary d-flex align-items-center gap-2" onClick={onAdd} disabled={!canCreate}>
                         <KTIcon iconName="plus" className="fs-2" />
                         Add Template
                     </button>
@@ -43,6 +50,7 @@ const EmailTemplateList = ({ templates, onAdd, onEdit, onDelete }: Props) => {
                                     <button
                                         className="btn btn-icon btn-sm btn-light-primary"
                                         onClick={() => onEdit(template)}
+                                        disabled={!canUpdate}
                                         title="Edit template"
                                     >
                                         <KTIcon iconName="pencil" className="fs-4" />
@@ -50,6 +58,7 @@ const EmailTemplateList = ({ templates, onAdd, onEdit, onDelete }: Props) => {
                                     <button
                                         className="btn btn-icon btn-sm btn-light-danger"
                                         onClick={() => onDelete(template)}
+                                        disabled={!canDelete}
                                         title="Delete template"
                                     >
                                         <KTIcon iconName="trash" className="fs-4" />

@@ -63,6 +63,7 @@ const InquiryList = ({ rowActions }: { rowActions: any[] }) => {
                 headerActions={[
                     {
                         label: "New Request",
+                        permission: "plan_request.create",
                         onClick: () => dispatch(openPlanRequestModal(null)),
                     },
                 ]}
@@ -78,6 +79,7 @@ export default function InquiryPage() {
     const rowActions = [
         {
             label: "Approve",
+            permission: "plan_request.approve",
             onClick: (row: any) =>
                 dispatch(
                     openReviewModal({
@@ -88,6 +90,7 @@ export default function InquiryPage() {
         },
         {
             label: "Reject",
+            permission: "plan_request.reject",
             onClick: (row: any) =>
                 dispatch(
                     openReviewModal({
@@ -99,6 +102,7 @@ export default function InquiryPage() {
         {
             label: "Delete",
             className: "text-danger",
+            permission: "plan_request.delete",
             onClick: (row: any) => dispatch(openDeletePlanRequestModal(row)),
         },
     ];

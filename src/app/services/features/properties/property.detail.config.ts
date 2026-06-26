@@ -1,38 +1,27 @@
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
-import type { Property } from "./property.types";
 
-const formatBool = (value: unknown) => (value ? "Yes" : "No");
-
-export const propertyDetailConfig: DetailConfig<Property> = {
+export const propertyDetailConfig: DetailConfig<any> = {
   header: {
-    titleAccessor: (data) => data.title ?? "Property",
-    subtitleAccessor: (data) =>
-      data.full_address ?? data.address ?? data.formatted_address ?? "No address provided",
+    titleAccessor: "name",
+    subtitleAccessor: "address",
     badges: [
       {
-        label: (data) => data.status ?? "Unknown",
-        color: (data) =>
-          data.status === "Published"
-            ? "success"
-            : data.status === "Draft"
-              ? "warning"
-              : "danger",
+        label: "status",
+        color: (data) => (data.status === "active" ? "success" : "warning"),
       },
       {
-        label: (data) => data.property_type?.name ?? "Unspecified type",
+        label: "property_type",
         color: "primary",
-        showIf: (data) => !!data.property_type?.name,
       },
     ],
     metrics: [
       {
-        label: "Rating",
-        valueAccessor: (data) =>
-          data.rating !== undefined && data.rating !== null ? Number(data.rating).toFixed(2) : "—",
+        label: "Price",
+        valueAccessor: (data) => `$${data.price?.toLocaleString() || "N/A"}`,
       },
       {
-        label: "Verified",
-        valueAccessor: (data) => formatBool(data.location_verified),
+        label: "Size",
+        valueAccessor: (data) => `${data.size || "N/A"} sqft`,
       },
     ],
   },
@@ -40,7 +29,22 @@ export const propertyDetailConfig: DetailConfig<Property> = {
     {
       id: "overview",
       label: "Overview",
-      sections: ["property_info", "location", "media_summary", "gallery"],
+      sections: ["property_info", "builder_info", "map_view"],
+    },
+    {
+      id: "gallery",
+      label: "Gallery",
+      sections: ["property_gallery", "video_gallery"],
+    },
+    {
+      id: "inquiries",
+      label: "Inquiries",
+      sections: ["property_inquiries"],
+    },
+    {
+      id: "activity",
+      label: "Activity",
+      sections: ["activity_timeline"],
     },
   ],
   sections: [
@@ -50,62 +54,63 @@ export const propertyDetailConfig: DetailConfig<Property> = {
       title: "Property Information",
       gridColumnSpan: 6,
       fields: [
-        { label: "Title", accessor: "title", colSpan: 6 },
-        { label: "Status", accessor: "status", colSpan: 6 },
-        { label: "Description", accessor: "description", colSpan: 12 },
-        { label: "Property Type", accessor: (data) => data.property_type?.name ?? "—", colSpan: 6 },
-        { label: "Organization", accessor: (data) => data.organization?.name ?? "—", colSpan: 6 },
-        { label: "Creator", accessor: (data) => data.creator?.name ?? "—", colSpan: 6 },
-        { label: "Creator Email", accessor: (data) => data.creator?.email ?? "—", colSpan: 6 },
+        { label: "Name", accessor: "name", colSpan: 6 },
+        { label: "Address", accessor: "address", colSpan: 6 },
+        { label: "City", accessor: "city", colSpan: 6 },
+        { label: "Zip Code", accessor: "zip_code", colSpan: 6 },
+        { label: "Bedrooms", accessor: "bedrooms", colSpan: 6 },
+        { label: "Bathrooms", accessor: "bathrooms", colSpan: 6 },
+        { label: "Year Built", accessor: "year_built", colSpan: 6 },
       ],
     },
     {
-      id: "location",
+      id: "builder_info",
       type: "info",
-      title: "Location",
+      title: "Builder Information",
       gridColumnSpan: 6,
       fields: [
-        { label: "Address", accessor: (data) => data.full_address ?? data.address ?? "—", colSpan: 12 },
-        { label: "Address Line 1", accessor: "address_line_1", colSpan: 6 },
-        { label: "Address Line 2", accessor: "address_line_2", colSpan: 6 },
-        { label: "Suburb", accessor: "suburb", colSpan: 6 },
-        { label: "State", accessor: "state", colSpan: 6 },
-        { label: "Postcode", accessor: "postcode", colSpan: 6 },
-        { label: "Country", accessor: "country", colSpan: 6 },
-        { label: "Latitude", accessor: (data) => data.latitude ?? "—", colSpan: 6 },
-        { label: "Longitude", accessor: (data) => data.longitude ?? "—", colSpan: 6 },
-        { label: "Place ID", accessor: "place_id", colSpan: 6 },
-        { label: "Verified", accessor: (data) => formatBool(data.location_verified), colSpan: 6 },
+        { label: "Builder Name", accessor: "builder_name", colSpan: 6 },
+        { label: "Contact", accessor: "builder_contact", colSpan: 6 },
       ],
     },
     {
-      id: "media",
+      id: "map_view",
+      type: "map",
+      title: "Location Map",
+      gridColumnSpan: 12,
+      latAccessor: "latitude",
+      lngAccessor: "longitude",
+    },
+    {
+      id: "property_gallery",
       type: "gallery",
-      title: "Property Gallery",
+      title: "Image Gallery",
       gridColumnSpan: 12,
-      imagesAccessor: (data) => (data.images ?? []).map((image) => image.url),
+      imagesAccessor: "images",
     },
     {
-      id: "media_summary",
-      type: "info",
-      title: "Media Summary",
+      id: "video_gallery",
+      type: "gallery",
+      title: "Video Gallery",
       gridColumnSpan: 12,
-      fields: [
-        { label: "Images", accessor: (data) => data.images?.length ?? 0, colSpan: 3 },
-        { label: "Videos", accessor: (data) => data.videos?.length ?? 0, colSpan: 3 },
-        {
-          label: "First Image",
-          accessor: (data) => data.images?.[0]?.url ?? "—",
-          colSpan: 6,
-        },
-        {
-          label: "First Video",
-          accessor: (data) => data.videos?.[0]?.url ?? "—",
-          colSpan: 6,
-        },
-        { label: "Created At", accessor: "created_at", colSpan: 6 },
-        { label: "Updated At", accessor: "updated_at", colSpan: 6 },
-      ],
+      imagesAccessor: "videos",
+    },
+    {
+      id: "property_inquiries",
+      type: "table",
+      title: "Related Inquiries",
+      gridColumnSpan: 12,
+      fetchFn: () => {},
+      dataSelector: () => [],
+      totalSelector: () => 0,
+      columns: [],
+    },
+    {
+      id: "activity_timeline",
+      type: "timeline",
+      title: "Status History",
+      gridColumnSpan: 12,
     },
   ],
 };
+

@@ -2,7 +2,7 @@ import React from "react";
 import type { DetailConfig } from "../core/DetailTypes";
 import { KTIcon } from "../../../../../_metronic/helpers";
 import type { RowAction } from "../../shared_table/entity-list/table/EntityTable";
-import { getAuth } from "../../../auth/core/AuthHelpers";
+import { usePermissionAccess } from "../../../auth";
 
 type Props<T> = {
   config: DetailConfig<T>["header"];
@@ -11,11 +11,9 @@ type Props<T> = {
 };
 
 export default function WorkspaceHeader<T>({ config, data, rowActions }: Props<T>) {
-  const auth = getAuth();
-  const abilities = auth?.abilities ?? [];
-  const visibleActions = rowActions?.filter(
-    (action) => !action.permission || abilities.includes(action.permission)
-  ) ?? [];
+  const { hasPermission } = usePermissionAccess();
+  const visibleActions =
+    rowActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
   // Helpers to resolve accessors safely
   const resolveValue = (accessor: keyof T | ((data: T) => React.ReactNode)) => {
     if (typeof accessor === "function") {
@@ -111,8 +109,13 @@ export default function WorkspaceHeader<T>({ config, data, rowActions }: Props<T
                 {visibleActions.map((action, idx) => (
                   <button
                     key={idx}
+                    type="button"
                     className={`btn btn-sm btn-light-primary me-3 mb-2 ${action.className ?? ""}`}
-                    onClick={() => action.onClick(data)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      action.onClick(data);
+                    }}
                   >
                     {action.label}
                   </button>

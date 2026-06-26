@@ -115,20 +115,19 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   );
 
   const propertyRowActions =
-    rowActions ??
-    (!isSuperAdmin
-      ? [
-          {
-            label: "Edit",
-            onClick: (row: PropertyList) => dispatch(openPropertyModal(row)),
-          },
-          {
-            label: "Delete",
-            className: "text-danger",
-            onClick: (row: PropertyList) => dispatch(openDeletePropertyModal(row)),
-          },
-        ]
-      : undefined);
+    rowActions ?? [
+      {
+        label: "Edit",
+        permission: "property.update",
+        onClick: (row: PropertyList) => dispatch(openPropertyModal(row)),
+      },
+      {
+        label: "Delete",
+        className: "text-danger",
+        permission: "property.delete",
+        onClick: (row: PropertyList) => dispatch(openDeletePropertyModal(row)),
+      },
+    ];
 
   if (error)
     return (
@@ -169,150 +168,156 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     );
 
   return (
-    <Routes>
-      <Route
-        index
-        element={
-          <>
-      <Content>
-        <PageHeader
-          title={
-            isSuperAdmin
-              ? "Property Management - At a Glance"
-              : "Property Management"
-          }
-          subtitle={
-            isSuperAdmin
-              ? "All properties across companies"
-              : "Manage properties for your company"
-          }
-        />
+    <>
+      <Routes>
+        <Route
+          index
+          element={
+            <Content>
+              <PageHeader
+                title={
+                  isSuperAdmin
+                    ? "Property Management - At a Glance"
+                    : "Property Management"
+                }
+                subtitle={
+                  isSuperAdmin
+                    ? "All properties across companies"
+                    : "Manage properties for your company"
+                }
+              />
 
-      <div className="d-flex justify-content-end mb-5">
-        <div className="btn-group">
-          <button
-            type="button"
-            className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-light"}`}
-            onClick={() => setViewMode("list")}
-          >
-            List View
-          </button>
-          <button
-            type="button"
-            className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-light"}`}
-            onClick={() => setViewMode("map")}
-          >
-            Map View
-          </button>
-        </div>
-      </div>
-
-        {viewMode === "list" ? (
-          <EntityList
-            data={data}
-            total={total}
-            params={params}
-            onParamsChange={handleParamsChange}
-            columns={propertyListConfig.columns}
-            filtersConfig={propertyListConfig.filters}
-            getRowLink={(row) => `${portalBase}/property-management/${row.id}`}
-            enableRowClick
-            headerActions={
-              !isSuperAdmin
-                ? [
-                    {
-                      label: "Add Property",
-                      onClick: () => dispatch(openPropertyModal(null)),
-                    },
-                  ]
-                : undefined
-            }
-            rowActions={
-              propertyRowActions
-            }
-          />
-        ) : (
-          <div className="d-flex flex-column gap-5">
-            <div className="card shadow-sm border-0">
-              <div className="card-body">
-                <div className="row g-4">
-                  <div className="col-md-3">
-                    <label className="form-label">Search</label>
-                    <input
-                      className="form-control form-control-solid"
-                      value={mapFilters.search}
-                      onChange={(e) => setMapFilters((prev) => ({ ...prev, search: e.target.value }))}
-                      placeholder="Search properties"
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    <label className="form-label">Status</label>
-                    <select
-                      className="form-select form-select-solid"
-                      value={mapFilters.status}
-                      onChange={(e) => setMapFilters((prev) => ({ ...prev, status: e.target.value }))}
-                    >
-                      <option value="">All</option>
-                      <option value="Draft">Draft</option>
-                      <option value="Published">Published</option>
-                      <option value="Archived">Archived</option>
-                    </select>
-                  </div>
-                  <div className="col-md-2">
-                    <label className="form-label">Suburb</label>
-                    <input
-                      className="form-control form-control-solid"
-                      value={mapFilters.suburb}
-                      onChange={(e) => setMapFilters((prev) => ({ ...prev, suburb: e.target.value }))}
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    <label className="form-label">State</label>
-                    <input
-                      className="form-control form-control-solid"
-                      value={mapFilters.state}
-                      onChange={(e) => setMapFilters((prev) => ({ ...prev, state: e.target.value }))}
-                    />
-                  </div>
-                  <div className="col-md-2">
-                    <label className="form-label">Postcode</label>
-                    <input
-                      className="form-control form-control-solid"
-                      value={mapFilters.postcode}
-                      onChange={(e) => setMapFilters((prev) => ({ ...prev, postcode: e.target.value }))}
-                    />
-                  </div>
-                  <div className="col-md-1 d-flex align-items-end">
-                    <button
-                      type="button"
-                      className="btn btn-light w-100"
-                      onClick={() =>
-                        setMapFilters({
-                          status: "",
-                          suburb: "",
-                          state: "",
-                          postcode: "",
-                          property_type_id: "",
-                          search: "",
-                        })
-                      }
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-                <div className="text-muted fs-7 mt-3">
-                  {mappedCount} mapped property markers, {mapProperties.length - mappedCount} missing coordinates.
+              <div className="d-flex justify-content-end mb-5">
+                <div className="btn-group">
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${viewMode === "list" ? "btn-primary" : "btn-light"}`}
+                    onClick={() => setViewMode("list")}
+                  >
+                    List View
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-sm ${viewMode === "map" ? "btn-primary" : "btn-light"}`}
+                    onClick={() => setViewMode("map")}
+                  >
+                    Map View
+                  </button>
                 </div>
               </div>
-            </div>
 
-            {mapLoading ? <div className="alert alert-light">Loading property map...</div> : null}
-            {mapError ? <div className="alert alert-danger">{mapError}</div> : null}
-            {!mapLoading && !mapError ? <PropertyMapView properties={mapProperties} /> : null}
-          </div>
-        )}
-      </Content>
+              {viewMode === "list" ? (
+                <EntityList
+                  data={data}
+                  total={total}
+                  params={params}
+                  onParamsChange={handleParamsChange}
+                  columns={propertyListConfig.columns}
+                  filtersConfig={propertyListConfig.filters}
+                  getRowLink={(row) => `${portalBase}/property-management/${row.id}`}
+                  enableRowClick
+                  headerActions={[
+                    {
+                      label: "Add Property",
+                      permission: "property.create",
+                      onClick: () => dispatch(openPropertyModal(null)),
+                    },
+                  ]}
+                  rowActions={propertyRowActions}
+                />
+              ) : (
+                <div className="d-flex flex-column gap-5">
+                  <div className="card shadow-sm border-0">
+                    <div className="card-body">
+                      <div className="row g-4">
+                        <div className="col-md-3">
+                          <label className="form-label">Search</label>
+                          <input
+                            className="form-control form-control-solid"
+                            value={mapFilters.search}
+                            onChange={(e) => setMapFilters((prev) => ({ ...prev, search: e.target.value }))}
+                            placeholder="Search properties"
+                          />
+                        </div>
+                        <div className="col-md-2">
+                          <label className="form-label">Status</label>
+                          <select
+                            className="form-select form-select-solid"
+                            value={mapFilters.status}
+                            onChange={(e) => setMapFilters((prev) => ({ ...prev, status: e.target.value }))}
+                          >
+                            <option value="">All</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Published">Published</option>
+                            <option value="Archived">Archived</option>
+                          </select>
+                        </div>
+                        <div className="col-md-2">
+                          <label className="form-label">Suburb</label>
+                          <input
+                            className="form-control form-control-solid"
+                            value={mapFilters.suburb}
+                            onChange={(e) => setMapFilters((prev) => ({ ...prev, suburb: e.target.value }))}
+                          />
+                        </div>
+                        <div className="col-md-2">
+                          <label className="form-label">State</label>
+                          <input
+                            className="form-control form-control-solid"
+                            value={mapFilters.state}
+                            onChange={(e) => setMapFilters((prev) => ({ ...prev, state: e.target.value }))}
+                          />
+                        </div>
+                        <div className="col-md-2">
+                          <label className="form-label">Postcode</label>
+                          <input
+                            className="form-control form-control-solid"
+                            value={mapFilters.postcode}
+                            onChange={(e) => setMapFilters((prev) => ({ ...prev, postcode: e.target.value }))}
+                          />
+                        </div>
+                        <div className="col-md-1 d-flex align-items-end">
+                          <button
+                            type="button"
+                            className="btn btn-light w-100"
+                            onClick={() =>
+                              setMapFilters({
+                                status: "",
+                                suburb: "",
+                                state: "",
+                                postcode: "",
+                                property_type_id: "",
+                                search: "",
+                              })
+                            }
+                          >
+                            Reset
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-muted fs-7 mt-3">
+                        {mappedCount} mapped property markers, {mapProperties.length - mappedCount} missing coordinates.
+                      </div>
+                    </div>
+                  </div>
+
+                  {mapLoading ? <div className="alert alert-light">Loading property map...</div> : null}
+                  {mapError ? <div className="alert alert-danger">{mapError}</div> : null}
+                  {!mapLoading && !mapError ? <PropertyMapView properties={mapProperties} /> : null}
+                </div>
+              )}
+            </Content>
+          }
+        />
+        <Route
+          path=":id"
+          element={<GenericDetailPage rowActions={propertyRowActions} />}
+        />
+        <Route
+          path="detail/:id"
+          element={<GenericDetailPage rowActions={propertyRowActions} />}
+        />
+      </Routes>
 
       {isModalOpen && (
         <PropertyModal
@@ -342,14 +347,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           isSubmitting={saving}
         />
       )}
-          </>
-        }
-      />
-      <Route
-        path=":id"
-        element={<GenericDetailPage rowActions={propertyRowActions} />}
-      />
-    </Routes>
+    </>
   );
 };
 

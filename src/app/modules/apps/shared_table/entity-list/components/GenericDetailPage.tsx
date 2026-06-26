@@ -24,6 +24,7 @@ const routeAliases: Record<string, string> = {
   solo: 'organization',
   'solo-traders': 'organization',
   users: 'staff',
+  businesses: 'organization',
 }
 
 const detailRegistry: Record<string, DetailRegistryEntry> = {

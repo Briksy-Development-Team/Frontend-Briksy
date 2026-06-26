@@ -37,7 +37,11 @@ const OrganizationPage = () => {
                 columns={organizationConfig.columns}
                 filtersConfig={organizationConfig.filters}
                 enableRowClick
-                getRowLink={(row) => `${portalBase}/companies/organization/${row.id}`}
+                getRowLink={(row) =>
+                    isSuperAdmin
+                        ? `${portalBase}/companies/organization/${row.id}`
+                        : `${portalBase}/businesses/${row.id}`
+                }
             />
         </Content>
     );

@@ -83,6 +83,7 @@ const OrderList = ({ rowActions }: { rowActions: any[] }) => {
         headerActions={[
           {
             label: "New Order",
+            permission: "order.create",
             onClick: () => dispatch(openOrderModal(null)),
           },
         ]}
@@ -105,19 +106,23 @@ const OrderPage = () => {
   const rowActions = [
     {
       label: "Edit",
+      permission: "order.update",
       onClick: (row: any) => dispatch(openOrderModal(row)),
     },
     {
       label: "Mark Paid",
+      permission: "order.update",
       onClick: (row: any) => dispatch(markOrderPaid(row.id)),
     },
     {
       label: "Cancel",
+      permission: "order.cancel",
       onClick: (row: any) => dispatch(cancelOrder(row.id)),
     },
     {
       label: "Delete",
       className: "text-danger",
+      permission: "order.delete",
       onClick: (row: any) => dispatch(openDeleteOrderModal(row)),
     },
   ];

@@ -27,6 +27,19 @@ export type Organization = {
     slug: string;
   };
 };
+
+export type OrganizationFormValues = {
+  name: string;
+  contact_email?: string;
+  contact_phone?: string;
+  address?: string;
+  business_type?: "organisation" | "company" | "solo_trader";
+  business_verification_status?: "pending" | "verified" | "rejected";
+  abn?: string;
+  acn?: string;
+  is_verified?: boolean;
+};
+
 export type GetOrganizationParams = {
   page?: number;
   per_page?: number;

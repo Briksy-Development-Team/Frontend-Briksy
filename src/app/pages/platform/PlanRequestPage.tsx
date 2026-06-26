@@ -63,6 +63,7 @@ const PlanRequestList = ({ rowActions }: { rowActions: any[] }) => {
         headerActions={[
           {
             label: "New Request",
+            permission: "plan_request.create",
             onClick: () => dispatch(openPlanRequestModal(null)),
           },
         ]}
@@ -87,6 +88,7 @@ export default function PlanRequestPage() {
   const rowActions = [
     {
       label: "Approve",
+      permission: "plan_request.approve",
       onClick: (row: any) =>
         dispatch(
           openReviewModal({
@@ -97,6 +99,7 @@ export default function PlanRequestPage() {
     },
     {
       label: "Reject",
+      permission: "plan_request.reject",
       onClick: (row: any) =>
         dispatch(
           openReviewModal({
@@ -108,6 +111,7 @@ export default function PlanRequestPage() {
     {
       label: "Delete",
       className: "text-danger",
+      permission: "plan_request.delete",
       onClick: (row: any) => dispatch(openDeletePlanRequestModal(row)),
     },
   ];

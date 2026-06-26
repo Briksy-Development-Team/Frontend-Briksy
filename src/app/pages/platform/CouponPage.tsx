@@ -83,10 +83,12 @@ const CouponList = ({ rowActions }: { rowActions: any[] }) => {
         headerActions={[
           {
             label: "Add Coupon",
+            permission: "coupon.create",
             onClick: () => dispatch(openCouponModal(null)),
           },
           {
             label: "Validate Coupon",
+            permission: "coupon.view",
             onClick: () => dispatch(openValidationModal()),
           },
         ]}
@@ -110,19 +112,23 @@ const CouponPage = () => {
   const rowActions = [
     {
       label: "Edit",
+      permission: "coupon.update",
       onClick: (row: any) => dispatch(openCouponModal(row)),
     },
     {
       label: "Activate",
+      permission: "coupon.update",
       onClick: (row: any) => dispatch(activateCoupon(row.id)),
     },
     {
       label: "Deactivate",
+      permission: "coupon.update",
       onClick: (row: any) => dispatch(deactivateCoupon(row.id)),
     },
     {
       label: "Delete",
       className: "text-danger",
+      permission: "coupon.delete",
       onClick: (row: any) => dispatch(openDeleteCouponModal(row)),
     },
   ];

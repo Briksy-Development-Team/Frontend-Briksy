@@ -1,10 +1,15 @@
 import { KTIcon } from "../../../../../../../_metronic/helpers";
 import { ColumnSelector } from "./ColumnSelector";
 import SortSelector from "./SortSelector";
+import { usePermissionAccess } from "../../../../../auth";
 
 type ColumnKey = string;
 
-export type AddAction = { label: string; onClick: () => void };
+export type AddAction = {
+  label: string;
+  onClick: () => void;
+  permission?: string;
+};
 
 type Col = {
   accessor: ColumnKey;
@@ -40,7 +45,12 @@ const EntityHeader = ({
   onSortChange,
   headerActions,
 
-}: Props) => (
+}: Props) => {
+  const { hasPermission } = usePermissionAccess();
+  const visibleHeaderActions =
+    headerActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
+
+  return (
   <div className="card-header border-0 pt-6 d-flex justify-content-between">
     <div className="card-title">
       <div className="d-flex align-items-center position-relative my-1">
@@ -84,11 +94,14 @@ const EntityHeader = ({
         setVisibleColumns={setVisibleColumns}
       />
 
-      {headerActions?.map((action) => (
+      {visibleHeaderActions.map((action) => (
         <button
           key={action.label}
-          type='button'
-          onClick={action.onClick}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            action.onClick();
+          }}
           className='btn btn-primary d-flex align-items-center gap-2'
         >
           <KTIcon iconName='plus' className='fs-2' />
@@ -97,6 +110,7 @@ const EntityHeader = ({
       ))}
     </div>
   </div>
-);
+  );
+};
 
 export { EntityHeader };
