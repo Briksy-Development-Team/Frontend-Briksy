@@ -159,6 +159,15 @@ const SidebarMenuMain = () => {
 
       {isAdmin && (
         <>
+          {hasPermission("company.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/businesses`}
+              title="Business Details"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
           {hasModule("property_management") && (
             <SidebarMenuItem
               to={`${portalBase}/property-management`}

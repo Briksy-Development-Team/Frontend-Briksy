@@ -1,5 +1,5 @@
 import axiosInstance from "../../api/axiosInstance";
-import type { GetSeekersParams } from "./seeker.types";
+import type { GetSeekersParams, SeekerFormValues } from "./seeker.types";
 import { buildApiParams } from "../../utils/buildApiParams";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 
@@ -24,4 +24,13 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
     data: data ?? [],
     total: meta?.pagination?.total ?? 0,
   };
-};  
+};
+
+export const updateSeekerApi = async (id: string, payload: SeekerFormValues) => {
+  const response = await axiosInstance.put(`${getSeekerEndpoint()}/${id}`, payload);
+  return response.data;
+};
+
+export const deleteSeekerApi = async (id: string) => {
+  await axiosInstance.delete(`${getSeekerEndpoint()}/${id}`);
+};

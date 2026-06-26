@@ -80,6 +80,7 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         storageKey="staffColumns"
         headerActions={[{
           label: "Add Staff",
+          permission: "user.create",
           onClick: () => dispatch(openStaffModal(null)),
         }]}
         rowActions={rowActions}
@@ -102,11 +103,13 @@ const StaffPage = () => {
   const rowActions = [
     {
       label: "Edit",
+      permission: "user.update",
       onClick: (row: any) => dispatch(openStaffModal(row)),
     },
     {
       label: "Delete",
       className: "text-danger",
+      permission: "user.delete",
       onClick: (row: any) =>
         dispatch(openDeleteStaffModal(row)),
     },

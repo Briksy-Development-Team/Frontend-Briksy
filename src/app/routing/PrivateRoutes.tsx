@@ -23,6 +23,7 @@ const StaffPage = lazy(() => import("../pages/user management/StaffPage"));
 const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
 const SoloPage = lazy(() => import("../pages/user management/user/SoloPage"));
 const UserPage = lazy(() => import("../pages/user management/UserPage"));
+const CompanyPage = lazy(() => import("../pages/user management/CompanyPage"));
 const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
 const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"));
 const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"));
@@ -113,6 +114,17 @@ const PrivateRoutes = () => {
                   <StaffPage />
                 </SuspensedView>
               </ModuleGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/businesses/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <SuspensedView>
+                <CompanyPage />
+              </SuspensedView>
             </RoleGuard>
           }
         />

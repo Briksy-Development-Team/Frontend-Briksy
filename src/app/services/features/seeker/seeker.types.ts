@@ -17,6 +17,15 @@ export type Seeker = {
   created_at?: string;
 };
 
+export type SeekerFormValues = {
+  name: string;
+  email: string;
+  display_name?: string;
+  mobile_number?: string;
+  password?: string;
+  password_confirmation?: string;
+};
+
 export type GetSeekersParams = {
   page?: number;
   per_page?: number;

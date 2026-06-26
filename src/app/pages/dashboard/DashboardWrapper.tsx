@@ -95,6 +95,55 @@ const DashboardPage: FC = () => {
                   <MetricCard label="Property Count" value={summary.property_summary.total} tone="#F59E0B" />
                 </div>
 
+                <div className="row g-5 mb-8">
+                  <div className="col-12">
+                    <div className="card shadow-sm border-0">
+                      <div className="card-header border-0 pt-5">
+                        <h3 className="card-title align-items-start flex-column">
+                          <span className="card-label fw-bold fs-3 mb-1">Management Shortcuts</span>
+                          <span className="text-muted mt-1 fw-semibold fs-7">Jump straight to the main record screens</span>
+                        </h3>
+                      </div>
+                      <div className="card-body pt-0">
+                        <div className="row g-4">
+                          <div className="col-md-3">
+                            <Link to="/super-admin/companies" className="card h-100 border border-light text-decoration-none">
+                              <div className="card-body">
+                                <div className="fw-bold fs-5 text-dark">Companies</div>
+                                <div className="text-gray-600 mt-2">View and manage organization records.</div>
+                              </div>
+                            </Link>
+                          </div>
+                          <div className="col-md-3">
+                            <Link to="/super-admin/seekers" className="card h-100 border border-light text-decoration-none">
+                              <div className="card-body">
+                                <div className="fw-bold fs-5 text-dark">Seekers</div>
+                                <div className="text-gray-600 mt-2">Open seeker profiles and details.</div>
+                              </div>
+                            </Link>
+                          </div>
+                          <div className="col-md-3">
+                            <Link to="/super-admin/plans" className="card h-100 border border-light text-decoration-none">
+                              <div className="card-body">
+                                <div className="fw-bold fs-5 text-dark">Plans</div>
+                                <div className="text-gray-600 mt-2">Edit pricing and feature permissions.</div>
+                              </div>
+                            </Link>
+                          </div>
+                          <div className="col-md-3">
+                            <Link to="/super-admin/orders" className="card h-100 border border-light text-decoration-none">
+                              <div className="card-body">
+                                <div className="fw-bold fs-5 text-dark">Orders</div>
+                                <div className="text-gray-600 mt-2">Review subscriptions and billing activity.</div>
+                              </div>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="row g-5 gx-xxl-8 mb-8">
                   <div className="col-xxl-6">
                     <div className="card h-100">
@@ -146,6 +195,16 @@ const DashboardPage: FC = () => {
 
         {!isSuperAdmin && (
           <div className="row g-5 mb-6">
+            <div className="col-md-4">
+              <Link to="/admin/businesses" className="card h-100 shadow-sm border-0 text-decoration-none">
+                <div className="card-body">
+                  <div className="text-muted fs-7">Module</div>
+                  <div className="fw-bold fs-3 text-dark">Business Details</div>
+                  <div className="text-gray-600 mt-2">Edit your organization profile and plan-facing company information.</div>
+                </div>
+              </Link>
+            </div>
+
             {hasModule("property_management") && (
               <div className="col-md-4">
                 <Link to="/admin/property-management" className="card h-100 shadow-sm border-0 text-decoration-none">

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { KTCardBody } from "../../../../../../_metronic/helpers";
 import type { Column as CustomColumn } from "../EntityList";
-import { getAuth } from "../../../../auth/core/AuthHelpers";
+import { usePermissionAccess } from "../../../../auth";
 export type RowAction<T> = {
   label: string;
   className?: string;
@@ -34,13 +34,12 @@ const EntityTable = <T extends { id: string | number }>({
   const navigate = useNavigate();
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable<T>({ columns: columns as any, data });
-  const auth = getAuth();
-  const abilities = auth?.abilities ?? [];
+  const { hasPermission } = usePermissionAccess();
   const allSelected = data.length > 0 && selectedRows.size === data.length;
   const someSelected = selectedRows.size > 0 && selectedRows.size < data.length;
   const visibleActions =
     rowActions?.filter(
-      (action) => !action.permission || abilities.includes(action.permission),
+      (action) => !action.permission || hasPermission(action.permission),
     ) ?? [];
   const hasActions = visibleActions.length > 0;
   const handleRowClick = (row: T) => {
@@ -159,6 +158,7 @@ const EntityTable = <T extends { id: string | number }>({
                       >
                         <div className="dropdown">
                           <button
+                            type="button"
                             className="btn btn-sm btn-light btn-active-light-primary"
                             data-bs-toggle="dropdown"
                           >
@@ -168,6 +168,7 @@ const EntityTable = <T extends { id: string | number }>({
                             {visibleActions!.map((action) => (
                               <li key={action.label}>
                                 <button
+                                  type="button"
                                   className={`dropdown-item ${action.className ?? ""}`}
                                   onClick={() => action.onClick(row.original)}
                                 >
