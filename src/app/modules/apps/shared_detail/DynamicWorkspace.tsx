@@ -14,9 +14,17 @@ type Props<T> = {
 export default function DynamicWorkspace<T>({ config, data, isLoading, error, rowActions }: Props<T>) {
   const [activeTab, setActiveTab] = useState<string>(config.tabs[0]?.id || "");
 
+  const visibleTabs = config.tabs.filter((tab) => !tab.showIf || (data && tab.showIf(data)));
+
   useEffect(() => {
-    setActiveTab(config.tabs[0]?.id || "");
-  }, [config]);
+    setActiveTab(visibleTabs[0]?.id || "");
+  }, [config, data]);
+
+  useEffect(() => {
+    if (!visibleTabs.some((tab) => tab.id === activeTab)) {
+      setActiveTab(visibleTabs[0]?.id || "");
+    }
+  }, [activeTab, visibleTabs]);
 
   if (isLoading) {
     return (
@@ -40,11 +48,11 @@ export default function DynamicWorkspace<T>({ config, data, isLoading, error, ro
   }
 
   // Find active tab configuration
-  const currentTabConfig = config.tabs.find((t) => t.id === activeTab);
+  const currentTabConfig = visibleTabs.find((t) => t.id === activeTab);
   
   // Filter sections that belong to the active tab
   const activeSections = config.sections.filter((s) => 
-    currentTabConfig?.sections.includes(s.id)
+    currentTabConfig?.sections.includes(s.id) && (!s.showIf || s.showIf(data))
   );
 
   return (
@@ -53,12 +61,12 @@ export default function DynamicWorkspace<T>({ config, data, isLoading, error, ro
       <WorkspaceHeader config={config.header} data={data} rowActions={rowActions} />
 
       {/* Navigation Tabs */}
-      {config.tabs.length > 1 && (
+      {visibleTabs.length > 1 && (
         <div className="card shadow-sm">
           <div className="card-header align-items-stretch border-bottom-0">
             <div className="card-toolbar m-0">
               <ul className="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fw-bold fs-5">
-                {config.tabs.map((tab) => (
+                {visibleTabs.map((tab) => (
                   <li key={tab.id} className="nav-item mt-2">
                     <button
                       className={`nav-link text-active-primary ms-0 me-10 py-5 bg-transparent border-0 ${

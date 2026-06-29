@@ -29,6 +29,14 @@ export default function WorkspaceHeader<T>({ config, data, rowActions }: Props<T
     return String(data[accessor] || "");
   };
 
+  const resolveMetricLabel = (label: string | ((data: T) => React.ReactNode)) => {
+    if (typeof label === "function") {
+      return label(data);
+    }
+
+    return label;
+  };
+
   const title = resolveValue(config.titleAccessor);
   const subtitle = config.subtitleAccessor ? resolveValue(config.subtitleAccessor) : null;
   const avatarUrl = config.avatarAccessor ? resolveString(config.avatarAccessor as any) : null;
@@ -84,20 +92,24 @@ export default function WorkspaceHeader<T>({ config, data, rowActions }: Props<T
             </div>
 
             {/* Metrics */}
-            {config.metrics && config.metrics.length > 0 && (
+            {config.metrics && config.metrics.some((metric) => !metric.showIf || metric.showIf(data)) && (
               <div className="d-flex flex-wrap flex-stack">
                 <div className="d-flex flex-column flex-grow-1 pe-8">
                   <div className="d-flex flex-wrap">
-                    {config.metrics.map((metric, idx) => (
-                      <div key={idx} className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                        <div className="d-flex align-items-center">
-                          <div className="fs-2 fw-bolder text-gray-800">
-                            {resolveValue(metric.valueAccessor)}
+                    {config.metrics.map((metric, idx) => {
+                      if (metric.showIf && !metric.showIf(data)) return null;
+
+                      return (
+                        <div key={idx} className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                          <div className="d-flex align-items-center">
+                            <div className="fs-2 fw-bolder text-gray-800">
+                              {resolveValue(metric.valueAccessor)}
+                            </div>
                           </div>
+                          <div className="fw-bold fs-6 text-gray-500">{resolveMetricLabel(metric.label)}</div>
                         </div>
-                        <div className="fw-bold fs-6 text-gray-500">{metric.label}</div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>

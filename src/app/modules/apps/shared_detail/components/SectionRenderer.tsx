@@ -15,7 +15,7 @@ export default function SectionRenderer<T>({ config, data }: Props<T>) {
       return <InfoCard config={config} data={data} />;
     
     case "table":
-      return <RelatedTable config={config} />;
+      return <RelatedTable config={config} data={data} />;
     
     case "custom":
       const CustomComponent = config.component;

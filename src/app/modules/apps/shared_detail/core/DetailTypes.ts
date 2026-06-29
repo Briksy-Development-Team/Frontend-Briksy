@@ -9,6 +9,7 @@ export interface BaseSectionConfig {
   title: string;
   type: SectionType;
   gridColumnSpan?: number; // e.g. 6 or 12 for half/full width
+  showIf?: (data: any) => boolean;
 }
 
 // Config for "info" sections (Key-Value cards)
@@ -25,7 +26,7 @@ export interface InfoSectionConfig<T> extends BaseSectionConfig {
 export interface TableSectionConfig<T> extends BaseSectionConfig {
   type: "table";
   // The fetch function for the related table
-  fetchFn: (params: QueryParams) => void;
+  fetchFn: (params: QueryParams, data: T) => void;
   // Selector to get data and total from Redux store
   dataSelector: (state: any) => any[];
   totalSelector: (state: any) => number;
@@ -92,14 +93,16 @@ export type DetailConfig<T> = {
       showIf?: (data: T) => boolean;
     }>;
     metrics?: Array<{
-      label: string;
+      label: string | ((data: T) => ReactNode);
       valueAccessor: Extract<keyof T, string> | ((data: T) => ReactNode);
+      showIf?: (data: T) => boolean;
     }>;
   };
   tabs: Array<{
     id: string;
     label: string;
     sections: string[]; // Section IDs mapping
+    showIf?: (data: T) => boolean;
   }>;
   sections: SectionConfig<T>[];
 };

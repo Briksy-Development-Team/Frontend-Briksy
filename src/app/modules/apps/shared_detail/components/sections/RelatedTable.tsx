@@ -6,12 +6,15 @@ import { useEntityTable } from "../../../shared_table/hooks/useEntityTable";
 
 type Props<T> = {
   config: TableSectionConfig<T>;
+  data: T;
 };
 
-export default function RelatedTable<T>({ config }: Props<T>) {
-  const { params, handleParamsChange } = useEntityTable(config.fetchFn);
+export default function RelatedTable<T>({ config, data: entityData }: Props<T>) {
+  const { params, handleParamsChange } = useEntityTable((params) =>
+    config.fetchFn(params, entityData)
+  );
 
-  const data = useSelector(config.dataSelector) || [];
+  const rows = useSelector(config.dataSelector) || [];
   const total = useSelector(config.totalSelector) || 0;
 
   return (
@@ -23,7 +26,7 @@ export default function RelatedTable<T>({ config }: Props<T>) {
       </div>
       <div className="card-body p-0">
         <EntityList
-          data={data}
+          data={rows}
           total={total}
           params={params}
           onParamsChange={handleParamsChange}
