@@ -18,14 +18,14 @@
 
         .btn-custom {
             @include button-custom-variant(
-                $color:#B5B5C3, 
-                $icon-color: #B5B5C3, 
+                $color:#ffffff, 
+                $icon-color: #ffffff, 
                 $border-color: null, 
-                $bg-color: rgba(63, 66, 84, 0.35), 
-                $color-active: #B5B5C3, 
+                $bg-color: rgba(0, 0, 0, 0.20), 
+                $color-active: #ffffff, 
                 $icon-color-active: null, 
                 $border-color-active: null, 
-                $bg-color-active: rgba(63, 66, 84, 0.35)
+                $bg-color-active: rgba(0, 0, 0, 0.30)
             );
         }
 
@@ -36,46 +36,46 @@
                 }
 
                 @include menu-link-default-state( 
-                    $title-color: $gray-700-dark, 
-                    $icon-color:  $gray-400-dark, 
-                    $bullet-color:$gray-400-dark,  
-                    $arrow-color: $gray-400-dark,  
+                    $title-color: rgba(255,255,255,0.8), 
+                    $icon-color:  rgba(255,255,255,0.6), 
+                    $bullet-color: rgba(255,255,255,0.6),  
+                    $arrow-color: rgba(255,255,255,0.6),  
                     $bg-color: null,
                     $all-links: true 
                 );
                 
                 @include menu-link-here-state( 
-                    $title-color: $gray-900-dark,
-                    $icon-color: $gray-900-dark, 
-                    $bullet-color: $gray-900-dark,
-                    $arrow-color: $gray-900-dark, 
+                    $title-color: #ffffff,
+                    $icon-color: #ffffff, 
+                    $bullet-color: #ffffff,
+                    $arrow-color: #ffffff, 
                     $bg-color: null,
                     $all-links: true
                 );
                 
                 @include menu-link-show-state( 
-                    $title-color: $gray-900-dark,
-                    $icon-color: $gray-900-dark, 
-                    $bullet-color: $gray-900-dark,
-                    $arrow-color: $gray-900-dark,
+                    $title-color: #ffffff,
+                    $icon-color: #ffffff, 
+                    $bullet-color: #ffffff,
+                    $arrow-color: #ffffff,
                     $bg-color: null,
                     $all-links: true
                 );
                 
                 @include menu-link-hover-state( 
-                    $title-color: $gray-900-dark,
-                    $icon-color: $gray-900-dark, 
-                    $bullet-color: $gray-900-dark,
-                    $arrow-color: $gray-900-dark,
-                    $bg-color: null,
+                    $title-color: #ffffff,
+                    $icon-color: #ffffff, 
+                    $bullet-color: #ffffff,
+                    $arrow-color: #ffffff,
+                    $bg-color: rgba(0,0,0,0.15),
                     $all-links: true
                 );
                 
                 @include menu-link-active-state( 
-                    $title-color: $gray-900-dark,
-                    $icon-color: $gray-900-dark, 
-                    $bullet-color: $gray-900-dark,
-                    $arrow-color: $gray-900-dark,
+                    $title-color: #ffffff,
+                    $icon-color: #ffffff, 
+                    $bullet-color: #ffffff,
+                    $arrow-color: #ffffff,
                     $bg-color: $app-sidebar-dark-menu-link-bg-color-active,
                     $all-links: true
                 );
@@ -95,11 +95,76 @@
     }
 }
 
-// Dark mode
+// Dark mode — sidebar gets lighter warm bg for contrast vs near-black page
 @include color-mode(dark) {
     [data-kt-app-layout="dark-sidebar"] {
         .app-sidebar {
-            border-right: 1px solid $app-sidebar-dark-separator-color;
+            background-color: #342511; /* same as light mode — sidebar never changes */
+            border-right: 1px solid rgba(255,255,255,0.06);
+
+            .app-sidebar-logo {
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+            }
+
+            .menu {
+                .menu-item {
+                    .menu-heading {
+                        color: rgba(245, 220, 180, 0.45) !important;
+                    }
+
+                    @include menu-link-default-state(
+                        $title-color: rgba(240, 220, 190, 0.70),
+                        $icon-color:  rgba(240, 220, 190, 0.45),
+                        $bullet-color: rgba(240, 220, 190, 0.45),
+                        $arrow-color: rgba(240, 220, 190, 0.45),
+                        $bg-color: null,
+                        $all-links: true
+                    );
+
+                    @include menu-link-hover-state(
+                        $title-color: #f0dcc0,
+                        $icon-color: #f0dcc0,
+                        $bullet-color: #f0dcc0,
+                        $arrow-color: #f0dcc0,
+                        $bg-color: rgba(255,255,255,0.05),
+                        $all-links: true
+                    );
+
+                    @include menu-link-here-state(
+                        $title-color: #ffffff,
+                        $icon-color: #f5551a,
+                        $bullet-color: #f5551a,
+                        $arrow-color: #ffffff,
+                        $bg-color: rgba(245,85,26,0.10),
+                        $all-links: true
+                    );
+
+                    @include menu-link-show-state(
+                        $title-color: #ffffff,
+                        $icon-color: #f5551a,
+                        $bullet-color: #f5551a,
+                        $arrow-color: #ffffff,
+                        $bg-color: rgba(245,85,26,0.10),
+                        $all-links: true
+                    );
+
+                    @include menu-link-active-state(
+                        $title-color: #ffffff,
+                        $icon-color: #f5551a,
+                        $bullet-color: #f5551a,
+                        $arrow-color: #ffffff,
+                        $bg-color: rgba(245,85,26,0.12),
+                        $all-links: true
+                    );
+
+                    // Orange left accent on active item
+                    .menu-link.active {
+                        border-left: 3px solid #f5551a;
+                        padding-left: calc(1rem - 3px);
+                        border-radius: 0 8px 8px 0;
+                    }
+                }
+            }
         }
     }
 }
