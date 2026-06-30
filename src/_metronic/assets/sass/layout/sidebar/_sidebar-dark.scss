@@ -73,12 +73,19 @@
                 
                 @include menu-link-active-state( 
                     $title-color: #ffffff,
-                    $icon-color: #ffffff, 
-                    $bullet-color: #ffffff,
+                    $icon-color: #f5551a, 
+                    $bullet-color: #f5551a,
                     $arrow-color: #ffffff,
-                    $bg-color: $app-sidebar-dark-menu-link-bg-color-active,
+                    $bg-color: rgba(245, 85, 26, 0.12),
                     $all-links: true
                 );
+
+                // Orange left accent — applies in both light and dark mode
+                .menu-link.active {
+                    border-left: 3px solid #f5551a;
+                    padding-left: calc(1rem - 3px);
+                    border-radius: 0 8px 8px 0;
+                }
             }
         }
     } 

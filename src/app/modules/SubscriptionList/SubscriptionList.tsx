@@ -117,7 +117,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                       boxShadow: '0 4px 12px rgba(245,85,26,0.4)',
                     }}
                   >
-                    ⭐ Most Popular
+                     Most Popular
                   </div>
                 )}
 
@@ -181,24 +181,10 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
 
                   {/* Plan icon + name */}
                   <div style={{ marginBottom: 20 }}>
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: 12,
-                        background: isPopular ? 'rgba(255,255,255,0.15)' : 'rgba(245,85,26,0.10)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 20,
-                        marginBottom: 14,
-                      }}
-                    >
-                      {index === 0 ? '🌱' : index === 1 ? '🚀' : '🏢'}
-                    </div>
+                
                     <h4
                       style={{
-                        fontSize: 18,
+                        fontSize: 28,
                         fontWeight: 700,
                         color: isPopular ? '#fff' : '#342511',
                         marginBottom: 4,
