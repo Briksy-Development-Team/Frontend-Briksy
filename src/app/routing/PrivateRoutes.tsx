@@ -35,6 +35,7 @@ const OrderPage = lazy(() => import("../pages/platform/OrderPage"));
 const CouponPage = lazy(() => import("../pages/platform/CouponPage"));
 const PlanRequestPage = lazy(() => import("../pages/platform/PlanRequestPage"));
 const NotificationsPage = lazy(() => import("../pages/notifications/NotificationsPage"));
+const ActivityLogsPage = lazy(() => import("../pages/platform/ActivityLogsPage"));
 
 const PrivateRoutes = () => {
   const { currentUser } = useAuth();
@@ -280,6 +281,19 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/super-admin/activity-logs/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <PermissionGuard anyOf={["activity_logs.view"]}>
+                <SuspensedView>
+                  <ActivityLogsPage />
+                </SuspensedView>
+              </PermissionGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/super-admin/services/*"
           element={
             <RoleGuard allow={["super_admin"]}>
@@ -323,6 +337,19 @@ const PrivateRoutes = () => {
               <SuspensedView>
                 <NotificationsPage />
               </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/activity-logs/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <PermissionGuard anyOf={["activity_logs.view"]}>
+                <SuspensedView>
+                  <ActivityLogsPage />
+                </SuspensedView>
+              </PermissionGuard>
             </RoleGuard>
           }
         />

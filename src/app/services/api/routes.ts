@@ -16,4 +16,6 @@ export const API_ROUTES = {
   orders: "/super-admin/orders",
 
   emailTemplates: "/super-admin/email-templates",
+
+  activityLogs: "/super-admin/activity-logs",
 };

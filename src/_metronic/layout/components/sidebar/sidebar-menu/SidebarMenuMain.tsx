@@ -153,6 +153,15 @@ const SidebarMenuMain = () => {
             />
           )}
 
+          {hasPermission("activity_logs.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/activity-logs`}
+              title="Activity Logs"
+              fontIcon="bi-archive"
+              icon="clock"
+            />
+          )}
+
 
         </>
       )}
@@ -201,6 +210,15 @@ const SidebarMenuMain = () => {
               title="Inquirys Management"
               fontIcon="bi-archive"
               icon="element-plus"
+            />
+          )}
+
+          {hasPermission("activity_logs.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/activity-logs`}
+              title="Activity Logs"
+              fontIcon="bi-archive"
+              icon="clock"
             />
           )}
         </>

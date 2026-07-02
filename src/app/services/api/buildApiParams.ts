@@ -8,12 +8,14 @@ export const API_ROUTES = {
     coupons: "/super-admin/coupons",
     orders: "/super-admin/orders",
     emailTemplates: "/super-admin/email-templates",
+    activityLogs: "/super-admin/activity-logs",
   },
 
   admin: {
     staff: "/admin/staff",
     properties: "/admin/properties",
     services: "/admin/services",
+    activityLogs: "/admin/activity-logs",
   },
 
   staff: {
