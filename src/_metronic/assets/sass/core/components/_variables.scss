@@ -21,16 +21,16 @@ $coal-clarity:  rgba(#18191F, 50) !default;
 $white: #ffffff !default;
 $black:#000000 !default;
 
-// Bootstrap grey colors
-$gray-100: #F9F9F9 !default;
-$gray-200: #F1F1F4 !default;
-$gray-300: #DBDFE9 !default;
-$gray-400: #C4CADA !default;
-$gray-500: #99A1B7 !default;
-$gray-600: #78829D !default;
-$gray-700: #4B5675 !default;
-$gray-800: #252F4A !default;
-$gray-900: #071437 !default;
+// Warm brown grey scale (from brand HTML)
+$gray-100: #f8f4ee !default;  // --bg-2
+$gray-200: #ede8e4 !default;  // --border
+$gray-300: #e2cbb3 !default;  // --bleach
+$gray-400: #bf9f7d !default;  // --brown-2
+$gray-500: #8b6f54 !default;  // --brown (muted text)
+$gray-600: #6b5240 !default;
+$gray-700: #4a3520 !default;
+$gray-800: #342511 !default;  // --dark-brown
+$gray-900: #1e1509 !default;
  
 // Bootstrap muted color
 $text-muted: $gray-500 !default;
@@ -50,10 +50,10 @@ $grays: (
 
 // Bootstrap contextual colors
 // Primary colors
-$primary:						#1B84FF !default;
-$primary-active:				#056EE9 !default;
-$primary-light: 				#E9F3FF !default;
-$primary-clarity: 				rgba(#1B84FF, 0.2) !default;
+$primary:						#f5551a !default;
+$primary-active:				#d94410 !default;
+$primary-light: 				#fdeee8 !default;
+$primary-clarity: 				rgba(#f5551a, 0.2) !default;
 $primary-inverse: 				$white !default; 
 
 // Secondary colors
@@ -71,18 +71,18 @@ $light-clarity: 				rgba($white, 0.2) !default;
 $light-inverse:					$gray-800 !default;
 
 // Success colors
-$success: 						#17C653 !default; 
-$success-active: 				#04B440 !default;
-$success-light: 				#DFFFEA !default;
-$success-clarity: 				rgba(#17C653, 0.2) !default;
+$success: 						#3a8451 !default; 
+$success-active: 				#2d6940 !default;
+$success-light: 				#e7f3ea !default;
+$success-clarity: 				rgba(#3a8451, 0.2) !default;
 $success-inverse: 				$white !default;
 
 // Info colors
-$info: 							#7239EA !default; 
-$info-active: 					#5014D0 !default;
-$info-light: 					#F8F5FF !default;
-$info-clarity: 					rgba(#7239EA, 0.2) !default;
-$info-inverse: 					$white !default;
+$info: 							#bf9f7d !default; // --brown-2 warm
+$info-active: 					#a08060 !default;
+$info-light: 					#f8f4ee !default;
+$info-clarity: 					rgba(#bf9f7d, 0.2) !default;
+$info-inverse: 					#342511 !default;
 
 // Warning colors
 $warning: 						#F6C000 !default; 
@@ -92,10 +92,10 @@ $warning-clarity: 				rgba(#F6C000, 0.2) !default;
 $warning-inverse: 				$white !default;
 
 // Danger colors
-$danger: 						#F8285A !default; 
-$danger-active: 				#D81A48 !default;
-$danger-light: 					#FFEEF3 !default;
-$danger-clarity: 				rgba(#F8285A, 0.2) !default;
+$danger: 						#c0392b !default; 
+$danger-active: 				#a02d22 !default;
+$danger-light: 					#fbeae8 !default;
+$danger-clarity: 				rgba(#c0392b, 0.2) !default;
 $danger-inverse: 				$white !default;
 
 // Dark colors
@@ -480,10 +480,10 @@ $table-striped-color:                       $table-color !default;
 $table-striped-bg:                          rgba(var(--#{$prefix}gray-100-rgb), 0.75) !default;
 
 $table-active-color:                        $table-color !default;
-$table-active-bg:                           var(--#{$prefix}gray-100) !default;
+$table-active-bg:                           rgba(245, 85, 26, 0.06) !default;
 
 $table-hover-color:                         $table-color !default;
-$table-hover-bg:                            var(--#{$prefix}gray-100) !default;
+$table-hover-bg:                            rgba(52, 37, 17, 0.04) !default;
 
 $table-border-factor:                       .1 !default;
 $table-border-width:                        $border-width !default;

@@ -106,8 +106,8 @@ function getChartOptions(
 ): ApexOptions {
   const labelColor = getCSSVariableValue('--bs-gray-500')
   const borderColor = getCSSVariableValue('--bs-gray-200')
-  const baseColor = getCSSVariableValue('--bs-info')
-  const lightColor = getCSSVariableValue('--bs-info-light')
+  const baseColor = '#8b6f54'   // --brown
+  const lightColor = '#f8f4ee'  // --bg-2
 
   let categories: string[] = []
   let seekerData: number[] = []

@@ -5,15 +5,16 @@
 // Safely override any variable in _variables.custom.scss
 //
 
-$gray-100-dark:  #1B1C22 !default;
-$gray-200-dark:  #26272F !default;
-$gray-300-dark:  #363843 !default;
-$gray-400-dark:  #464852 !default;
-$gray-500-dark:  #636674 !default;
-$gray-600-dark:  #808290 !default;
-$gray-700-dark:  #9A9CAE !default;
-$gray-800-dark:  #B5B7C8 !default;
-$gray-900-dark:  #F5F5F5 !default;
+// Dark mode scale — surfaces LIGHTER than page bg (#181310)
+$gray-100-dark:  #241c14 !default;  // card bg — clearly above page
+$gray-200-dark:  #2a2318 !default;  // inner card surfaces, borders
+$gray-300-dark:  #332b20 !default;  // hover, active rows
+$gray-400-dark:  #4a3a28 !default;  // subtle accents
+$gray-500-dark:  #6b5840 !default;  // muted / disabled text
+$gray-600-dark:  #9a8060 !default;  // secondary text
+$gray-700-dark:  #bfa882 !default;  // lighter secondary
+$gray-800-dark:  #d9c8aa !default;  // light labels
+$gray-900-dark:  #f0e8dc !default;  // main text (warm white)
 
 $grays-dark: (
 	"100": $gray-100-dark,
@@ -32,10 +33,11 @@ $text-muted-dark: $gray-500-dark !default;
 
 // Bootstrap contextual colors
 // Primary colors
-$primary-dark:						#006AE6 !default;
-$primary-active-dark:				#107EFF !default;
-$primary-light-dark: 				#172331 !default;
-$primary-clarity-dark: 				rgba(#006AE6, 0.2) !default;
+// Primary (orange for buttons) dark
+$primary-dark:						#f5551a !default;
+$primary-active-dark:				#d94410 !default;
+$primary-light-dark: 				#3a2c1a !default;
+$primary-clarity-dark: 				rgba(#f5551a, 0.2) !default;
 $primary-inverse-dark: 				$white !default;
 
 // Secondary colors
@@ -52,19 +54,19 @@ $light-light-dark: 					#1F212A !default;
 $light-clarity-dark: 				rgba(31, 33, 42, 0.20) !default;
 $light-inverse-dark:				$gray-600-dark !default;
 
-// Success colors
-$success-dark: 						#00A261 !default; 
-$success-active-dark: 				#01BF73 !default;
-$success-light-dark: 				#1F212A !default;
-$success-clarity-dark: 				rgba(#00A261, 0.2) !default;
+// Success dark
+$success-dark: 						#3a8451 !default;
+$success-active-dark: 				#4aaa68 !default;
+$success-light-dark: 				#1f3325 !default;  // --green-bg dark
+$success-clarity-dark: 				rgba(#3a8451, 0.2) !default;
 $success-inverse-dark: 				$white !default;
 
-// Info colors
-$info-dark: 						#883FFF !default; 
-$info-active-dark: 					#9E63FF !default;
-$info-light-dark: 					#272134 !default;
-$info-clarity-dark: 				rgba(#883FFF, 0.2) !default;
-$info-inverse-dark: 				$white !default;
+// Info — warm brown (dark)
+$info-dark: 						#bfa882 !default;  // --brown-2 warm light
+$info-active-dark: 					#d9c8aa !default;
+$info-light-dark: 					#2a2318 !default;
+$info-clarity-dark: 				rgba(#bfa882, 0.2) !default;
+$info-inverse-dark: 				#141210 !default;
 
 // Warning colors
 $warning-dark: 						#C59A00 !default; 
@@ -73,11 +75,11 @@ $warning-light-dark: 				#242320 !default;
 $warning-clarity-dark: 				rgba(#C59A00, 0.2) !default;
 $warning-inverse-dark: 				$white !default;
 
-// Danger colors
-$danger-dark: 						#E42855 !default; 
-$danger-active-dark: 				#FF3767 !default;
-$danger-light-dark: 				#302024 !default;
-$danger-clarity-dark: 				rgba(#E42855, 0.2) !default;
+// Danger dark
+$danger-dark: 						#e07a6c !default;  // --red dark
+$danger-active-dark: 				#e89080 !default;
+$danger-light-dark: 				#3a201c !default;  // --red-bg dark
+$danger-clarity-dark: 				rgba(#e07a6c, 0.2) !default;
 $danger-inverse-dark: 				$white !default;
 
 // Dark colors
@@ -174,7 +176,7 @@ $theme-text-colors-dark: (
 // Body
 //
 // Settings for the `<body>` element.
-$body-bg-dark:              #1C1D22 !default;
+$body-bg-dark:              #181310 !default;
 $body-bg-rgb-dark:          to-rgb($body-bg-dark) !default;
 $body-color-dark:           $gray-900-dark !default;
 
@@ -188,8 +190,8 @@ $link-color-dark:           $primary-dark !default;
 // Components
 //
 // Define common padding and border radius sizes and more.
-$border-color-dark:             $gray-200-dark !default;
-$border-dashed-color-dark:      $gray-300-dark !default; 
+$border-color-dark:             #2a2318 !default;
+$border-dashed-color-dark:      #3a3020 !default; 
 
 // Keenthemes hover states
 $component-hover-color-dark: 	$primary-dark !default;
@@ -219,9 +221,11 @@ $box-shadow-inset-dark: 		inset 0 1px 2px rgba($black, .075) !default;
 $card-box-shadow-dark:                   			null !default;
 $card-border-color-dark:     						$border-color-dark !default;
 
-// Tables
-$table-striped-bg-dark:         					rgba($gray-100-dark, 0.75) !default;
-$table-loading-message-box-shadow-dark:        		0px 0px 30px rgba(0, 0, 0, 0.3) !default;
+// Tables — dark mode uses warm dark bg
+$table-striped-bg-dark:                         #241c14 !default;
+$table-active-bg-dark:                          rgba(245, 85, 26, 0.08) !default;
+$table-hover-bg-dark:                           rgba(255, 255, 255, 0.03) !default;
+$table-loading-message-box-shadow-dark:         0px 0px 30px rgba(0, 0, 0, 0.3) !default;
 	
 // Forms
 $form-select-indicator-color-dark:                  $gray-600-dark !default;
@@ -278,6 +282,7 @@ $scrolltop-opacity-dark: 0 !default;
 $scrolltop-opacity-on-dark: 0.3 !default;
 $scrolltop-opacity-hover-dark: 1 !default;
 $scrolltop-box-shadow-dark: $box-shadow !default;
+$app-bg-color-dark: #181310 !default;
 $scrolltop-bg-color-dark: $primary !default;
 $scrolltop-bg-color-hover-dark: $primary !default;
 $scrolltop-icon-color-dark: $primary-inverse !default;

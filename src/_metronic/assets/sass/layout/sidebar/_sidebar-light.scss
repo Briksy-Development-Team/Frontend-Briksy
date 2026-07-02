@@ -5,7 +5,7 @@
 [data-kt-app-layout="light-sidebar"] {
     .app-sidebar {
         background-color: var(--#{$prefix}app-sidebar-light-bg-color);
-        border-right: 1px solid var(--#{$prefix}gray-200);
+        border-right: none;
 
         .scroll-y,
         .hover-scroll-overlay-y {        
@@ -66,14 +66,21 @@
                     $icon-color: var(--#{$prefix}primary), 
                     $bullet-color: var(--#{$prefix}primary), 
                     $arrow-color: var(--#{$prefix}primary), 
-                    $bg-color: var(--#{$prefix}app-sidebar-light-menu-link-bg-color-active)
+                    $bg-color: rgba(245, 85, 26, 0.08)
                 );
+
+                // Orange left accent — same in both light and dark
+                .menu-link.active {
+                    border-left: 3px solid #f5551a;
+                    padding-left: calc(1rem - 3px);
+                    border-radius: 0 8px 8px 0;
+                }
 
                 .menu-sub {
                     .menu-item {
                         .menu-link {
                             .menu-title {
-                                color: #4B5675;
+                                color: rgba(255,255,255,0.75);
                             }
 
                             &.active {

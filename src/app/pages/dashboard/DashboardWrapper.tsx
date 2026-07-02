@@ -89,10 +89,10 @@ const DashboardPage: FC = () => {
             {summary && (
               <>
                 <div className="row g-5 mb-6">
-                  <MetricCard label="Total Companies" value={summary.total_companies} tone="#0D6EFD" />
-                  <MetricCard label="Active Plans" value={summary.active_plans} tone="#198754" />
-                  <MetricCard label="Total Orders" value={summary.total_orders} tone="#6F42C1" />
-                  <MetricCard label="Property Count" value={summary.property_summary.total} tone="#F59E0B" />
+                  <MetricCard label="Total Companies" value={summary.total_companies} tone="#bf9f7d" />
+                  <MetricCard label="Active Plans" value={summary.active_plans} tone="#bf9f7d" />
+                  <MetricCard label="Total Orders" value={summary.total_orders} tone="#bf9f7d" />
+                  <MetricCard label="Property Count" value={summary.property_summary.total} tone="#bf9f7d" />
                 </div>
 
                 <div className="row g-5 mb-8">
@@ -246,7 +246,7 @@ const DashboardPage: FC = () => {
             <CardsWidget20
               className="h-100"
               description={isSuperAdmin ? "Platform overview" : "Active Builders"}
-              color="#F1416C"
+              color="#f5551a"
               img={toAbsoluteUrl("media/patterns/vector-1.png")}
             />
           </div>
