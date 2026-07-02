@@ -112,11 +112,11 @@ function getChartOptions(
   const labelColor = getCSSVariableValue('--bs-gray-500')
   const borderColor = getCSSVariableValue('--bs-gray-200')
 
-  const baseColor = getCSSVariableValue('--bs-success')
-  const baseLightColor = getCSSVariableValue('--bs-success-light')
+  const baseColor = '#f5551a'        // --accent orange
+  const baseLightColor = 'rgba(245,85,26,0.12)'
 
-  const secondaryColor = getCSSVariableValue('--bs-warning')
-  const secondaryLightColor = getCSSVariableValue('--bs-warning-light')
+  const secondaryColor = '#342511'   // --dark-brown
+  const secondaryLightColor = 'rgba(52,37,17,0.10)'
 
   let categories: string[] = []
   let profitData: number[] = []

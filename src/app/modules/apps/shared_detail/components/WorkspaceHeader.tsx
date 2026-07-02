@@ -10,71 +10,95 @@ type Props<T> = {
   rowActions?: RowAction<T>[];
 };
 
-export default function WorkspaceHeader<T>({ config, data, rowActions }: Props<T>) {
+export default function WorkspaceHeader<T>({
+  config,
+  data,
+  rowActions,
+}: Props<T>) {
   const { hasPermission } = usePermissionAccess();
+
   const visibleActions =
-    rowActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
-  // Helpers to resolve accessors safely
-  const resolveValue = (accessor: keyof T | ((data: T) => React.ReactNode)) => {
-    if (typeof accessor === "function") {
-      return accessor(data);
-    }
+    rowActions?.filter(
+      (action) => !action.permission || hasPermission(action.permission)
+    ) ?? [];
+
+  const resolveValue = (
+    accessor: keyof T | ((data: T) => React.ReactNode)
+  ) => {
+    if (typeof accessor === "function") return accessor(data);
     return data[accessor] as React.ReactNode;
   };
 
   const resolveString = (accessor: keyof T | ((data: T) => string)) => {
-    if (typeof accessor === "function") {
-      return accessor(data);
-    }
+    if (typeof accessor === "function") return accessor(data);
     return String(data[accessor] || "");
   };
 
-  const resolveMetricLabel = (label: string | ((data: T) => React.ReactNode)) => {
-    if (typeof label === "function") {
-      return label(data);
-    }
-
+  const resolveMetricLabel = (
+    label: string | ((data: T) => React.ReactNode)
+  ) => {
+    if (typeof label === "function") return label(data);
     return label;
   };
 
   const title = resolveValue(config.titleAccessor);
-  const subtitle = config.subtitleAccessor ? resolveValue(config.subtitleAccessor) : null;
-  const avatarUrl = config.avatarAccessor ? resolveString(config.avatarAccessor as any) : null;
+  const subtitle = config.subtitleAccessor
+    ? resolveValue(config.subtitleAccessor)
+    : null;
+
+  const avatarUrl = config.avatarAccessor
+    ? resolveString(config.avatarAccessor as any)
+    : null;
 
   return (
     <div className="card shadow-sm mb-5 mb-xl-10">
-      <div className="card-body pt-9 pb-0">
+      <div className="card-body pt-9 pb-8">
         <div className="d-flex flex-wrap flex-sm-nowrap">
-          {/* Avatar Area */}
+          {/* Avatar */}
           {config.avatarAccessor && (
             <div className="me-7 mb-4">
-              <div className="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
+              <div className="symbol symbol-100px symbol-lg-160px symbol-fixed">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt="avatar" style={{ objectFit: "cover" }} />
+                  <img
+                    src={avatarUrl}
+                    alt="avatar"
+                    style={{ objectFit: "cover" }}
+                  />
                 ) : (
                   <div className="symbol-label fs-1 fw-bold bg-light-primary text-primary">
-                    {typeof title === "string" ? title.charAt(0).toUpperCase() : "?"}
+                    {typeof title === "string"
+                      ? title.charAt(0).toUpperCase()
+                      : "?"}
                   </div>
                 )}
-                {/* Could add online status dot here if needed later */}
               </div>
             </div>
           )}
 
-          {/* Info Area */}
+          {/* Content */}
           <div className="flex-grow-1">
-            <div className="d-flex justify-content-between align-items-start flex-wrap mb-2">
-              <div className="d-flex flex-column">
-                <div className="d-flex align-items-center mb-2">
-                  <h1 className="text-gray-900 fs-2 fw-bolder me-1 mb-0">{title}</h1>
-                  
-                  {/* Badges */}
+            {/* Header */}
+            <div className="d-flex justify-content-between align-items-start flex-wrap mb-5">
+              <div>
+                <div className="d-flex align-items-center flex-wrap mb-2">
+                  <h1 className="text-gray-900 fs-2hx fw-bold me-3 mb-0">
+                    {title}
+                  </h1>
+
                   {config.badges?.map((badge, idx) => {
                     if (badge.showIf && !badge.showIf(data)) return null;
+
                     const label = resolveString(badge.label);
-                    const color = typeof badge.color === "function" ? badge.color(data) : badge.color;
+                    const color =
+                      typeof badge.color === "function"
+                        ? badge.color(data)
+                        : badge.color;
+
                     return (
-                      <span key={idx} className={`badge badge-light-${color} fw-bold ms-2 fs-8`}>
+                      <span
+                        key={idx}
+                        className={`badge badge-light-${color} fw-semibold ms-2`}
+                      >
                         {label}
                       </span>
                     );
@@ -82,58 +106,86 @@ export default function WorkspaceHeader<T>({ config, data, rowActions }: Props<T
                 </div>
 
                 {subtitle && (
-                  <div className="d-flex flex-wrap fw-bold fs-6 mb-4 pe-2">
-                    <span className="d-flex align-items-center text-gray-500 me-5 mb-2">
-                      {subtitle}
-                    </span>
+                  <div className="text-gray-600 fw-semibold fs-6">
+                    {subtitle}
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Metrics */}
-            {config.metrics && config.metrics.some((metric) => !metric.showIf || metric.showIf(data)) && (
-              <div className="d-flex flex-wrap flex-stack">
-                <div className="d-flex flex-column flex-grow-1 pe-8">
-                  <div className="d-flex flex-wrap">
-                    {config.metrics.map((metric, idx) => {
-                      if (metric.showIf && !metric.showIf(data)) return null;
+              {/* Actions */}
+              {visibleActions.length > 0 && (
+                <div className="dropdown">
+                  <button
+                    className="btn btn-sm btn-light-primary"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Actions
+                    <KTIcon iconName="down" className="fs-6 ms-2" />
+                  </button>
+
+                  <div className="dropdown-menu dropdown-menu-end w-225px py-2">
+                    {visibleActions.map((action, idx) => {
+                      const isDelete = action.label
+                        .toLowerCase()
+                        .includes("delete");
 
                       return (
-                        <div key={idx} className="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                          <div className="d-flex align-items-center">
-                            <div className="fs-2 fw-bolder text-gray-800">
-                              {resolveValue(metric.valueAccessor)}
-                            </div>
-                          </div>
-                          <div className="fw-bold fs-6 text-gray-500">{resolveMetricLabel(metric.label)}</div>
-                        </div>
+                        <button
+                          key={idx}
+                          type="button"
+                          className={`dropdown-item d-flex align-items-center py-3 ${isDelete ? "text-danger" : ""
+                            }`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            action.onClick(data);
+                          }}
+                        >
+                          {action.icon && (
+                            <KTIcon
+                              iconName={action.icon}
+                              className={`fs-3 me-3 ${isDelete ? "text-danger" : ""
+                                }`}
+                            />
+                          )}
+
+                          <span>{action.label}</span>
+                        </button>
                       );
                     })}
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Actions */}
-            {visibleActions.length > 0 && (
-              <div className="d-flex flex-wrap mt-4">
-                {visibleActions.map((action, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className={`btn btn-sm btn-light-primary me-3 mb-2 ${action.className ?? ""}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      action.onClick(data);
-                    }}
-                  >
-                    {action.label}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Metrics */}
+            {config.metrics &&
+              config.metrics.some(
+                (metric) => !metric.showIf || metric.showIf(data)
+              ) && (
+                <div className="d-flex flex-wrap">
+                  {config.metrics.map((metric, idx) => {
+                    if (metric.showIf && !metric.showIf(data)) return null;
+
+                    return (
+                      <div
+                        key={idx}
+                        className="border border-gray-300 border-dashed rounded min-w-150px py-4 px-5 me-5 mb-4"
+                      >
+                        <div className="fs-2 fw-bold text-gray-900">
+                          {resolveValue(metric.valueAccessor)}
+                        </div>
+
+                        <div className="fw-semibold fs-7 text-gray-500 mt-1">
+                          {resolveMetricLabel(metric.label)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
           </div>
         </div>
       </div>
