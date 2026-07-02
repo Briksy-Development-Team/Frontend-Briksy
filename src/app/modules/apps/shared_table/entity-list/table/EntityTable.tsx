@@ -7,6 +7,7 @@ export type RowAction<T> = {
   label: string;
   className?: string;
   permission?: string;
+  icon?: string;
   onClick: (row: T) => void;
 };
 
