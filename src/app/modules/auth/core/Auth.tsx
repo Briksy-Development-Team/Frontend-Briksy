@@ -36,6 +36,7 @@ type AuthContextProps = {
     postcode?: string
     password: string
     password_confirmation: string
+    referral_code?: string
   }) => Promise<string>
 }
 
@@ -162,6 +163,7 @@ const useAuth = (): AuthContextProps => {
     postcode?: string
     password: string
     password_confirmation: string
+    referral_code?: string
   }) => {
     const normalizedPayload = {
       first: payload.first.trim(),
@@ -180,6 +182,7 @@ const useAuth = (): AuthContextProps => {
       postcode: payload.postcode?.trim(),
       password: payload.password,
       password_confirmation: payload.password_confirmation,
+      referral_code: payload.referral_code?.trim(),
     }
 
     const data = await registerRequest(normalizedPayload)

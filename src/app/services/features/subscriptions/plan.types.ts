@@ -35,9 +35,29 @@ export type Plan = {
   id: string;
   name: string;
   price: number;
+  monthly_price?: number | null;
+  yearly_price?: number | null;
+  currency?: string;
+  billing_enabled?: boolean;
+  stripe_monthly_price_id?: string | null;
+  stripe_yearly_price_id?: string | null;
+  trial_days?: number | null;
   popular: boolean;
   features: PlanFeature[];
   permissions?: string[];
+  addons?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    feature_key: string;
+    pricing_type: string;
+    monthly_price?: number | null;
+    yearly_price?: number | null;
+    one_time_price?: number | null;
+    currency?: string;
+    is_active?: boolean;
+    pivot?: { included_quantity?: number | null; is_included?: boolean };
+  }>;
   is_current?: boolean;
   is_active?: boolean;
   propertyLimit?: number;
@@ -50,10 +70,18 @@ export type Plan = {
 export type PlanFormValues = {
   name: string;
   price: number;
+  monthly_price?: number | null;
+  yearly_price?: number | null;
+  currency?: string;
+  billing_enabled?: boolean;
+  stripe_monthly_price_id?: string | null;
+  stripe_yearly_price_id?: string | null;
+  trial_days?: number | null;
   propertyLimit: number;
   popular: boolean;
   features: PlanFeature[];
   permissions: string[];
+  addon_ids?: string[];
   is_active?: boolean;
 };
 

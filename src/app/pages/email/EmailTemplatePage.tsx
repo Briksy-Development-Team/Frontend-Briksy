@@ -12,16 +12,21 @@ import {
   deleteEmailTemplateApi,
   fetchEmailTemplatesApi,
   previewEmailTemplateApi,
+  sendTestEmailTemplateApi,
   updateEmailTemplateApi,
 } from "../../services/features/email_template/email-template.api";
 
 const emptyForm: EmailTemplateFormValues = {
   key: "",
+  slug: "",
   name: "",
   subject: "",
   body: "",
   variables: [],
   status: "active",
+  is_active: true,
+  module: "",
+  event_key: "",
 };
 
 const EmailTemplatePage = () => {
@@ -40,8 +45,13 @@ const EmailTemplatePage = () => {
   const [previewItem, setPreviewItem] = useState<EmailTemplate | null>(null);
   const [previewJson, setPreviewJson] = useState("{\"name\":\"Jane\",\"order_number\":\"ORD-001\"}");
   const [previewResult, setPreviewResult] = useState<{ subject?: string; body?: string } | null>(null);
+  const [sendTestItem, setSendTestItem] = useState<EmailTemplate | null>(null);
+  const [sendTestEmail, setSendTestEmail] = useState("");
+  const [sendTestVariables, setSendTestVariables] = useState("{\"name\":\"Jane\"}");
+  const [sendTestMessage, setSendTestMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [sendTestLoading, setSendTestLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState<EmailTemplateFormValues>(emptyForm);
 
@@ -77,7 +87,10 @@ const EmailTemplatePage = () => {
     try {
       const payload = {
         ...form,
+        key: form.key || form.slug || "",
+        slug: form.slug || form.key || "",
         variables: Array.isArray(form.variables) ? form.variables : [],
+        is_active: form.is_active ?? form.status === "active",
       };
       const saved = editing
         ? await updateEmailTemplateApi(scope, editing.id, payload)
@@ -116,6 +129,26 @@ const EmailTemplatePage = () => {
     }
   };
 
+  const sendTest = async () => {
+    if (!sendTestItem || !sendTestEmail.trim()) {
+      return;
+    }
+
+    setSendTestLoading(true);
+    try {
+      const variables = JSON.parse(sendTestVariables || "{}");
+      const result = await sendTestEmailTemplateApi(scope, sendTestItem.id, {
+        email: sendTestEmail.trim(),
+        variables,
+      });
+      setSendTestMessage(`Test email sent to ${result.email}.`);
+    } catch (error) {
+      setSendTestMessage(error instanceof Error ? error.message : "Failed to send test email.");
+    } finally {
+      setSendTestLoading(false);
+    }
+  };
+
   const remove = async () => {
     if (!deleting) {
       return;
@@ -135,14 +168,25 @@ const EmailTemplatePage = () => {
   const openEdit = (item: EmailTemplate) => {
     setEditing(item);
     setForm({
-      key: item.key,
+      key: item.key ?? item.slug ?? "",
+      slug: item.slug ?? item.key ?? "",
       name: item.name,
       subject: item.subject,
       body: item.body,
       variables: item.variables ?? [],
-      status: item.status,
+      status: item.status ?? (item.is_active ? "active" : "inactive"),
+      is_active: item.is_active ?? item.status === "active",
+      module: item.module ?? "",
+      event_key: item.event_key ?? "",
     });
     setIsModalOpen(true);
+  };
+
+  const openSendTest = (item: EmailTemplate) => {
+    setSendTestItem(item);
+    setSendTestEmail("");
+    setSendTestVariables(JSON.stringify({ name: "Jane" }, null, 2));
+    setSendTestMessage(null);
   };
 
   return (
@@ -174,12 +218,15 @@ const EmailTemplatePage = () => {
                 <div className="card h-100 border">
                   <div className="card-body d-flex flex-column">
                     <div className="d-flex justify-content-between mb-3">
-                      <span className={`badge badge-light-${item.status === "active" ? "success" : "danger"}`}>
-                        {item.status}
+                      <span className={`badge badge-light-${(item.is_active ?? item.status === "active") ? "success" : "danger"}`}>
+                        {(item.is_active ?? item.status === "active") ? "active" : "inactive"}
                       </span>
                       <div className="d-flex gap-2">
                         <button className="btn btn-icon btn-sm btn-light" onClick={() => setPreviewItem(item)}>
                           <KTIcon iconName="eye" className="fs-4" />
+                        </button>
+                        <button className="btn btn-icon btn-sm btn-light-warning" onClick={() => openSendTest(item)} disabled={!canUpdate}>
+                          <KTIcon iconName="send" className="fs-4" />
                         </button>
                         <button className="btn btn-icon btn-sm btn-light-primary" onClick={() => openEdit(item)} disabled={!canUpdate}>
                           <KTIcon iconName="pencil" className="fs-4" />
@@ -190,7 +237,7 @@ const EmailTemplatePage = () => {
                       </div>
                     </div>
                     <h4 className="fw-bold mb-2">{item.name}</h4>
-                    <div className="text-muted fs-7 mb-2">{item.key}</div>
+                    <div className="text-muted fs-7 mb-2">{item.slug ?? item.key}</div>
                     <div className="fw-semibold mb-3">{item.subject}</div>
                     <div className="text-muted fs-7 flex-grow-1" style={{ whiteSpace: "pre-wrap" }}>
                       {item.body}
@@ -214,15 +261,28 @@ const EmailTemplatePage = () => {
           onSubmit={submit}
           isSubmitting={submitting}
           submitLabel={editing ? "Update" : "Create"}
-          isValid={form.key.trim().length > 0 && form.name.trim().length > 0 && form.subject.trim().length > 0 && form.body.trim().length > 0}
+          isValid={(
+            (form.slug ?? form.key).trim().length > 0 &&
+            form.name.trim().length > 0 &&
+            form.subject.trim().length > 0 &&
+            form.body.trim().length > 0
+          )}
         >
           <div className="fv-row mb-4">
-            <label className="form-label required">Key</label>
-            <input className="form-control form-control-solid" value={form.key} onChange={(e) => setForm((current) => ({ ...current, key: e.target.value }))} />
+            <label className="form-label required">Slug / Key</label>
+            <input className="form-control form-control-solid" value={form.slug ?? form.key} onChange={(e) => setForm((current) => ({ ...current, slug: e.target.value, key: e.target.value }))} />
           </div>
           <div className="fv-row mb-4">
             <label className="form-label required">Name</label>
             <input className="form-control form-control-solid" value={form.name} onChange={(e) => setForm((current) => ({ ...current, name: e.target.value }))} />
+          </div>
+          <div className="fv-row mb-4">
+            <label className="form-label">Module</label>
+            <input className="form-control form-control-solid" value={form.module ?? ""} onChange={(e) => setForm((current) => ({ ...current, module: e.target.value }))} />
+          </div>
+          <div className="fv-row mb-4">
+            <label className="form-label">Event Key</label>
+            <input className="form-control form-control-solid" value={form.event_key ?? ""} onChange={(e) => setForm((current) => ({ ...current, event_key: e.target.value }))} />
           </div>
           <div className="fv-row mb-4">
             <label className="form-label required">Subject</label>
@@ -240,12 +300,32 @@ const EmailTemplatePage = () => {
               onChange={(e) => setForm((current) => ({ ...current, variables: e.target.value.split(",").map((value) => value.trim()).filter(Boolean) }))}
             />
           </div>
-          <div className="fv-row mb-2">
-            <label className="form-label">Status</label>
-            <select className="form-select form-select-solid" value={form.status} onChange={(e) => setForm((current) => ({ ...current, status: e.target.value as EmailTemplateFormValues["status"] }))}>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
+          <div className="fv-row mb-4">
+            <label className="form-check form-check-custom form-check-solid form-switch d-flex align-items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                checked={form.is_active ?? form.status === "active"}
+                onChange={(e) =>
+                  setForm((current) => ({
+                    ...current,
+                    is_active: e.target.checked,
+                    status: e.target.checked ? "active" : "inactive",
+                  }))
+                }
+              />
+              <span className="fw-bold fs-6">Active</span>
+            </label>
+          </div>
+          <div className="alert alert-light border border-dashed">
+            <div className="fw-bold mb-2">Available placeholders</div>
+            <div className="d-flex flex-wrap gap-2">
+              {["{{company_name}}", "{{user_name}}", "{{plan_name}}", "{{amount}}", "{{billing_cycle}}", "{{renewal_date}}", "{{app_name}}"].map((placeholder) => (
+                <span key={placeholder} className="badge badge-light-primary">
+                  {placeholder}
+                </span>
+              ))}
+            </div>
           </div>
         </ModalShell>
       )}
@@ -272,6 +352,50 @@ const EmailTemplatePage = () => {
               <div style={{ whiteSpace: "pre-wrap" }}>{previewResult.body}</div>
             </div>
           )}
+        </ModalShell>
+      )}
+
+      {sendTestItem && (
+        <ModalShell
+          title={`Send Test: ${sendTestItem.name}`}
+          onClose={() => {
+            setSendTestItem(null);
+            setSendTestMessage(null);
+          }}
+          onSubmit={sendTest}
+          isSubmitting={sendTestLoading}
+          submitLabel="Send Test Email"
+          isValid={sendTestEmail.trim().length > 0}
+        >
+          <div className="fv-row mb-4">
+            <label className="form-label required">Recipient Email</label>
+            <input
+              className="form-control form-control-solid"
+              type="email"
+              value={sendTestEmail}
+              onChange={(e) => setSendTestEmail(e.target.value)}
+            />
+          </div>
+          <div className="fv-row mb-4">
+            <label className="form-label">Variables JSON</label>
+            <textarea
+              className="form-control form-control-solid"
+              rows={6}
+              value={sendTestVariables}
+              onChange={(e) => setSendTestVariables(e.target.value)}
+            />
+          </div>
+          {sendTestMessage && <div className="alert alert-info">{sendTestMessage}</div>}
+          <div className="alert alert-light border border-dashed">
+            <div className="fw-bold mb-2">Available placeholders</div>
+            <div className="d-flex flex-wrap gap-2">
+              {["{{company_name}}", "{{user_name}}", "{{plan_name}}", "{{amount}}", "{{billing_cycle}}", "{{renewal_date}}", "{{app_name}}"].map((placeholder) => (
+                <span key={placeholder} className="badge badge-light-primary">
+                  {placeholder}
+                </span>
+              ))}
+            </div>
+          </div>
         </ModalShell>
       )}
 

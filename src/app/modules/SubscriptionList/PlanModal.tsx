@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { ModalShell } from "../apps/component/ModalShell";
 import { KTIcon } from "../../../_metronic/helpers";
 import type { PermissionGroup } from "../../services/features/permissions/permission.types";
+import type { Addon } from "../../services/features/billing/billing.types";
 import {
   DEFAULT_FEATURES,
   type Plan,
@@ -16,6 +17,7 @@ type Props = {
   onSubmit: (values: PlanFormValues) => void;
   isSubmitting?: boolean;
   permissionGroups?: PermissionGroup[];
+  availableAddons?: Addon[];
 };
 
 const defaultFeatureList = (): PlanFeature[] =>
@@ -43,16 +45,25 @@ const PlanModal = ({
   onSubmit,
   isSubmitting,
   permissionGroups = [],
+  availableAddons = [],
 }: Props) => {
   const isEdit = !!initialValues;
 
   const [form, setForm] = useState<PlanFormValues>({
     name: "",
     price: 0,
+    monthly_price: null,
+    yearly_price: null,
+    currency: "AUD",
+    billing_enabled: true,
+    stripe_monthly_price_id: null,
+    stripe_yearly_price_id: null,
+    trial_days: null,
     propertyLimit: 0,
     popular: false,
     features: defaultFeatureList(),
     permissions: [],
+    addon_ids: [],
   });
 
   const [newFeatureName, setNewFeatureName] = useState("");
@@ -72,10 +83,18 @@ const PlanModal = ({
     setForm({
       name: initialValues.name,
       price: initialValues.price,
+      monthly_price: initialValues.monthly_price ?? null,
+      yearly_price: initialValues.yearly_price ?? null,
+      currency: initialValues.currency ?? "AUD",
+      billing_enabled: initialValues.billing_enabled ?? true,
+      stripe_monthly_price_id: initialValues.stripe_monthly_price_id ?? null,
+      stripe_yearly_price_id: initialValues.stripe_yearly_price_id ?? null,
+      trial_days: initialValues.trial_days ?? null,
       propertyLimit: initialValues.propertyLimit ?? 0,
       popular: initialValues.popular,
       features: normalizeFeatureList(initialValues.features),
       permissions: initialValues.permissions ?? [],
+      addon_ids: initialValues.addons?.map((addon) => addon.id) ?? [],
     });
     setPermissionSearch("");
   }, [initialValues]);
@@ -254,6 +273,14 @@ const PlanModal = ({
       };
     });
 
+  const toggleAddon = (addonId: string) =>
+    setForm((current) => ({
+      ...current,
+      addon_ids: current.addon_ids?.includes(addonId)
+        ? current.addon_ids.filter((value) => value !== addonId)
+        : [...(current.addon_ids ?? []), addonId],
+    }));
+
   return (
     <ModalShell
       title={isEdit ? "Edit Plan" : "Add Plan"}
@@ -284,7 +311,7 @@ const PlanModal = ({
 
       <div className="row g-5 mb-7">
         <div className="col-md-6">
-          <label className="required fw-bold fs-6 mb-2">Price (₹)</label>
+          <label className="required fw-bold fs-6 mb-2">Legacy Price</label>
           <input
             type="number"
             className={clsx("form-control form-control-solid", {
@@ -323,6 +350,116 @@ const PlanModal = ({
               <span className="fv-help-block">{propertyLimitError}</span>
             </div>
           ) : null}
+        </div>
+      </div>
+
+      <div className="row g-5 mb-7">
+        <div className="col-md-4">
+          <label className="fw-bold fs-6 mb-2">Monthly Price</label>
+          <input
+            type="number"
+            className="form-control form-control-solid"
+            placeholder="e.g. 49"
+            value={form.monthly_price ?? ""}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                monthly_price: event.target.value === "" ? null : Number(event.target.value),
+              }))
+            }
+          />
+        </div>
+        <div className="col-md-4">
+          <label className="fw-bold fs-6 mb-2">Yearly Price</label>
+          <input
+            type="number"
+            className="form-control form-control-solid"
+            placeholder="e.g. 490"
+            value={form.yearly_price ?? ""}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                yearly_price: event.target.value === "" ? null : Number(event.target.value),
+              }))
+            }
+          />
+        </div>
+        <div className="col-md-4">
+          <label className="fw-bold fs-6 mb-2">Currency</label>
+          <input
+            type="text"
+            className="form-control form-control-solid"
+            placeholder="AUD"
+            value={form.currency ?? "AUD"}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                currency: event.target.value.toUpperCase(),
+              }))
+            }
+          />
+        </div>
+      </div>
+
+      <div className="row g-5 mb-7">
+        <div className="col-md-6">
+          <label className="fw-bold fs-6 mb-2">Stripe Monthly Price ID</label>
+          <input
+            type="text"
+            className="form-control form-control-solid"
+            value={form.stripe_monthly_price_id ?? ""}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                stripe_monthly_price_id: event.target.value || null,
+              }))
+            }
+          />
+        </div>
+        <div className="col-md-6">
+          <label className="fw-bold fs-6 mb-2">Stripe Yearly Price ID</label>
+          <input
+            type="text"
+            className="form-control form-control-solid"
+            value={form.stripe_yearly_price_id ?? ""}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                stripe_yearly_price_id: event.target.value || null,
+              }))
+            }
+          />
+        </div>
+      </div>
+
+      <div className="row g-5 mb-7">
+        <div className="col-md-6">
+          <label className="fw-bold fs-6 mb-2">Trial Days</label>
+          <input
+            type="number"
+            className="form-control form-control-solid"
+            placeholder="e.g. 14"
+            value={form.trial_days ?? ""}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                trial_days: event.target.value === "" ? null : Number(event.target.value),
+              }))
+            }
+          />
+        </div>
+        <div className="col-md-6 d-flex align-items-end">
+          <label className="form-check form-check-custom form-check-solid d-flex align-items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={form.billing_enabled ?? true}
+              onChange={(event) =>
+                setForm((current) => ({ ...current, billing_enabled: event.target.checked }))
+              }
+            />
+            <span className="fw-bold fs-6">Enable Billing Cycle Pricing</span>
+          </label>
         </div>
       </div>
 
@@ -482,6 +619,36 @@ const PlanModal = ({
             This is a numeric limit (e.g. a quantity)
           </span>
         </label>
+
+        {availableAddons.length > 0 ? (
+          <div className="mt-8">
+            <label className="fw-bold fs-6 mb-4 d-block">Included Add-ons</label>
+            <div className="row g-3">
+              {availableAddons.map((addon) => {
+                const checked = form.addon_ids?.includes(addon.id) ?? false;
+
+                return (
+                  <div className="col-md-6" key={addon.id}>
+                    <label className={`form-check form-check-custom form-check-solid d-flex gap-3 m-0 p-3 rounded-3 border ${checked ? "border-primary bg-white" : "border-light"}`}>
+                      <input
+                        type="checkbox"
+                        className="form-check-input mt-1"
+                        checked={checked}
+                        onChange={() => toggleAddon(addon.id)}
+                      />
+                      <span className="flex-grow-1">
+                        <span className="fw-semibold d-block mb-1">{addon.name}</span>
+                        <span className="text-muted fs-7">
+                          {addon.feature_key} · {addon.pricing_type}
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         {permissionGroups.length > 0 ? (
           <div className="mt-8">

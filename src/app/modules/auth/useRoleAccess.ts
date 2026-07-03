@@ -9,7 +9,7 @@ export const useRoleAccess = () => {
 
     return {
       roles,
-      isSuperAdmin: roles.includes('super_admin'),
+      isSuperAdmin: roles.includes('super_admin') || roles.includes('super_admin_employee'),
       isAdmin: roles.includes('admin') || roles.includes('admin_staff'),
       hasAnyRole: roles.length > 0,
     }

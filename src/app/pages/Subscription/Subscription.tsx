@@ -8,6 +8,11 @@ import { DeleteConfirmModal } from '../../modules/apps/component/DeleteConfirmMo
 import { ModalShell } from '../../modules/apps/component/ModalShell'
 import { fetchPermissionsApi } from '../../services/features/permissions/permission.api'
 import {
+    fetchSuperAdminAddonsApi,
+    attachAddonToPlanApi,
+    detachAddonFromPlanApi,
+} from '../../services/features/billing/billing.api'
+import {
     fetchPlans, savePlan, removePlan, changePlan,
     openPlanModal, closePlanModal,
 } from '../../services/features/subscriptions/plan.slice'
@@ -30,6 +35,7 @@ const Subscription = () => {
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
     const [permissionGroups, setPermissionGroups] = useState<PermissionGroup[]>([])
     const [subscriptionSummary, setSubscriptionSummary] = useState<PlanSubscriptionSummary | null>(null)
+    const [availableAddons, setAvailableAddons] = useState<any[]>([])
     useEffect(() => {
         void dispatch(fetchPlans())
     }, [dispatch])
@@ -37,19 +43,24 @@ const Subscription = () => {
     useEffect(() => {
         if (!canManage) {
             setPermissionGroups([])
+            setAvailableAddons([])
             return
         }
 
         let mounted = true
-        void fetchPermissionsApi().then((response) => {
-            if (mounted) {
-                setPermissionGroups(response.data.grouped ?? [])
-            }
-        }).catch(() => {
-            if (mounted) {
-                setPermissionGroups([])
-            }
-        })
+        void Promise.all([fetchPermissionsApi(), fetchSuperAdminAddonsApi()])
+            .then(([permissionsResponse, addonsResponse]) => {
+                if (mounted) {
+                    setPermissionGroups(permissionsResponse.data.grouped ?? [])
+                    setAvailableAddons(addonsResponse.filter((addon) => addon.is_active))
+                }
+            })
+            .catch(() => {
+                if (mounted) {
+                    setPermissionGroups([])
+                    setAvailableAddons([])
+                }
+            })
 
         return () => {
             mounted = false
@@ -74,6 +85,17 @@ const Subscription = () => {
             }),
         )
         setSelectedPlan(null)
+    }
+
+    const syncPlanAddons = async (plan: Plan, addonIds: string[]) => {
+        const currentIds = plan.addons?.map((addon) => addon.id) ?? []
+        const toAttach = addonIds.filter((id) => !currentIds.includes(id))
+        const toDetach = currentIds.filter((id) => !addonIds.includes(id))
+
+        await Promise.all([
+            ...toAttach.map((addonId) => attachAddonToPlanApi(plan.id, addonId)),
+            ...toDetach.map((addonId) => detachAddonFromPlanApi(plan.id, addonId)),
+        ])
     }
 
     const selectedPlanPropertyLimit = selectedPlan
@@ -112,7 +134,11 @@ const Subscription = () => {
                     initialValues={editingPlan}
                     isSubmitting={saving}
                     onClose={() => dispatch(closePlanModal())}
-                    onSubmit={(values) => dispatch(savePlan({ id: editingPlan?.id, values }))}
+                    availableAddons={availableAddons as any[]}
+                    onSubmit={async (values) => {
+                        const saved = await dispatch(savePlan({ id: editingPlan?.id, values })).unwrap()
+                        await syncPlanAddons(saved as Plan, values.addon_ids ?? [])
+                    }}
                     permissionGroups={permissionGroups}
                 />
             )}

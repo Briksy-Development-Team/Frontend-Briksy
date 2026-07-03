@@ -10,6 +10,7 @@ type Props = {
   icon?: string
   fontIcon?: string
   hasBullet?: boolean
+  activePaths?: string[]
 }
 
 const SidebarMenuItemWithSub: React.FC<Props & WithChildren> = ({
@@ -19,9 +20,10 @@ const SidebarMenuItemWithSub: React.FC<Props & WithChildren> = ({
   icon,
   fontIcon,
   hasBullet,
+  activePaths,
 }) => {
   const {pathname} = useLocation()
-  const isActive = checkIsActive(pathname, to)
+  const isActive = [to, ...(activePaths ?? [])].some((path) => checkIsActive(pathname, path))
   const {config} = useLayout()
   const {app} = config
 

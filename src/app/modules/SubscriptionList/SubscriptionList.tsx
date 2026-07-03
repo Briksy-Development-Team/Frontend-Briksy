@@ -214,13 +214,28 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                           lineHeight: 1,
                         }}
                       >
-                        {plan.price?.toLocaleString('en-IN')}
+                        {((plan.monthly_price ?? plan.price) || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
                     <p style={{ fontSize: 12, color: isPopular ? 'rgba(255,255,255,0.5)' : '#8b6f54', margin: '6px 0 0' }}>
-                      per month · billed annually
+                      {plan.monthly_price ? `Monthly ₹${plan.monthly_price.toLocaleString('en-IN')}` : 'Monthly pricing unavailable'}
+                      {plan.yearly_price ? ` · Annual ₹${plan.yearly_price.toLocaleString('en-IN')}` : ''}
                     </p>
                   </div>
+
+                  {plan.addons?.length ? (
+                    <div className='d-flex flex-wrap gap-2 mb-4'>
+                      {plan.addons.map((addon) => (
+                        <span
+                          key={addon.id}
+                          className='badge badge-light'
+                          style={{ background: isPopular ? 'rgba(255,255,255,0.14)' : '#f6f1ea', color: isPopular ? '#fff' : '#6b5846' }}
+                        >
+                          {addon.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
 
                   {/* CTA Button */}
                   {canManage ? (
