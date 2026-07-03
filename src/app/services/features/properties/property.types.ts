@@ -85,6 +85,8 @@ export type PropertyFormValues = {
 
 export type PropertyList = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
 
   title: string;
 
