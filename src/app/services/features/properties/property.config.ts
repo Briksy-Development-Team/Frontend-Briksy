@@ -9,9 +9,10 @@ export const propertyListConfig = {
   columns: [
     {
       Header: "ID",
-      accessor: "id",
+      accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
+      Cell: ({ row, value }: { row: any; value: any }) => value || row.original?.generated_id || row.original?.id || "—",
     },
     {
       Header: "Title",
