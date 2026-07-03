@@ -12,7 +12,6 @@ import { fetchActivityLogsApi } from "../../services/features/activity_logs/acti
 import {
   activityLogActions,
   activityLogModules,
-  activityLogRoles,
   getActivityLogColumns,
 } from "../../services/features/activity_logs/activity-log.config";
 import type {
@@ -21,10 +20,6 @@ import type {
 } from "../../services/features/activity_logs/activity-log.types";
 import type { Column } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { KTIcon } from "../../../_metronic/helpers";
-import { fetchOrganizationApi } from "../../services/features/organization/organization.api";
-import type { Organization } from "../../services/features/organization/organization.types";
-
-type OrganizationOption = Pick<Organization, "id" | "name">;
 
 const defaultParams: ActivityLogQueryParams = {
   page: 1,
@@ -44,59 +39,21 @@ const ActivityLogsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null);
-  const [organizationOptions, setOrganizationOptions] = useState<OrganizationOption[]>([]);
   const [params, setParams] = useState<ActivityLogQueryParams>(defaultParams);
   const [filtersDraft, setFiltersDraft] = useState<Record<string, string>>({
     date_from: "",
     date_to: "",
     user: "",
-    role: "",
     action: "",
     module: "",
-    organization_id: "",
     ip_address: "",
+    device: "",
   });
 
   const columns = useMemo(
     () => getActivityLogColumns(isSuperAdmin) as Column<ActivityLog>[],
     [isSuperAdmin],
   );
-
-  useEffect(() => {
-    if (!isSuperAdmin) {
-      return;
-    }
-
-    let active = true;
-
-    void fetchOrganizationApi({
-      page: 1,
-      per_page: 100,
-      sort: "name",
-      direction: "asc",
-    })
-      .then((response) => {
-        if (!active) {
-          return;
-        }
-
-        setOrganizationOptions(
-          (response.data as Organization[]).map((organization) => ({
-            id: organization.id,
-            name: organization.name,
-          })),
-        );
-      })
-      .catch(() => {
-        if (active) {
-          setOrganizationOptions([]);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [isSuperAdmin]);
 
   useEffect(() => {
     let active = true;
@@ -154,11 +111,10 @@ const ActivityLogsPage = () => {
       date_from: "",
       date_to: "",
       user: "",
-      role: "",
       action: "",
       module: "",
-      organization_id: "",
       ip_address: "",
+      device: "",
     });
 
     setParams((current) => ({
@@ -189,11 +145,11 @@ const ActivityLogsPage = () => {
 
   return (
     <Content>
-      <PageHeader
+        <PageHeader
         title="Activity Logs"
         subtitle={
           isSuperAdmin
-            ? "View and audit platform-wide activity across all organisations."
+            ? "View and audit platform activity limited to super admin scope only."
             : "View activity captured for your organisation only."
         }
       />
@@ -273,22 +229,6 @@ const ActivityLogsPage = () => {
               />
             </div>
 
-            <div className="col-lg-3">
-              <label className="form-label">Role</label>
-              <select
-                className="form-select form-select-solid"
-                value={filtersDraft.role}
-                onChange={(event) => updateFilter("role", event.target.value)}
-              >
-                <option value="">All</option>
-                {activityLogRoles.map((role) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div className="col-lg-2">
               <label className="form-label">Action</label>
               <select
@@ -321,24 +261,6 @@ const ActivityLogsPage = () => {
               </select>
             </div>
 
-            {isSuperAdmin && (
-              <div className="col-lg-3">
-                <label className="form-label">Organisation / Company</label>
-                <select
-                  className="form-select form-select-solid"
-                  value={filtersDraft.organization_id}
-                  onChange={(event) => updateFilter("organization_id", event.target.value)}
-                >
-                  <option value="">All</option>
-                  {organizationOptions.map((organization) => (
-                    <option key={organization.id} value={organization.id}>
-                      {organization.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
             <div className="col-lg-2">
               <label className="form-label">IP Address</label>
               <input
@@ -347,6 +269,17 @@ const ActivityLogsPage = () => {
                 placeholder="127.0.0.1"
                 value={filtersDraft.ip_address}
                 onChange={(event) => updateFilter("ip_address", event.target.value)}
+              />
+            </div>
+
+            <div className="col-lg-2">
+              <label className="form-label">Device</label>
+              <input
+                type="text"
+                className="form-control form-control-solid"
+                placeholder="Browser / device"
+                value={filtersDraft.device}
+                onChange={(event) => updateFilter("device", event.target.value)}
               />
             </div>
           </div>

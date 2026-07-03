@@ -12,7 +12,6 @@ import {
   useAuth,
 } from "../modules/auth";
 import { getRoleHomeRoute } from "../modules/auth/core/roleRoutes";
-import { ComingSoonPage } from "../pages/ComingSoonPage";
 
 const DashboardWrapper = lazy(() =>
   import("../pages/dashboard/DashboardWrapper").then((m) => ({
@@ -34,8 +33,15 @@ const SettingsPage = lazy(() => import("../pages/platform/SettingsPage"));
 const OrderPage = lazy(() => import("../pages/platform/OrderPage"));
 const CouponPage = lazy(() => import("../pages/platform/CouponPage"));
 const PlanRequestPage = lazy(() => import("../pages/platform/PlanRequestPage"));
+const DynamicIdSettingsPage = lazy(() => import("../pages/platform/DynamicIdSettingsPage"));
+const AddonsPage = lazy(() => import("../pages/platform/AddonsPage"));
+const SubscriptionsPage = lazy(() => import("../pages/platform/SubscriptionsPage"));
+const AdminBillingPage = lazy(() => import("../pages/billing/AdminBillingPage"));
+const BillingSuccessPage = lazy(() => import("../pages/billing/BillingSuccessPage"));
+const BillingCancelPage = lazy(() => import("../pages/billing/BillingCancelPage"));
 const NotificationsPage = lazy(() => import("../pages/notifications/NotificationsPage"));
 const ActivityLogsPage = lazy(() => import("../pages/platform/ActivityLogsPage"));
+const ReferralsPage = lazy(() => import("../pages/platform/ReferralsPage"));
 
 const PrivateRoutes = () => {
   const { currentUser } = useAuth();
@@ -166,6 +172,19 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/admin/referrals/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <PermissionGuard anyOf={["referral.view"]}>
+                <SuspensedView>
+                  <ReferralsPage />
+                </SuspensedView>
+              </PermissionGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/super-admin/staff/*"
           element={
             <RoleGuard allow={["super_admin"]}>
@@ -202,12 +221,11 @@ const PrivateRoutes = () => {
           path="/super-admin/referral-programs/*"
           element={
             <RoleGuard allow={["super_admin"]}>
-              <SuspensedView>
-                <ComingSoonPage
-                  title="Referral Programs"
-                  description="Referral program management is being finalized. This page will let super admins manage rewards, commissions, and tracking."
-                />
-              </SuspensedView>
+              <PermissionGuard anyOf={["referral.view"]}>
+                <SuspensedView>
+                  <ReferralsPage />
+                </SuspensedView>
+              </PermissionGuard>
             </RoleGuard>
           }
         />
@@ -366,11 +384,77 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/super-admin/dynamic-id-settings"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <DynamicIdSettingsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/addons"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <AddonsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/subscriptions"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <SubscriptionsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/admin/settings"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
               <SuspensedView>
                 <SettingsPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/billing"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <SuspensedView>
+                <AdminBillingPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/billing/success"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <SuspensedView>
+                <BillingSuccessPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/billing/cancel"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <SuspensedView>
+                <BillingCancelPage />
               </SuspensedView>
             </RoleGuard>
           }

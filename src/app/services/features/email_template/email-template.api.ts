@@ -1,5 +1,10 @@
 import axiosInstance from "../../api/axiosInstance";
-import type { EmailTemplate, EmailTemplateFormValues, EmailTemplatePreviewValues } from "./email-template.types";
+import type {
+  EmailTemplate,
+  EmailTemplateFormValues,
+  EmailTemplatePreviewValues,
+  EmailTemplateSendTestValues,
+} from "./email-template.types";
 
 type EmailTemplateEnvelope = {
   success: boolean;
@@ -42,6 +47,15 @@ export const deleteEmailTemplateApi = async (
   id: string,
 ): Promise<void> => {
   await axiosInstance.delete(`${basePath(scope)}/${id}`);
+};
+
+export const sendTestEmailTemplateApi = async (
+  scope: "admin" | "super-admin",
+  id: string,
+  payload: EmailTemplateSendTestValues,
+): Promise<{ email: string; template_id: string }> => {
+  const response = await axiosInstance.post<EmailTemplateEnvelope>(`${basePath(scope)}/${id}/send-test`, payload);
+  return response.data.data as { email: string; template_id: string };
 };
 
 export const previewEmailTemplateApi = async (

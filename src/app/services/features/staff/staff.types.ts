@@ -14,6 +14,8 @@ export const ADMIN_PERMISSIONS = [
   "user.delete",
   "settings.view",
   "settings.update",
+  "activity_logs.view",
+  "referral.view",
 ] as const;
 
 export const SUPER_ADMIN_PERMISSIONS = [
@@ -63,6 +65,8 @@ export const SUPER_ADMIN_PERMISSIONS = [
   "user.delete",
   "settings.view",
   "settings.update",
+  "activity_logs.view",
+  "referral.view",
   "permission.view",
   "permission.manage",
 ] as const;
@@ -87,6 +91,8 @@ export const PERMISSION_LABELS: Record<PlatformPermission, string> = {
   "user.delete": "Delete Users",
   "settings.view": "View Settings",
   "settings.update": "Update Settings",
+  "activity_logs.view": "View Activity Logs",
+  "referral.view": "View Referral Programs",
   "order.view": "View Orders",
   "order.create": "Create Orders",
   "order.update": "Update Orders",
@@ -110,7 +116,6 @@ export const PERMISSION_LABELS: Record<PlatformPermission, string> = {
   "plan.create": "Create Plans",
   "plan.update": "Update Plans",
   "plan.delete": "Delete Plans",
-  "referral.view": "View Referral Programs",
   "referral.create": "Create Referral Programs",
   "referral.update": "Update Referral Programs",
   "referral.delete": "Delete Referral Programs",

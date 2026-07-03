@@ -25,6 +25,7 @@ type AdminAuthPayload = {
   postcode?: string;
   password: string;
   password_confirmation: string;
+  referral_code?: string;
 };
 
 export async function login(email: string, password: string) {
@@ -58,7 +59,7 @@ export async function register(payload: AdminAuthPayload) {
 
 export async function getUserByToken() {
   const auth = getAuth();
-  const basePath = auth?.abilities?.includes("super_admin")
+  const basePath = auth?.abilities?.includes("super_admin") || auth?.abilities?.includes("super_admin_employee")
     ? "/super-admin"
     : "/admin";
   const response =
@@ -92,7 +93,7 @@ export async function getPermissionsByToken() {
 
 export async function logout() {
   const auth = getAuth();
-  const basePath = auth?.abilities?.includes("super_admin")
+  const basePath = auth?.abilities?.includes("super_admin") || auth?.abilities?.includes("super_admin_employee")
     ? "/super-admin"
     : "/admin";
   const response =

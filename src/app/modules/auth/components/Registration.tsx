@@ -1,9 +1,10 @@
 import { AxiosError } from 'axios'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
+import { useSearchParams } from 'react-router-dom'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { useAuth } from '../core/Auth'
 
@@ -21,6 +22,7 @@ const initialValues = {
   postcode: '',
   password: '',
   password_confirmation: '',
+  referral_code: '',
   acceptTerms: false,
 }
 
@@ -49,6 +51,8 @@ export function Registration() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const referralCodeFromUrl = searchParams.get('ref') ?? searchParams.get('referral_code') ?? ''
 
   const formik = useFormik({
     initialValues,
@@ -73,6 +77,7 @@ export function Registration() {
           postcode: values.postcode,
           password: values.password,
           password_confirmation: values.password_confirmation,
+          referral_code: values.referral_code || referralCodeFromUrl || undefined,
         })
         navigate(homeRoute, { replace: true })
       } catch (error) {
@@ -88,6 +93,12 @@ export function Registration() {
       }
     },
   })
+
+  useEffect(() => {
+    if (referralCodeFromUrl && !formik.values.referral_code) {
+      void formik.setFieldValue('referral_code', referralCodeFromUrl)
+    }
+  }, [formik, referralCodeFromUrl])
 
   return (
     <form
@@ -332,6 +343,18 @@ export function Registration() {
             )}
           />
         </div>
+      </div>
+
+      <div className='fv-row mb-8'>
+        <label className='form-label fw-bolder text-gray-900 fs-6'>Referral code</label>
+        <input
+          placeholder='Referral code (optional)'
+          type='text'
+          autoComplete='off'
+          {...formik.getFieldProps('referral_code')}
+          className='form-control bg-transparent'
+        />
+        <div className='form-text'>If you were invited by another member, add their code here.</div>
       </div>
 
       <div className='fv-row mb-8'>
