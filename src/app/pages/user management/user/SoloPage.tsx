@@ -30,6 +30,8 @@ const SoloPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
+  const resolveOrganizationId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+    row.display_id ?? row.generated_id ?? row.id;
   const { data, total, error } = useSelector((s: RootState) => s.organization);
 
   const { params, handleParamsChange } = useEntityTable(
@@ -77,7 +79,7 @@ const SoloPage = () => {
         columns={organizationConfig.columns}
         filtersConfig={filtersConfig}
         enableRowClick
-        getRowLink={(row) => `${portalBase}/companies/solo-traders/detail/${row.id}`}
+        getRowLink={(row) => `${portalBase}/companies/solo-traders/detail/${resolveOrganizationId(row)}`}
       />
     </Content>
   );

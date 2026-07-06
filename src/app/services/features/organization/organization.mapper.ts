@@ -2,6 +2,8 @@ import type { Organization } from "./organization.types";
 
 type OrganizationApi = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
   name: string;
   contact_email?: string;
   contact_phone?: string;
@@ -32,6 +34,8 @@ type OrganizationApi = {
 
 export const mapOrganization = (item: OrganizationApi): Organization => ({
   id: item.id,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? null,
   name: item.name ?? "",
   slug: item.slug ?? undefined,
   abn: item.abn ?? undefined,

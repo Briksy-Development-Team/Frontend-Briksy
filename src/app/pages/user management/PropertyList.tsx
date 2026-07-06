@@ -47,6 +47,8 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
+  const resolvePropertyId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+    row.display_id ?? row.generated_id ?? row.id;
   const {
     data,
     total,
@@ -214,7 +216,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
                   onParamsChange={handleParamsChange}
                   columns={propertyListConfig.columns}
                   filtersConfig={propertyListConfig.filters}
-                  getRowLink={(row) => `${portalBase}/property-management/${row.id}`}
+                  getRowLink={(row) => `${portalBase}/property-management/${resolvePropertyId(row)}`}
                   enableRowClick
                   headerActions={[
                     {

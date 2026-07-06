@@ -34,13 +34,12 @@ export type PlanSubscriptionSummary = {
 export type Plan = {
   id: string;
   name: string;
+  description?: string | null;
   price: number;
   monthly_price?: number | null;
   yearly_price?: number | null;
   currency?: string;
   billing_enabled?: boolean;
-  stripe_monthly_price_id?: string | null;
-  stripe_yearly_price_id?: string | null;
   trial_days?: number | null;
   popular: boolean;
   features: PlanFeature[];
@@ -69,13 +68,12 @@ export type Plan = {
 
 export type PlanFormValues = {
   name: string;
+  description?: string | null;
   price: number;
   monthly_price?: number | null;
   yearly_price?: number | null;
   currency?: string;
   billing_enabled?: boolean;
-  stripe_monthly_price_id?: string | null;
-  stripe_yearly_price_id?: string | null;
   trial_days?: number | null;
   propertyLimit: number;
   popular: boolean;

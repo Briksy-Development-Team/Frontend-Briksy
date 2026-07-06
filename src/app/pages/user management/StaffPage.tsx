@@ -29,6 +29,8 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { isSuperAdmin } = useRoleAccess()
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin'])
+  const resolveStaffId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+    row.display_id ?? row.generated_id ?? row.id
 
   const {
     data,
@@ -75,7 +77,7 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         filtersConfig={staffConfig.filters}
         enableRowClick
         getRowLink={(row) =>
-          isSuperAdmin ? `${portalBase}/staff/${row.id}` : `${portalBase}/users/${row.id}`
+          isSuperAdmin ? `${portalBase}/staff/${resolveStaffId(row)}` : `${portalBase}/users/${resolveStaffId(row)}`
         }
         storageKey="staffColumns"
         headerActions={[{

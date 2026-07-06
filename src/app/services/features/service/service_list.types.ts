@@ -8,6 +8,8 @@ export type ServiceCategory =
 
 export type Service = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
 
   name: string;
 
@@ -36,6 +38,8 @@ export type Service = {
 
 export type ServiceList = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
 
   name: string;
 

@@ -1,5 +1,7 @@
 export type Organization = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
   name: string;
   slug?: string;
   abn?: string;

@@ -46,6 +46,7 @@ export const serviceDetailConfig: DetailConfig<any> = {
       title: "Service Information",
       gridColumnSpan: 8,
       fields: [
+        { label: "ID", accessor: (data) => data?.display_id ?? data?.generated_id ?? data?.id ?? "—", colSpan: 12 },
         { label: "Name", accessor: "name", colSpan: 6 },
         { label: "Category", accessor: "category", colSpan: 6 },
         { label: "Description", accessor: "description", colSpan: 12 },

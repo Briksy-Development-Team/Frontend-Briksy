@@ -193,11 +193,12 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                       {plan.name}
                     </h4>
                     <p style={{ fontSize: 12, color: isPopular ? 'rgba(255,255,255,0.6)' : '#8b6f54', margin: 0 }}>
-                      {index === 0
-                        ? 'Perfect for small agencies'
-                        : index === 1
-                        ? 'Best for growing teams'
-                        : 'For large organizations'}
+                      {plan.description ??
+                        (index === 0
+                          ? 'Perfect for small agencies'
+                          : index === 1
+                          ? 'Best for growing teams'
+                          : 'For large organizations')}
                     </p>
                   </div>
 

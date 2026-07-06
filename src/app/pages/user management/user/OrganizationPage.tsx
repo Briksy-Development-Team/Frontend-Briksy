@@ -13,6 +13,8 @@ const OrganizationPage = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { isSuperAdmin } = useRoleAccess();
     const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin']);
+    const resolveOrganizationId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+        row.display_id ?? row.generated_id ?? row.id;
     const { data, total, error } = useSelector((s: RootState) => s.organization);
 
     const { params, handleParamsChange } = useEntityTable(
@@ -39,8 +41,8 @@ const OrganizationPage = () => {
                 enableRowClick
                 getRowLink={(row) =>
                     isSuperAdmin
-                        ? `${portalBase}/companies/organization/${row.id}`
-                        : `${portalBase}/businesses/${row.id}`
+                        ? `${portalBase}/companies/organization/${resolveOrganizationId(row)}`
+                        : `${portalBase}/businesses/${resolveOrganizationId(row)}`
                 }
             />
         </Content>
