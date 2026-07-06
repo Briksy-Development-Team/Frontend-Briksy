@@ -25,6 +25,8 @@ const SeekerList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin']);
+  const resolveSeekerId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+    row.display_id ?? row.generated_id ?? row.id;
   const { data, total, error } = useSelector((s: RootState) => s.seeker);
 
   const { params, handleParamsChange } = useEntityTable(
@@ -49,7 +51,7 @@ const SeekerList = () => {
         columns={seekerConfig.columns}
         filtersConfig={seekerConfig.filters}
         enableRowClick
-        getRowLink={(row) => `${portalBase}/seekers/${row.id}`}
+        getRowLink={(row) => `${portalBase}/seekers/${resolveSeekerId(row)}`}
       />
     </Content>
   );

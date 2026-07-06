@@ -7,7 +7,13 @@ import {
   fetchBillingCurrentSubscriptionApi,
   fetchBillingPlansApi,
 } from "../../services/features/billing/billing.api";
-import type { Addon, BillingCycle, CompanySubscription, SubscriptionPlanBilling } from "../../services/features/billing/billing.types";
+import type {
+  Addon,
+  BillingCheckoutAddonSelection,
+  BillingCycle,
+  CompanySubscription,
+  SubscriptionPlanBilling,
+} from "../../services/features/billing/billing.types";
 
 export default function AdminBillingPage() {
   const [current, setCurrent] = useState<CompanySubscription | null>(null);
@@ -16,6 +22,7 @@ export default function AdminBillingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
   const [selectedPlanId, setSelectedPlanId] = useState<string>("");
   const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
+  const [addonQuantities, setAddonQuantities] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,6 +35,8 @@ export default function AdminBillingPage() {
       setPlans(planList);
       setAddons(addonList);
       setSelectedPlanId(planList[0]?.id ?? "");
+      setSelectedAddonIds([]);
+      setAddonQuantities({});
       setLoading(false);
     });
   }, []);
@@ -38,17 +47,48 @@ export default function AdminBillingPage() {
     ? (selectedPlan?.yearly_price ?? 0)
     : (selectedPlan?.monthly_price ?? 0);
   const addonTotal = selectedAddons.reduce((total, addon) => {
-    const price = billingCycle === "yearly" ? (addon.yearly_price ?? addon.monthly_price ?? 0) : (addon.monthly_price ?? addon.one_time_price ?? 0);
-    return total + price;
+    const quantity = Math.max(1, addonQuantities[addon.id] ?? 1);
+    const price =
+      billingCycle === "yearly"
+        ? (addon.yearly_price ?? addon.monthly_price ?? addon.one_time_price ?? 0)
+        : (addon.monthly_price ?? addon.one_time_price ?? 0);
+    return total + price * quantity;
   }, 0);
   const total = useMemo(() => basePrice + addonTotal, [addonTotal, basePrice]);
+  const selectedAddonSelections: BillingCheckoutAddonSelection[] = selectedAddons.map((addon) => ({
+    addon_id: addon.id,
+    quantity: Math.max(1, addonQuantities[addon.id] ?? 1),
+  }));
+
+  const toggleAddon = (addonId: string) => {
+    const isSelected = selectedAddonIds.includes(addonId);
+
+    setSelectedAddonIds((current) =>
+      current.includes(addonId)
+        ? current.filter((id) => id !== addonId)
+        : [...current, addonId],
+    );
+
+    setAddonQuantities((current) => {
+      if (isSelected) {
+        const next = { ...current };
+        delete next[addonId];
+        return next;
+      }
+
+      return {
+        ...current,
+        [addonId]: current[addonId] ?? 1,
+      };
+    });
+  };
 
   const checkout = async () => {
     if (!selectedPlan) return;
     const response = await createBillingCheckoutApi({
       plan_id: selectedPlan.id,
       billing_cycle: billingCycle,
-      addon_ids: selectedAddonIds,
+      addons: selectedAddonSelections,
     });
 
     if (response.checkout_url) {
@@ -92,6 +132,7 @@ export default function AdminBillingPage() {
                     <div className="d-flex flex-wrap gap-2 mt-3">
                       {(plan.addons ?? []).map((addon) => <span key={addon.id} className="badge badge-light">{addon.name}</span>)}
                     </div>
+                    {plan.description ? <p className="text-muted mt-3 mb-0">{plan.description}</p> : null}
                   </div>
                 </div>
               </div>
@@ -104,13 +145,41 @@ export default function AdminBillingPage() {
               <h4 className="fw-bold mb-4">Add-ons</h4>
               <div className="d-flex flex-column gap-3 mb-5">
                 {addons.map((addon) => (
-                  <label key={addon.id} className="form-check form-check-custom form-check-solid d-flex gap-3 m-0">
-                    <input className="form-check-input mt-1" type="checkbox" checked={selectedAddonIds.includes(addon.id)} onChange={() => setSelectedAddonIds((current) => current.includes(addon.id) ? current.filter((id) => id !== addon.id) : [...current, addon.id])} />
-                    <span className="flex-grow-1">
-                      <span className="fw-semibold d-block">{addon.name}</span>
-                      <span className="text-muted fs-7">{billingCycle === "yearly" ? addon.yearly_price ?? addon.monthly_price ?? 0 : addon.monthly_price ?? addon.one_time_price ?? 0} {addon.currency}</span>
-                    </span>
-                  </label>
+                  <div key={addon.id} className="d-flex gap-3 align-items-start">
+                    <input
+                      className="form-check-input mt-1"
+                      type="checkbox"
+                      checked={selectedAddonIds.includes(addon.id)}
+                      onChange={() => toggleAddon(addon.id)}
+                    />
+                    <div className="flex-grow-1">
+                      <div className="d-flex justify-content-between gap-3">
+                        <div>
+                          <span className="fw-semibold d-block">{addon.name}</span>
+                          <span className="text-muted fs-7">
+                            {billingCycle === "yearly"
+                              ? addon.yearly_price ?? addon.monthly_price ?? addon.one_time_price ?? 0
+                              : addon.monthly_price ?? addon.one_time_price ?? 0}{" "}
+                            {addon.currency}
+                          </span>
+                        </div>
+                        {selectedAddonIds.includes(addon.id) ? (
+                          <input
+                            type="number"
+                            min={1}
+                            className="form-control form-control-solid w-75px"
+                            value={addonQuantities[addon.id] ?? 1}
+                            onChange={(event) =>
+                              setAddonQuantities((current) => ({
+                                ...current,
+                                [addon.id]: Math.max(1, Number(event.target.value) || 1),
+                              }))
+                            }
+                          />
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
               <div className="border-top pt-4">

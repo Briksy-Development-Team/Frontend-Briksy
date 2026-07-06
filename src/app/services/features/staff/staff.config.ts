@@ -9,9 +9,13 @@ export const staffConfig = {
   columns: [
     {
       Header: "ID",
-      accessor: "id",
+      accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
+      Cell: ({ row, value }) =>
+        (value as string | null | undefined) ??
+        row.generated_id ??
+        row.id,
     },
 
     {

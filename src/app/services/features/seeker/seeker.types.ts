@@ -1,5 +1,7 @@
 export type Seeker = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
 
   name: string;
   display_name?: string;

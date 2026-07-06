@@ -2,6 +2,8 @@ import type { Seeker } from "./seeker.types";
 
 type SeekerApi = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
   name: string;
   display_name?: string;
   email: string;
@@ -15,6 +17,8 @@ type SeekerApi = {
 
 export const mapSeeker = (item: SeekerApi): Seeker => ({
   id: item.id,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? item.id,
   name: item.name,
   display_name: item.display_name,
   email: item.email,

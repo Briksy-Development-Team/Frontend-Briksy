@@ -2,6 +2,8 @@ import type { Staff, PlatformPermission } from "./staff.types"
 
 type StaffApi = {
   id: string
+  generated_id?: string | null
+  display_id?: string | null
   name: string
   email: string
   permissions: string[]
@@ -11,6 +13,8 @@ type StaffApi = {
 
 export const mapStaff = (item: StaffApi): Staff => ({
   id: item.id,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? item.id,
   name: item.name ?? "",
   email: item.email ?? "",
   permissions: (item.permissions ?? []) as PlatformPermission[],

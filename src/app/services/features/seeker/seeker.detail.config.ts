@@ -60,6 +60,7 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
       title: "Personal Information",
       gridColumnSpan: 8,
       fields: [
+        { label: "ID", accessor: (data) => data.display_id || data.generated_id || data.id, colSpan: 6 },
         { label: "Full Name", accessor: "name", colSpan: 6 },
         { label: "Display Name", accessor: "display_name", colSpan: 6 },
         { label: "Email Address", accessor: "email", colSpan: 6 },

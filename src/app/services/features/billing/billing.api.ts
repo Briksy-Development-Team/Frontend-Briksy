@@ -2,6 +2,7 @@ import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import type {
   Addon,
+  BillingCheckoutAddonSelection,
   BillingCheckoutResponse,
   CompanySubscription,
   DynamicIdSetting,
@@ -106,8 +107,7 @@ export const fetchBillingSubscriptionsApi = async (): Promise<CompanySubscriptio
 export const createBillingCheckoutApi = async (payload: {
   plan_id: string;
   billing_cycle: "monthly" | "yearly";
-  addon_ids?: string[];
-  quantities?: Record<string, number>;
+  addons?: BillingCheckoutAddonSelection[];
 }): Promise<BillingCheckoutResponse> => {
   const response = await axiosInstance.post("/admin/billing/checkout", payload);
   return response.data.data ?? {};

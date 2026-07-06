@@ -51,13 +51,12 @@ const PlanModal = ({
 
   const [form, setForm] = useState<PlanFormValues>({
     name: "",
+    description: "",
     price: 0,
     monthly_price: null,
     yearly_price: null,
     currency: "AUD",
     billing_enabled: true,
-    stripe_monthly_price_id: null,
-    stripe_yearly_price_id: null,
     trial_days: null,
     propertyLimit: 0,
     popular: false,
@@ -82,13 +81,12 @@ const PlanModal = ({
 
     setForm({
       name: initialValues.name,
+      description: initialValues.description ?? "",
       price: initialValues.price,
       monthly_price: initialValues.monthly_price ?? null,
       yearly_price: initialValues.yearly_price ?? null,
       currency: initialValues.currency ?? "AUD",
       billing_enabled: initialValues.billing_enabled ?? true,
-      stripe_monthly_price_id: initialValues.stripe_monthly_price_id ?? null,
-      stripe_yearly_price_id: initialValues.stripe_yearly_price_id ?? null,
       trial_days: initialValues.trial_days ?? null,
       propertyLimit: initialValues.propertyLimit ?? 0,
       popular: initialValues.popular,
@@ -354,6 +352,24 @@ const PlanModal = ({
       </div>
 
       <div className="row g-5 mb-7">
+        <div className="col-md-6">
+          <label className="fw-bold fs-6 mb-2">Description</label>
+          <textarea
+            className="form-control form-control-solid"
+            rows={3}
+            placeholder="Describe the plan"
+            value={form.description ?? ""}
+            onChange={(event) =>
+              setForm((current) => ({
+                ...current,
+                description: event.target.value,
+              }))
+            }
+          />
+        </div>
+      </div>
+
+      <div className="row g-5 mb-7">
         <div className="col-md-4">
           <label className="fw-bold fs-6 mb-2">Monthly Price</label>
           <input
@@ -395,37 +411,6 @@ const PlanModal = ({
               setForm((current) => ({
                 ...current,
                 currency: event.target.value.toUpperCase(),
-              }))
-            }
-          />
-        </div>
-      </div>
-
-      <div className="row g-5 mb-7">
-        <div className="col-md-6">
-          <label className="fw-bold fs-6 mb-2">Stripe Monthly Price ID</label>
-          <input
-            type="text"
-            className="form-control form-control-solid"
-            value={form.stripe_monthly_price_id ?? ""}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                stripe_monthly_price_id: event.target.value || null,
-              }))
-            }
-          />
-        </div>
-        <div className="col-md-6">
-          <label className="fw-bold fs-6 mb-2">Stripe Yearly Price ID</label>
-          <input
-            type="text"
-            className="form-control form-control-solid"
-            value={form.stripe_yearly_price_id ?? ""}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                stripe_yearly_price_id: event.target.value || null,
               }))
             }
           />

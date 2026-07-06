@@ -49,16 +49,20 @@ export type SubscriptionAddon = {
 export type SubscriptionPlanBilling = {
   id: string;
   name: string;
+  description?: string | null;
   monthly_price?: number | null;
   yearly_price?: number | null;
   currency: string;
   billing_enabled?: boolean;
-  stripe_monthly_price_id?: string | null;
-  stripe_yearly_price_id?: string | null;
   trial_days?: number | null;
   is_active?: boolean;
   popular?: boolean;
   addons?: Addon[];
+};
+
+export type BillingCheckoutAddonSelection = {
+  addon_id: string;
+  quantity?: number;
 };
 
 export type CompanySubscription = {

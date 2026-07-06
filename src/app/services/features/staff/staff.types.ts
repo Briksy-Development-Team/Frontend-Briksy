@@ -146,6 +146,8 @@ export type StaffFormValues = {
 // `Staff` is a superset used by admin tables and lists. Keep fields optional
 // when they are not part of the core `StaffMember` shape.
 export type Staff = StaffMember & {
+  generated_id?: string | null;
+  display_id?: string | null;
   display_name?: string;
   organization_id?: string | null;
   mobile_number?: string | null;

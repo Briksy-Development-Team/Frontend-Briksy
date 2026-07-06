@@ -20,6 +20,9 @@ const isSoloTrader = (data: any) =>
 const getOrganizationSubtitle = (data: any) =>
   data?.type?.name ?? data?.business_type ?? data?.slug ?? "Organization";
 
+const getOrganizationDisplayId = (data: any) =>
+  data?.display_id ?? data?.generated_id ?? data?.id ?? "—";
+
 const getVerificationStatus = (data: any) => {
   if (typeof data?.business_verification_status === "string" && data.business_verification_status.trim()) {
     return data.business_verification_status;
@@ -109,6 +112,7 @@ export const organizationDetailConfig: DetailConfig<any> = {
       gridColumnSpan: 12,
       fields: [
         { label: "Company Name", accessor: "name", colSpan: 6 },
+        { label: "ID", accessor: getOrganizationDisplayId, colSpan: 6 },
         {
           label: "Type",
           accessor: (data) => data?.type?.name ?? data?.business_type ?? "—",

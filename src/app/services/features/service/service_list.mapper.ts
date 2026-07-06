@@ -6,6 +6,8 @@ import type {
 
 type ServiceApi = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
 
   name: string;
 
@@ -43,6 +45,8 @@ type ServiceApi = {
 
 export const mapServiceList = (item: ServiceApi): ServiceList => ({
   id: item.id,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? null,
 
   name: item.name ?? "",
 
@@ -77,6 +81,8 @@ export const mapServiceList = (item: ServiceApi): ServiceList => ({
 
 export const mapService = (item: ServiceApi): Service => ({
   id: item.id,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? null,
 
   name: item.name ?? "",
 
