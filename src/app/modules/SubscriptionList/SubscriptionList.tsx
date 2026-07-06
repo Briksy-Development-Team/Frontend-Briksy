@@ -205,7 +205,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                   {/* Price */}
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4 }}>
-                      <span style={{ fontSize: 13, color: isPopular ? 'rgba(255,255,255,0.7)' : '#8b6f54', marginBottom: 6 }}>₹</span>
+                      <span style={{ fontSize: 13, color: isPopular ? 'rgba(255,255,255,0.7)' : '#8b6f54', marginBottom: 6 }}>$</span>
                       <span
                         style={{
                           fontSize: 42,
@@ -219,8 +219,8 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                       </span>
                     </div>
                     <p style={{ fontSize: 12, color: isPopular ? 'rgba(255,255,255,0.5)' : '#8b6f54', margin: '6px 0 0' }}>
-                      {plan.monthly_price ? `Monthly ₹${plan.monthly_price.toLocaleString('en-IN')}` : 'Monthly pricing unavailable'}
-                      {plan.yearly_price ? ` · Annual ₹${plan.yearly_price.toLocaleString('en-IN')}` : ''}
+                      {plan.monthly_price ? `Monthly $${plan.monthly_price.toLocaleString('en-IN')}` : 'Monthly pricing unavailable'}
+                      {plan.yearly_price ? ` · Annual $${plan.yearly_price.toLocaleString('en-IN')}` : ''}
                     </p>
                   </div>
 

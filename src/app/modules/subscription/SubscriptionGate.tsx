@@ -95,7 +95,7 @@ const SubscriptionGate = () => {
                       <div>
                         <h3 className="fw-bold mb-1">{plan.name}</h3>
                         <div className="text-muted fs-7">
-                          ₹{plan.price} / month
+                          ${plan.price} / month
                         </div>
                       </div>
                       {plan.popular ? <span className="badge badge-light-primary">Popular</span> : null}
