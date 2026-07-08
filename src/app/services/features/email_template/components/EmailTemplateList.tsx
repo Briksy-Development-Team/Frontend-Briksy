@@ -1,5 +1,5 @@
 import { KTCard, KTIcon } from '../../../../../_metronic/helpers'
-import { getAuth } from '../../../../auth/core/AuthHelpers'
+import { getAuth } from '../../../../modules/auth/core/AuthHelpers'
 import type { EmailTemplate } from '../email-template.types'
 
 type Props = {

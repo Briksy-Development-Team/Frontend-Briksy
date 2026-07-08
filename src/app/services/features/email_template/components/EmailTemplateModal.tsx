@@ -1,146 +1,180 @@
-import { useState, useEffect } from "react"
-import clsx from "clsx"
-import { ModalShell } from "../../../../modules/apps/component/ModalShell"
-import {
-    TEMPLATE_VARIABLES,
-    type EmailTemplate,
-    type EmailTemplateFormValues,
-} from "../email-template.types"
+import { useState, useEffect } from "react";
+import { ModalShell } from "../../../../modules/apps/component/ModalShell";
+import type { EmailTemplate, EmailTemplateFormValues } from "../email-template.types";
+
+const emptyForm: EmailTemplateFormValues = {
+  key: "",
+  slug: "",
+  name: "",
+  subject: "",
+  body: "",
+  variables: [],
+  status: "active",
+  is_active: true,
+  module: "",
+  event_key: "",
+};
 
 type Props = {
-    initialValues?: EmailTemplate | null
-    onClose: () => void
-    onSubmit: (values: EmailTemplateFormValues) => void
-    isSubmitting?: boolean
-}
+  editing: EmailTemplate | null;
+  onClose: () => void;
+  onSubmit: (payload: EmailTemplateFormValues) => Promise<void>;
+};
 
-const EmailTemplateModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) => {
-    const isEdit = !!initialValues
+export const EmailTemplateModal = ({ editing, onClose, onSubmit }: Props) => {
+  const [form, setForm] = useState<EmailTemplateFormValues>(emptyForm);
+  const [submitting, setSubmitting] = useState(false);
 
-    const [form, setForm] = useState<EmailTemplateFormValues>({
-        key: "",
-        name: "",
-        subject: "",
-        body: "",
-        variables: [],
-        status: "active",
-    })
-
-    const [touched, setTouched] = useState({ name: false, subject: false, body: false })
-
-    useEffect(() => {
-        if (initialValues) {
-            setForm({
-                key: initialValues.key,
-                name: initialValues.name,
-                subject: initialValues.subject,
-                body: initialValues.body,
-                variables: initialValues.variables ?? [],
-                status: initialValues.status,
-            })
-        }
-    }, [initialValues])
-
-    const nameError = touched.name && !form.name ? "Name is required" : ""
-    const subjectError = touched.subject && !form.subject ? "Subject is required" : ""
-    const bodyError = touched.body && !form.body ? "Body is required" : ""
-
-    const isValid = !!form.key && !!form.name && !!form.subject && !!form.body
-
-    const handleSubmit = () => {
-        setTouched({ name: true, subject: true, body: true })
-        if (!isValid) return
-        onSubmit(form)
+  useEffect(() => {
+    if (editing) {
+      setForm({
+        key: editing.key ?? editing.slug ?? "",
+        slug: editing.slug ?? editing.key ?? "",
+        name: editing.name,
+        subject: editing.subject,
+        body: editing.body,
+        variables: editing.variables ?? [],
+        status: editing.status ?? (editing.is_active ? "active" : "inactive"),
+        is_active: editing.is_active ?? editing.status === "active",
+        module: editing.module ?? "",
+        event_key: editing.event_key ?? "",
+      });
+    } else {
+      setForm(emptyForm);
     }
+  }, [editing]);
 
-    return (
-        <ModalShell
-            title={isEdit ? "Edit Email Template" : "Add Email Template"}
-            onClose={onClose}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            submitLabel={isEdit ? "Update Template" : "Create Template"}
-            isValid={isValid}
-        >
-            <div className="fv-row mb-7">
-                    <label className="required fw-bold fs-6 mb-2">Template Key</label>
-                    <input
-                    type="text"
-                    className={clsx("form-control form-control-solid", {
-                        "is-invalid": !!nameError,
-                        "is-valid": touched.name && !nameError,
-                    })}
-                    placeholder="e.g. welcome-email"
-                    value={form.key}
-                    onChange={(e) => setForm((p) => ({ ...p, key: e.target.value }))}
-                    onBlur={() => setTouched((p) => ({ ...p, name: true }))}
-                />
-                {nameError && <div className="fv-plugins-message-container"><span className="fv-help-block">{nameError}</span></div>}
-            </div>
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    try {
+      const payload = {
+        ...form,
+        key: form.key || form.slug || "",
+        slug: form.slug || form.key || "",
+        variables: Array.isArray(form.variables) ? form.variables : [],
+        is_active: form.is_active ?? form.status === "active",
+      };
+      await onSubmit(payload);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-            <div className="fv-row mb-7">
-                    <label className="required fw-bold fs-6 mb-2">Template Name</label>
-                    <select
-                        className="form-select form-select-solid"
-                        value={form.name}
-                        onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                    >
-                        {TEMPLATE_VARIABLES.map((variable) => (
-                            <option key={variable} value={variable}>
-                                {variable}
-                            </option>
-                        ))}
-                    </select>
-            </div>
+  const isValid =
+    (form.slug ?? form.key).trim().length > 0 &&
+    form.name.trim().length > 0 &&
+    form.subject.trim().length > 0 &&
+    form.body.trim().length > 0;
 
-            <div className="fv-row mb-7">
-                <label className="required fw-bold fs-6 mb-2">Email Subject</label>
-                <input
-                    type="text"
-                    className={clsx("form-control form-control-solid", {
-                        "is-invalid": !!subjectError,
-                        "is-valid": touched.subject && !subjectError,
-                    })}
-                    placeholder="e.g. Welcome to Briksy!"
-                    value={form.subject}
-                    onChange={(e) => setForm((p) => ({ ...p, subject: e.target.value }))}
-                    onBlur={() => setTouched((p) => ({ ...p, subject: true }))}
-                />
-                {subjectError && <div className="fv-plugins-message-container"><span className="fv-help-block">{subjectError}</span></div>}
-            </div>
-
-            <div className="fv-row mb-7">
-                <label className="required fw-bold fs-6 mb-2">Email Body</label>
-                <textarea
-                    className={clsx("form-control form-control-solid", {
-                        "is-invalid": !!bodyError,
-                        "is-valid": touched.body && !bodyError,
-                    })}
-                    rows={6}
-                    placeholder="Hi {{name}}, ..."
-                    value={form.body}
-                    onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
-                    onBlur={() => setTouched((p) => ({ ...p, body: true }))}
-                />
-                {bodyError && <div className="fv-plugins-message-container"><span className="fv-help-block">{bodyError}</span></div>}
-                <div className="text-muted fs-7 mt-2">
-                    Use placeholders like <code>{"{{name}}"}</code>, <code>{"{{order_number}}"}</code>, <code>{"{{total_amount}}"}</code>
-                </div>
-            </div>
-
-            <div className="fv-row mb-7">
-                <label className="form-check form-check-custom form-check-solid form-switch d-flex align-items-center gap-3 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={form.status === "active"}
-                        onChange={(e) => setForm((p) => ({ ...p, status: e.target.checked ? "active" : "inactive" }))}
-                    />
-                    <span className="fw-bold fs-6">Active</span>
-                </label>
-            </div>
-        </ModalShell>
-    )
-}
-
-export { EmailTemplateModal }
+  return (
+    <ModalShell
+      title={editing ? "Edit Email Template" : "Add Email Template"}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      isSubmitting={submitting}
+      submitLabel={editing ? "Update" : "Create"}
+      isValid={isValid}
+    >
+      <div className="fv-row mb-4">
+        <label className="form-label required">Slug / Key</label>
+        <input
+          className="form-control form-control-solid"
+          value={form.slug ?? form.key}
+          onChange={(e) => setForm((c) => ({ ...c, slug: e.target.value, key: e.target.value }))}
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-label required">Name</label>
+        <input
+          className="form-control form-control-solid"
+          value={form.name}
+          onChange={(e) => setForm((c) => ({ ...c, name: e.target.value }))}
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-label">Module</label>
+        <input
+          className="form-control form-control-solid"
+          value={form.module ?? ""}
+          onChange={(e) => setForm((c) => ({ ...c, module: e.target.value }))}
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-label">Event Key</label>
+        <input
+          className="form-control form-control-solid"
+          value={form.event_key ?? ""}
+          onChange={(e) => setForm((c) => ({ ...c, event_key: e.target.value }))}
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-label required">Subject</label>
+        <input
+          className="form-control form-control-solid"
+          value={form.subject}
+          onChange={(e) => setForm((c) => ({ ...c, subject: e.target.value }))}
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-label required">Body</label>
+        <textarea
+          className="form-control form-control-solid"
+          rows={8}
+          value={form.body}
+          onChange={(e) => setForm((c) => ({ ...c, body: e.target.value }))}
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-label">Variables</label>
+        <input
+          className="form-control form-control-solid"
+          value={form.variables.join(", ")}
+          onChange={(e) =>
+            setForm((c) => ({
+              ...c,
+              variables: e.target.value
+                .split(",")
+                .map((v) => v.trim())
+                .filter(Boolean),
+            }))
+          }
+        />
+      </div>
+      <div className="fv-row mb-4">
+        <label className="form-check form-check-custom form-check-solid form-switch d-flex align-items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={form.is_active ?? form.status === "active"}
+            onChange={(e) =>
+              setForm((c) => ({
+                ...c,
+                is_active: e.target.checked,
+                status: e.target.checked ? "active" : "inactive",
+              }))
+            }
+          />
+          <span className="fw-bold fs-6">Active</span>
+        </label>
+      </div>
+      <div className="alert alert-light border border-dashed">
+        <div className="fw-bold mb-2">Available placeholders</div>
+        <div className="d-flex flex-wrap gap-2">
+          {[
+            "{{company_name}}",
+            "{{user_name}}",
+            "{{plan_name}}",
+            "{{amount}}",
+            "{{billing_cycle}}",
+            "{{renewal_date}}",
+            "{{app_name}}",
+          ].map((placeholder) => (
+            <span key={placeholder} className="badge badge-light-primary">
+              {placeholder}
+            </span>
+          ))}
+        </div>
+      </div>
+    </ModalShell>
+  );
+};

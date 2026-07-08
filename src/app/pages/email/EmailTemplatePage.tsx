@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { KTCard, KTIcon } from "../../../_metronic/helpers";
-import { ModalShell } from "../../modules/apps/component/ModalShell";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { useRoleAccess } from "../../modules/auth";
 import { getAuth } from "../../modules/auth/core/AuthHelpers";
@@ -16,18 +15,9 @@ import {
   updateEmailTemplateApi,
 } from "../../services/features/email_template/email-template.api";
 
-const emptyForm: EmailTemplateFormValues = {
-  key: "",
-  slug: "",
-  name: "",
-  subject: "",
-  body: "",
-  variables: [],
-  status: "active",
-  is_active: true,
-  module: "",
-  event_key: "",
-};
+import { EmailTemplateModal } from "../../services/features/email_template/components/EmailTemplateModal";
+import { EmailTemplatePreviewModal } from "../../services/features/email_template/components/EmailTemplatePreviewModal";
+import { EmailTemplateSendTestModal } from "../../services/features/email_template/components/EmailTemplateSendTestModal";
 
 const EmailTemplatePage = () => {
   const { isSuperAdmin } = useRoleAccess();
@@ -37,123 +27,63 @@ const EmailTemplatePage = () => {
   const canCreate = abilities.includes("email_template.create");
   const canUpdate = abilities.includes("email_template.update");
   const canDelete = abilities.includes("email_template.delete");
+
   const [items, setItems] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
   const [editing, setEditing] = useState<EmailTemplate | null>(null);
   const [deleting, setDeleting] = useState<EmailTemplate | null>(null);
   const [previewItem, setPreviewItem] = useState<EmailTemplate | null>(null);
-  const [previewJson, setPreviewJson] = useState("{\"name\":\"Jane\",\"order_number\":\"ORD-001\"}");
-  const [previewResult, setPreviewResult] = useState<{ subject?: string; body?: string } | null>(null);
   const [sendTestItem, setSendTestItem] = useState<EmailTemplate | null>(null);
-  const [sendTestEmail, setSendTestEmail] = useState("");
-  const [sendTestVariables, setSendTestVariables] = useState("{\"name\":\"Jane\"}");
-  const [sendTestMessage, setSendTestMessage] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [sendTestLoading, setSendTestLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form, setForm] = useState<EmailTemplateFormValues>(emptyForm);
 
   useEffect(() => {
     let active = true;
     setLoading(true);
     fetchEmailTemplatesApi(scope)
       .then((data) => {
-        if (active) {
-          setItems(data);
-        }
+        if (active) setItems(data);
       })
       .catch((err: unknown) => {
-        if (active) {
-          setError(err instanceof Error ? err.message : "Failed to load email templates");
-        }
+        if (active) setError(err instanceof Error ? err.message : "Failed to load email templates");
       })
       .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       });
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [scope]);
 
   const title = useMemo(() => "Email Templates", []);
 
-  const submit = async () => {
-    setSubmitting(true);
-    try {
-      const payload = {
-        ...form,
-        key: form.key || form.slug || "",
-        slug: form.slug || form.key || "",
-        variables: Array.isArray(form.variables) ? form.variables : [],
-        is_active: form.is_active ?? form.status === "active",
-      };
-      const saved = editing
-        ? await updateEmailTemplateApi(scope, editing.id, payload)
-        : await createEmailTemplateApi(scope, payload);
-      setItems((current) => {
-        const idx = current.findIndex((item) => item.id === saved.id);
-        if (idx === -1) {
-          return [saved, ...current];
-        }
-        const next = [...current];
-        next[idx] = saved;
-        return next;
-      });
-      setEditing(null);
-      setIsModalOpen(false);
-      setForm(emptyForm);
-    } finally {
-      setSubmitting(false);
-    }
+  const submit = async (payload: EmailTemplateFormValues) => {
+    const saved = editing
+      ? await updateEmailTemplateApi(scope, editing.id, payload)
+      : await createEmailTemplateApi(scope, payload);
+    setItems((current) => {
+      const idx = current.findIndex((item) => item.id === saved.id);
+      if (idx === -1) return [saved, ...current];
+      const next = [...current];
+      next[idx] = saved;
+      return next;
+    });
+    setEditing(null);
+    setIsModalOpen(false);
   };
 
-  const preview = async () => {
-    if (!previewItem) {
-      return;
-    }
-
-    setPreviewLoading(true);
-    try {
-      const variables = JSON.parse(previewJson || "{}");
-      const result = await previewEmailTemplateApi(scope, previewItem.id, { variables });
-      setPreviewResult(result);
-    } catch (error) {
-      setPreviewResult({ subject: error instanceof Error ? error.message : "Invalid preview JSON" });
-    } finally {
-      setPreviewLoading(false);
-    }
+  const preview = async (variables: Record<string, string | number | boolean>) => {
+    if (!previewItem) return {};
+    return await previewEmailTemplateApi(scope, previewItem.id, { variables });
   };
 
-  const sendTest = async () => {
-    if (!sendTestItem || !sendTestEmail.trim()) {
-      return;
-    }
-
-    setSendTestLoading(true);
-    try {
-      const variables = JSON.parse(sendTestVariables || "{}");
-      const result = await sendTestEmailTemplateApi(scope, sendTestItem.id, {
-        email: sendTestEmail.trim(),
-        variables,
-      });
-      setSendTestMessage(`Test email sent to ${result.email}.`);
-    } catch (error) {
-      setSendTestMessage(error instanceof Error ? error.message : "Failed to send test email.");
-    } finally {
-      setSendTestLoading(false);
-    }
+  const sendTest = async (email: string, variables: Record<string, string | number | boolean>) => {
+    if (!sendTestItem) return "";
+    const result = await sendTestEmailTemplateApi(scope, sendTestItem.id, { email, variables });
+    return `Test email sent to ${result.email}.`;
   };
 
   const remove = async () => {
-    if (!deleting) {
-      return;
-    }
-
+    if (!deleting) return;
     await deleteEmailTemplateApi(scope, deleting.id);
     setItems((current) => current.filter((item) => item.id !== deleting.id));
     setDeleting(null);
@@ -161,32 +91,12 @@ const EmailTemplatePage = () => {
 
   const openCreate = () => {
     setEditing(null);
-    setForm(emptyForm);
     setIsModalOpen(true);
   };
 
   const openEdit = (item: EmailTemplate) => {
     setEditing(item);
-    setForm({
-      key: item.key ?? item.slug ?? "",
-      slug: item.slug ?? item.key ?? "",
-      name: item.name,
-      subject: item.subject,
-      body: item.body,
-      variables: item.variables ?? [],
-      status: item.status ?? (item.is_active ? "active" : "inactive"),
-      is_active: item.is_active ?? item.status === "active",
-      module: item.module ?? "",
-      event_key: item.event_key ?? "",
-    });
     setIsModalOpen(true);
-  };
-
-  const openSendTest = (item: EmailTemplate) => {
-    setSendTestItem(item);
-    setSendTestEmail("");
-    setSendTestVariables(JSON.stringify({ name: "Jane" }, null, 2));
-    setSendTestMessage(null);
   };
 
   return (
@@ -225,7 +135,7 @@ const EmailTemplatePage = () => {
                         <button className="btn btn-icon btn-sm btn-light" onClick={() => setPreviewItem(item)}>
                           <KTIcon iconName="eye" className="fs-4" />
                         </button>
-                        <button className="btn btn-icon btn-sm btn-light-warning" onClick={() => openSendTest(item)} disabled={!canUpdate}>
+                        <button className="btn btn-icon btn-sm btn-light-warning" onClick={() => setSendTestItem(item)} disabled={!canUpdate}>
                           <KTIcon iconName="send" className="fs-4" />
                         </button>
                         <button className="btn btn-icon btn-sm btn-light-primary" onClick={() => openEdit(item)} disabled={!canUpdate}>
@@ -251,152 +161,30 @@ const EmailTemplatePage = () => {
       </KTCard>
 
       {isModalOpen && (
-        <ModalShell
-          title={editing ? "Edit Email Template" : "Add Email Template"}
+        <EmailTemplateModal
+          editing={editing}
           onClose={() => {
             setEditing(null);
-            setForm(emptyForm);
             setIsModalOpen(false);
           }}
           onSubmit={submit}
-          isSubmitting={submitting}
-          submitLabel={editing ? "Update" : "Create"}
-          isValid={(
-            (form.slug ?? form.key).trim().length > 0 &&
-            form.name.trim().length > 0 &&
-            form.subject.trim().length > 0 &&
-            form.body.trim().length > 0
-          )}
-        >
-          <div className="fv-row mb-4">
-            <label className="form-label required">Slug / Key</label>
-            <input className="form-control form-control-solid" value={form.slug ?? form.key} onChange={(e) => setForm((current) => ({ ...current, slug: e.target.value, key: e.target.value }))} />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label required">Name</label>
-            <input className="form-control form-control-solid" value={form.name} onChange={(e) => setForm((current) => ({ ...current, name: e.target.value }))} />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label">Module</label>
-            <input className="form-control form-control-solid" value={form.module ?? ""} onChange={(e) => setForm((current) => ({ ...current, module: e.target.value }))} />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label">Event Key</label>
-            <input className="form-control form-control-solid" value={form.event_key ?? ""} onChange={(e) => setForm((current) => ({ ...current, event_key: e.target.value }))} />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label required">Subject</label>
-            <input className="form-control form-control-solid" value={form.subject} onChange={(e) => setForm((current) => ({ ...current, subject: e.target.value }))} />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label required">Body</label>
-            <textarea className="form-control form-control-solid" rows={8} value={form.body} onChange={(e) => setForm((current) => ({ ...current, body: e.target.value }))} />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label">Variables</label>
-            <input
-              className="form-control form-control-solid"
-              value={form.variables.join(", ")}
-              onChange={(e) => setForm((current) => ({ ...current, variables: e.target.value.split(",").map((value) => value.trim()).filter(Boolean) }))}
-            />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-check form-check-custom form-check-solid form-switch d-flex align-items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={form.is_active ?? form.status === "active"}
-                onChange={(e) =>
-                  setForm((current) => ({
-                    ...current,
-                    is_active: e.target.checked,
-                    status: e.target.checked ? "active" : "inactive",
-                  }))
-                }
-              />
-              <span className="fw-bold fs-6">Active</span>
-            </label>
-          </div>
-          <div className="alert alert-light border border-dashed">
-            <div className="fw-bold mb-2">Available placeholders</div>
-            <div className="d-flex flex-wrap gap-2">
-              {["{{company_name}}", "{{user_name}}", "{{plan_name}}", "{{amount}}", "{{billing_cycle}}", "{{renewal_date}}", "{{app_name}}"].map((placeholder) => (
-                <span key={placeholder} className="badge badge-light-primary">
-                  {placeholder}
-                </span>
-              ))}
-            </div>
-          </div>
-        </ModalShell>
+        />
       )}
 
       {previewItem && (
-        <ModalShell
-          title={`Preview: ${previewItem.name}`}
-          onClose={() => {
-            setPreviewItem(null);
-            setPreviewResult(null);
-          }}
-          onSubmit={preview}
-          isSubmitting={previewLoading}
-          submitLabel="Render Preview"
-          isValid={true}
-        >
-          <div className="fv-row mb-4">
-            <label className="form-label">Variables JSON</label>
-            <textarea className="form-control form-control-solid" rows={6} value={previewJson} onChange={(e) => setPreviewJson(e.target.value)} />
-          </div>
-          {previewResult && (
-            <div className="alert alert-light">
-              <div className="fw-bold mb-2">{previewResult.subject}</div>
-              <div style={{ whiteSpace: "pre-wrap" }}>{previewResult.body}</div>
-            </div>
-          )}
-        </ModalShell>
+        <EmailTemplatePreviewModal
+          template={previewItem}
+          onClose={() => setPreviewItem(null)}
+          onPreview={preview}
+        />
       )}
 
       {sendTestItem && (
-        <ModalShell
-          title={`Send Test: ${sendTestItem.name}`}
-          onClose={() => {
-            setSendTestItem(null);
-            setSendTestMessage(null);
-          }}
-          onSubmit={sendTest}
-          isSubmitting={sendTestLoading}
-          submitLabel="Send Test Email"
-          isValid={sendTestEmail.trim().length > 0}
-        >
-          <div className="fv-row mb-4">
-            <label className="form-label required">Recipient Email</label>
-            <input
-              className="form-control form-control-solid"
-              type="email"
-              value={sendTestEmail}
-              onChange={(e) => setSendTestEmail(e.target.value)}
-            />
-          </div>
-          <div className="fv-row mb-4">
-            <label className="form-label">Variables JSON</label>
-            <textarea
-              className="form-control form-control-solid"
-              rows={6}
-              value={sendTestVariables}
-              onChange={(e) => setSendTestVariables(e.target.value)}
-            />
-          </div>
-          {sendTestMessage && <div className="alert alert-info">{sendTestMessage}</div>}
-          <div className="alert alert-light border border-dashed">
-            <div className="fw-bold mb-2">Available placeholders</div>
-            <div className="d-flex flex-wrap gap-2">
-              {["{{company_name}}", "{{user_name}}", "{{plan_name}}", "{{amount}}", "{{billing_cycle}}", "{{renewal_date}}", "{{app_name}}"].map((placeholder) => (
-                <span key={placeholder} className="badge badge-light-primary">
-                  {placeholder}
-                </span>
-              ))}
-            </div>
-          </div>
-        </ModalShell>
+        <EmailTemplateSendTestModal
+          template={sendTestItem}
+          onClose={() => setSendTestItem(null)}
+          onSendTest={sendTest}
+        />
       )}
 
       {deleting && (

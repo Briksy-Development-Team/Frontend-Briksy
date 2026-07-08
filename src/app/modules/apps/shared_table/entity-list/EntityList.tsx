@@ -35,7 +35,7 @@ type Props<T extends { id: number | string }> = {
   params: QueryParams;
   onParamsChange: (params: QueryParams) => void;
   columns: Column<T>[];
-  filtersConfig?: any;
+  filtersConfig?: any[];
   enableRowClick?: boolean;
   getRowLink?: (row: T) => string;
   storageKey?: string;
@@ -62,10 +62,16 @@ const EntityList = <T extends { id: number | string }>({
     columns.map((c) => c.accessor as string),
   );
   const [isExportOpen, setIsExportOpen] = useState(false);
-
   const [isMobile, setIsMobile] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<T["id"]>>(new Set());
+
+  const activeFilterCount = Object.values(params.filters ?? {}).filter((v) => {
+    if (!v) return false;
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "object") return Object.values(v).some(Boolean);
+    return true;
+  }).length;
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -92,95 +98,59 @@ const EntityList = <T extends { id: number | string }>({
   const toggleAll = (checked: boolean) =>
     setSelectedRows(checked ? new Set(data.map((r) => r.id)) : new Set());
 
-  const exportAll = async (): Promise<void> => {
-    if (!onExportAll) return;
+  const doExport = async (rows: T[]) =>
+    exportToExcel(rows as Record<string, unknown>[], columns);
 
-    const allRows = await onExportAll();
-
-    await exportToExcel(
-      allRows as Record<string, unknown>[],
-      columns
-    );
-  };
   const filteredColumns = columns.filter(
     (col) => col.alwaysVisible || visibleColumns.includes(col.accessor),
   );
-  const exportSelected = async (): Promise<void> => {
-    const rows = data.filter((r) => selectedRows.has(r.id));
 
-    await exportToExcel(
-      rows as Record<string, unknown>[],
-      columns
-    );
-  };
+  const handleFilterChange = (filters: Record<string, any>) =>
+    onParamsChange({ ...params, filters, page: 1 });
 
-  const exportCurrentPage = async (): Promise<void> => {
-    await exportToExcel(
-      data as Record<string, unknown>[],
-      columns
-    );
-  };
   return (
-    <div className="d-flex gap-5">
-      <div className="flex-grow-1" style={{ minWidth: 0 }}>
-        <KTCard>
-          <EntityHeader
-            search={params.search}
-            onSearchChange={(val) =>
-              onParamsChange({ ...params, search: val, page: 1 })
-            }
-            columns={columns}
-            visibleColumns={visibleColumns}
-            setVisibleColumns={setVisibleColumns}
-            isMobile={isMobile}
-            onOpenFilter={() => setShowFilter(true)}
-            onExport={() => setIsExportOpen(true)}
-            selectedCount={selectedRows.size}
-            onSortChange={(config) =>
-              onParamsChange({
-                ...params,
-                sort: config.key,
-                direction: config.direction,
-                page: 1,
-              })
-            }
-            headerActions={headerActions}
-          />
+    <div>
+      <KTCard>
+        <EntityHeader
+          search={params.search}
+          onSearchChange={(val) => onParamsChange({ ...params, search: val, page: 1 })}
+          columns={columns}
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
+          isMobile={isMobile}
+          onOpenFilter={() => setShowFilter(true)}
+          onExport={() => setIsExportOpen(true)}
+          selectedCount={selectedRows.size}
+          onSortChange={(config) =>
+            onParamsChange({ ...params, sort: config.key, direction: config.direction, page: 1 })
+          }
+          headerActions={headerActions}
+          filtersConfig={filtersConfig}
+          onFilterChange={handleFilterChange}
+          activeFilterCount={activeFilterCount}
+        />
 
-          <EntityTable
-            data={data}
-            columns={filteredColumns}
-            enableRowClick={enableRowClick}
-            getRowLink={getRowLink}
-            selectedRows={selectedRows}
-            onRowSelect={toggleRow}
-            onSelectAll={toggleAll}
-            rowActions={rowActions}
-          />
+        <EntityTable
+          data={data}
+          columns={filteredColumns}
+          enableRowClick={enableRowClick}
+          getRowLink={getRowLink}
+          selectedRows={selectedRows}
+          onRowSelect={toggleRow}
+          onSelectAll={toggleAll}
+          rowActions={rowActions}
+        />
 
-          <Paginations
-            page={params.page}
-            per_page={params.per_page}
-            total={total}
-            onChange={(page) => onParamsChange({ ...params, page })}
-            onPageSizeChange={(size) =>
-              onParamsChange({ ...params, per_page: size, page: 1 })
-            }
-          />
-        </KTCard>
-      </div>
+        <Paginations
+          page={params.page}
+          per_page={params.per_page}
+          total={total}
+          onChange={(page) => onParamsChange({ ...params, page })}
+          onPageSizeChange={(size) => onParamsChange({ ...params, per_page: size, page: 1 })}
+        />
+      </KTCard>
 
-      {filtersConfig && !isMobile && (
-        <div style={{ width: 280 }}>
-          <SideFilter
-            filters={filtersConfig}
-            onFilterChange={(filters) =>
-              onParamsChange({ ...params, filters, page: 1 })
-            }
-          />
-        </div>
-      )}
-
+      {/* Mobile bottom-sheet filter */}
       {filtersConfig && isMobile && showFilter && (
         <div
           style={{
@@ -206,7 +176,11 @@ const EntityList = <T extends { id: number | string }>({
             <SideFilter
               filters={filtersConfig}
               onFilterChange={(f) => {
-                onParamsChange({ ...params, filters: f, page: 1 });
+                handleFilterChange(f);
+                setShowFilter(false);
+              }}
+              onReset={() => {
+                handleFilterChange({});
                 setShowFilter(false);
               }}
             />
@@ -218,9 +192,9 @@ const EntityList = <T extends { id: number | string }>({
         <ExportModal
           selectedCount={selectedRows.size}
           onClose={() => setIsExportOpen(false)}
-          onExportSelected={exportSelected}
-          onExportCurrent={exportCurrentPage}
-          onExportAll={exportAll}
+          onExportSelected={() => doExport(data.filter((r) => selectedRows.has(r.id)))}
+          onExportCurrent={() => doExport(data)}
+          onExportAll={onExportAll ? async () => doExport(await onExportAll()) : undefined}
         />
       )}
     </div>

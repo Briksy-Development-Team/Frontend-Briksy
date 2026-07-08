@@ -38,17 +38,22 @@ const SidebarMenuMain = () => {
         >
           <SidebarMenuItem
             to={`${portalBase}/seekers`}
-            icon="abstract-28"
+            icon="abstract-45"
             title="Seekers"
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
             to={`${portalBase}/staff`}
-            icon="abstract-28"
+            icon="abstract-45"
             title="Platform Staff"
             fontIcon="bi-layers"
           />
         </SidebarMenuItemWithSub>
+
+
+
+
+
       )}
 
       {isSuperAdmin && hasPermission("company.view") && (
@@ -61,13 +66,13 @@ const SidebarMenuMain = () => {
         >
           <SidebarMenuItem
             to={`${portalBase}/companies`}
-            icon="abstract-28"
+            icon="abstract-45"
             title="Companies"
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
             to={`${portalBase}/companies/solo-traders`}
-            icon="abstract-28"
+            icon="abstract-45"
             title="Solo Traders"
             fontIcon="bi-layers"
           />
@@ -80,54 +85,54 @@ const SidebarMenuMain = () => {
             hasPermission("addon.view") ||
             hasPermission("plan.view") ||
             hasPermission("subscription.view")) && (
-            <SidebarMenuItemWithSub
-              to={`${portalBase}/dynamic-id-settings`}
-              title="Billing & IDs"
-              fontIcon="bi-archive"
-              icon="element-plus"
-              activePaths={[
-                `${portalBase}/addons`,
-                `${portalBase}/plans`,
-                `${portalBase}/subscriptions`,
-              ]}
-            >
-              {hasPermission("dynamic_id.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/dynamic-id-settings`}
-                  icon="abstract-28"
-                  title="Dynamic ID Settings"
-                  fontIcon="bi-layers"
-                />
-              )}
+              <SidebarMenuItemWithSub
+                to={`${portalBase}/dynamic-id-settings`}
+                title="Billing & IDs"
+                fontIcon="bi-archive"
+                icon="element-plus"
+                activePaths={[
+                  `${portalBase}/addons`,
+                  `${portalBase}/plans`,
+                  `${portalBase}/subscriptions`,
+                ]}
+              >
+                {hasPermission("dynamic_id.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/dynamic-id-settings`}
+                    icon="abstract-45"
+                    title="Dynamic ID Settings"
+                    fontIcon="bi-layers"
+                  />
+                )}
 
-              {hasPermission("addon.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/addons`}
-                  icon="abstract-28"
-                  title="Add-ons"
-                  fontIcon="bi-layers"
-                />
-              )}
+                {hasPermission("addon.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/addons`}
+                    icon="abstract-45"
+                    title="Add-ons"
+                    fontIcon="bi-layers"
+                  />
+                )}
 
-              {hasPermission("plan.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/plans`}
-                  icon="abstract-28"
-                  title="Plans"
-                  fontIcon="bi-layers"
-                />
-              )}
+                {hasPermission("plan.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/plans`}
+                    icon="abstract-45"
+                    title="Plans"
+                    fontIcon="bi-layers"
+                  />
+                )}
 
-              {hasPermission("subscription.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/subscriptions`}
-                  icon="abstract-28"
-                  title="Subscriptions"
-                  fontIcon="bi-layers"
-                />
-              )}
-            </SidebarMenuItemWithSub>
-          )}
+                {hasPermission("subscription.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/subscriptions`}
+                    icon="abstract-45"
+                    title="Subscriptions"
+                    fontIcon="bi-layers"
+                  />
+                )}
+              </SidebarMenuItemWithSub>
+            )}
 
           {(hasPermission("email_template.view") || hasPermission("activity_logs.view")) && (
             <SidebarMenuItemWithSub
@@ -140,7 +145,7 @@ const SidebarMenuMain = () => {
               {hasPermission("email_template.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/email-templates`}
-                  icon="abstract-28"
+                  icon="abstract-45"
                   title="Email Templates"
                   fontIcon="bi-layers"
                 />
@@ -149,8 +154,18 @@ const SidebarMenuMain = () => {
               {hasPermission("activity_logs.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/activity-logs`}
-                  icon="clock"
+                  icon="abstract-45"
                   title="Activity Logs"
+                  fontIcon="bi-layers"
+                />
+              )}
+
+
+              {hasPermission("blogs.view") && (
+                <SidebarMenuItem
+                  to={`${portalBase}/blogs`}
+                  icon="abstract-45"
+                  title="Blogs"
                   fontIcon="bi-layers"
                 />
               )}

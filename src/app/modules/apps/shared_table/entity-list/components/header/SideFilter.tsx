@@ -18,9 +18,10 @@ type FilterConfig =
 type Props = {
   filters: FilterConfig[];
   onFilterChange: (filters: Record<string, FilterValue>) => void;
+  onReset?: () => void;
 };
 
-const SideFilter = ({ filters, onFilterChange }: Props) => {
+const SideFilter = ({ filters, onFilterChange, onReset }: Props) => {
   const [values, setValues] = useState<Record<string, FilterValue>>({});
   const [open, setOpen] = useState<string | null>(null);
 
@@ -158,7 +159,11 @@ const SideFilter = ({ filters, onFilterChange }: Props) => {
           className="btn btn-light w-100"
           onClick={() => {
             setValues({});
-            onFilterChange({});
+            if (onReset) {
+              onReset();
+            } else {
+              onFilterChange({});
+            }
           }}
         >
           Reset

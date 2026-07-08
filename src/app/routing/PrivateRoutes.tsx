@@ -25,6 +25,7 @@ const UserPage = lazy(() => import("../pages/user management/UserPage"));
 const CompanyPage = lazy(() => import("../pages/user management/CompanyPage"));
 const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
 const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"));
+const BlogPage = lazy(() => import("../pages/blogs/BlogPage"));
 const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
@@ -190,6 +191,17 @@ const PrivateRoutes = () => {
             <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
                 <StaffPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/blogs/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <BlogPage />
               </SuspensedView>
             </RoleGuard>
           }
