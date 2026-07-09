@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 import type { Property, PropertyFormValues } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
+import { LocationMapPreview } from "../../maps/LocationMapPreview";
 
 type Props = {
     initialValues?: Property | null;
@@ -254,6 +255,20 @@ const PropertyModal = ({
                             }
                         />
                     </div>
+                </div>
+            </div>
+
+            <div className="fv-row mb-7">
+                <label className="form-label">Map Preview</label>
+                <LocationMapPreview
+                    latitude={form.latitude ?? null}
+                    longitude={form.longitude ?? null}
+                    address={form.formatted_address ?? form.full_address ?? form.address}
+                    onChange={handleLocationSelect}
+                    height={260}
+                />
+                <div className="text-muted fs-7 mt-2">
+                    Drag the marker or click on the map to reverse geocode the address.
                 </div>
             </div>
 

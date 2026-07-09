@@ -77,6 +77,7 @@ export type CompanySubscription = {
   stripe_customer_id?: string | null;
   stripe_subscription_id?: string | null;
   stripe_checkout_session_id?: string | null;
+  latest_invoice_id?: string | null;
   current_period_start?: string | null;
   current_period_end?: string | null;
   canceled_at?: string | null;
@@ -89,4 +90,19 @@ export type CompanySubscription = {
 export type BillingCheckoutResponse = {
   checkout_session_id?: string;
   checkout_url?: string | null;
+};
+
+export type BillingCheckoutVerificationResponse = {
+  checkout_session_id?: string;
+  checkout_status?: string | null;
+  payment_status?: string | null;
+  subscription?: CompanySubscription | null;
+  stripe_details?: {
+    subscription_id?: string | null;
+    customer_id?: string | null;
+    invoice_id?: string | null;
+    invoice_download_url?: string | null;
+    payment_method?: string | null;
+    transaction_timestamp?: string | null;
+  } | null;
 };

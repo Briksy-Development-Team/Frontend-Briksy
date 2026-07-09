@@ -28,6 +28,24 @@ type AdminAuthPayload = {
   referral_code?: string;
 };
 
+type AbnVerificationPayload = {
+  abn: string;
+  business_type?: "organisation" | "company" | "solo_trader";
+};
+
+export type AbnVerificationResponse = {
+  valid: boolean;
+  abn: string;
+  entityName: string;
+  entityType: string;
+  gstRegistered: boolean;
+  state?: string | null;
+  postcode?: string | null;
+  acn?: string | null;
+  status: string;
+  message?: string | null;
+};
+
 export async function login(email: string, password: string) {
   const payload = { email, password };
 
@@ -51,6 +69,15 @@ export async function login(email: string, password: string) {
 export async function register(payload: AdminAuthPayload) {
   const response = await api.post<AdminAuthEnvelope<AuthResponse>>(
     "/admin/auth/register",
+    payload,
+  );
+
+  return response.data;
+}
+
+export async function verifyAbn(payload: AbnVerificationPayload) {
+  const response = await api.post<AbnVerificationResponse>(
+    "/auth/verify-abn",
     payload,
   );
 

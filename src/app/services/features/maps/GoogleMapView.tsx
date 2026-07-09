@@ -18,6 +18,17 @@ type Cluster = {
 
 const AUSTRALIA_CENTER = { lat: -25.2744, lng: 133.7751 };
 
+const getFriendlyGoogleMapsError = (error: unknown) => {
+  const message = error instanceof Error ? error.message : "Google Maps could not be loaded.";
+  if (/apikey|key/i.test(message)) {
+    return "Google Maps API key is missing or invalid.";
+  }
+  if (/quota|billing|over/i.test(message)) {
+    return "Google Maps quota or billing limits were reached. Please try again later.";
+  }
+  return message;
+};
+
 const isValidPoint = (property: PropertyList) =>
   typeof property.latitude === "number" &&
   typeof property.longitude === "number" &&
@@ -63,6 +74,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
   const [map, setMap] = useState<any>(null);
   const [googleMaps, setGoogleMaps] = useState<any>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [selectedProperty, setSelectedProperty] = useState<PropertyList | null>(null);
   const [zoom, setZoom] = useState(6);
 
@@ -71,6 +83,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
 
   useEffect(() => {
     let active = true;
+    setLoadState("loading");
 
     loadGoogleMapsScript()
       .then(() => {
@@ -103,13 +116,21 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
         });
 
         setMap(nextMap);
+        setLoadState("ready");
       })
       .catch((error: unknown) => {
-        setLoadError(error instanceof Error ? error.message : "Google Maps could not be loaded.");
+        console.error("Google Maps map initialization failed.", error);
+        setLoadError(getFriendlyGoogleMapsError(error));
+        setLoadState("error");
       });
 
     return () => {
       active = false;
+      if (window.google?.maps?.event) {
+        if (map) {
+          window.google.maps.event.clearInstanceListeners(map);
+        }
+      }
     };
   }, [validProperties]);
 
@@ -139,6 +160,17 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
 
   return (
     <div className="position-relative rounded-4 overflow-hidden border bg-light" style={{ minHeight: 640 }}>
+      {loadState !== "ready" ? (
+        <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ zIndex: 1 }}>
+          <div className="w-100 h-100 p-4">
+            <div className="placeholder-glow h-100 d-flex flex-column gap-3">
+              <span className="placeholder col-12 rounded-3 flex-grow-1" />
+              <span className="placeholder col-8 rounded-3" style={{ height: 16 }} />
+              <span className="placeholder col-6 rounded-3" style={{ height: 16 }} />
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div id="briksy-google-map" style={{ width: "100%", height: 640 }} />
 
       {map && googleMaps

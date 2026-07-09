@@ -29,6 +29,17 @@ type Props = {
 const getComponent = (components: any[] | undefined, type: string) =>
   components?.find((component) => component.types.includes(type))?.long_name ?? "";
 
+const getFriendlyGoogleMapsError = (error: unknown) => {
+  const message = error instanceof Error ? error.message : "Google Maps could not be loaded.";
+  if (/apikey|key/i.test(message)) {
+    return "Google Maps API key is missing or invalid.";
+  }
+  if (/quota|billing|over/i.test(message)) {
+    return "Google Maps quota or billing limits were reached. Please try again later.";
+  }
+  return message;
+};
+
 const LocationAutocomplete = ({
   value,
   onChange,
@@ -38,7 +49,23 @@ const LocationAutocomplete = ({
   error,
 }: Props) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const valueRef = useRef(value);
+  const onChangeRef = useRef(onChange);
+  const onSelectRef = useRef(onSelect);
+  const sessionTokenRef = useRef<any>(null);
   const [scriptError, setScriptError] = useState<string | null>(null);
+
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   useEffect(() => {
     let autocomplete: any = null;
@@ -50,11 +77,14 @@ const LocationAutocomplete = ({
           return;
         }
 
+        sessionTokenRef.current = sessionTokenRef.current ?? new window.google.maps.places.AutocompleteSessionToken();
+
         autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
           fields: ["address_components", "formatted_address", "geometry", "place_id", "name"],
           types: ["address"],
           componentRestrictions: { country: "au" },
-        });
+          sessionToken: sessionTokenRef.current,
+        } as any);
 
         autocomplete.addListener("place_changed", () => {
           const place = autocomplete?.getPlace();
@@ -72,11 +102,11 @@ const LocationAutocomplete = ({
           const country = getComponent(components, "country") || "Australia";
           const latitude = place.geometry?.location?.lat?.() ?? null;
           const longitude = place.geometry?.location?.lng?.() ?? null;
-          const formattedAddress = place.formatted_address ?? place.name ?? value ?? "";
+          const formattedAddress = place.formatted_address ?? place.name ?? valueRef.current ?? "";
           const addressLine1 = [streetNumber, route].filter(Boolean).join(" ").trim() || formattedAddress;
 
-          onChange(formattedAddress);
-          onSelect({
+          onChangeRef.current(formattedAddress);
+          onSelectRef.current({
             address_line_1: addressLine1,
             address: addressLine1,
             full_address: formattedAddress,
@@ -90,10 +120,13 @@ const LocationAutocomplete = ({
             country,
             location_verified: latitude !== null && longitude !== null,
           });
+
+          sessionTokenRef.current = null;
         });
       })
       .catch((error: unknown) => {
-        setScriptError(error instanceof Error ? error.message : "Google Maps could not be loaded.");
+        console.error("Google Maps autocomplete initialization failed.", error);
+        setScriptError(getFriendlyGoogleMapsError(error));
       });
 
     return () => {
@@ -102,7 +135,7 @@ const LocationAutocomplete = ({
         window.google?.maps?.event?.clearInstanceListeners(autocomplete);
       }
     };
-  }, [onChange, onSelect, value]);
+  }, []);
 
   return (
     <div className="fv-row mb-7">

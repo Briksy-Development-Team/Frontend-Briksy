@@ -8,6 +8,7 @@ type ExportColumn = {
 export const exportToExcel = async (
   data: Record<string, unknown>[],
   columns: ExportColumn[],
+  fileName = "table_data.xlsx",
 ): Promise<void> => {
   if (!data.length) return;
 
@@ -32,5 +33,5 @@ export const exportToExcel = async (
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 
-  saveAs(blob, "table_data.xlsx");
+  saveAs(blob, fileName);
 };

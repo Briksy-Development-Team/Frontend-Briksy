@@ -294,6 +294,14 @@ const SidebarMenuMain = () => {
             fontIcon="bi-archive"
             icon="element-plus"
           />
+          {hasPermission("webhook.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/webhooks`}
+              title="Webhooks"
+              fontIcon="bi-archive"
+              icon="diagram-3"
+            />
+          )}
         </>
       )}
     </>

@@ -24,7 +24,14 @@ export const loadGoogleMapsScript = (): Promise<void> => {
 
     if (existing) {
       existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Failed to load Google Maps script.")), { once: true });
+      existing.addEventListener(
+        "error",
+        () => {
+          googleMapsLoaderPromise = null;
+          reject(new Error("Failed to load Google Maps script."));
+        },
+        { once: true },
+      );
       return;
     }
 
@@ -34,7 +41,10 @@ export const loadGoogleMapsScript = (): Promise<void> => {
     script.defer = true;
     script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places`;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Google Maps script."));
+    script.onerror = () => {
+      googleMapsLoaderPromise = null;
+      reject(new Error("Failed to load Google Maps script."));
+    };
     document.head.appendChild(script);
   });
 
