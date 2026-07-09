@@ -10,9 +10,10 @@ export const serviceListConfig = {
     {
       Header: "ID",
       accessor: "display_id",
-      sortable: true,
+      // sortable: true,
       alwaysVisible: true,
-      Cell: ({ row, value }: { row: any; value: any }) => value || row.original?.generated_id || row.original?.id || "—",
+      Cell: ({ row, value }: { row: any; value: any }) =>
+        value || row.original?.generated_id || row.original?.id || "—",
     },
     {
       Header: "Name",
@@ -53,12 +54,12 @@ export const serviceListConfig = {
     {
       Header: "Rate From",
       accessor: "rate_from",
-      Cell: ({ value }: { value: any }) => (value ?? "—"),
+      Cell: ({ value }: { value: any }) => value ?? "—",
     },
     {
       Header: "Rate To",
       accessor: "rate_to",
-      Cell: ({ value }: { value: any }) => (value ?? "—"),
+      Cell: ({ value }: { value: any }) => value ?? "—",
     },
     {
       Header: "Organizations Count",
@@ -81,6 +82,12 @@ export const serviceListConfig = {
   ] satisfies Column<ServiceList>[],
 
   filters: [
+    {
+      key: "status",
+      label: "Status",
+      type: "select" as const,
+      options: ["Draft", "Published", "Archived"],
+    },
     {
       key: "created_at",
       label: "Created Date",

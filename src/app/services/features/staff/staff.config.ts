@@ -10,7 +10,7 @@ export const staffConfig = {
     {
       Header: "ID",
       accessor: "display_id",
-      sortable: true,
+      // sortable: true,
       alwaysVisible: true,
       Cell: ({ row, value }) =>
         (value as string | null | undefined) ??

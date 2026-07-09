@@ -6,7 +6,6 @@ export const InquiryRequestConfig = {
     {
       Header: "ID",
       accessor: "id",
-      sortable: true,
       alwaysVisible: true,
     },
 

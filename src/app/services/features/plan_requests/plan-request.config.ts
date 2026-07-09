@@ -6,7 +6,6 @@ export const planRequestConfig = {
     {
       Header: "ID",
       accessor: "id",
-      sortable: true,
       alwaysVisible: true,
     },
 

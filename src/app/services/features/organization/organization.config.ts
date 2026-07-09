@@ -12,7 +12,7 @@ export const organizationConfig = {
     {
       Header: "ID",
       accessor: "display_id",
-      sortable: true,
+      // sortable: true,
       alwaysVisible: true,
       Cell: ({ row, value }: { row: any; value: any }) => value || row.original?.generated_id || row.original?.id || "—",
     },
