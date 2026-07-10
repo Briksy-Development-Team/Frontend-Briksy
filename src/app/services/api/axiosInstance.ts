@@ -44,6 +44,11 @@ axiosInstance.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${auth.api_token}`;
   }
 
+  if (config.data instanceof FormData) {
+    // Let the browser set the multipart boundary for file uploads.
+    delete config.headers["Content-Type"];
+  }
+
   return config;
 });
 

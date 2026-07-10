@@ -71,18 +71,18 @@ const toFormData = (payload: PropertyFormValues) => {
   }
 
   if (payload.location_verified !== undefined && payload.location_verified !== null) {
-    formData.append("location_verified", String(payload.location_verified));
+    formData.append("location_verified", payload.location_verified ? "1" : "0");
   }
 
   payload.images?.forEach((file) => {
     if (file instanceof File) {
-      formData.append("images", file);
+      formData.append("images[]", file);
     }
   });
 
   payload.videos?.forEach((file) => {
     if (file instanceof File) {
-      formData.append("videos", file);
+      formData.append("videos[]", file);
     }
   });
 

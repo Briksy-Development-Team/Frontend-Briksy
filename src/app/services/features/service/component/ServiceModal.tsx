@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 
 import type { ServiceList, ServiceFormValues, ServiceCategory } from "../service_list.types";
+import { ServiceAreaGeometryEditor } from "./ServiceAreaGeometryEditor";
+import type { ServiceAreaGeometry } from "../serviceAreaGeometry";
 
 type Props = {
     initialValues?: ServiceList | null;
@@ -21,11 +23,26 @@ const ServiceModal = ({
         slug: initialValues?.slug ?? initialValues?.category ?? "",
         description: initialValues?.description ?? "",
         category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "electrical",
-        service_area: "",
+        service_area: initialValues?.service_area ?? "",
+        service_area_geometry: initialValues?.service_area_geometry ?? null,
         rate_from: "",
         rate_to: "",
         is_active: initialValues?.is_active ?? true,
     });
+
+    useEffect(() => {
+        setForm({
+            name: initialValues?.name ?? "",
+            slug: initialValues?.slug ?? initialValues?.category ?? "",
+            description: initialValues?.description ?? "",
+            category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "electrical",
+            service_area: initialValues?.service_area ?? "",
+            service_area_geometry: initialValues?.service_area_geometry ?? null,
+            rate_from: initialValues?.rate_from ?? "",
+            rate_to: initialValues?.rate_to ?? "",
+            is_active: initialValues?.is_active ?? true,
+        });
+    }, [initialValues]);
 
     return (
         <ModalShell
@@ -124,6 +141,20 @@ const ServiceModal = ({
                         setForm((prev) => ({
                             ...prev,
                             service_area: e.target.value,
+                        }))
+                    }
+                />
+            </div>
+
+            <div className="fv-row mt-6">
+                <label className="form-label">Service Area Coverage</label>
+                <ServiceAreaGeometryEditor
+                    value={form.service_area_geometry ?? null}
+                    addressHint={form.service_area ?? null}
+                    onChange={(geometry: ServiceAreaGeometry | null) =>
+                        setForm((prev) => ({
+                            ...prev,
+                            service_area_geometry: geometry,
                         }))
                     }
                 />

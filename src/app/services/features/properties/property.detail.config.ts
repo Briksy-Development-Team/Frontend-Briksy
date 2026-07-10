@@ -2,26 +2,34 @@ import type { DetailConfig } from "../../../modules/apps/shared_detail/core/Deta
 
 export const propertyDetailConfig: DetailConfig<any> = {
   header: {
-    titleAccessor: "name",
-    subtitleAccessor: "address",
+    titleAccessor: "title",
+    subtitleAccessor: (data) => data?.full_address ?? data?.address ?? "—",
     badges: [
       {
         label: "status",
-        color: (data) => (data.status === "active" ? "success" : "warning"),
+        color: (data) => {
+          if (data?.status === "Published" || data?.status === "Approved") return "success";
+          if (data?.status === "Rejected") return "danger";
+          if (data?.status === "Archived") return "secondary";
+          if (data?.status === "Pending Review") return "warning";
+          return "warning";
+        },
       },
       {
-        label: "property_type",
-        color: "primary",
+        label: (data) => (data?.location_verified ? "Location verified" : "Location unverified"),
+        color: (data) => (data?.location_verified ? "success" : "warning"),
       },
     ],
     metrics: [
       {
-        label: "Price",
-        valueAccessor: (data) => `$${data.price?.toLocaleString() || "N/A"}`,
+        label: "Latitude",
+        valueAccessor: (data) =>
+          typeof data?.latitude === "number" ? data.latitude.toFixed(6) : "N/A",
       },
       {
-        label: "Size",
-        valueAccessor: (data) => `${data.size || "N/A"} sqft`,
+        label: "Longitude",
+        valueAccessor: (data) =>
+          typeof data?.longitude === "number" ? data.longitude.toFixed(6) : "N/A",
       },
     ],
   },
@@ -29,7 +37,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
     {
       id: "overview",
       label: "Overview",
-      sections: ["property_info", "builder_info", "map_view"],
+      sections: ["property_info", "location_map", "builder_info"],
     },
     {
       id: "gallery",
@@ -54,27 +62,41 @@ export const propertyDetailConfig: DetailConfig<any> = {
       title: "Property Information",
       gridColumnSpan: 6,
       fields: [
-        { label: "Name", accessor: "name", colSpan: 6 },
+        { label: "ID", accessor: (data) => data?.display_id ?? data?.generated_id ?? data?.id ?? "—", colSpan: 12 },
+        { label: "Title", accessor: "title", colSpan: 6 },
+        { label: "Status", accessor: "status", colSpan: 6 },
+        { label: "Property Type", accessor: (data) => data?.property_type?.name ?? "—", colSpan: 6 },
         { label: "Address", accessor: "address", colSpan: 6 },
-        { label: "City", accessor: "city", colSpan: 6 },
-        { label: "Zip Code", accessor: "zip_code", colSpan: 6 },
-        { label: "Bedrooms", accessor: "bedrooms", colSpan: 6 },
-        { label: "Bathrooms", accessor: "bathrooms", colSpan: 6 },
-        { label: "Year Built", accessor: "year_built", colSpan: 6 },
+        { label: "Address Line 1", accessor: "address_line_1", colSpan: 6 },
+        { label: "Address Line 2", accessor: "address_line_2", colSpan: 6 },
+        { label: "Full Address", accessor: "full_address", colSpan: 12 },
+        { label: "Formatted Address", accessor: "formatted_address", colSpan: 12 },
+        { label: "Suburb", accessor: "suburb", colSpan: 6 },
+        { label: "State", accessor: "state", colSpan: 6 },
+        { label: "Postcode", accessor: "postcode", colSpan: 6 },
+        { label: "Country", accessor: "country", colSpan: 6 },
+        { label: "Place ID", accessor: "place_id", colSpan: 12 },
+        { label: "Location Verified", accessor: (data) => (data?.location_verified ? "Yes" : "No"), colSpan: 6 },
+        { label: "Reviewer", accessor: (data) => data?.reviewer?.name ?? "—", colSpan: 6 },
+        { label: "Reviewed On", accessor: (data) => data?.reviewed_at ?? "—", colSpan: 6 },
+        { label: "Published On", accessor: (data) => data?.published_at ?? "—", colSpan: 6 },
+        { label: "Rejection Reason", accessor: (data) => data?.rejection_reason ?? "—", colSpan: 12 },
       ],
     },
     {
       id: "builder_info",
       type: "info",
-      title: "Builder Information",
+      title: "Builder / Organization",
       gridColumnSpan: 6,
       fields: [
-        { label: "Builder Name", accessor: "builder_name", colSpan: 6 },
-        { label: "Contact", accessor: "builder_contact", colSpan: 6 },
+        { label: "Organization", accessor: (data) => data?.organization?.name ?? "—", colSpan: 6 },
+        { label: "Creator", accessor: (data) => data?.creator?.name ?? "—", colSpan: 6 },
+        { label: "Creator Email", accessor: (data) => data?.creator?.email ?? "—", colSpan: 6 },
+        { label: "Rating", accessor: (data) => data?.rating ?? "—", colSpan: 6 },
       ],
     },
     {
-      id: "map_view",
+      id: "location_map",
       type: "map",
       title: "Location Map",
       gridColumnSpan: 12,
@@ -86,14 +108,14 @@ export const propertyDetailConfig: DetailConfig<any> = {
       type: "gallery",
       title: "Image Gallery",
       gridColumnSpan: 12,
-      imagesAccessor: "images",
+      imagesAccessor: (data) => (Array.isArray(data?.images) ? data.images.map((image: any) => image.url).filter(Boolean) : []),
     },
     {
       id: "video_gallery",
       type: "gallery",
       title: "Video Gallery",
       gridColumnSpan: 12,
-      imagesAccessor: "videos",
+      imagesAccessor: (data) => (Array.isArray(data?.videos) ? data.videos.map((video: any) => video.url).filter(Boolean) : []),
     },
     {
       id: "property_inquiries",
@@ -113,4 +135,3 @@ export const propertyDetailConfig: DetailConfig<any> = {
     },
   ],
 };
-

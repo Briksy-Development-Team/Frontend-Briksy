@@ -60,7 +60,7 @@ export const propertyListConfig = {
       key: "status",
       label: "Status",
       type: "select" as const,
-      options: ["Draft", "Published", "Archived"],
+      options: ["Draft", "Pending Review", "Approved", "Rejected", "Published", "Archived"],
     },
     {
       key: "created_at",

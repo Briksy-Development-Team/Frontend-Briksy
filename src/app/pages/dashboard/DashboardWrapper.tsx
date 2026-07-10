@@ -223,7 +223,7 @@ const DashboardPage: FC = () => {
                 </div>
 
                 <div className="row g-5 mb-8">
-                  <div className="col-lg-4">
+                  <div className="col-lg-3">
                     <div className="card h-100 shadow-sm border-0">
                       <div className="card-body">
                         <div className="text-muted fs-7">Monthly Revenue</div>
@@ -232,7 +232,7 @@ const DashboardPage: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="col-lg-4">
+                  <div className="col-lg-3">
                     <div className="card h-100 shadow-sm border-0">
                       <div className="card-body">
                         <div className="text-muted fs-7">Property Count</div>
@@ -241,19 +241,21 @@ const DashboardPage: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="col-lg-4">
+                  <div className="col-lg-3">
                     <div className="card h-100 shadow-sm border-0">
                       <div className="card-body">
-                        <div className="text-muted fs-7">Platform Conversion</div>
-                        <div className="fw-bold fs-2 text-dark">
-                          {formatPercent(
-                            superAdminSummary.trend_series.length
-                              ? superAdminSummary.trend_series.reduce((acc, row) => acc + row.company_conversion_rate, 0) /
-                                  superAdminSummary.trend_series.length
-                              : 0,
-                          )}
-                        </div>
-                        <div className="text-gray-600 mt-2">Average monthly subscription conversion.</div>
+                        <div className="text-muted fs-7">Pending Review</div>
+                        <div className="fw-bold fs-2 text-dark">{superAdminSummary.property_summary.pending_review}</div>
+                        <div className="text-gray-600 mt-2">Waiting for a super-admin decision.</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-lg-3">
+                    <div className="card h-100 shadow-sm border-0">
+                      <div className="card-body">
+                        <div className="text-muted fs-7">Awaiting Location Verification</div>
+                        <div className="fw-bold fs-2 text-dark">{superAdminSummary.property_summary.awaiting_location_verification}</div>
+                        <div className="text-gray-600 mt-2">Approved records still needing verification.</div>
                       </div>
                     </div>
                   </div>
@@ -734,6 +736,45 @@ const DashboardPage: FC = () => {
               <MetricCard label="Properties" value={adminSummary.metrics.properties} tone="#bf9f7d" />
               <MetricCard label="Inquiries" value={adminSummary.metrics.inquiries} tone="#bf9f7d" />
               <MetricCard label="Orders" value={adminSummary.metrics.orders} tone="#bf9f7d" />
+            </div>
+
+            <div className="row g-5 mb-8">
+              <div className="col-lg-3">
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-body">
+                    <div className="text-muted fs-7">Pending Review</div>
+                    <div className="fw-bold fs-2 text-dark">{adminSummary.metrics.pending_review_properties}</div>
+                    <div className="text-gray-600 mt-2">Awaiting super-admin review.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3">
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-body">
+                    <div className="text-muted fs-7">Approved</div>
+                    <div className="fw-bold fs-2 text-dark">{adminSummary.metrics.approved_properties}</div>
+                    <div className="text-gray-600 mt-2">Approved but not yet published.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3">
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-body">
+                    <div className="text-muted fs-7">Rejected</div>
+                    <div className="fw-bold fs-2 text-dark">{adminSummary.metrics.rejected_properties}</div>
+                    <div className="text-gray-600 mt-2">Needs edits before resubmission.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-3">
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-body">
+                    <div className="text-muted fs-7">Archived</div>
+                    <div className="fw-bold fs-2 text-dark">{adminSummary.metrics.archived_properties}</div>
+                    <div className="text-gray-600 mt-2">No longer active in the workflow.</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="row g-5 mb-8">
