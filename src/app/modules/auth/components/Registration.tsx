@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import { Link, useNavigate } from 'react-router-dom'
@@ -7,6 +7,9 @@ import { useFormik } from 'formik'
 import { useSearchParams } from 'react-router-dom'
 import { toAbsoluteUrl } from '../../../../_metronic/helpers'
 import { useAuth } from '../core/Auth'
+import { verifyAbn as verifyAbnRequest } from '../core/_requests'
+
+type BusinessType = 'organisation' | 'company' | 'solo_trader'
 
 const initialValues = {
   first: '',
@@ -14,8 +17,11 @@ const initialValues = {
   email: '',
   business_name: '',
   trading_name: '',
-  business_type: 'organisation',
+  business_type: 'organisation' as BusinessType,
   abn_number: '',
+  entity_type: '',
+  gst_registered: '',
+  abn_verified: false,
   contact_phone: '',
   address: '',
   state: '',
@@ -47,12 +53,31 @@ const registrationSchema = Yup.object().shape({
 
 export function Registration() {
   const [loading, setLoading] = useState(false)
+  const [abnVerificationState, setAbnVerificationState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [abnVerificationMessage, setAbnVerificationMessage] = useState<string | null>(null)
+  const verifiedSignatureRef = useRef<string>('')
   const { register } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const referralCodeFromUrl = searchParams.get('ref') ?? searchParams.get('referral_code') ?? ''
+
+  const normalizeAbn = (value: string) => value.replace(/\D/g, '').slice(0, 11)
+
+  const clearVerification = () => {
+    verifiedSignatureRef.current = ''
+    setAbnVerificationState('idle')
+    setAbnVerificationMessage(null)
+    formik?.setFieldValue('abn_verified', false, false)
+    formik?.setFieldValue('entity_type', '', false)
+    formik?.setFieldValue('gst_registered', '', false)
+    formik?.setFieldValue('business_name', '', false)
+    formik?.setFieldValue('state', '', false)
+    formik?.setFieldValue('postcode', '', false)
+    formik?.setFieldError('abn_number', '')
+    formik?.setStatus(undefined)
+  }
 
   const formik = useFormik({
     initialValues,
@@ -62,19 +87,60 @@ export function Registration() {
       setStatus(undefined)
 
       try {
+        const normalizedAbn = normalizeAbn(values.abn_number)
+
+        if (normalizedAbn.length !== 11) {
+          const message = 'ABN must be 11 digits.'
+          setStatus(message)
+          formik.setFieldError('abn_number', message)
+          setSubmitting(false)
+          return
+        }
+
+        setAbnVerificationState('loading')
+        setAbnVerificationMessage(null)
+
+        const verification = await verifyAbnRequest({
+          abn: normalizedAbn,
+          business_type: values.business_type,
+        })
+
+        if (!verification.valid) {
+          const message = verification.message ?? 'Invalid ABN. Please enter a valid Australian Business Number.'
+          verifiedSignatureRef.current = ''
+          setAbnVerificationState('error')
+          setAbnVerificationMessage(message)
+          formik.setFieldError('abn_number', message)
+          setStatus(message)
+          setSubmitting(false)
+          return
+        }
+
+        const signature = `${normalizedAbn}:${values.business_type}`
+        verifiedSignatureRef.current = signature
+        setAbnVerificationState('success')
+        setAbnVerificationMessage(null)
+
+        void formik.setFieldValue('abn_verified', true, false)
+        void formik.setFieldValue('entity_type', verification.entityType, false)
+        void formik.setFieldValue('gst_registered', verification.gstRegistered ? 'yes' : 'no', false)
+        void formik.setFieldValue('business_name', verification.entityName, false)
+        void formik.setFieldValue('state', verification.state ?? '', false)
+        void formik.setFieldValue('postcode', verification.postcode ?? '', false)
+
         const homeRoute = await register({
           first: values.first,
           last: values.last,
           email: values.email,
-          business_name: values.business_name,
+          business_name: verification.entityName,
           trading_name: values.trading_name,
           business_type: values.business_type as 'organisation' | 'company' | 'solo_trader',
-          abn_number: values.abn_number,
+          abn_number: normalizedAbn,
           contact_email: values.email,
           contact_phone: values.contact_phone,
           address: values.address,
-          state: values.state,
-          postcode: values.postcode,
+          state: verification.state ?? values.state,
+          postcode: verification.postcode ?? values.postcode,
           password: values.password,
           password_confirmation: values.password_confirmation,
           referral_code: values.referral_code || referralCodeFromUrl || undefined,
@@ -93,6 +159,10 @@ export function Registration() {
       }
     },
   })
+
+  const currentAbn = normalizeAbn(formik.values.abn_number)
+  const currentSignature = `${currentAbn}:${formik.values.business_type}`
+  const isAbnVerified = formik.values.abn_verified && verifiedSignatureRef.current === currentSignature
 
   useEffect(() => {
     if (referralCodeFromUrl && !formik.values.referral_code) {
@@ -142,6 +212,7 @@ export function Registration() {
         <label className='form-label fw-bolder text-gray-900 fs-6'>Business type</label>
         <select
           {...formik.getFieldProps('business_type')}
+          disabled={isAbnVerified}
           className={clsx(
             'form-select bg-transparent',
             { 'is-invalid': formik.touched.business_type && formik.errors.business_type },
@@ -162,6 +233,7 @@ export function Registration() {
           type='text'
           autoComplete='off'
           {...formik.getFieldProps('business_name')}
+          readOnly={isAbnVerified}
           className={clsx(
             'form-control bg-transparent',
             { 'is-invalid': formik.touched.business_name && formik.errors.business_name },
@@ -198,7 +270,16 @@ export function Registration() {
           placeholder='12345678901'
           type='text'
           autoComplete='off'
-          {...formik.getFieldProps('abn_number')}
+          value={formik.values.abn_number}
+          onChange={(event) => {
+            const nextAbn = normalizeAbn(event.target.value)
+            void formik.setFieldValue('abn_number', nextAbn)
+
+            if (formik.values.abn_verified && verifiedSignatureRef.current !== `${nextAbn}:${formik.values.business_type}`) {
+              clearVerification()
+            }
+          }}
+          onBlur={formik.handleBlur}
           className={clsx(
             'form-control bg-transparent',
             { 'is-invalid': formik.touched.abn_number && formik.errors.abn_number },
@@ -206,6 +287,22 @@ export function Registration() {
           )}
         />
         <div className='form-text'>Required for Australian business verification.</div>
+        {abnVerificationState === 'loading' && (
+          <div className='text-primary fw-semibold mt-2 d-flex align-items-center gap-2'>
+            <span className='spinner-border spinner-border-sm'></span>
+            Verifying ABN with the Australian Business Register...
+          </div>
+        )}
+        {abnVerificationState === 'success' && isAbnVerified && (
+          <div className='text-success fw-semibold mt-2'>
+            ABN verified. Business details have been populated.
+          </div>
+        )}
+        {abnVerificationState === 'error' && abnVerificationMessage && (
+          <div className='text-danger fw-semibold mt-2'>
+            {abnVerificationMessage}
+          </div>
+        )}
         {formik.touched.abn_number && formik.errors.abn_number && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>
@@ -213,6 +310,30 @@ export function Registration() {
             </div>
           </div>
         )}
+      </div>
+
+      <div className='row g-3 mb-8'>
+        <div className='col-md-6'>
+          <label className='form-label fw-bolder text-gray-900 fs-6'>ABR entity type</label>
+          <input
+            type='text'
+            readOnly
+            value={formik.values.entity_type}
+            placeholder='Verified entity type'
+            className='form-control bg-light'
+          />
+        </div>
+
+        <div className='col-md-6'>
+          <label className='form-label fw-bolder text-gray-900 fs-6'>GST registration</label>
+          <input
+            type='text'
+            readOnly
+            value={formik.values.gst_registered === 'yes' ? 'Registered' : formik.values.gst_registered === 'no' ? 'Not registered' : ''}
+            placeholder='GST registration status'
+            className='form-control bg-light'
+          />
+        </div>
       </div>
 
       <div className='row g-3 mb-8'>
@@ -321,6 +442,7 @@ export function Registration() {
             type='text'
             autoComplete='off'
             {...formik.getFieldProps('state')}
+            readOnly={isAbnVerified}
             className={clsx(
               'form-control bg-transparent',
               { 'is-invalid': formik.touched.state && formik.errors.state },
@@ -336,6 +458,7 @@ export function Registration() {
             type='text'
             autoComplete='off'
             {...formik.getFieldProps('postcode')}
+            readOnly={isAbnVerified}
             className={clsx(
               'form-control bg-transparent',
               { 'is-invalid': formik.touched.postcode && formik.errors.postcode },
@@ -446,9 +569,9 @@ export function Registration() {
           type='submit'
           id='kt_sign_up_submit'
           className='btn btn-lg btn-primary w-100 mb-5'
-          disabled={formik.isSubmitting || !formik.isValid || !formik.values.acceptTerms}
+          disabled={formik.isSubmitting || loading || abnVerificationState === 'loading' || !formik.isValid || !formik.values.acceptTerms}
         >
-          {!loading && <span className='indicator-label'>Submit</span>}
+          {!loading && <span className='indicator-label'>Create Account</span>}
           {loading && (
             <span className='indicator-progress' style={{ display: 'block' }}>
               Please wait...

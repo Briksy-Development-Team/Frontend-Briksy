@@ -18,9 +18,14 @@ export type SuperAdminDashboardSummary = {
   revenue_this_month: number;
   property_summary: {
     total: number;
+    draft?: number;
+    pending_review?: number;
+    approved?: number;
+    rejected?: number;
     published: number;
-    draft: number;
     archived: number;
+    awaiting_location_verification?: number;
+    published_today?: number;
   };
   recent_companies: Array<{
     id: string;
@@ -91,6 +96,11 @@ export type AdminDashboardSummary = {
     team_members: number;
     properties: number;
     published_properties: number;
+    draft_properties?: number;
+    pending_review_properties?: number;
+    approved_properties?: number;
+    rejected_properties?: number;
+    archived_properties?: number;
     services: number;
     inquiries: number;
     new_inquiries: number;

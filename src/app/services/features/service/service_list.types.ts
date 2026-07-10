@@ -1,3 +1,5 @@
+import type { ServiceAreaGeometry } from "./serviceAreaGeometry";
+
 export type ServiceCategory =
   | "electrical"
   | "plumbing"
@@ -22,6 +24,8 @@ export type Service = {
   category?: ServiceCategory;
 
   service_area?: string | null;
+
+  service_area_geometry?: ServiceAreaGeometry | null;
 
   rate_from?: number | null;
 
@@ -52,6 +56,8 @@ export type ServiceList = {
   category?: ServiceCategory;
 
   service_area?: string | null;
+
+  service_area_geometry?: ServiceAreaGeometry | null;
 
   rate_from?: number | null;
 
@@ -86,6 +92,8 @@ export type ServiceFormValues = {
   category: ServiceCategory;
 
   service_area?: string;
+
+  service_area_geometry?: ServiceAreaGeometry | null;
 
   rate_from?: string | number;
 

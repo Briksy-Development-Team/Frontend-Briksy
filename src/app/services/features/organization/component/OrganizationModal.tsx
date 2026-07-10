@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 import type { Organization, OrganizationFormValues } from "../organization.types";
+import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 
 type Props = {
   initialValues?: Organization | null;
@@ -21,6 +22,13 @@ const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: P
     acn: initialValues?.acn ?? "",
     is_verified: initialValues?.is_verified ?? false,
   });
+
+  const handleLocationSelect = (selection: LocationSelection) => {
+    setForm((current) => ({
+      ...current,
+      address: selection.full_address ?? selection.formatted_address ?? selection.address ?? current.address,
+    }));
+  };
 
   useEffect(() => {
     setForm({
@@ -57,10 +65,13 @@ const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: P
         <label className="form-label">Phone</label>
         <input className="form-control form-control-solid" value={form.contact_phone ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, contact_phone: e.target.value }))} />
       </div>
-      <div className="fv-row mb-4">
-        <label className="form-label">Address</label>
-        <textarea className="form-control form-control-solid" rows={3} value={form.address ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, address: e.target.value }))} />
-      </div>
+      <LocationAutocomplete
+        value={form.address ?? ""}
+        onChange={(value) => setForm((prev) => ({ ...prev, address: value }))}
+        onSelect={handleLocationSelect}
+        label="Address"
+        placeholder="Search for an address"
+      />
       <div className="row">
         <div className="col-md-6 fv-row mb-4">
           <label className="form-label">Business Type</label>

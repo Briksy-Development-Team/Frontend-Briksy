@@ -3,6 +3,8 @@ import type { SectionConfig } from "../core/DetailTypes";
 import InfoCard from "./sections/InfoCard";
 import GalleryWidget from "./sections/GalleryWidget";
 import RelatedTable from "./sections/RelatedTable";
+import MapWidget from "./sections/MapWidget";
+import TimelineWidget from "./sections/TimelineWidget";
 
 type Props<T> = {
   config: SectionConfig<T>;
@@ -35,9 +37,12 @@ export default function SectionRenderer<T>({ config, data }: Props<T>) {
     case "gallery":
       return <GalleryWidget config={config} data={data} />;
 
-    case "timeline":
-    case "emails":
     case "map":
+      return <MapWidget config={config} data={data} />;
+
+    case "timeline":
+      return <TimelineWidget config={config} data={data} />;
+    case "emails":
     case "notes":
       // Placeholders for advanced widgets to be implemented in Phase 2
       return (

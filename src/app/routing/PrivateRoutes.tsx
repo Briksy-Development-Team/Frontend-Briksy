@@ -30,6 +30,8 @@ const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
 const PermissionsPage = lazy(() => import("../pages/platform/PermissionsPage"));
 const SettingsPage = lazy(() => import("../pages/platform/SettingsPage"));
+const WebhooksPage = lazy(() => import("../pages/platform/WebhooksPage"));
+const WebhooksDocumentationPage = lazy(() => import("../pages/platform/WebhooksDocumentationPage"));
 const OrderPage = lazy(() => import("../pages/platform/OrderPage"));
 const CouponPage = lazy(() => import("../pages/platform/CouponPage"));
 const PlanRequestPage = lazy(() => import("../pages/platform/PlanRequestPage"));
@@ -423,6 +425,32 @@ const PrivateRoutes = () => {
               <SuspensedView>
                 <SettingsPage />
               </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/webhooks"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <PermissionGuard anyOf={["webhook.view"]}>
+                <SuspensedView>
+                  <WebhooksPage />
+                </SuspensedView>
+              </PermissionGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/webhooks/docs"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <PermissionGuard anyOf={["webhook.view"]}>
+                <SuspensedView>
+                  <WebhooksDocumentationPage />
+                </SuspensedView>
+              </PermissionGuard>
             </RoleGuard>
           }
         />

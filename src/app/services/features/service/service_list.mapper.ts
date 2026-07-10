@@ -21,6 +21,11 @@ type ServiceApi = {
 
   service_area?: string | null;
 
+  service_area_geometry?: {
+    type: "Polygon";
+    coordinates: number[][][];
+  } | null;
+
   rate_from?: number | null;
 
   rate_to?: number | null;
@@ -60,6 +65,8 @@ export const mapServiceList = (item: ServiceApi): ServiceList => ({
 
   service_area: item.service_area ?? null,
 
+  service_area_geometry: item.service_area_geometry ?? null,
+
   rate_from: item.rate_from ?? null,
 
   rate_to: item.rate_to ?? null,
@@ -95,6 +102,8 @@ export const mapService = (item: ServiceApi): Service => ({
   category: item.category,
 
   service_area: item.service_area ?? null,
+
+  service_area_geometry: item.service_area_geometry ?? null,
 
   rate_from: item.rate_from ?? null,
 

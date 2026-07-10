@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 import type { Property, PropertyFormValues } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
+import { LocationMapPreview } from "../../maps/LocationMapPreview";
+import { useRoleAccess } from "../../../../modules/auth";
 
 type Props = {
     initialValues?: Property | null;
@@ -16,6 +18,7 @@ const PropertyModal = ({
     onClose,
     onSubmit,
 }: Props) => {
+    const { isSuperAdmin } = useRoleAccess();
     const [form, setForm] = useState<PropertyFormValues>({
         title: initialValues?.title ?? "",
         description: initialValues?.description ?? "",
@@ -45,6 +48,59 @@ const PropertyModal = ({
     const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
 
     useEffect(() => {
+        if (!initialValues) {
+            setForm({
+                title: "",
+                description: "",
+                status: "Draft",
+                address: "",
+                address_line_1: "",
+                address_line_2: "",
+                full_address: "",
+                formatted_address: "",
+                place_id: "",
+                latitude: "",
+                longitude: "",
+                suburb: "",
+                state: "",
+                postcode: "",
+                country: "Australia",
+                property_type_id: "",
+                location_verified: false,
+                images: [],
+                videos: [],
+            });
+            setImages([]);
+            setVideos([]);
+            return;
+        }
+
+        setForm({
+            title: initialValues.title ?? "",
+            description: initialValues.description ?? "",
+            status: initialValues.status ?? "Draft",
+            address: initialValues.address ?? "",
+            address_line_1: initialValues.address_line_1 ?? initialValues.address ?? "",
+            address_line_2: initialValues.address_line_2 ?? "",
+            full_address: initialValues.full_address ?? initialValues.address ?? "",
+            formatted_address: initialValues.formatted_address ?? initialValues.full_address ?? "",
+            place_id: initialValues.place_id ?? "",
+            latitude: initialValues.latitude ?? "",
+            longitude: initialValues.longitude ?? "",
+            suburb: initialValues.suburb ?? "",
+            state: initialValues.state ?? "",
+            postcode: initialValues.postcode ?? "",
+            country: initialValues.country ?? "Australia",
+            property_type_id: initialValues.property_type_id ?? "",
+            location_verified: initialValues.location_verified ?? false,
+            images: [],
+            videos: [],
+        });
+        setImages([]);
+        setVideos([]);
+    }, [initialValues]);
+
+    useEffect(() => {
         const urls = images.map((file) => URL.createObjectURL(file));
 
         setImagePreviews(urls);
@@ -68,6 +124,8 @@ const PropertyModal = ({
         onSubmit({
             ...form,
             country: form.country || "Australia",
+            status: isSuperAdmin ? form.status : "Pending Review",
+            location_verified: isSuperAdmin ? form.location_verified : undefined,
             images,
             videos,
         });
@@ -132,26 +190,29 @@ const PropertyModal = ({
                 />
             </div>
 
-            <div className="fv-row mb-7">
-                <label className="form-label">Status</label>
+            {isSuperAdmin ? (
+                <div className="fv-row mb-7">
+                    <label className="form-label">Status</label>
 
-                <select
-                    className="form-select form-select-solid"
-                    value={form.status}
-                    onChange={(e) =>
-                        setForm((prev) => ({
-                            ...prev,
-                            status: e.target.value as PropertyFormValues["status"],
-                        }))
-                    }
-                >
-                    <option value="Draft">Draft</option>
-
-                    <option value="Published">Published</option>
-
-                    <option value="Archived">Archived</option>
-                </select>
-            </div>
+                    <select
+                        className="form-select form-select-solid"
+                        value={form.status}
+                        onChange={(e) =>
+                            setForm((prev) => ({
+                                ...prev,
+                                status: e.target.value as PropertyFormValues["status"],
+                            }))
+                        }
+                    >
+                        <option value="Draft">Draft</option>
+                        <option value="Pending Review">Pending Review</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Published">Published</option>
+                        <option value="Archived">Archived</option>
+                    </select>
+                </div>
+            ) : null}
 
             {/* Address */}
             <LocationAutocomplete
@@ -257,6 +318,20 @@ const PropertyModal = ({
                 </div>
             </div>
 
+            <div className="fv-row mb-7">
+                <label className="form-label">Map Preview</label>
+                <LocationMapPreview
+                    latitude={form.latitude ?? null}
+                    longitude={form.longitude ?? null}
+                    address={form.formatted_address ?? form.full_address ?? form.address}
+                    onChange={handleLocationSelect}
+                    height={260}
+                />
+                <div className="text-muted fs-7 mt-2">
+                    Drag the marker or click on the map to reverse geocode the address.
+                </div>
+            </div>
+
             <div className="row">
                 <div className="col-md-6">
                     <div className="fv-row mb-7">
@@ -355,19 +430,25 @@ const PropertyModal = ({
                     <div className="fv-row mb-7">
                         <label className="form-label">Location Verified</label>
 
-                        <select
-                            className="form-select form-select-solid"
-                            value={String(form.location_verified)}
-                            onChange={(e) =>
-                                setForm((prev) => ({
-                                    ...prev,
-                                    location_verified: e.target.value === "true",
-                                }))
-                            }
-                        >
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
+                        {isSuperAdmin ? (
+                            <select
+                                className="form-select form-select-solid"
+                                value={String(form.location_verified)}
+                                onChange={(e) =>
+                                    setForm((prev) => ({
+                                        ...prev,
+                                        location_verified: e.target.value === "true",
+                                    }))
+                                }
+                            >
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        ) : (
+                            <div className="form-control form-control-solid bg-light">
+                                {form.location_verified ? "Verified" : "Pending super-admin review"}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

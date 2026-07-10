@@ -14,7 +14,7 @@ export type Property = {
   title: string;
   description?: string | null;
 
-  status: "Draft" | "Published" | "Archived";
+  status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
 
   address?: string | null;
   address_line_1?: string | null;
@@ -29,6 +29,23 @@ export type Property = {
   postcode?: string | null;
   country?: string | null;
   location_verified?: boolean;
+  submitted_at?: string | null;
+  reviewed_by?: string | null;
+  reviewer?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  reviewed_at?: string | null;
+  rejection_reason?: string | null;
+  published_at?: string | null;
+  location_verified_by?: string | null;
+  location_verifier?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  location_verified_at?: string | null;
   property_type_id?: string | null;
   property_type?: {
     id: string;
@@ -54,6 +71,17 @@ export type Property = {
     email?: string;
   } | null;
 
+  timeline_events?: Array<{
+    id: string;
+    action?: string | null;
+    title?: string | null;
+    description?: string | null;
+    comment?: string | null;
+    user_name?: string | null;
+    user_role?: string | null;
+    created_at?: string | null;
+  }>;
+
   created_at?: string | null;
   updated_at?: string | null;
 };
@@ -62,7 +90,7 @@ export type PropertyFormValues = {
   title: string;
   description?: string;
 
-  status: "Draft" | "Published" | "Archived";
+  status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
 
   address?: string;
   address_line_1?: string;
@@ -77,6 +105,13 @@ export type PropertyFormValues = {
   postcode?: string;
   country?: string;
   location_verified?: boolean;
+  submitted_at?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  rejection_reason?: string;
+  published_at?: string;
+  location_verified_by?: string;
+  location_verified_at?: string;
   property_type_id?: string;
 
   images?: (File | string)[];
@@ -90,7 +125,7 @@ export type PropertyList = {
 
   title: string;
 
-  status: "Draft" | "Published" | "Archived";
+  status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
 
   description?: string | null;
 
@@ -109,6 +144,23 @@ export type PropertyList = {
   postcode?: string | null;
   country?: string | null;
   location_verified?: boolean;
+  submitted_at?: string | null;
+  reviewed_by?: string | null;
+  reviewer?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  reviewed_at?: string | null;
+  rejection_reason?: string | null;
+  published_at?: string | null;
+  location_verified_by?: string | null;
+  location_verifier?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  location_verified_at?: string | null;
   property_type_id?: string | null;
   property_type?: {
     id: string;
@@ -128,6 +180,17 @@ export type PropertyList = {
     name: string;
     email?: string;
   } | null;
+
+  timeline_events?: Array<{
+    id: string;
+    action?: string | null;
+    title?: string | null;
+    description?: string | null;
+    comment?: string | null;
+    user_name?: string | null;
+    user_role?: string | null;
+    created_at?: string | null;
+  }>;
 
   created_at?: string | null;
   updated_at?: string | null;

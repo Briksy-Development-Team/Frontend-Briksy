@@ -250,6 +250,9 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
                           >
                             <option value="">All</option>
                             <option value="Draft">Draft</option>
+                            <option value="Pending Review">Pending Review</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
                             <option value="Published">Published</option>
                             <option value="Archived">Archived</option>
                           </select>

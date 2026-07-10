@@ -1,4 +1,6 @@
+import { createElement } from "react";
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
+import { ServiceAreaMapPreview } from "./component/ServiceAreaMapPreview";
 
 export const serviceDetailConfig: DetailConfig<any> = {
   header: {
@@ -21,7 +23,7 @@ export const serviceDetailConfig: DetailConfig<any> = {
     {
       id: "overview",
       label: "Overview",
-      sections: ["service_info", "organization_info", "activity_timeline"],
+      sections: ["service_info", "service_area_map", "organization_info", "activity_timeline"],
     },
     {
       id: "gallery",
@@ -51,6 +53,18 @@ export const serviceDetailConfig: DetailConfig<any> = {
         { label: "Category", accessor: "category", colSpan: 6 },
         { label: "Description", accessor: "description", colSpan: 12 },
       ],
+    },
+    {
+      id: "service_area_map",
+      type: "custom",
+      title: "Service Area Map",
+      gridColumnSpan: 12,
+      showIf: (data) => Boolean(data?.service_area_geometry || data?.service_area?.trim?.() || data?.service_area),
+      component: ({ data }) =>
+        createElement(ServiceAreaMapPreview, {
+          serviceArea: data?.service_area,
+          geometry: data?.service_area_geometry ?? null,
+        }),
     },
     {
       id: "activity_timeline",

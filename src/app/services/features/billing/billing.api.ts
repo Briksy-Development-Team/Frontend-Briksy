@@ -5,6 +5,7 @@ import type {
   BillingCheckoutAddonSelection,
   BillingCheckoutResponse,
   CompanySubscription,
+  BillingCheckoutVerificationResponse,
   DynamicIdSetting,
   SubscriptionPlanBilling,
 } from "./billing.types";
@@ -110,5 +111,12 @@ export const createBillingCheckoutApi = async (payload: {
   addons?: BillingCheckoutAddonSelection[];
 }): Promise<BillingCheckoutResponse> => {
   const response = await axiosInstance.post("/admin/billing/checkout", payload);
+  return response.data.data ?? {};
+};
+
+export const verifyBillingCheckoutSessionApi = async (
+  checkoutSessionId: string,
+): Promise<BillingCheckoutVerificationResponse> => {
+  const response = await axiosInstance.get(`/admin/billing/checkout/${checkoutSessionId}`);
   return response.data.data ?? {};
 };

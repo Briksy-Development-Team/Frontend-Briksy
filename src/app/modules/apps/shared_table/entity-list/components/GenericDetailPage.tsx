@@ -98,21 +98,18 @@ const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setData(initialData)
+    setIsLoading(!initialData)
+    setError(null)
+  }, [initialData])
+
+  useEffect(() => {
     let active = true
 
     if (!registryEntry || !config) {
       setData(null)
       setIsLoading(false)
       setError(`No detail configuration found for module: ${entitySegment}`)
-      return () => {
-        active = false
-      }
-    }
-
-    if (initialData) {
-      setData(initialData)
-      setIsLoading(false)
-      setError(null)
       return () => {
         active = false
       }
