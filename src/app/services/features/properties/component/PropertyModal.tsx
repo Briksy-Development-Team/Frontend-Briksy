@@ -299,7 +299,7 @@ const PropertyModal = ({
                         <label className="form-label">Latitude</label>
 
                         <input
-                            type="number"
+                            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                             step="any"
                             className="form-control form-control-solid"
                             value={form.latitude ?? ""}
@@ -318,7 +318,7 @@ const PropertyModal = ({
                         <label className="form-label">Longitude</label>
 
                         <input
-                            type="number"
+                            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                             step="any"
                             className="form-control form-control-solid"
                             value={form.longitude ?? ""}

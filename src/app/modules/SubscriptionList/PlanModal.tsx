@@ -311,7 +311,7 @@ const PlanModal = ({
         <div className="col-md-6">
           <label className="required fw-bold fs-6 mb-2">Legacy Price</label>
           <input
-            type="number"
+            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
             className={clsx("form-control form-control-solid", {
               "is-invalid": !!priceError,
             })}
@@ -332,7 +332,7 @@ const PlanModal = ({
         <div className="col-md-6">
           <label className="required fw-bold fs-6 mb-2">Property Limit</label>
           <input
-            type="number"
+            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
             className={clsx("form-control form-control-solid", {
               "is-invalid": !!propertyLimitError,
             })}
@@ -373,7 +373,7 @@ const PlanModal = ({
         <div className="col-md-4">
           <label className="fw-bold fs-6 mb-2">Monthly Price</label>
           <input
-            type="number"
+            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
             className="form-control form-control-solid"
             placeholder="e.g. 49"
             value={form.monthly_price ?? ""}
@@ -388,7 +388,7 @@ const PlanModal = ({
         <div className="col-md-4">
           <label className="fw-bold fs-6 mb-2">Yearly Price</label>
           <input
-            type="number"
+            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
             className="form-control form-control-solid"
             placeholder="e.g. 490"
             value={form.yearly_price ?? ""}
@@ -421,7 +421,7 @@ const PlanModal = ({
         <div className="col-md-6">
           <label className="fw-bold fs-6 mb-2">Trial Days</label>
           <input
-            type="number"
+            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
             className="form-control form-control-solid"
             placeholder="e.g. 14"
             value={form.trial_days ?? ""}
@@ -543,7 +543,7 @@ const PlanModal = ({
 
                 {isNumeric(feature) ? (
                   <input
-                    type="number"
+                    type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                     className="form-control form-control-solid w-100px"
                     value={feature.value ?? 0}
                     onChange={(event) => updateFeatureValue(index, event.target.value)}

@@ -143,15 +143,15 @@ export default function AddonsPage() {
             </div>
             <div className="col-md-4">
               <label className="form-label">Monthly Price</label>
-              <input className="form-control form-control-solid" type="number" value={editing.monthly_price ?? ""} onChange={(e) => setEditing((current) => ({ ...current, monthly_price: e.target.value === "" ? null : Number(e.target.value) }))} />
+              <input className="form-control form-control-solid" type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }} value={editing.monthly_price ?? ""} onChange={(e) => setEditing((current) => ({ ...current, monthly_price: e.target.value === "" ? null : Number(e.target.value) }))} />
             </div>
             <div className="col-md-4">
               <label className="form-label">Yearly Price</label>
-              <input className="form-control form-control-solid" type="number" value={editing.yearly_price ?? ""} onChange={(e) => setEditing((current) => ({ ...current, yearly_price: e.target.value === "" ? null : Number(e.target.value) }))} />
+              <input className="form-control form-control-solid" type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }} value={editing.yearly_price ?? ""} onChange={(e) => setEditing((current) => ({ ...current, yearly_price: e.target.value === "" ? null : Number(e.target.value) }))} />
             </div>
             <div className="col-md-4">
               <label className="form-label">One-time Price</label>
-              <input className="form-control form-control-solid" type="number" value={editing.one_time_price ?? ""} onChange={(e) => setEditing((current) => ({ ...current, one_time_price: e.target.value === "" ? null : Number(e.target.value) }))} />
+              <input className="form-control form-control-solid" type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }} value={editing.one_time_price ?? ""} onChange={(e) => setEditing((current) => ({ ...current, one_time_price: e.target.value === "" ? null : Number(e.target.value) }))} />
             </div>
             <div className="col-md-6">
               <label className="form-label">Currency</label>
@@ -159,7 +159,7 @@ export default function AddonsPage() {
             </div>
             <div className="col-md-6">
               <label className="form-label">Sort Order</label>
-              <input className="form-control form-control-solid" type="number" value={editing.sort_order ?? 0} onChange={(e) => setEditing((current) => ({ ...current, sort_order: Number(e.target.value) }))} />
+              <input className="form-control form-control-solid" type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }} value={editing.sort_order ?? 0} onChange={(e) => setEditing((current) => ({ ...current, sort_order: Number(e.target.value) }))} />
             </div>
             <div className="col-12">
               <label className="form-label">Description</label>

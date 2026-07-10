@@ -114,7 +114,7 @@ export const OrderModal = ({
         </label>
 
         <input
-          type="number"
+          type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
           className="form-control form-control-solid"
           value={form.subtotal}
           onChange={(e) =>
@@ -132,7 +132,7 @@ export const OrderModal = ({
         </label>
 
         <input
-          type="number"
+          type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
           className="form-control form-control-solid"
           value={form.discount_amount ?? 0}
           onChange={(e) =>
@@ -152,7 +152,7 @@ export const OrderModal = ({
         </label>
 
         <input
-          type="number"
+          type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
           className="form-control form-control-solid"
           value={form.tax_amount ?? 0}
           onChange={(e) =>
@@ -172,7 +172,7 @@ export const OrderModal = ({
         </label>
 
         <input
-          type="number"
+          type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
           className="form-control form-control-solid"
           value={form.total_amount ?? 0}
           onChange={(e) =>

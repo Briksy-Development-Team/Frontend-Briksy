@@ -93,6 +93,7 @@ export const staffConfig = {
       label: "Updated Date",
       type: "dateRange",
     },
+  
   ],
   addAction: { label: "Add Staff" },
   rowActions: [{ label: "Edit" }],

@@ -58,7 +58,7 @@ const CouponModal = ({
             <div className="fv-row mb-4">
                 <label className="form-label">Discount Value</label>
                 <input
-                    type="number"
+                    type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                     className="form-control"
                     value={form.discount_value}
                     onChange={(e) =>

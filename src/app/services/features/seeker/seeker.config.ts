@@ -1,10 +1,8 @@
 import type { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { Seeker } from "./seeker.types";
 import { formatDateTime } from "../../utils/dateFormat";
-
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
-
 export const seekerConfig = {
   columns: [
     {
@@ -13,9 +11,7 @@ export const seekerConfig = {
       // sortable: true,
       alwaysVisible: true,
       Cell: ({ row, value }) =>
-        (value as string | null | undefined) ??
-        row.generated_id ??
-        row.id,
+        (value as string | null | undefined) ?? row.generated_id ?? row.id,
     },
     {
       Header: "Name",
@@ -65,7 +61,6 @@ export const seekerConfig = {
       Cell: ({ value }: { value: any }) => safeDate(value),
     },
   ] satisfies Column<Seeker>[],
-
   filters: [
     {
       key: "email_verified",
@@ -100,7 +95,6 @@ export const seekerConfig = {
       type: "dateRange" as const,
     },
   ],
-
   addAction: null,
   rowActions: [],
 };

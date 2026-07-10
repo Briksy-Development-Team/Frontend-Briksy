@@ -41,7 +41,7 @@ const CouponValidationModal = ({ onClose, onSubmit }: Props) => {
         <label className="form-label">Amount</label>
 
         <input
-          type="number"
+          type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
           className="form-control"
           value={form.amount}
           onChange={(e) =>

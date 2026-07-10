@@ -165,7 +165,7 @@ export default function AdminBillingPage() {
                         </div>
                         {selectedAddonIds.includes(addon.id) ? (
                           <input
-                            type="number"
+                            type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                             min={1}
                             className="form-control form-control-solid w-75px"
                             value={addonQuantities[addon.id] ?? 1}

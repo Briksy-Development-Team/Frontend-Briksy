@@ -133,7 +133,7 @@ const ServiceModal = ({
                 <div className="col-md-6 fv-row">
                     <label className="form-label">Rate From</label>
                     <input
-                        type="number"
+                        type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                         className="form-control form-control-solid"
                         value={form.rate_from ?? ""}
                         onChange={(e) =>
@@ -147,7 +147,7 @@ const ServiceModal = ({
                 <div className="col-md-6 fv-row">
                     <label className="form-label">Rate To</label>
                     <input
-                        type="number"
+                        type="number" min="0" onKeyDown={(e) => { if (e.key === "-" || e.key === "e") e.preventDefault(); }}
                         className="form-control form-control-solid"
                         value={form.rate_to ?? ""}
                         onChange={(e) =>
