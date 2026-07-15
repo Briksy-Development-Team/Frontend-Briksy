@@ -50,7 +50,7 @@
   }
 
   export async function fetchUsersApi(search = '') {
-    const response = await axiosInstance.get<ApiEnvelope<Array<{ id: string; name: string; email: string; permissions?: string[] }>>>(
+    const response = await axiosInstance.get<ApiEnvelope<Array<{ id: string; generated_id?: string | null; display_id?: string | null; name: string; email: string; permissions?: string[] }>>>(
       `${superAdminBase}/users`,
       { params: search ? { search } : undefined },
     )

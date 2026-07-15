@@ -77,6 +77,8 @@ type PropertyApi = {
 
 export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   id: item.id,
+  generated_id: (item as any).generated_id ?? null,
+  display_id: (item as any).display_id ?? (item as any).generated_id ?? null,
   title: item.title ?? "",
   status: item.status,
   description: item.description ?? null,
@@ -114,6 +116,8 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
 
 export const mapProperty = (item: PropertyApi): Property => ({
   id: item.id,
+  generated_id: (item as any).generated_id ?? null,
+  display_id: (item as any).display_id ?? (item as any).generated_id ?? null,
   title: item.title ?? "",
   status: item.status,
   description: item.description ?? null,

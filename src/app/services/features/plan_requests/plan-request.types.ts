@@ -2,6 +2,8 @@ export type PlanRequestStatus = "pending" | "approved" | "rejected" | "cancelled
 
 export type PlanRequest = {
   id: string;
+  request_code?: string | null;
+  display_id?: string | null;
   organization_id?: string | null;
   requested_by?: string | null;
   plan_id?: string | null;

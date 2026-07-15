@@ -1,6 +1,7 @@
 import type { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { Seeker } from "./seeker.types";
 import { formatDateTime } from "../../utils/dateFormat";
+import { getDisplayId } from "../../utils/displayId";
 
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
@@ -12,10 +13,7 @@ export const seekerConfig = {
       accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
-      Cell: ({ row, value }) =>
-        (value as string | null | undefined) ??
-        row.generated_id ??
-        row.id,
+      Cell: ({ row, value }: { row: any; value: any }) => value || getDisplayId(row),
     },
     {
       Header: "Name",

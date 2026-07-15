@@ -18,7 +18,7 @@ type SeekerApi = {
 export const mapSeeker = (item: SeekerApi): Seeker => ({
   id: item.id,
   generated_id: item.generated_id ?? null,
-  display_id: item.display_id ?? item.generated_id ?? item.id,
+  display_id: item.display_id ?? item.generated_id ?? null,
   name: item.name,
   display_name: item.display_name,
   email: item.email,

@@ -30,6 +30,7 @@ import GenericDetailPage from "../../modules/apps/shared_table/entity-list/compo
 
 import { useRoleAccess } from "../../modules/auth";
 import { getRolePortalBaseRoute } from "../../modules/auth/core/roleRoutes";
+import { getDisplayId } from "../../services/utils/displayId";
 
 const OrderList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -78,7 +79,7 @@ const OrderList = ({ rowActions }: { rowActions: any[] }) => {
         columns={orderConfig.columns}
         filtersConfig={orderConfig.filters}
         enableRowClick
-        getRowLink={(row) => `${portalBase}/orders/${row.id}`}
+        getRowLink={(row) => `${portalBase}/orders/${getDisplayId(row)}`}
         storageKey="orderColumns"
         headerActions={[
           {

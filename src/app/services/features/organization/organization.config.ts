@@ -3,6 +3,7 @@
 import type { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { Organization } from "./organization.types";
 import { formatDateTime } from "../../utils/dateFormat";
+import { getDisplayId } from "../../utils/displayId";
 
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
@@ -14,7 +15,7 @@ export const organizationConfig = {
       accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
-      Cell: ({ row, value }: { row: any; value: any }) => value || row.original?.generated_id || row.original?.id || "—",
+      Cell: ({ row, value }: { row: any; value: any }) => value || getDisplayId(row),
     },
     {
       Header: "Organization",

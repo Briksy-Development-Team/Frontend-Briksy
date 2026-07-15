@@ -810,7 +810,7 @@ export default function WebhooksPage() {
                     <label className="form-label">Company</label>
                     <input
                       className="form-control form-control-solid"
-                      placeholder="Company UUID"
+                      placeholder="Company ID"
                       value={logFilters.company_id}
                       onChange={(e) => setLogFilters((current) => ({ ...current, company_id: e.target.value }))}
                     />

@@ -31,6 +31,8 @@ export type UserPermissionOverride = {
 export type UserPermissionSnapshot = {
   user: {
     id: string
+    generated_id?: string | null
+    display_id?: string | null
     name: string
     email: string
     organization_id: string | null

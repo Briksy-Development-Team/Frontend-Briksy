@@ -31,6 +31,7 @@ import GenericDetailPage from "../../modules/apps/shared_table/entity-list/compo
 import CouponModal from "../../services/features/coupons/component/CouponModal";
 import CouponValidationModal from "../../services/features/coupons/component/CouponValidationModal";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import { getDisplayId } from "../../services/utils/displayId";
 
 const CouponList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -77,7 +78,7 @@ const CouponList = ({ rowActions }: { rowActions: any[] }) => {
         onParamsChange={handleParamsChange}
         columns={couponConfig.columns}
         filtersConfig={couponConfig.filters}
-        getRowLink={(row) => `${portalBase}/coupons/${row.id}`}
+        getRowLink={(row) => `${portalBase}/coupons/${getDisplayId(row)}`}
         enableRowClick
         storageKey="couponColumns"
         headerActions={[

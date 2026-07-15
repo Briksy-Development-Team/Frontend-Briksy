@@ -1,4 +1,5 @@
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
+import { getDisplayId } from "../../utils/displayId";
 
 export const staffDetailConfig: DetailConfig<any> = {
   header: {
@@ -44,8 +45,8 @@ export const staffDetailConfig: DetailConfig<any> = {
       type: "info",
       title: "Staff Information",
       gridColumnSpan: 8,
-    fields: [
-        { label: "ID", accessor: (data) => data.display_id || data.generated_id || data.id, colSpan: 6 },
+      fields: [
+        { label: "ID", accessor: (data) => getDisplayId(data), colSpan: 6 },
         { label: "Full Name", accessor: "name", colSpan: 6 },
         { label: "Email", accessor: "email", colSpan: 6 },
         { label: "Mobile Number", accessor: "mobile_number", colSpan: 6 },

@@ -28,6 +28,7 @@ import { Content } from "../../../_metronic/layout/components/content";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import { getDisplayId } from "../../services/utils/displayId";
 
 const PlanRequestList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -58,7 +59,7 @@ const PlanRequestList = ({ rowActions }: { rowActions: any[] }) => {
         onParamsChange={handleParamsChange}
         columns={planRequestConfig.columns}
         filtersConfig={planRequestConfig.filters}
-        getRowLink={(row) => `${portalBase}/plan-requests/${row.id}`}
+        getRowLink={(row) => `${portalBase}/plan-requests/${getDisplayId(row)}`}
         enableRowClick
         headerActions={[
           {

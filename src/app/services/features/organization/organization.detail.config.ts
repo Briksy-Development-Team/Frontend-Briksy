@@ -6,6 +6,7 @@ import { propertyListConfig } from "../properties/property.config";
 import { fetchServiceList } from "../service/service_service_list.slice";
 import { serviceListConfig } from "../service/service_list.config";
 import { store, type RootState } from "../../store";
+import { getDisplayId } from "../../utils/displayId";
 
 const getOrganizationId = (data: any) => String(data?.id ?? data?.organization_id ?? "");
 
@@ -21,7 +22,7 @@ const getOrganizationSubtitle = (data: any) =>
   data?.type?.name ?? data?.business_type ?? data?.slug ?? "Organization";
 
 const getOrganizationDisplayId = (data: any) =>
-  data?.display_id ?? data?.generated_id ?? data?.id ?? "—";
+  getDisplayId(data);
 
 const getVerificationStatus = (data: any) => {
   if (typeof data?.business_verification_status === "string" && data.business_verification_status.trim()) {
@@ -152,7 +153,9 @@ export const organizationDetailConfig: DetailConfig<any> = {
       columns: staffConfig.columns,
       enableRowClick: true,
       getRowLink: (row) =>
-        getPortalBase() === "/super-admin" ? `/super-admin/staff/${row.id}` : `/admin/users/${row.id}`,
+        getPortalBase() === "/super-admin"
+          ? `/super-admin/staff/${getDisplayId(row)}`
+          : `/admin/users/${getDisplayId(row)}`,
     },
     {
       id: "properties_table",
@@ -180,8 +183,8 @@ export const organizationDetailConfig: DetailConfig<any> = {
       enableRowClick: true,
       getRowLink: (row) =>
         getPortalBase() === "/super-admin"
-          ? `/super-admin/properties/${row.id}`
-          : `/admin/properties/${row.id}`,
+          ? `/super-admin/properties/${getDisplayId(row)}`
+          : `/admin/properties/${getDisplayId(row)}`,
     },
     {
       id: "services_table",
@@ -208,7 +211,7 @@ export const organizationDetailConfig: DetailConfig<any> = {
       columns: serviceListConfig.columns,
       enableRowClick: true,
       getRowLink: (row) =>
-        getPortalBase() === "/super-admin" ? `/super-admin/services/${row.id}` : `/admin/services/${row.id}`,
+        getPortalBase() === "/super-admin" ? `/super-admin/services/${getDisplayId(row)}` : `/admin/services/${getDisplayId(row)}`,
     },
   ],
 };

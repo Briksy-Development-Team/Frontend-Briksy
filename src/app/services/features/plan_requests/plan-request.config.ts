@@ -1,13 +1,15 @@
 import type { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { PlanRequest } from "./plan-request.types";
+import { getDisplayId } from "../../utils/displayId";
 
 export const planRequestConfig = {
   columns: [
     {
       Header: "ID",
-      accessor: "id",
+      accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
+      Cell: ({ row, value }: { row: any; value: any }) => value || getDisplayId(row),
     },
 
     {

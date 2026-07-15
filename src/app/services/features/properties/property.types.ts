@@ -10,6 +10,8 @@ export type PropertyVideo = {
 
 export type Property = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
 
   title: string;
   description?: string | null;

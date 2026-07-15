@@ -1,4 +1,5 @@
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
+import { getDisplayId } from "../../utils/displayId";
 
 export const propertyDetailConfig: DetailConfig<any> = {
   header: {
@@ -62,7 +63,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
       title: "Property Information",
       gridColumnSpan: 6,
       fields: [
-        { label: "ID", accessor: (data) => data?.display_id ?? data?.generated_id ?? data?.id ?? "—", colSpan: 12 },
+        { label: "ID", accessor: (data) => getDisplayId(data), colSpan: 12 },
         { label: "Title", accessor: "title", colSpan: 6 },
         { label: "Status", accessor: "status", colSpan: 6 },
         { label: "Property Type", accessor: (data) => data?.property_type?.name ?? "—", colSpan: 6 },

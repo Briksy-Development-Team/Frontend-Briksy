@@ -14,7 +14,7 @@ type StaffApi = {
 export const mapStaff = (item: StaffApi): Staff => ({
   id: item.id,
   generated_id: item.generated_id ?? null,
-  display_id: item.display_id ?? item.generated_id ?? item.id,
+  display_id: item.display_id ?? item.generated_id ?? null,
   name: item.name ?? "",
   email: item.email ?? "",
   permissions: (item.permissions ?? []) as PlatformPermission[],

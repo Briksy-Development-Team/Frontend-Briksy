@@ -63,6 +63,21 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
   },
 }
 
+const matchesRouteIdentifier = (data: any, id: string) => {
+  const candidates = [
+    data?.display_id,
+    data?.generated_id,
+    data?.request_code,
+    data?.reference_no,
+    data?.display_number,
+    data?.order_number,
+    data?.code,
+    data?.id,
+  ]
+
+  return candidates.some((value) => String(value ?? '') === String(id))
+}
+
 const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
   const location = useLocation()
   const { id } = useParams()
@@ -90,7 +105,7 @@ const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
       return stateData
     }
 
-    return String(stateData.id ?? '') === String(id) ? stateData : null
+    return matchesRouteIdentifier(stateData, id) ? stateData : null
   }, [id, state?.data])
 
   const [data, setData] = useState<any | null>(initialData)

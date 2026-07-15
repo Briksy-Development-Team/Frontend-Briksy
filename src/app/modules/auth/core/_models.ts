@@ -58,6 +58,8 @@ export interface UserSocialNetworksModel {
 
 export interface UserModel {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
   username: string;
   password: string | undefined;
   first?: string;

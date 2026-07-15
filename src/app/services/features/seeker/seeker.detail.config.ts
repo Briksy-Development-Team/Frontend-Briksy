@@ -1,6 +1,7 @@
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import type { Seeker } from "./seeker.types";
 import { formatDateTime } from "../../utils/dateFormat";
+import { getDisplayId } from "../../utils/displayId";
 
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
@@ -60,7 +61,7 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
       title: "Personal Information",
       gridColumnSpan: 8,
       fields: [
-        { label: "ID", accessor: (data) => data.display_id || data.generated_id || data.id, colSpan: 6 },
+        { label: "ID", accessor: (data) => getDisplayId(data), colSpan: 6 },
         { label: "Full Name", accessor: "name", colSpan: 6 },
         { label: "Display Name", accessor: "display_name", colSpan: 6 },
         { label: "Email Address", accessor: "email", colSpan: 6 },

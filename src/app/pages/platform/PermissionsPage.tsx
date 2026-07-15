@@ -10,6 +10,7 @@ import {
   syncUserPermissionsApi,
 } from '../../services/features/permissions/permission.api'
 import type { Permission, PermissionGroup, RoleSummary, UserPermissionSnapshot } from '../../services/features/permissions/permission.types'
+import { getDisplayId } from '../../services/utils/displayId'
 
 const flattenPermissionIds = (groups: PermissionGroup[]) =>
   groups.flatMap((group) => group.permissions.map((permission) => permission.id))
@@ -25,7 +26,7 @@ const PermissionsPageContent = () => {
   const [roles, setRoles] = useState<RoleSummary[]>([])
   const [selectedRoleId, setSelectedRoleId] = useState<string>('')
   const [rolePermissionIds, setRolePermissionIds] = useState<string[]>([])
-  const [users, setUsers] = useState<Array<{ id: string; name: string; email: string }>>([])
+  const [users, setUsers] = useState<Array<{ id: string; generated_id?: string | null; display_id?: string | null; name: string; email: string }>>([])
   const [userSearch, setUserSearch] = useState('')
   const [selectedUserId, setSelectedUserId] = useState<string>('')
   const [userSnapshot, setUserSnapshot] = useState<UserPermissionSnapshot | null>(null)
@@ -123,7 +124,7 @@ const PermissionsPageContent = () => {
   )
 
   const selectedUser = useMemo(
-    () => users.find((user) => user.id === selectedUserId) ?? null,
+    () => users.find((user) => getDisplayId(user) === selectedUserId || user.id === selectedUserId) ?? null,
     [selectedUserId, users],
   )
 
@@ -294,8 +295,8 @@ const PermissionsPageContent = () => {
                 >
                   <option value="">Select a user</option>
                   {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name} ({user.email})
+                    <option key={getDisplayId(user)} value={getDisplayId(user)}>
+                      {user.name} ({user.email}) - {getDisplayId(user)}
                     </option>
                   ))}
                 </select>

@@ -1,5 +1,6 @@
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import type { PlanRequest } from "./plan-request.types";
+import { getDisplayId } from "../../utils/displayId";
 
 export const planRequestDetailConfig: DetailConfig<PlanRequest> = {
   header: {
@@ -36,6 +37,7 @@ export const planRequestDetailConfig: DetailConfig<PlanRequest> = {
       type: "info",
       title: "Contact Information",
       fields: [
+        { label: "ID", accessor: (data) => getDisplayId(data), colSpan: 6 },
         { label: "Company Name", accessor: "company_name", colSpan: 6 },
         { label: "Contact Name", accessor: "contact_name", colSpan: 6 },
         { label: "Email", accessor: "contact_email", colSpan: 6 },
