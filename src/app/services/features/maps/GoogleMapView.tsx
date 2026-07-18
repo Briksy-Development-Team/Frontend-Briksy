@@ -77,6 +77,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
   const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [selectedProperty, setSelectedProperty] = useState<PropertyList | null>(null);
   const [zoom, setZoom] = useState(6);
+  const mapContainerRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
 
   const validProperties = useMemo(() => properties.filter(isValidPoint), [properties]);
   const clusters = useMemo(() => buildClusters(validProperties, zoom), [validProperties, zoom]);
@@ -93,7 +94,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
 
         setGoogleMaps(window.google);
 
-        const element = document.getElementById("briksy-google-map");
+        const element = mapContainerRef.current;
 
         if (!element) {
           setLoadError("Map container not found.");
@@ -171,7 +172,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
           </div>
         </div>
       ) : null}
-      <div id="briksy-google-map" style={{ width: "100%", height: 640 }} />
+      <div ref={(node) => { mapContainerRef.current = node; }} style={{ width: "100%", height: 640 }} />
 
       {map && googleMaps
         ? clusters.map((cluster) => (

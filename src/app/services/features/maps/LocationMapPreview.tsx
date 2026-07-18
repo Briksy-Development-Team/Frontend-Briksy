@@ -39,10 +39,12 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
   const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const mapRef = useRef<any>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<any>(null);
   const geocoderRef = useRef<any>(null);
   const listenersAttachedRef = useRef(false);
   const onChangeRef = useRef(onChange);
+  const refreshTimerRef = useRef<number | null>(null);
   const lat = normalizeNumber(latitude);
   const lng = normalizeNumber(longitude);
 
@@ -69,7 +71,7 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
           return;
         }
 
-        const element = document.getElementById("briksy-location-map");
+        const element = mapContainerRef.current;
         if (!element || !window.google?.maps) {
           setError("Map container not found.");
           setLoadState("error");
@@ -87,6 +89,19 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
         } else {
           mapRef.current.setCenter(coordinates);
         }
+
+        if (refreshTimerRef.current) {
+          window.clearTimeout(refreshTimerRef.current);
+        }
+
+        refreshTimerRef.current = window.setTimeout(() => {
+          if (!active || !mapRef.current || !window.google?.maps) {
+            return;
+          }
+
+          window.google.maps.event.trigger(mapRef.current, "resize");
+          mapRef.current.setCenter(coordinates);
+        }, 50);
 
         if (!markerRef.current) {
           markerRef.current = new window.google.maps.Marker({
@@ -180,6 +195,10 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
 
     return () => {
       active = false;
+      if (refreshTimerRef.current) {
+        window.clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
       if (window.google?.maps?.event) {
         if (markerRef.current) {
           window.google.maps.event.clearInstanceListeners(markerRef.current);
@@ -217,7 +236,7 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
           </div>
         </div>
       ) : null}
-      <div id="briksy-location-map" style={{ width: "100%", height, minHeight: height }} />
+      <div ref={mapContainerRef} style={{ width: "100%", height, minHeight: height }} />
     </div>
   );
 };
