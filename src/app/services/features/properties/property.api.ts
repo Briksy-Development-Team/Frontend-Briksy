@@ -154,3 +154,7 @@ export const updatePropertyApi = async (
 export const deletePropertyApi = async (id: string) => {
   await axiosInstance.delete(`${getBasePath()}/${id}`);
 };
+
+export const deletePropertyMediaApi = async (mediaId: string) => {
+  await axiosInstance.delete(`/media/${mediaId}`);
+};

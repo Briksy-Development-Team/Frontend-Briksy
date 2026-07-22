@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { loadGoogleMapsScript } from "./googleMapsLoader";
 import { PropertyMapMarker } from "./PropertyMapMarker";
 import { PropertyMapInfoWindow } from "./PropertyMapInfoWindow";
@@ -70,6 +70,26 @@ const buildClusters = (properties: PropertyList[], zoom: number): Cluster[] => {
   });
 };
 
+const waitForVisibleContainer = (element: HTMLDivElement, attempts = 12): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const check = (remainingAttempts: number) => {
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        resolve();
+        return;
+      }
+
+      if (remainingAttempts <= 0) {
+        reject(new Error("Map container has no visible dimensions."));
+        return;
+      }
+
+      window.requestAnimationFrame(() => check(remainingAttempts - 1));
+    };
+
+    check(attempts);
+  });
+
 const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
   const [map, setMap] = useState<any>(null);
   const [googleMaps, setGoogleMaps] = useState<any>(null);
@@ -77,7 +97,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
   const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [selectedProperty, setSelectedProperty] = useState<PropertyList | null>(null);
   const [zoom, setZoom] = useState(6);
-  const mapContainerRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
 
   const validProperties = useMemo(() => properties.filter(isValidPoint), [properties]);
   const clusters = useMemo(() => buildClusters(validProperties, zoom), [validProperties, zoom]);
@@ -101,23 +121,42 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
           return;
         }
 
-        const nextMap = new window.google.maps.Map(element, {
-          center: validProperties[0]
-            ? { lat: validProperties[0].latitude ?? AUSTRALIA_CENTER.lat, lng: validProperties[0].longitude ?? AUSTRALIA_CENTER.lng }
-            : AUSTRALIA_CENTER,
-          zoom: validProperties.length > 1 ? 6 : 10,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: true,
-        });
+        const initializeMap = async () => {
+          await waitForVisibleContainer(element);
 
-        nextMap.addListener("zoom_changed", () => {
-          const currentZoom = nextMap.getZoom() ?? 6;
-          setZoom(currentZoom);
-        });
+          if (!active) {
+            return;
+          }
 
-        setMap(nextMap);
-        setLoadState("ready");
+          const nextMap = new window.google.maps.Map(element, {
+            center: validProperties[0]
+              ? { lat: validProperties[0].latitude ?? AUSTRALIA_CENTER.lat, lng: validProperties[0].longitude ?? AUSTRALIA_CENTER.lng }
+              : AUSTRALIA_CENTER,
+            zoom: validProperties.length > 1 ? 6 : 10,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true,
+          });
+
+          nextMap.addListener("zoom_changed", () => {
+            const currentZoom = nextMap.getZoom() ?? 6;
+            setZoom(currentZoom);
+          });
+
+          setMap(nextMap);
+          setLoadState("ready");
+
+          window.requestAnimationFrame(() => {
+            window.google.maps.event.trigger(nextMap, "resize");
+            nextMap.setCenter(
+              validProperties[0]
+                ? { lat: validProperties[0].latitude ?? AUSTRALIA_CENTER.lat, lng: validProperties[0].longitude ?? AUSTRALIA_CENTER.lng }
+                : AUSTRALIA_CENTER,
+            );
+          });
+        };
+
+        void initializeMap();
       })
       .catch((error: unknown) => {
         console.error("Google Maps map initialization failed.", error);
@@ -172,7 +211,7 @@ const GoogleMapView = ({ properties, missingLocationCount = 0 }: Props) => {
           </div>
         </div>
       ) : null}
-      <div ref={(node) => { mapContainerRef.current = node; }} style={{ width: "100%", height: 640 }} />
+      <div ref={mapContainerRef} style={{ width: "100%", height: 640 }} />
 
       {map && googleMaps
         ? clusters.map((cluster) => (

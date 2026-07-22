@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
-import type { Property, PropertyFormValues } from "../property.types";
+import type { Property, PropertyFormValues, PropertyImage } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 import { LocationMapPreview } from "../../maps/LocationMapPreview";
 import { useRoleAccess } from "../../../../modules/auth";
+import { deletePropertyMediaApi } from "../property.api";
 
 type Props = {
     initialValues?: Property | null;
@@ -43,6 +44,8 @@ const PropertyModal = ({
 
     const [images, setImages] = useState<File[]>([]);
     const [videos, setVideos] = useState<File[]>([]);
+    const [existingImages, setExistingImages] = useState<PropertyImage[]>(initialValues?.images ?? []);
+    const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
 
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
@@ -72,6 +75,7 @@ const PropertyModal = ({
             });
             setImages([]);
             setVideos([]);
+            setExistingImages([]);
             return;
         }
 
@@ -98,6 +102,7 @@ const PropertyModal = ({
         });
         setImages([]);
         setVideos([]);
+        setExistingImages(initialValues.images ?? []);
     }, [initialValues]);
 
     useEffect(() => {
@@ -148,6 +153,29 @@ const PropertyModal = ({
             country: selection.country ?? prev.country ?? "Australia",
             location_verified: selection.location_verified ?? prev.location_verified,
         }));
+    };
+
+    const handleDeleteExistingImage = async (image: PropertyImage) => {
+        if (!image.id) {
+            return;
+        }
+
+        const confirmed = window.confirm("Delete this image?");
+        if (!confirmed) {
+            return;
+        }
+
+        setDeletingImageIds((prev) => [...prev, image.id as string]);
+
+        try {
+            await deletePropertyMediaApi(image.id);
+            setExistingImages((prev) => prev.filter((item) => item.id !== image.id));
+        } catch (error) {
+            console.error("Failed to delete property image.", error);
+            window.alert("Failed to delete the image. Please try again.");
+        } finally {
+            setDeletingImageIds((prev) => prev.filter((id) => id !== image.id));
+        }
     };
 
     return (
@@ -454,21 +482,39 @@ const PropertyModal = ({
             </div>
 
             {/* Existing Images */}
-            {initialValues?.images?.length ? (
+            {existingImages.length ? (
                 <>
                     <label className="form-label">Existing Photos</label>
 
                     <div className="row g-3 mb-7">
-                        {initialValues.images.map((img) => (
-                            <div key={img.url} className="col-md-3">
-                                <img
-                                    src={img.url}
-                                    className="w-100 rounded border"
-                                    style={{
-                                        height: 150,
-                                        objectFit: "cover",
-                                    }}
-                                />
+                        {existingImages.map((img) => (
+                            <div key={img.id ?? img.url} className="col-md-3">
+                                <div className="position-relative">
+                                    <img
+                                        src={img.url}
+                                        className="w-100 rounded border"
+                                        style={{
+                                            height: 150,
+                                            objectFit: "cover",
+                                        }}
+                                    />
+
+                                    {img.id ? (
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-light-danger btn-icon position-absolute top-0 end-0 m-2 shadow-sm"
+                                            onClick={() => handleDeleteExistingImage(img)}
+                                            disabled={deletingImageIds.includes(img.id)}
+                                            aria-label="Delete image"
+                                        >
+                                            {deletingImageIds.includes(img.id) ? (
+                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                                            ) : (
+                                                <i className="bi bi-trash3" />
+                                            )}
+                                        </button>
+                                    ) : null}
+                                </div>
                             </div>
                         ))}
                     </div>
