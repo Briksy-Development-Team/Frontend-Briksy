@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchOrganization } from "../../../services/features/organization/organization.slice";
 import { organizationConfig } from "../../../services/features/organization/organization.config";
 import { RootState, AppDispatch } from "../../../services/store";
@@ -11,6 +12,7 @@ import { getRolePortalBaseRoute } from "../../../modules/auth/core/roleRoutes";
 
 const OrganizationPage = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const { isSuperAdmin } = useRoleAccess();
     const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin']);
     const resolveOrganizationId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
@@ -20,6 +22,16 @@ const OrganizationPage = () => {
     const { params, handleParamsChange } = useEntityTable(
         (p) => dispatch(fetchOrganization(p))
     );
+    const rowActions = isSuperAdmin
+        ? [
+              {
+                  label: "Review Properties",
+                  permission: "company.view",
+                  onClick: (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+                      navigate(`${portalBase}/companies/organization/${resolveOrganizationId(row)}`),
+              },
+          ]
+        : undefined;
 
     if (error) return (
         <Content>
@@ -44,6 +56,7 @@ const OrganizationPage = () => {
                         ? `${portalBase}/companies/organization/${resolveOrganizationId(row)}`
                         : `${portalBase}/businesses/${resolveOrganizationId(row)}`
                 }
+                rowActions={rowActions}
             />
         </Content>
     );

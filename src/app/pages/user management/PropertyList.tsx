@@ -21,17 +21,21 @@ import { Content } from "../../../_metronic/layout/components/content";
 
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import PropertyModal from "../../services/features/properties/component/PropertyModal";
 import PropertyMapView from "../../services/features/properties/component/PropertyMapView";
+import { fetchPropertyApi } from "../../services/features/properties/property.api";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { useToast } from "../../services/ui/toast/useToast";
 import type { PropertyList } from "../../services/features/properties/property.types";
+import { usePropertyReviewActions } from "../../services/features/properties/usePropertyReviewActions";
 
 const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [mapProperties, setMapProperties] = useState<PropertyList[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
@@ -46,6 +50,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   });
 
   const { isSuperAdmin } = useRoleAccess();
+  const location = useLocation();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const resolvePropertyId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
     row.display_id ?? row.generated_id ?? row.id;
@@ -60,6 +65,51 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     deletingProperty,
     saving,
   } = useSelector((s: RootState) => s.propertyList);
+  const { rowActions: reviewRowActions, modal: reviewModal } = usePropertyReviewActions({
+    onChanged: () => {
+      const onDetailPage = location.pathname !== `${portalBase}/property-management`;
+
+      if (onDetailPage) {
+        window.location.reload();
+        return;
+      }
+
+      void dispatch(fetchPropertyList(params));
+    },
+  });
+
+  useEffect(() => {
+    const editId = searchParams.get("edit");
+
+    if (!editId) {
+      return;
+    }
+
+    let active = true;
+
+    void fetchPropertyApi(editId)
+      .then((property) => {
+        if (!active) {
+          return;
+        }
+
+        dispatch(openPropertyModal(property));
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!active) {
+          return;
+        }
+
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete("edit");
+        setSearchParams(nextParams, { replace: true });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [dispatch, searchParams, setSearchParams]);
 
   const { params, handleParamsChange } = useEntityTable((p) =>
     dispatch(fetchPropertyList(p)),
@@ -116,7 +166,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     [mapProperties],
   );
 
-  const propertyRowActions =
+  const defaultPropertyRowActions =
     rowActions ?? [
       {
         label: "Edit",
@@ -130,6 +180,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
         onClick: (row: PropertyList) => dispatch(openDeletePropertyModal(row)),
       },
     ];
+  const propertyRowActions = isSuperAdmin ? [...reviewRowActions, ...defaultPropertyRowActions] : defaultPropertyRowActions;
 
   if (error)
     return (
@@ -352,6 +403,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           isSubmitting={saving}
         />
       )}
+      {reviewModal}
     </>
   );
 };

@@ -26,6 +26,7 @@ const CompanyPage = lazy(() => import("../pages/user management/CompanyPage"));
 const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
 const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"));
 const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"));
+const PropertyMapPage = lazy(() => import("../pages/platform/PropertyMapPage"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
 const PermissionsPage = lazy(() => import("../pages/platform/PermissionsPage"));
@@ -290,6 +291,17 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/super-admin/property-map/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <PropertyMapPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/super-admin/notifications/*"
           element={
             <RoleGuard allow={["super_admin"]}>
@@ -346,6 +358,19 @@ const PrivateRoutes = () => {
                   <PropertyListPage />
                 </SuspensedView>
               </ModuleGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/property-map/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <PermissionGuard anyOf={["property.map"]}>
+                <SuspensedView>
+                  <PropertyMapPage />
+                </SuspensedView>
+              </PermissionGuard>
             </RoleGuard>
           }
         />

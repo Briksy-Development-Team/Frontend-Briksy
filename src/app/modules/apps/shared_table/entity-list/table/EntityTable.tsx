@@ -8,6 +8,7 @@ export type RowAction<T> = {
   className?: string;
   permission?: string;
   icon?: string;
+  showIf?: (row: T) => boolean;
   onClick: (row: T) => void;
 };
 
@@ -38,10 +39,7 @@ const EntityTable = <T extends { id: string | number }>({
   const { hasPermission } = usePermissionAccess();
   const allSelected = data.length > 0 && selectedRows.size === data.length;
   const someSelected = selectedRows.size > 0 && selectedRows.size < data.length;
-  const visibleActions =
-    rowActions?.filter(
-      (action) => !action.permission || hasPermission(action.permission),
-    ) ?? [];
+  const visibleActions = rowActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
   const hasActions = visibleActions.length > 0;
   const handleRowClick = (row: T) => {
     if (!enableRowClick || !getRowLink) return;
@@ -120,6 +118,7 @@ const EntityTable = <T extends { id: string | number }>({
                 prepareRow(row);
                 const { key, ...rest } = row.getRowProps();
                 const isSelected = selectedRows.has(row.original.id);
+                const rowActionsForItem = visibleActions.filter((action) => !action.showIf || action.showIf(row.original));
 
                 return (
                   <tr
@@ -157,28 +156,32 @@ const EntityTable = <T extends { id: string | number }>({
                         onClick={(e) => e.stopPropagation()}
                         style={{ textAlign: "center" }}
                       >
-                        <div className="dropdown">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-light btn-active-light-primary"
-                            data-bs-toggle="dropdown"
-                          >
-                            Actions
-                          </button>
-                          <ul className="dropdown-menu">
-                            {visibleActions!.map((action) => (
-                              <li key={action.label}>
-                                <button
-                                  type="button"
-                                  className={`dropdown-item ${action.className ?? ""}`}
-                                  onClick={() => action.onClick(row.original)}
-                                >
-                                  {action.label}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                        {rowActionsForItem.length > 0 ? (
+                          <div className="dropdown">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-light btn-active-light-primary"
+                              data-bs-toggle="dropdown"
+                            >
+                              Actions
+                            </button>
+                            <ul className="dropdown-menu">
+                              {rowActionsForItem.map((action) => (
+                                <li key={action.label}>
+                                  <button
+                                    type="button"
+                                    className={`dropdown-item ${action.className ?? ""}`}
+                                    onClick={() => action.onClick(row.original)}
+                                  >
+                                    {action.label}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <span className="text-muted">—</span>
+                        )}
                       </td>
                     )}
                   </tr>

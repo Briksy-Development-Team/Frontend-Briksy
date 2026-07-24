@@ -1,11 +1,15 @@
 export type PropertyImage = {
   id?: string;
   url: string;
+  is_primary?: boolean;
+  sort_order?: number;
 };
 
 export type PropertyVideo = {
   id?: string;
   url: string;
+  is_primary?: boolean;
+  sort_order?: number;
 };
 
 export type Property = {
@@ -169,6 +173,9 @@ export type PropertyList = {
     name: string;
     slug?: string;
   } | null;
+
+  images?: PropertyImage[];
+  videos?: PropertyVideo[];
 
   organization?: {
     id: string;
