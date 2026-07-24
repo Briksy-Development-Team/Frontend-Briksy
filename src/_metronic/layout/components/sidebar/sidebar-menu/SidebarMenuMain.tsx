@@ -184,12 +184,12 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("property_management") && (
+          {hasPermission("property.map") && (
             <SidebarMenuItem
-              to={`${portalBase}/property-management`}
-              title="Property Management - At a Glance"
-              fontIcon="bi-archive"
-              icon="element-plus"
+              to={`${portalBase}/property-map`}
+              title="Property Map"
+              fontIcon="bi-geo-alt"
+              icon="geolocation"
             />
           )}
 
@@ -232,6 +232,13 @@ const SidebarMenuMain = () => {
               icon="element-plus"
             />
           )}
+
+          <SidebarMenuItem
+            to={`${portalBase}/property-map`}
+            title="Property Map"
+            fontIcon="bi-geo-alt"
+            icon="geolocation"
+          />
 
           {hasModule("service_management") && (
             <SidebarMenuItem

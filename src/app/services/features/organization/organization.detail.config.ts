@@ -181,6 +181,22 @@ export const organizationDetailConfig: DetailConfig<any> = {
       totalSelector: (state: RootState) => state.propertyList.total,
       columns: propertyListConfig.columns,
       enableRowClick: true,
+      rowActions: [
+        {
+          label: "Review",
+          permission: "property.view",
+          onClick: (row) => {
+            const scopeBase = getPortalBase();
+            const propertyId = getDisplayId(row);
+
+            if (!propertyId) {
+              return;
+            }
+
+            window.location.href = `${scopeBase}/properties/${propertyId}`;
+          },
+        },
+      ],
       getRowLink: (row) =>
         getPortalBase() === "/super-admin"
           ? `/super-admin/properties/${getDisplayId(row)}`

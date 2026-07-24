@@ -1,6 +1,7 @@
 export const ADMIN_PERMISSIONS = [
   "dashboard.view",
   "property.view",
+  "property.map",
   "property.create",
   "property.update",
   "property.delete",
@@ -58,6 +59,7 @@ export const SUPER_ADMIN_PERMISSIONS = [
   "email_template.update",
   "email_template.delete",
   "property.view",
+  "property.map",
   "property.create",
   "property.update",
   "property.delete",
@@ -84,6 +86,7 @@ export type PlatformPermission = AdminPermission | SuperAdminPermission;
 export const PERMISSION_LABELS: Record<PlatformPermission, string> = {
   "dashboard.view": "View Dashboard",
   "property.view": "View Properties",
+  "property.map": "View Property Map",
   "property.create": "Create Properties",
   "property.update": "Update Properties",
   "property.delete": "Delete Properties",

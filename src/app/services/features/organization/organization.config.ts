@@ -39,6 +39,15 @@ export const organizationConfig = {
       Cell: ({ value }) => value ? String(value) : "pending",
     },
     {
+      Header: "Review Queue",
+      accessor: "pending_properties_count",
+      Cell: ({ value }: { value: any }) => {
+        const count = Number(value ?? 0);
+
+        return count ? `${count} pending` : "Clear";
+      },
+    },
+    {
       Header: "ABN",
       accessor: "abn",
       sortable: true,

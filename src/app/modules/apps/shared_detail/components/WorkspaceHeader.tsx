@@ -19,7 +19,7 @@ export default function WorkspaceHeader<T>({
 
   const visibleActions =
     rowActions?.filter(
-      (action) => !action.permission || hasPermission(action.permission)
+      (action) => (!action.permission || hasPermission(action.permission)) && (!action.showIf || action.showIf(data))
     ) ?? [];
 
   const resolveValue = (

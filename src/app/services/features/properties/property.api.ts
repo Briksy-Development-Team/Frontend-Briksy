@@ -119,6 +119,12 @@ export const fetchPropertyListApi = async (params: PropertyListParams) => {
   };
 };
 
+export const fetchPropertyApi = async (id: string) => {
+  const res = await axiosInstance.get<ApiResponse<Property>>(`${getBasePath()}/${id}`);
+
+  return res.data.data;
+};
+
 export const fetchPropertyMapApi = async (params: PropertyListParams) => {
   const res = await axiosInstance.get<ApiResponse<Property[]>>(`${getBasePath()}/map`, {
     params: buildApiParams(params),
@@ -153,6 +159,28 @@ export const updatePropertyApi = async (
 
 export const deletePropertyApi = async (id: string) => {
   await axiosInstance.delete(`${getBasePath()}/${id}`);
+};
+
+export const approvePropertyApi = async (id: string) => {
+  const res = await axiosInstance.patch<ApiResponse<Property>>(`${getBasePath()}/${id}/approve`);
+  return res.data.data;
+};
+
+export const rejectPropertyApi = async (id: string, rejection_reason: string) => {
+  const res = await axiosInstance.patch<ApiResponse<Property>>(`${getBasePath()}/${id}/reject`, {
+    rejection_reason,
+  });
+  return res.data.data;
+};
+
+export const verifyPropertyLocationApi = async (id: string) => {
+  const res = await axiosInstance.patch<ApiResponse<Property>>(`${getBasePath()}/${id}/verify-location`);
+  return res.data.data;
+};
+
+export const unverifyPropertyLocationApi = async (id: string) => {
+  const res = await axiosInstance.patch<ApiResponse<Property>>(`${getBasePath()}/${id}/unverify-location`);
+  return res.data.data;
 };
 
 export const deletePropertyMediaApi = async (mediaId: string) => {
