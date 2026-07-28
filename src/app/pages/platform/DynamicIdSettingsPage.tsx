@@ -68,8 +68,31 @@ export default function DynamicIdSettingsPage() {
                     <td>{[item.prefix, item.include_year ? "YYYY" : null, item.include_month ? "MM" : null, "####"].filter(Boolean).join(item.separator ?? "-")}</td>
                     <td>{item.is_active ? "Active" : "Inactive"}</td>
                     <td className="text-end">
-                      <button className="btn btn-sm btn-light me-2" onClick={() => setEditing(item)}>Edit</button>
-                      <button className="btn btn-sm btn-light-danger" onClick={async () => { await deleteSuperAdminDynamicIdSettingApi(item.id); await load(); }}>Delete</button>
+                      <div className="dropdown">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-light btn-active-light-primary"
+                          data-bs-toggle="dropdown"
+                        >
+                          Actions
+                        </button>
+                        <ul className="dropdown-menu">
+                          <li>
+                            <button type="button" className="dropdown-item" onClick={() => setEditing(item)}>
+                              Edit
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="button"
+                              className="dropdown-item text-danger"
+                              onClick={async () => { await deleteSuperAdminDynamicIdSettingApi(item.id); await load(); }}
+                            >
+                              Delete
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
                     </td>
                   </tr>
                 ))}

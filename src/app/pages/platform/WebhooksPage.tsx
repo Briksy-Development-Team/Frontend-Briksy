@@ -722,19 +722,36 @@ export default function WebhooksPage() {
                             </td>
                             <td>{endpoint.created_by_user?.name ?? "System"}</td>
                             <td className="text-end">
-                              <div className="d-flex flex-wrap justify-content-end gap-2">
-                                <button className="btn btn-sm btn-light" onClick={() => startEdit(endpoint)}>
-                                  Edit
+                              <div className="dropdown">
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-light btn-active-light-primary"
+                                  data-bs-toggle="dropdown"
+                                >
+                                  Actions
                                 </button>
-                                <button className="btn btn-sm btn-light-primary" onClick={() => void sendTestEvent(endpoint)} disabled={busyId === endpoint.id}>
-                                  Send Test Event
-                                </button>
-                                <button className="btn btn-sm btn-light-warning" onClick={() => void regenerateSecret(endpoint)} disabled={busyId === endpoint.id}>
-                                  Regenerate Secret
-                                </button>
-                                <button className="btn btn-sm btn-light-danger" onClick={() => void remove(endpoint)} disabled={busyId === endpoint.id}>
-                                  Delete
-                                </button>
+                                <ul className="dropdown-menu">
+                                  <li>
+                                    <button type="button" className="dropdown-item" onClick={() => startEdit(endpoint)}>
+                                      Edit
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button type="button" className="dropdown-item" onClick={() => void sendTestEvent(endpoint)} disabled={busyId === endpoint.id}>
+                                      Send Test Event
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button type="button" className="dropdown-item" onClick={() => void regenerateSecret(endpoint)} disabled={busyId === endpoint.id}>
+                                      Regenerate Secret
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button type="button" className="dropdown-item text-danger" onClick={() => void remove(endpoint)} disabled={busyId === endpoint.id}>
+                                      Delete
+                                    </button>
+                                  </li>
+                                </ul>
                               </div>
                             </td>
                           </tr>

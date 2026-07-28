@@ -13,6 +13,7 @@ const MasterLayout = () => {
   useEffect(() => {
     reInitMenu()
   }, [location.key])
+  
 
   return (
     <PageDataProvider>

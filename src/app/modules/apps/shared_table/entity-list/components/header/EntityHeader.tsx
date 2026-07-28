@@ -2,6 +2,7 @@ import { KTIcon } from "../../../../../../../_metronic/helpers";
 import { ColumnSelector } from "./ColumnSelector";
 import SortSelector from "./SortSelector";
 import { usePermissionAccess } from "../../../../../auth";
+import { FilterDropdown } from "./FilterDropdown";
 
 type ColumnKey = string;
 
@@ -25,11 +26,12 @@ type Props = {
   search: string;
   onSearchChange: (val: string) => void;
   isMobile: boolean;
-  onOpenFilter: () => void;
   onExport?: () => void;
   selectedCount?: number;
   onSortChange: (config: { key: ColumnKey; direction: "asc" | "desc" }) => void;
-  headerActions?: AddAction[]
+  headerActions?: AddAction[];
+  filtersConfig?: any;
+  onFilterChange?: (filters: Record<string, any>) => void;
 };
 
 const EntityHeader = ({
@@ -39,12 +41,12 @@ const EntityHeader = ({
   visibleColumns,
   setVisibleColumns,
   isMobile,
-  onOpenFilter,
   onExport,
   selectedCount = 0,
   onSortChange,
   headerActions,
-
+  filtersConfig,
+  onFilterChange
 }: Props) => {
   const { hasPermission } = usePermissionAccess();
   const visibleHeaderActions =
@@ -65,16 +67,14 @@ const EntityHeader = ({
       </div>
     </div>
 
-    <div className="card-toolbar d-flex gap-3">
+    <div className="card-toolbar d-flex flex-wrap gap-3">
       <SortSelector
         columns={columns.filter((c) => c.sortable)}
         onSortChange={onSortChange}
       />
 
-      {isMobile && (
-        <button className="btn btn-light-primary" onClick={onOpenFilter}>
-          Filter
-        </button>
+      {filtersConfig && onFilterChange && (
+        <FilterDropdown filters={filtersConfig} onFilterChange={onFilterChange} />
       )}
 
       <button

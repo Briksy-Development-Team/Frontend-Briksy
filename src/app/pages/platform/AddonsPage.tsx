@@ -81,27 +81,50 @@ export default function AddonsPage() {
                     <td>{addon.pricing_type}</td>
                     <td>{addon.is_active ? "Active" : "Inactive"}</td>
                     <td className="text-end">
-                      <button className="btn btn-sm btn-light me-2" onClick={() => setEditing(addon)}>
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-sm btn-light me-2"
-                        onClick={async () => {
-                          await toggleSuperAdminAddonApi(addon.id, !addon.is_active);
-                          await load();
-                        }}
-                      >
-                        Toggle
-                      </button>
-                      <button
-                        className="btn btn-sm btn-light-danger"
-                        onClick={async () => {
-                          await deleteSuperAdminAddonApi(addon.id);
-                          await load();
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <div className="dropdown">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-light btn-active-light-primary"
+                          data-bs-toggle="dropdown"
+                        >
+                          Actions
+                        </button>
+                        <ul className="dropdown-menu">
+                          <li>
+                            <button
+                              type="button"
+                              className="dropdown-item"
+                              onClick={() => setEditing(addon)}
+                            >
+                              Edit
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="button"
+                              className="dropdown-item"
+                              onClick={async () => {
+                                await toggleSuperAdminAddonApi(addon.id, !addon.is_active);
+                                await load();
+                              }}
+                            >
+                              Toggle
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="button"
+                              className="dropdown-item text-danger"
+                              onClick={async () => {
+                                await deleteSuperAdminAddonApi(addon.id);
+                                await load();
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
                     </td>
                   </tr>
                 ))}

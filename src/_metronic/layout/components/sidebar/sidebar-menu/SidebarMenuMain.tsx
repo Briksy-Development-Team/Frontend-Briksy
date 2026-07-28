@@ -29,26 +29,37 @@ const SidebarMenuMain = () => {
       )}
 
       {isSuperAdmin && hasPermission("user.view") && (
-        <SidebarMenuItemWithSub
-          to={`${portalBase}/users`}
-          title="User Management"
-          fontIcon="bi-archive"
-          icon="element-plus"
-          activePaths={[`${portalBase}/seekers`, `${portalBase}/staff`]}
-        >
-          <SidebarMenuItem
-            to={`${portalBase}/seekers`}
-            icon="abstract-28"
-            title="Seekers"
-            fontIcon="bi-layers"
-          />
-          <SidebarMenuItem
-            to={`${portalBase}/staff`}
-            icon="abstract-28"
-            title="Platform Staff"
-            fontIcon="bi-layers"
-          />
-        </SidebarMenuItemWithSub>
+        <>
+          <SidebarMenuItemWithSub
+            to={`${portalBase}/users`}
+            title="User Management"
+            fontIcon="bi-archive"
+            icon="element-plus"
+            activePaths={[`${portalBase}/seekers`]}
+          >
+            <SidebarMenuItem
+              to={`${portalBase}/seekers`}
+              icon="abstract-28"
+              title="Seekers"
+              fontIcon="bi-layers"
+            />
+          </SidebarMenuItemWithSub>
+
+          <SidebarMenuItemWithSub
+            to={`${portalBase}/superadmin-staff-menu`}
+            title="Superadmin Staff"
+            fontIcon="bi-shield-check"
+            icon="element-plus"
+            activePaths={[`${portalBase}/staff`]}
+          >
+            <SidebarMenuItem
+              to={`${portalBase}/staff`}
+              icon="abstract-28"
+              title="Platform Staff"
+              fontIcon="bi-layers"
+            />
+          </SidebarMenuItemWithSub>
+        </>
       )}
 
       {isSuperAdmin && hasPermission("company.view") && (
@@ -64,11 +75,12 @@ const SidebarMenuMain = () => {
             icon="abstract-28"
             title="Companies"
             fontIcon="bi-layers"
+            excludePaths={[`${portalBase}/companies/solo-traders`]}
           />
           <SidebarMenuItem
             to={`${portalBase}/companies/solo-traders`}
             icon="abstract-28"
-            title="Solo Traders"
+            title="Sole Traders"
             fontIcon="bi-layers"
           />
         </SidebarMenuItemWithSub>
