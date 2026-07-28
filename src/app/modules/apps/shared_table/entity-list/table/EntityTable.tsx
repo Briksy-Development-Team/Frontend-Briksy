@@ -53,18 +53,18 @@ const EntityTable = <T extends { id: string | number }>({
 
   return (
     <KTCardBody>
-      <div className="table-responsive border rounded">
+      <div className="table-responsive border rounded" style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto", overflowX: "auto" }}>
         <table
           className="table align-middle table-bordered fs-4 g-6 table-row-gray-300"
           {...getTableProps()}
         >
-          <thead>
+          <thead style={{ position: "sticky", top: 0, zIndex: 2, backgroundColor: "var(--bs-body-bg, #fff)", boxShadow: "0px 1px 3px rgba(0,0,0,0.1)" }}>
             {headerGroups.map((hg: any) => {
               const { key, ...rest } = hg.getHeaderGroupProps();
               return (
                 <tr key={key} {...rest}>
                   {onRowSelect && (
-                    <th style={{ width: 40 }}>
+                    <th style={{ width: 40, position: "sticky", left: 0, zIndex: 3, backgroundColor: "var(--bs-body-bg, #fff)", boxShadow: "2px 0px 4px rgba(0,0,0,0.05)" }}>
                       <input
                         type="checkbox"
                         checked={allSelected}
@@ -135,7 +135,7 @@ const EntityTable = <T extends { id: string | number }>({
                     }}
                   >
                     {onRowSelect && (
-                      <td onClick={(e) => e.stopPropagation()}>
+                      <td onClick={(e) => e.stopPropagation()} style={{ position: "sticky", left: 0, zIndex: 1, backgroundColor: isSelected ? "rgba(var(--bs-primary-rgb), 0.05)" : "var(--bs-body-bg, #fff)", boxShadow: "2px 0px 4px rgba(0,0,0,0.05)" }}>
                         <input
                           type="checkbox"
                           checked={isSelected}

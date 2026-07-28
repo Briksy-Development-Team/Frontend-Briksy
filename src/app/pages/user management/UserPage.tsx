@@ -72,7 +72,7 @@ const UserPage = () => {
     <>
       <Routes>
         <Route element={<Outlet />}>
-          <Route path="organization" element={<OrganizationPage />} />
+          <Route path="organization" element={<OrganizationPage rowActions={organizationRowActions} />} />
           <Route path="organization/:id" element={<GenericDetailPage rowActions={organizationRowActions} />} />
 
           <Route path="solo/:id" element={<GenericDetailPage rowActions={organizationRowActions} />} />

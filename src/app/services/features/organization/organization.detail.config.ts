@@ -193,14 +193,14 @@ export const organizationDetailConfig: DetailConfig<any> = {
               return;
             }
 
-            window.location.href = `${scopeBase}/properties/${propertyId}`;
+            window.location.href = `${scopeBase}/property-management/${propertyId}`;
           },
         },
       ],
       getRowLink: (row) =>
         getPortalBase() === "/super-admin"
-          ? `/super-admin/properties/${getDisplayId(row)}`
-          : `/admin/properties/${getDisplayId(row)}`,
+          ? `/super-admin/property-management/${getDisplayId(row)}`
+          : `/admin/property-management/${getDisplayId(row)}`,
     },
     {
       id: "services_table",

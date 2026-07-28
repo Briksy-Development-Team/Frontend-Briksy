@@ -10,7 +10,7 @@ import { Content } from "../../../../_metronic/layout/components/content";
 import { useRoleAccess } from "../../../modules/auth";
 import { getRolePortalBaseRoute } from "../../../modules/auth/core/roleRoutes";
 
-const OrganizationPage = () => {
+const OrganizationPage = ({ rowActions: externalRowActions }: { rowActions?: any[] }) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { isSuperAdmin } = useRoleAccess();
@@ -22,16 +22,19 @@ const OrganizationPage = () => {
     const { params, handleParamsChange } = useEntityTable(
         (p) => dispatch(fetchOrganization(p))
     );
-    const rowActions = isSuperAdmin
-        ? [
-              {
-                  label: "Review Properties",
-                  permission: "company.view",
-                  onClick: (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
-                      navigate(`${portalBase}/companies/organization/${resolveOrganizationId(row)}`),
-              },
-          ]
-        : undefined;
+    const rowActions = [
+        ...(isSuperAdmin
+            ? [
+                  {
+                      label: "Review Properties",
+                      permission: "company.view",
+                      onClick: (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
+                          navigate(`${portalBase}/companies/organization/${resolveOrganizationId(row)}`),
+                  },
+              ]
+            : []),
+        ...(externalRowActions || []),
+    ];
 
     if (error) return (
         <Content>

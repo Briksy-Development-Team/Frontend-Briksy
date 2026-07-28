@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { KTCard } from "../../../../../_metronic/helpers";
 import { EntityTable } from "./table/EntityTable";
 import { EntityHeader } from "./components/header/EntityHeader";
-import { SideFilter } from "./components/header/SideFilter";
 import Paginations from "./components/Pagination";
 import { exportToExcel } from "../utils/exportToExcel";
 import type { ReactNode } from "react";
@@ -64,7 +63,6 @@ const EntityList = <T extends { id: number | string }>({
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   const [isMobile, setIsMobile] = useState(false);
-  const [showFilter, setShowFilter] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Set<T["id"]>>(new Set());
 
   useEffect(() => {
@@ -133,7 +131,6 @@ const EntityList = <T extends { id: number | string }>({
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
             isMobile={isMobile}
-            onOpenFilter={() => setShowFilter(true)}
             onExport={() => setIsExportOpen(true)}
             selectedCount={selectedRows.size}
             onSortChange={(config) =>
@@ -145,6 +142,10 @@ const EntityList = <T extends { id: number | string }>({
               })
             }
             headerActions={headerActions}
+            filtersConfig={filtersConfig}
+            onFilterChange={(filters) =>
+              onParamsChange({ ...params, filters, page: 1 })
+            }
           />
 
           <EntityTable
@@ -170,50 +171,6 @@ const EntityList = <T extends { id: number | string }>({
         </KTCard>
       </div>
 
-      {filtersConfig && !isMobile && (
-        <div style={{ width: 280 }}>
-          <SideFilter
-            filters={filtersConfig}
-            onFilterChange={(filters) =>
-              onParamsChange({ ...params, filters, page: 1 })
-            }
-          />
-        </div>
-      )}
-
-      {filtersConfig && isMobile && showFilter && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 1050,
-            background: "rgba(0,0,0,0.4)",
-            display: "flex",
-            alignItems: "flex-end",
-          }}
-          onClick={() => setShowFilter(false)}
-        >
-          <div
-            style={{
-              width: "100%",
-              maxHeight: "80vh",
-              overflowY: "auto",
-              borderRadius: "16px 16px 0 0",
-              background: "var(--kt-card-bg)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <SideFilter
-              filters={filtersConfig}
-              onFilterChange={(f) => {
-                onParamsChange({ ...params, filters: f, page: 1 });
-                setShowFilter(false);
-              }}
-            />
-          </div>
-        </div>
-      )}
-
       {isExportOpen && (
         <ExportModal
           selectedCount={selectedRows.size}
@@ -228,3 +185,4 @@ const EntityList = <T extends { id: number | string }>({
 };
 
 export { EntityList };
+
