@@ -65,7 +65,7 @@ const SidebarMenuMain = () => {
       {isSuperAdmin && hasPermission("company.view") && (
         <SidebarMenuItemWithSub
           to={`${portalBase}/companies`}
-          title="Companies / Organisations"
+          title="Organisations"
           fontIcon="bi-archive"
           icon="element-plus"
           activePaths={[`${portalBase}/companies/solo-traders`]}
@@ -73,7 +73,7 @@ const SidebarMenuMain = () => {
           <SidebarMenuItem
             to={`${portalBase}/companies`}
             icon="abstract-28"
-            title="Companies"
+            title="Organisations"
             fontIcon="bi-layers"
             excludePaths={[`${portalBase}/companies/solo-traders`]}
           />
