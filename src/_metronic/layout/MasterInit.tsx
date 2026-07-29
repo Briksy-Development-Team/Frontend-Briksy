@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {Tab} from 'bootstrap'
 import {
   MenuComponent,
@@ -15,7 +15,7 @@ import {useLayout} from './core'
 
 export function MasterInit() {
   const {config} = useLayout()
-  const [initialized, setInitialized] = useState(false)
+
   const pluginsInitialization = () => {
     ThemeModeComponent.init()
     setTimeout(() => {
@@ -33,11 +33,9 @@ export function MasterInit() {
   }
 
   useEffect(() => {
-    if (!initialized) {
-      setInitialized(true)
-      pluginsInitialization()
-    }
-  }, [config, initialized])
+    pluginsInitialization()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config])
 
   return <></>
 }
