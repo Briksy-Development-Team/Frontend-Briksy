@@ -1,0 +1,55 @@
+//
+// Small desktop breakpoint (13" laptop: 992px – 1366px)
+// Adjusts Metronic's existing CSS variables for tighter screens.
+// Does NOT override mobile or large desktop styles.
+//
+
+@media (min-width: 992px) and (max-width: 1366px) {
+
+    // Shrink sidebar width — saves ~25px of horizontal space
+    :root {
+        --kt-app-sidebar-width: 240px;
+        --kt-app-sidebar-width-actual: 240px;
+    }
+
+    // Tighter container padding
+    .app-container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    // Slightly smaller header
+    .app-header {
+        --kt-app-header-height: 64px;
+    }
+
+    // Tighten page title spacing
+    .app-page-title {
+        padding-top: 16px !important;
+        padding-bottom: 16px !important;
+    }
+
+    // Tighten card body padding so tables breathe
+    .card > .card-body {
+        padding: 1.25rem !important;
+    }
+
+    // Tighten card header
+    .card > .card-header {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+        min-height: 56px !important;
+    }
+
+    // Slightly smaller base font so more data fits
+    body {
+        font-size: 12.5px;
+    }
+
+    // Toolbar tighter
+    .app-toolbar {
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
+        --kt-app-toolbar-height: 48px;
+    }
+}
