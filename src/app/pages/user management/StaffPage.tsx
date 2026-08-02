@@ -130,7 +130,7 @@ const StaffPage = () => {
           isSubmitting={saving}
           onClose={() => dispatch(closeStaffModal())}
           onSubmit={(values) =>
-            dispatch(saveStaff({ id: editingStaff?.id, values }))
+            dispatch(saveStaff({ id: editingStaff?.id, values })).unwrap()
           }
         />
       )}

@@ -12,6 +12,13 @@ type Props = {
 
 export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, onSelectPlan }: Props) => {
   const currentPlan = plans.find((p) => p.is_current)
+  const familyLabel = (family?: string) => {
+    if (family === 'trades_professional') {
+      return 'Trades & Professionals'
+    }
+
+    return 'Real Estate Owners'
+  }
 
   return (
     <div style={{ fontFamily: 'Inter, Helvetica, sans-serif' }}>
@@ -181,7 +188,13 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
 
                   {/* Plan icon + name */}
                   <div style={{ marginBottom: 20 }}>
-                
+                    <span
+                      className='badge badge-light mb-3'
+                      style={{ background: isPopular ? 'rgba(255,255,255,0.14)' : '#f6f1ea', color: isPopular ? '#fff' : '#6b5846' }}
+                    >
+                      {familyLabel(plan.plan_family)}
+                    </span>
+
                     <h4
                       style={{
                         fontSize: 28,

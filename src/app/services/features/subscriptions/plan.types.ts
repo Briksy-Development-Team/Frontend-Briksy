@@ -4,6 +4,8 @@ export type PlanFeature = {
   value?: number | null;
 };
 
+export type PlanFamily = "property_owner" | "trades_professional";
+
 export type PlanPermission = {
   id: string;
   name: string;
@@ -21,6 +23,7 @@ export type PlanSubscriptionSummary = {
   plan?: {
     id: string;
     name: string;
+    plan_family?: PlanFamily;
     price: number;
   } | null;
   current_subscription?: {
@@ -33,6 +36,7 @@ export type PlanSubscriptionSummary = {
 
 export type Plan = {
   id: string;
+  plan_family?: PlanFamily;
   name: string;
   description?: string | null;
   price: number;
@@ -67,6 +71,7 @@ export type Plan = {
 };
 
 export type PlanFormValues = {
+  plan_family: PlanFamily;
   name: string;
   description?: string | null;
   price: number;

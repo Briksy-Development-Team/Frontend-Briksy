@@ -5,10 +5,11 @@ import { KTIcon } from '../../../../_metronic/helpers'
 type Props = {
   title: string
   onClose: () => void
-  onSubmit: () => void
+  onSubmit: () => void | Promise<unknown>
   isSubmitting?: boolean
   submitLabel?: string
   isValid?: boolean
+  dialogClassName?: string
   children: React.ReactNode
 }
 
@@ -19,8 +20,19 @@ const ModalShell = ({
   isSubmitting = false,
   submitLabel = 'Save',
   isValid = true,
+  dialogClassName = "mw-650px",
   children,
 }: Props) => {
+  const handleSubmit = async () => {
+    const result = onSubmit()
+
+    if (result && typeof (result as Promise<unknown>).then === "function") {
+      await result
+    }
+
+    onClose()
+  }
+
   return (
     <div
       className="modal fade show d-block"
@@ -28,7 +40,7 @@ const ModalShell = ({
       onClick={onClose}
     >
       <div
-        className="modal-dialog modal-dialog-centered mw-650px"
+        className={`modal-dialog modal-dialog-centered ${dialogClassName}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-content">
@@ -67,7 +79,7 @@ const ModalShell = ({
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={onSubmit}
+                onClick={() => void handleSubmit()}
                 disabled={!isValid || isSubmitting}
               >
                 {isSubmitting ? 'Saving...' : submitLabel}

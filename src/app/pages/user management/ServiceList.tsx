@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchServiceList,
@@ -9,10 +9,11 @@ import {
     openDeleteServiceModal,
     closeDeleteServiceModal,
 } from "../../services/features/service/service_service_list.slice";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 
 import ServiceModal from "../../services/features/service/component/ServiceModal";
+import ServiceImportModal from "../../services/features/service/component/ServiceImportModal";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { serviceListConfig } from "../../services/features/service/service_list.config";
 import type { RootState, AppDispatch } from "../../services/store";
@@ -22,14 +23,17 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import ServiceMapPage from "../platform/ServiceMapPage";
 
 const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const resolveServiceId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
       row.display_id ?? row.generated_id ?? row.id;
   const canManage = true;
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const {
         data,
         total,
@@ -91,9 +95,26 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 permission: "service.create",
                 onClick: () => dispatch(openServiceModal(null)),
             },
+            {
+                label: "Import Services",
+                permission: "service.create",
+                onClick: () => setIsImportOpen(true),
+            },
+            {
+                label: "Coverage Map",
+                permission: "service.view",
+                onClick: () => navigate(`${portalBase}/services/map`),
+            },
         ]}
                 rowActions={rowActions}
             />
+
+            {isImportOpen && (
+                <ServiceImportModal
+                    onClose={() => setIsImportOpen(false)}
+                    onCompleted={() => dispatch(fetchServiceList(params))}
+                />
+            )}
         </Content>
     );
 };
@@ -129,6 +150,7 @@ const ServiceListPageWrapper = () => {
         <>
             <Routes>
                 <Route index element={<ServiceListPage rowActions={rowActions} />} />
+                <Route path="map" element={<ServiceMapPage />} />
                 <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} />} />
                 <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
             </Routes>
@@ -139,7 +161,7 @@ const ServiceListPageWrapper = () => {
                     isSubmitting={saving}
                     onClose={() => dispatch(closeServiceModal())}
                     onSubmit={(values) =>
-                        dispatch(saveService({ id: editingService?.id, values }))
+                        dispatch(saveService({ id: editingService?.id, values })).unwrap()
                     }
                 />
             )}

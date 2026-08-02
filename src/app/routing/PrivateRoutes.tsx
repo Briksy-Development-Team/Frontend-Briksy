@@ -366,7 +366,7 @@ const PrivateRoutes = () => {
           path="/admin/property-map/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <PermissionGuard anyOf={["property.map"]}>
+              <PermissionGuard anyOf={["property.view"]}>
                 <SuspensedView>
                   <PropertyMapPage />
                 </SuspensedView>

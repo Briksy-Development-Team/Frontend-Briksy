@@ -6,6 +6,7 @@ import type { PermissionGroup } from "../../services/features/permissions/permis
 import type { Addon } from "../../services/features/billing/billing.types";
 import {
   DEFAULT_FEATURES,
+  type PlanFamily,
   type Plan,
   type PlanFeature,
   type PlanFormValues,
@@ -18,6 +19,7 @@ type Props = {
   isSubmitting?: boolean;
   permissionGroups?: PermissionGroup[];
   availableAddons?: Addon[];
+  defaultFamily?: PlanFamily;
 };
 
 const defaultFeatureList = (): PlanFeature[] =>
@@ -46,10 +48,12 @@ const PlanModal = ({
   isSubmitting,
   permissionGroups = [],
   availableAddons = [],
+  defaultFamily = "property_owner",
 }: Props) => {
   const isEdit = !!initialValues;
 
   const [form, setForm] = useState<PlanFormValues>({
+    plan_family: defaultFamily,
     name: "",
     description: "",
     price: 0,
@@ -76,10 +80,15 @@ const PlanModal = ({
   useEffect(() => {
     if (!initialValues) {
       setPermissionSearch("");
+      setForm((current) => ({
+        ...current,
+        plan_family: defaultFamily,
+      }));
       return;
     }
 
     setForm({
+      plan_family: initialValues.plan_family ?? defaultFamily,
       name: initialValues.name,
       description: initialValues.description ?? "",
       price: initialValues.price,
@@ -95,11 +104,15 @@ const PlanModal = ({
       addon_ids: initialValues.addons?.map((addon) => addon.id) ?? [],
     });
     setPermissionSearch("");
-  }, [initialValues]);
+  }, [defaultFamily, initialValues]);
 
   const isValid = useMemo(
-    () => form.name.trim().length > 0 && form.price >= 0 && form.propertyLimit >= 0,
-    [form.name, form.price, form.propertyLimit],
+    () =>
+      form.plan_family.length > 0 &&
+      form.name.trim().length > 0 &&
+      form.price >= 0 &&
+      form.propertyLimit >= 0,
+    [form.name, form.plan_family, form.price, form.propertyLimit],
   );
 
   const filteredPermissionGroups = useMemo(() => {
@@ -289,6 +302,23 @@ const PlanModal = ({
       isValid={isValid}
     >
       <div className="fv-row mb-7">
+        <label className="fw-bold fs-6 mb-2">Plan Family</label>
+        <select
+          className="form-select form-select-solid"
+          value={form.plan_family}
+          onChange={(event) =>
+            setForm((current) => ({
+              ...current,
+              plan_family: event.target.value as PlanFamily,
+            }))
+          }
+        >
+          <option value="property_owner">Real Estate Owners</option>
+          <option value="trades_professional">Trades & Professionals</option>
+        </select>
+      </div>
+
+      <div className="fv-row mb-7">
         <label className="required fw-bold fs-6 mb-2">Plan Name</label>
         <input
           type="text"
@@ -309,7 +339,7 @@ const PlanModal = ({
 
       <div className="row g-5 mb-7">
         <div className="col-md-6">
-          <label className="required fw-bold fs-6 mb-2">Legacy Price</label>
+          <label className="required fw-bold fs-6 mb-2">Monthly Price</label>
           <input
             type="number"
             className={clsx("form-control form-control-solid", {
@@ -330,7 +360,9 @@ const PlanModal = ({
         </div>
 
         <div className="col-md-6">
-          <label className="required fw-bold fs-6 mb-2">Property Limit</label>
+          <label className="required fw-bold fs-6 mb-2">
+            {form.plan_family === "trades_professional" ? "Service Area / Suburb Limit" : "Property Limit"}
+          </label>
           <input
             type="number"
             className={clsx("form-control form-control-solid", {

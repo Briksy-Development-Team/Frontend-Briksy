@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Content } from '../../../_metronic/layout/components/content'
 import { PageHeader } from '../../modules/apps/shared_table/entity-list/components/header/PageHeader'
@@ -16,7 +16,7 @@ import {
     fetchPlans, savePlan, removePlan, changePlan,
     openPlanModal, closePlanModal,
 } from '../../services/features/subscriptions/plan.slice'
-import type { Plan, PlanSubscriptionSummary } from '../../services/features/subscriptions/plan.types'
+import type { Plan, PlanFamily, PlanSubscriptionSummary } from '../../services/features/subscriptions/plan.types'
 import type { RootState, AppDispatch } from '../../services/store'
 import { useRoleAccess } from '../../modules/auth'
 import type { PermissionGroup } from '../../services/features/permissions/permission.types'
@@ -33,9 +33,36 @@ const Subscription = () => {
 
     const [deletingPlan, setDeletingPlan] = useState<Plan | null>(null)
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
+    const [selectedFamily, setSelectedFamily] = useState<PlanFamily>("property_owner")
+    const [familyTouched, setFamilyTouched] = useState(false)
     const [permissionGroups, setPermissionGroups] = useState<PermissionGroup[]>([])
     const [subscriptionSummary, setSubscriptionSummary] = useState<PlanSubscriptionSummary | null>(null)
     const [availableAddons, setAvailableAddons] = useState<any[]>([])
+
+    const availableFamilies = useMemo(() => {
+        const families = plans.map((plan) => plan.plan_family ?? "property_owner")
+        return Array.from(new Set(families))
+    }, [plans])
+
+    useEffect(() => {
+        if (familyTouched) {
+            return
+        }
+
+        const preferredFamily = (
+            subscriptionSummary?.plan?.plan_family
+            ?? plans.find((plan) => plan.is_current)?.plan_family
+            ?? availableFamilies[0]
+            ?? "property_owner"
+        ) as PlanFamily
+
+        setSelectedFamily(preferredFamily)
+    }, [availableFamilies, familyTouched, plans, subscriptionSummary?.plan?.plan_family])
+
+    const visiblePlans = useMemo(
+        () => plans.filter((plan) => (plan.plan_family ?? "property_owner") === selectedFamily),
+        [plans, selectedFamily],
+    )
     useEffect(() => {
         void dispatch(fetchPlans())
     }, [dispatch])
@@ -102,6 +129,10 @@ const Subscription = () => {
         ? (selectedPlan.propertyLimit ?? selectedPlan.features.find((feature) => feature.name.toLowerCase() === "property listings")?.value ?? "unlimited")
         : null
 
+    const selectedPlanCapacityLabel = selectedPlan?.plan_family === "trades_professional"
+        ? "suburbs"
+        : "properties"
+
     if (loading) return <Content><div className="p-10">Loading...</div></Content>
 
     return (
@@ -120,8 +151,29 @@ const Subscription = () => {
                 </div>
             ) : null}
 
+            <div className="d-flex flex-wrap gap-2 mb-5">
+                {availableFamilies.map((family) => {
+                    const active = selectedFamily === family
+                    const label = family === "trades_professional" ? "Trades & Professionals" : "Real Estate Owners"
+
+                    return (
+                        <button
+                            key={family}
+                            type="button"
+                            className={`btn ${active ? "btn-primary" : "btn-light"} btn-sm`}
+                            onClick={() => {
+                                setFamilyTouched(true)
+                                setSelectedFamily(family)
+                            }}
+                        >
+                            {label}
+                        </button>
+                    )
+                })}
+            </div>
+
             <SubscriptionList
-                plans={plans}
+                plans={visiblePlans}
                 canManage={canManage}
                 onAdd={canManage ? () => dispatch(openPlanModal(null)) : undefined}
                 onEdit={canManage ? (plan) => dispatch(openPlanModal(plan)) : undefined}
@@ -134,6 +186,7 @@ const Subscription = () => {
                     initialValues={editingPlan}
                     isSubmitting={saving}
                     onClose={() => dispatch(closePlanModal())}
+                    defaultFamily={selectedFamily}
                     availableAddons={availableAddons as any[]}
                     onSubmit={async (values) => {
                         const saved = await dispatch(savePlan({ id: editingPlan?.id, values })).unwrap()
@@ -166,7 +219,7 @@ const Subscription = () => {
                     <div className="text-center py-4">
                         <h4 className="fw-bold mb-2">Switch to {selectedPlan.name}</h4>
                         <p className="text-gray-700 fs-5">
-                            ${selectedPlan.price}/month — up to {selectedPlanPropertyLimit} properties
+                            ${selectedPlan.price}/month — up to {selectedPlanPropertyLimit} {selectedPlanCapacityLabel}
                         </p>
                         <p className="text-muted fs-6">
                             This change takes effect immediately and your billing will be updated.
