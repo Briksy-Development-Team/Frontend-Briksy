@@ -4,7 +4,7 @@ import { MenuComponent } from "../../../../../../../_metronic/assets/ts/componen
 
 type Range = { min?: number; max?: number };
 type DateRange = { from?: string; to?: string };
-type FilterValue = (string | number)[] | Range | DateRange;
+type FilterValue = (string | number)[] | Range | DateRange | string | boolean;
 
 type FilterConfig =
   | {
@@ -14,7 +14,9 @@ type FilterConfig =
       options: string[] | { label: string; value: string | number }[];
     }
   | { key: string; label: string; type: "range" }
-  | { key: string; label: string; type: "dateRange" };
+  | { key: string; label: string; type: "dateRange" }
+  | { key: string; label: string; type: "text" }
+  | { key: string; label: string; type: "boolean" };
 
 // ── Date preset helpers ──────────────────────────────────────────────────
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
@@ -133,6 +135,8 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
     if (Array.isArray(val)) return val.length;
     if ("min" in val || "max" in val) return val.min || val.max ? 1 : 0;
     if ("from" in val || "to" in val) return val.from || val.to ? 1 : 0;
+    if (typeof val === "string") return val.trim().length > 0 ? 1 : 0;
+    if (typeof val === "boolean") return val ? 1 : 0;
     return 0;
   };
 
@@ -277,6 +281,40 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
                           />
                         </div>
                       </div>
+                    </div>
+                  )}
+
+                  {f.type === "text" && (
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder={`Filter by ${f.label.toLowerCase()}`}
+                        value={(values[f.key] as string) ?? ""}
+                        onChange={(e) => setValues(prev => ({ ...prev, [f.key]: e.target.value }))}
+                      />
+                    </div>
+                  )}
+
+                  {f.type === "boolean" && (
+                    <div className="mt-2">
+                      <label className="form-check form-check-custom form-check-solid mb-2">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          checked={(values[f.key] as boolean) ?? false}
+                          onChange={(e) => setValues(prev => {
+                            const next = { ...prev };
+                            if (e.target.checked) {
+                              next[f.key] = true;
+                            } else {
+                              delete next[f.key];
+                            }
+                            return next;
+                          })}
+                        />
+                        <span className="mx-3 form-check-label text-gray-800">Yes / Enabled</span>
+                      </label>
                     </div>
                   )}
                 </div>
