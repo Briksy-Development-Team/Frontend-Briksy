@@ -152,7 +152,7 @@ const CouponPage = () => {
                 id: editingCoupon?.id,
                 values,
               }),
-            )
+            ).unwrap()
           }
         />
       )}
@@ -160,7 +160,7 @@ const CouponPage = () => {
       {isValidationModalOpen && (
         <CouponValidationModal
           onClose={() => dispatch(closeValidationModal())}
-          onSubmit={(values) => dispatch(validateCoupon(values))}
+          onSubmit={(values) => dispatch(validateCoupon(values)).unwrap()}
         />
       )}
       {deleteModalOpen && deletingCoupon && (

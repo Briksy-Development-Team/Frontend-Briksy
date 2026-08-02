@@ -25,6 +25,7 @@ import { Routes, Route, useSearchParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import PropertyModal from "../../services/features/properties/component/PropertyModal";
+import PropertyImportModal from "../../services/features/properties/component/PropertyImportModal";
 import PropertyMapView from "../../services/features/properties/component/PropertyMapView";
 import { fetchPropertyApi } from "../../services/features/properties/property.api";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
@@ -40,6 +41,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const [mapProperties, setMapProperties] = useState<PropertyList[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [mapFilters, setMapFilters] = useState({
     status: "",
     suburb: "",
@@ -51,7 +53,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
   const { isSuperAdmin } = useRoleAccess();
   const location = useLocation();
-  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
+  const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]) as "/super-admin" | "/admin";
   const resolvePropertyId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
     row.display_id ?? row.generated_id ?? row.id;
   const {
@@ -181,6 +183,24 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
       },
     ];
   const propertyRowActions = isSuperAdmin ? [...reviewRowActions, ...defaultPropertyRowActions] : defaultPropertyRowActions;
+  const headerActions = [
+    !isSuperAdmin
+      ? {
+          label: "Import Properties",
+          permission: "property.create",
+          onClick: () => setIsImportModalOpen(true),
+        }
+      : null,
+    {
+      label: "Add Property",
+      permission: "property.create",
+      onClick: () => dispatch(openPropertyModal(null)),
+    },
+  ].filter(Boolean) as {
+    label: string;
+    permission?: string;
+    onClick: () => void;
+  }[];
 
   if (error)
     return (
@@ -269,13 +289,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
                   filtersConfig={propertyListConfig.filters}
                   getRowLink={(row) => `${portalBase}/property-management/${resolvePropertyId(row)}`}
                   enableRowClick
-                  headerActions={[
-                    {
-                      label: "Add Property",
-                      permission: "property.create",
-                      onClick: () => dispatch(openPropertyModal(null)),
-                    },
-                  ]}
+                  headerActions={headerActions}
                   rowActions={propertyRowActions}
                 />
               ) : (
@@ -359,7 +373,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
                   {mapLoading ? <div className="alert alert-light">Loading property map...</div> : null}
                   {mapError ? <div className="alert alert-danger">{mapError}</div> : null}
-                  {!mapLoading && !mapError ? <PropertyMapView properties={mapProperties} /> : null}
+                  {!mapLoading && !mapError ? <PropertyMapView properties={mapProperties} portalBase={portalBase} /> : null}
                 </div>
               )}
             </Content>
@@ -404,6 +418,14 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
         />
       )}
       {reviewModal}
+      {isImportModalOpen ? (
+        <PropertyImportModal
+          onClose={() => setIsImportModalOpen(false)}
+          onCompleted={() => {
+            void dispatch(fetchPropertyList(params));
+          }}
+        />
+      ) : null}
     </>
   );
 };

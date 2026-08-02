@@ -146,7 +146,7 @@ const OrderPage = () => {
                 id: editingOrder?.id,
                 values,
               }),
-            )
+            ).unwrap()
           }
         />
       )}

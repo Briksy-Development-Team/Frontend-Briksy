@@ -135,7 +135,7 @@ export default function PlanRequestPage() {
                 id: editingRequest?.id,
                 values,
               }),
-            )
+            ).unwrap()
           }
         />
       )}
@@ -157,7 +157,7 @@ export default function PlanRequestPage() {
                   id: reviewingRequest.id,
                   payload,
                 }),
-            )
+            ).unwrap()
           }
         />
       )}
