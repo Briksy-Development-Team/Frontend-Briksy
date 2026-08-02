@@ -64,9 +64,24 @@ export const propertyListConfig = {
       options: ["Draft", "Pending Review", "Approved", "Rejected", "Published", "Archived"],
     },
     {
-      key: "created_at",
-      label: "Created Date",
-      type: "dateRange" as const,
+      key: "suburb",
+      label: "Suburb",
+      type: "text" as const,
+    },
+    {
+      key: "state",
+      label: "State",
+      type: "text" as const,
+    },
+    {
+      key: "postcode",
+      label: "Postcode",
+      type: "text" as const,
+    },
+    {
+      key: "verified_only",
+      label: "Verified Only",
+      type: "boolean" as const,
     },
   ],
 

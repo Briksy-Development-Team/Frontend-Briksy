@@ -20,7 +20,7 @@ $app-container-padding-x-mobile: 20px;
 // Header base
 $app-header-base-height: 74px;
 $app-header-base-height-mobile: 60px;
-$app-header-base-bg-color: transparent;
+$app-header-base-bg-color: $body-bg;
 $app-header-base-bg-color-dark: #241c14;
 $app-header-base-bg-color-mobile: $app-header-base-bg-color;
 $app-header-base-bg-color-mobile-dark: $app-header-base-bg-color-dark;

@@ -15,7 +15,7 @@ export const buildApiParams = (params: {
     ? Object.fromEntries(
         Object.entries(params.filters)
           .filter(([, v]) => v !== undefined && v !== null && v !== "")
-          .map(([k, v]) => [k, Array.isArray(v) && v.length === 1 ? v[0] : v])
+          .map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : v])
       )
     : undefined,
 });
