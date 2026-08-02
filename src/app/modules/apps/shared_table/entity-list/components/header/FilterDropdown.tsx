@@ -18,6 +18,9 @@ type FilterConfig =
   | { key: string; label: string; type: "text" }
   | { key: string; label: string; type: "boolean" };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
 // ── Date preset helpers ──────────────────────────────────────────────────
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -133,8 +136,14 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
     const val = values[key];
     if (!val) return 0;
     if (Array.isArray(val)) return val.length;
-    if ("min" in val || "max" in val) return val.min || val.max ? 1 : 0;
-    if ("from" in val || "to" in val) return val.from || val.to ? 1 : 0;
+    if (isRecord(val) && ("min" in val || "max" in val)) {
+      const range = val as Partial<Range>;
+      return range.min || range.max ? 1 : 0;
+    }
+    if (isRecord(val) && ("from" in val || "to" in val)) {
+      const range = val as Partial<DateRange>;
+      return range.from || range.to ? 1 : 0;
+    }
     if (typeof val === "string") return val.trim().length > 0 ? 1 : 0;
     if (typeof val === "boolean") return val ? 1 : 0;
     return 0;
