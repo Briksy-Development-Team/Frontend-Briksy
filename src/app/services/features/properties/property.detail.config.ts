@@ -1,5 +1,7 @@
+import React from "react";
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import { getDisplayId } from "../../utils/displayId";
+import PropertyOffersSection from "./PropertyOffersSection";
 
 export const propertyDetailConfig: DetailConfig<any> = {
   header: {
@@ -54,6 +56,12 @@ export const propertyDetailConfig: DetailConfig<any> = {
       id: "activity",
       label: "Activity",
       sections: ["activity_timeline"],
+    },
+    {
+      id: "offers",
+      label: "Briksy Exclusive",
+      sections: ["exclusive_offers"],
+      showIf: (data) => Array.isArray(data?.briksy_exclusive_offers) && data.briksy_exclusive_offers.length > 0,
     },
   ],
   sections: [
@@ -133,6 +141,14 @@ export const propertyDetailConfig: DetailConfig<any> = {
       type: "timeline",
       title: "Status History",
       gridColumnSpan: 12,
+    },
+    {
+      id: "exclusive_offers",
+      type: "custom",
+      title: "BRIKSY EXCLUSIVE",
+      gridColumnSpan: 12,
+      showIf: (data) => Array.isArray(data?.briksy_exclusive_offers) && data.briksy_exclusive_offers.length > 0,
+      component: (props) => React.createElement(PropertyOffersSection, { data: props.data }),
     },
   ],
 };

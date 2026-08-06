@@ -41,6 +41,18 @@ type PropertyApi = {
     name: string;
     slug?: string;
   } | null;
+  has_briksy_exclusive_offer?: boolean;
+  briksy_exclusive_offers?: {
+    id: string;
+    title: string;
+    tag_label?: string | null;
+    summary?: string | null;
+    description?: string | null;
+    highlights?: string[] | null;
+    terms?: string | null;
+    starts_at?: string | null;
+    ends_at?: string | null;
+  }[];
   rating?: number;
   images?: {
     id?: string;
@@ -107,6 +119,8 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   location_verified_at: item.location_verified_at ?? null,
   property_type_id: item.property_type_id ?? null,
   property_type: item.property_type ?? null,
+  has_briksy_exclusive_offer: item.has_briksy_exclusive_offer ?? false,
+  briksy_exclusive_offers: item.briksy_exclusive_offers ?? [],
   organization: item.organization ?? null,
   creator: item.creator ?? null,
   timeline_events: item.timeline_events ?? [],
@@ -145,6 +159,8 @@ export const mapProperty = (item: PropertyApi): Property => ({
   location_verified_at: item.location_verified_at ?? null,
   property_type_id: item.property_type_id ?? null,
   property_type: item.property_type ?? null,
+  has_briksy_exclusive_offer: item.has_briksy_exclusive_offer ?? false,
+  briksy_exclusive_offers: item.briksy_exclusive_offers ?? [],
   rating: item.rating,
   images: item.images ?? [],
   videos: item.videos ?? [],

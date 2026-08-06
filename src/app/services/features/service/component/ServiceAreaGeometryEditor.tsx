@@ -28,7 +28,9 @@ const getFriendlyGoogleMapsError = (error: unknown) => {
 const ServiceAreaGeometryEditor = ({ value, onChange, addressHint }: Props) => {
   const mapRef = useRef<any>(null);
   const polygonRef = useRef<any>(null);
-  const drawingManagerRef = useRef<any>(null);
+  const previewLineRef = useRef<any>(null);
+  const mapClickListenerRef = useRef<any>(null);
+  const drawingEnabledRef = useRef(false);
   const geocoderRef = useRef<any>(null);
   const listenersRef = useRef<any[]>([]);
   const [loadState, setLoadState] = useState<"idle" | "loading" | "ready" | "error">("idle");
@@ -49,6 +51,54 @@ const ServiceAreaGeometryEditor = ({ value, onChange, addressHint }: Props) => {
       lng: point.lng(),
     })) ?? [];
 
+    onChange(pathToGeometry(path));
+  };
+
+  const clearPolygon = () => {
+    clearPathListeners();
+
+    if (polygonRef.current) {
+      polygonRef.current.setMap(null);
+      polygonRef.current = null;
+    }
+  };
+
+  const clearPreviewLine = () => {
+    if (previewLineRef.current) {
+      previewLineRef.current.setMap(null);
+      previewLineRef.current = null;
+    }
+  };
+
+  const setPolygonPath = (path: { lat: number; lng: number }[], map: any) => {
+    if (path.length < 3) {
+      return;
+    }
+
+    if (!polygonRef.current) {
+      polygonRef.current = new window.google.maps.Polygon({
+        paths: path,
+        editable: true,
+        draggable: true,
+        fillColor: "#0d6efd",
+        fillOpacity: 0.2,
+        strokeColor: "#0d6efd",
+        strokeWeight: 2,
+      });
+      polygonRef.current.setMap(map);
+
+      const polygonPath = polygonRef.current.getPath();
+      listenersRef.current.push(
+        polygonPath.addListener("insert_at", () => syncGeometryFromPolygon(polygonRef.current)),
+        polygonPath.addListener("set_at", () => syncGeometryFromPolygon(polygonRef.current)),
+        polygonRef.current.addListener("dragend", () => syncGeometryFromPolygon(polygonRef.current)),
+      );
+    } else {
+      polygonRef.current.setPaths(path);
+      polygonRef.current.setMap(map);
+    }
+
+    clearPreviewLine();
     onChange(pathToGeometry(path));
   };
 
@@ -84,95 +134,56 @@ const ServiceAreaGeometryEditor = ({ value, onChange, addressHint }: Props) => {
 
         const map = mapRef.current;
         geocoderRef.current = geocoderRef.current ?? new window.google.maps.Geocoder();
+        drawingEnabledRef.current = initialPath.length < 3;
 
-        if (addressHint?.trim()) {
-          geocoderRef.current.geocode({ address: addressHint.trim() }, (results: any[], status: string) => {
-            if (!active || !mapRef.current) {
-              return;
-            }
+        mapClickListenerRef.current?.remove?.();
+        mapClickListenerRef.current = map.addListener("click", (event: any) => {
+          if (!drawingEnabledRef.current || !event?.latLng) {
+            return;
+          }
 
-            if (status === "OK" && results?.[0]?.geometry?.location) {
-              mapRef.current.setCenter(results[0].geometry.location);
-            }
-          });
-        }
+          const point = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng(),
+          };
 
-        if (polygonRef.current) {
-          clearPathListeners();
-          polygonRef.current.setMap(null);
-          polygonRef.current = null;
-        }
+          const nextPath = [
+            ...(previewLineRef.current?.getPath?.()?.getArray?.()?.map((marker: any) => ({
+              lat: marker.lat(),
+              lng: marker.lng(),
+            })) ?? []),
+            point,
+          ];
+
+          if (previewLineRef.current) {
+            previewLineRef.current.setPath(nextPath);
+          } else {
+            previewLineRef.current = new window.google.maps.Polyline({
+              path: nextPath,
+              clickable: false,
+              geodesic: true,
+              strokeColor: "#0d6efd",
+              strokeOpacity: 0.9,
+              strokeWeight: 2,
+              map,
+            });
+          }
+
+          if (nextPath.length >= 3) {
+            setPolygonPath(nextPath, map);
+            drawingEnabledRef.current = false;
+          }
+        });
 
         if (initialPath.length >= 3) {
-          polygonRef.current = new window.google.maps.Polygon({
-            paths: initialPath,
-            editable: true,
-            draggable: true,
-            fillColor: "#0d6efd",
-            fillOpacity: 0.2,
-            strokeColor: "#0d6efd",
-            strokeWeight: 2,
-          });
-          polygonRef.current.setMap(map);
-
-          const path = polygonRef.current.getPath();
-          listenersRef.current.push(
-            path.addListener("insert_at", () => syncGeometryFromPolygon(polygonRef.current)),
-            path.addListener("set_at", () => syncGeometryFromPolygon(polygonRef.current)),
-            polygonRef.current.addListener("dragend", () => syncGeometryFromPolygon(polygonRef.current)),
-          );
-
+          clearPolygon();
+          clearPreviewLine();
+          setPolygonPath(initialPath, map);
           const bounds = new window.google.maps.LatLngBounds();
           initialPath.forEach((point) => bounds.extend(point));
           if (!bounds.isEmpty()) {
             map.fitBounds(bounds);
           }
-        }
-
-        if (!drawingManagerRef.current) {
-          drawingManagerRef.current = new window.google.maps.drawing.DrawingManager({
-            drawingMode: initialPath.length >= 3 ? null : window.google.maps.drawing.OverlayType.POLYGON,
-            drawingControl: true,
-            drawingControlOptions: {
-              position: window.google.maps.ControlPosition.TOP_CENTER,
-              drawingModes: [window.google.maps.drawing.OverlayType.POLYGON],
-            },
-            polygonOptions: {
-              editable: true,
-              draggable: true,
-              fillColor: "#0d6efd",
-              fillOpacity: 0.2,
-              strokeColor: "#0d6efd",
-              strokeWeight: 2,
-            },
-          });
-
-          drawingManagerRef.current.setMap(map);
-
-          drawingManagerRef.current.addListener("overlaycomplete", (event: any) => {
-            if (event.type !== window.google.maps.drawing.OverlayType.POLYGON) {
-              return;
-            }
-
-            if (polygonRef.current) {
-              clearPathListeners();
-              polygonRef.current.setMap(null);
-            }
-
-            polygonRef.current = event.overlay;
-            drawingManagerRef.current.setDrawingMode(null);
-
-            const path = polygonRef.current.getPath();
-            listenersRef.current.push(
-              path.addListener("insert_at", () => syncGeometryFromPolygon(polygonRef.current)),
-              path.addListener("set_at", () => syncGeometryFromPolygon(polygonRef.current)),
-              polygonRef.current.addListener("dragend", () => syncGeometryFromPolygon(polygonRef.current)),
-            );
-
-            syncGeometryFromPolygon(polygonRef.current);
-          });
-        } else {
-          drawingManagerRef.current.setMap(map);
         }
 
         setLoadState("ready");
@@ -185,41 +196,56 @@ const ServiceAreaGeometryEditor = ({ value, onChange, addressHint }: Props) => {
 
     return () => {
       active = false;
-      clearPathListeners();
+      mapClickListenerRef.current?.remove?.();
+      mapClickListenerRef.current = null;
 
       if (window.google?.maps?.event) {
         if (polygonRef.current) {
           window.google.maps.event.clearInstanceListeners(polygonRef.current);
         }
-        if (drawingManagerRef.current) {
-          window.google.maps.event.clearInstanceListeners(drawingManagerRef.current);
+        if (previewLineRef.current) {
+          window.google.maps.event.clearInstanceListeners(previewLineRef.current);
         }
         if (mapRef.current) {
           window.google.maps.event.clearInstanceListeners(mapRef.current);
         }
       }
     };
-  }, [addressHint, initialPath]);
+  }, [initialPath.length]);
+
+  useEffect(() => {
+    if (!mapRef.current || !window.google?.maps || !addressHint?.trim()) {
+      return;
+    }
+
+    geocoderRef.current = geocoderRef.current ?? new window.google.maps.Geocoder();
+
+    geocoderRef.current.geocode({ address: addressHint.trim() }, (results: any[], status: string) => {
+      if (!window.google?.maps || !mapRef.current) {
+        return;
+      }
+
+      if (status === "OK" && results?.[0]?.geometry?.location) {
+        mapRef.current.setCenter(results[0].geometry.location);
+      }
+    });
+  }, [addressHint]);
 
   return (
     <div className="d-flex flex-column gap-3">
       <div className="d-flex flex-wrap gap-2 align-items-center justify-content-between">
         <div className="text-muted fs-7">
-          Draw the service coverage area with the map tools. The area is stored as GeoJSON.
+          Click on the map to place coverage points. After 3 points the area becomes editable.
         </div>
         <div className="d-flex gap-2">
           <button
             type="button"
             className="btn btn-light btn-sm"
             onClick={() => {
-              if (polygonRef.current) {
-                clearPathListeners();
-                polygonRef.current.setMap(null);
-                polygonRef.current = null;
-              }
-
+              clearPolygon();
+              clearPreviewLine();
+              drawingEnabledRef.current = true;
               onChange(null);
-              drawingManagerRef.current?.setDrawingMode(window.google?.maps?.drawing?.OverlayType.POLYGON ?? null);
             }}
           >
             Redraw Area
@@ -228,12 +254,9 @@ const ServiceAreaGeometryEditor = ({ value, onChange, addressHint }: Props) => {
             type="button"
             className="btn btn-light btn-sm"
             onClick={() => {
-              if (polygonRef.current) {
-                clearPathListeners();
-                polygonRef.current.setMap(null);
-                polygonRef.current = null;
-              }
-
+              clearPolygon();
+              clearPreviewLine();
+              drawingEnabledRef.current = false;
               onChange(null);
             }}
           >

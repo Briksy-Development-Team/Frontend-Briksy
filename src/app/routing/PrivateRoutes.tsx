@@ -28,6 +28,7 @@ const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
 const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"));
 const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"));
 const PropertyMapPage = lazy(() => import("../pages/platform/PropertyMapPage"));
+const PropertyOffersPage = lazy(() => import("../pages/platform/PropertyOffersPage"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
 const PermissionsPage = lazy(() => import("../pages/platform/PermissionsPage"));
@@ -153,6 +154,19 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/admin/property-offers/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <ModuleGuard anyOf={["property_management"]}>
+                <SuspensedView>
+                  <PropertyOffersPage />
+                </SuspensedView>
+              </ModuleGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/admin/plan-requests/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
@@ -223,6 +237,11 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/super-admin/property-offers/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <PropertyOffersPage />
           path="/super-admin/invoices/*"
           element={
             <RoleGuard allow={["super_admin"]}>
