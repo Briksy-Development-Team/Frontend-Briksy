@@ -281,10 +281,18 @@ const DashboardPage: FC = () => {
                             </Link>
                           </div>
                           <div className="col-md-3">
-                            <Link to="/super-admin/seekers" className="card h-100 border border-light text-decoration-none">
+                            <Link to="/super-admin/endusers" className="card h-100 border border-light text-decoration-none">
                               <div className="card-body">
-                                <div className="fw-bold fs-5 text-dark">Seekers</div>
-                                <div className="text-gray-600 mt-2">Open seeker profiles and details.</div>
+                                <div className="fw-bold fs-5 text-dark">End Users</div>
+                                <div className="text-gray-600 mt-2">Open end user profiles and details.</div>
+                              </div>
+                            </Link>
+                          </div>
+                          <div className="col-md-3">
+                            <Link to="/super-admin/invoices" className="card h-100 border border-light text-decoration-none">
+                              <div className="card-body">
+                                <div className="fw-bold fs-5 text-dark">Invoices</div>
+                                <div className="text-gray-600 mt-2">Review Stripe invoice records for the superadmin team.</div>
                               </div>
                             </Link>
                           </div>
@@ -1185,7 +1193,7 @@ const DashboardPage: FC = () => {
                   <div className="card-body">
                     <div className="text-muted fs-7">Published Properties</div>
                     <div className="fw-bold fs-2 text-dark">{adminSummary.metrics.published_properties}</div>
-                    <div className="text-gray-600 mt-2">Active listings currently visible to seekers.</div>
+                    <div className="text-gray-600 mt-2">Active listings currently visible to end users.</div>
                   </div>
                 </div>
               </div>

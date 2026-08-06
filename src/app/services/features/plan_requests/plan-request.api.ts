@@ -1,6 +1,7 @@
 import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
+import { mockPlanRequests, queryMockList, useMockListingData } from "../../mock/listingMocks";
 
 import type { PlanRequestFormValues } from "./plan-request.types";
 
@@ -21,6 +22,19 @@ const getBasePath = () => {
 };
 
 export const fetchPlanRequestsApi = async (params: GetPlanRequestParams) => {
+  if (useMockListingData) {
+    return queryMockList(mockPlanRequests, params, {
+      searchFields: [
+        "company_name",
+        "contact_name",
+        "contact_email",
+        "requested_plan_name",
+        "status",
+      ],
+      filterKeys: ["status", "billing_cycle", "created_at"],
+    });
+  }
+
   const res = await axiosInstance.get(`${getBasePath()}/plan-requests`, {
     params: buildApiParams(params),
   });

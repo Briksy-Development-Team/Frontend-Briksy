@@ -1,6 +1,7 @@
 import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
+import { mockServices, queryMockList, useMockListingData } from "../../mock/listingMocks";
 
 import type {
   Service,
@@ -30,6 +31,13 @@ type ApiResponse<T> = {
 };
 
 export const fetchServiceGroupApi = async (params: GetServiceListParams) => {
+  if (useMockListingData) {
+    return queryMockList(mockServices, params, {
+      searchFields: ["name", "title", "slug", "description", "service_area", "organization_type.name"],
+      filterKeys: ["created_at"],
+    });
+  }
+
   const res = await axiosInstance.get<ApiResponse<Service[]>>(getBasePath(), {
     params: buildApiParams(params),
   });

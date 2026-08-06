@@ -42,11 +42,11 @@ const ChartsWidget3: React.FC<Props> = ({ className }) => {
       <div className='card-header border-0 pt-5'>
         <h3 className='card-title align-items-start flex-column'>
           <span className='card-label fw-bold fs-3 mb-1'>
-            Recent Seekers
+            Recent End Users
           </span>
 
           <span className='text-muted fw-semibold fs-7'>
-            More than 1000 new seekers
+            More than 1000 new end users
           </span>
         </h3>
 
@@ -110,7 +110,7 @@ function getChartOptions(
   const lightColor = '#f8f4ee'  // --bg-2
 
   let categories: string[] = []
-  let seekerData: number[] = []
+  let endUserData: number[] = []
 
   switch (period) {
     case 'year':
@@ -129,7 +129,7 @@ function getChartOptions(
         'Dec',
       ]
 
-      seekerData = [
+      endUserData = [
         44,
         55,
         57,
@@ -153,7 +153,7 @@ function getChartOptions(
         'Week 4',
       ]
 
-      seekerData = [150, 220, 180, 260]
+      endUserData = [150, 220, 180, 260]
       break
 
     case 'week':
@@ -167,15 +167,15 @@ function getChartOptions(
         'Sun',
       ]
 
-      seekerData = [25, 35, 42, 28, 51, 39, 44]
+      endUserData = [25, 35, 42, 28, 51, 39, 44]
       break
   }
 
   return {
     series: [
       {
-        name: 'Seekers',
-        data: seekerData,
+        name: 'End Users',
+        data: endUserData,
       },
     ],
 

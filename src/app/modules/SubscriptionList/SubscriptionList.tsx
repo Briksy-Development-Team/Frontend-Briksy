@@ -17,7 +17,15 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
       return 'Trades & Professionals'
     }
 
-    return 'Real Estate Owners'
+    if (family === 'buyers_agent') {
+      return 'Buyers Agent'
+    }
+
+    if (family === 'builders') {
+      return 'Builders'
+    }
+
+    return 'Real Estate'
   }
 
   return (

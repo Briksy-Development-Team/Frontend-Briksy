@@ -12,6 +12,7 @@ import { organizationDetailConfig } from '../../../../../services/features/organ
 import { serviceDetailConfig } from '../../../../../services/features/service/service_list.detail.config'
 import { staffDetailConfig } from '../../../../../services/features/staff/staff.detail.config'
 import { planRequestDetailConfig } from '../../../../../services/features/plan_requests/plan-request.detail.config'
+import { getMockItemBySegment, useMockListingData } from '../../../../../services/mock/listingMocks'
 import type { DetailConfig } from '../../../shared_detail/core/DetailTypes'
 
 type DetailRegistryEntry = {
@@ -25,6 +26,7 @@ const routeAliases: Record<string, string> = {
   'solo-traders': 'organization',
   users: 'staff',
   businesses: 'organization',
+  seekers: 'endusers',
 }
 
 const detailRegistry: Record<string, DetailRegistryEntry> = {
@@ -36,7 +38,7 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
     config: couponDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/coupons/${id}`,
   },
-  seekers: {
+  endusers: {
     config: seekerDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/seekers/${id}`,
   },
@@ -154,6 +156,17 @@ const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
       .catch((fetchError: unknown) => {
         if (!active) {
           return
+        }
+
+        if (useMockListingData) {
+          const mockItem = getMockItemBySegment(resolvedSegment, String(id))
+
+          if (mockItem) {
+            setData(mockItem)
+            setError(null)
+            setIsLoading(false)
+            return
+          }
         }
 
         setData(null)

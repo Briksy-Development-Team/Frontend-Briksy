@@ -62,7 +62,7 @@ const SoloPage = () => {
   if (error) {
     return (
       <Content>
-        <PageHeader title="Solo Traders" subtitle="Filter and inspect solo trader organizations" />
+        <PageHeader title="Trades and Professional" subtitle="Filter and inspect trades and professional organizations" />
         <div className="text-danger">{error}</div>
       </Content>
     );
@@ -70,7 +70,7 @@ const SoloPage = () => {
 
   return (
     <Content>
-      <PageHeader title="Solo Traders" subtitle="Solo trader organizations and service tags" />
+      <PageHeader title="Trades and Professional" subtitle="Trades and professional organizations and service tags" />
       <EntityList
         data={data}
         total={total}

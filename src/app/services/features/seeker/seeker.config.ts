@@ -1,7 +1,6 @@
 import type { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
 import type { Seeker } from "./seeker.types";
 import { formatDateTime } from "../../utils/dateFormat";
-import { getDisplayId } from "../../utils/displayId";
 
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
@@ -13,7 +12,14 @@ export const seekerConfig = {
       accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
-      Cell: ({ row, value }: { row: any; value: any }) => value || getDisplayId(row),
+      Cell: ({ row, value }: { row: any; value: any }) => {
+        if (value) {
+          return value;
+        }
+
+        const index = Number(row?.index ?? 0) + 1;
+        return `USR-${String(index).padStart(3, "0")}`;
+      },
     },
     {
       Header: "Name",
@@ -33,16 +39,6 @@ export const seekerConfig = {
     {
       Header: "Mobile",
       accessor: "mobile_number",
-    },
-    {
-      Header: "Organization ID",
-      accessor: "organization_id",
-    },
-    {
-      Header: "Roles",
-      accessor: "roles",
-      Cell: ({ value }: { value: any }) =>
-        Array.isArray(value) ? (value as string[]).join(", ") : "—",
     },
     {
       Header: "Email Verified",
@@ -81,15 +77,6 @@ export const seekerConfig = {
       options: [
         { label: "Verified", value: 1 },
         { label: "Not Verified", value: 0 },
-      ],
-    },
-    {
-      key: "role",
-      label: "Role",
-      type: "select" as const,
-      options: [
-        { label: "Seeker", value: "seeker" },
-        { label: "Admin", value: "admin" },
       ],
     },
     {

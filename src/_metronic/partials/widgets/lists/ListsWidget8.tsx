@@ -47,7 +47,7 @@ const ListsWidget8: FC<Props> = () => {
         <h3 className='card-title align-items-start flex-column'>
           <span className='fw-bold text-gray-900'>Top Rated</span>
           <span className='text-muted mt-1 fw-semibold fs-7'>
-           Organization/Solo Trader
+           Organization/Trades and Professional
           </span>
         </h3>
 

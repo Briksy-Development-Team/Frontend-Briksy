@@ -131,6 +131,10 @@ const Subscription = () => {
 
     const selectedPlanCapacityLabel = selectedPlan?.plan_family === "trades_professional"
         ? "suburbs"
+        : selectedPlan?.plan_family === "builders"
+        ? "projects"
+        : selectedPlan?.plan_family === "buyers_agent"
+        ? "buyer briefs"
         : "properties"
 
     if (loading) return <Content><div className="p-10">Loading...</div></Content>
@@ -154,7 +158,14 @@ const Subscription = () => {
             <div className="d-flex flex-wrap gap-2 mb-5">
                 {availableFamilies.map((family) => {
                     const active = selectedFamily === family
-                    const label = family === "trades_professional" ? "Trades & Professionals" : "Real Estate Owners"
+                    const label =
+                        family === "trades_professional"
+                            ? "Trades & Professionals"
+                            : family === "buyers_agent"
+                            ? "Buyers Agent"
+                            : family === "builders"
+                            ? "Builders"
+                            : "Real Estate"
 
                     return (
                         <button

@@ -1,6 +1,7 @@
 import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
+import { mockProperties, queryMockList, useMockListingData } from "../../mock/listingMocks";
 
 import type {
   Property,
@@ -109,6 +110,13 @@ type ApiResponse<T> = {
 };
 
 export const fetchPropertyListApi = async (params: PropertyListParams) => {
+  if (useMockListingData) {
+    return queryMockList(mockProperties, params, {
+      searchFields: ["title", "suburb", "state", "postcode", "organization.name"],
+      filterKeys: ["status", "suburb", "state", "postcode", "verified_only"],
+    });
+  }
+
   const res = await axiosInstance.get<ApiResponse<Property[]>>(getBasePath(), {
     params: buildApiParams(params),
   });
@@ -119,13 +127,24 @@ export const fetchPropertyListApi = async (params: PropertyListParams) => {
   };
 };
 
-export const fetchPropertyApi = async (id: string) => {
+export const fetchPropertyApi = async (id: string): Promise<Property | null> => {
+  if (useMockListingData) {
+    return mockProperties.find((property) => property.id === id || property.display_id === id || property.generated_id === id) ?? null;
+  }
+
   const res = await axiosInstance.get<ApiResponse<Property>>(`${getBasePath()}/${id}`);
 
   return res.data.data;
 };
 
 export const fetchPropertyMapApi = async (params: PropertyListParams) => {
+  if (useMockListingData) {
+    return queryMockList(mockProperties, params, {
+      searchFields: ["title", "suburb", "state", "postcode", "organization.name"],
+      filterKeys: ["status", "suburb", "state", "postcode", "property_type_id", "verified_only"],
+    }).data as unknown as Property[];
+  }
+
   const res = await axiosInstance.get<ApiResponse<Property[]>>(`${getBasePath()}/map`, {
     params: buildApiParams(params),
   });

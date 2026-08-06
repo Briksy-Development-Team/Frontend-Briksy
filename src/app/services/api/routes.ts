@@ -4,6 +4,7 @@ export const API_ROUTES = {
   soloTraders: "/super-admin/solo-traders",
 
   seekers: "/super-admin/seekers",
+  endusers: "/super-admin/endusers",
 
   platformUsers: "/super-admin/staff",
 

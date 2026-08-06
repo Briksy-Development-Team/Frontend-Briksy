@@ -101,7 +101,7 @@ export function Dropdown4({ setStartDate, setEndDate }: Props) {
 
             <label className='form-check form-check-sm form-check-custom form-check-solid'>
               <input className='form-check-input' type='checkbox' value='2' defaultChecked={true} />
-              <span className='form-check-label'>Solo Trader</span>
+              <span className='form-check-label'>Trades and Professional</span>
             </label>
           </div>
         </div>

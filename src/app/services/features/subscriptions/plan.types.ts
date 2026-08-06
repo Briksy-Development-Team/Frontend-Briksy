@@ -4,7 +4,7 @@ export type PlanFeature = {
   value?: number | null;
 };
 
-export type PlanFamily = "property_owner" | "trades_professional";
+export type PlanFamily = "property_owner" | "trades_professional" | "buyers_agent" | "builders";
 
 export type PlanPermission = {
   id: string;

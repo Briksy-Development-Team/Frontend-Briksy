@@ -35,14 +35,14 @@ const SeekerList = () => {
 
   if (error) return (
     <Content>
-      <PageHeader title="Seekers" subtitle="All registered seekers" />
+      <PageHeader title="End Users" subtitle="All registered end users" />
       <div className="text-danger">{error}</div>
     </Content>
   );
 
   return (
     <Content>
-      <PageHeader title="Seekers" subtitle="All registered seekers" />
+      <PageHeader title="End Users" subtitle="All registered end users" />
       <EntityList
         data={data}
         total={total}
@@ -51,7 +51,7 @@ const SeekerList = () => {
         columns={seekerConfig.columns}
         filtersConfig={seekerConfig.filters}
         enableRowClick
-        getRowLink={(row) => `${portalBase}/seekers/${resolveSeekerId(row)}`}
+        getRowLink={(row) => `${portalBase}/endusers/${resolveSeekerId(row)}`}
       />
     </Content>
   );
