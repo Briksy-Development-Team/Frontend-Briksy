@@ -228,12 +228,20 @@ const SidebarMenuMain = () => {
           )}
 
           {hasModule("property_management") && (
-            <SidebarMenuItem
-              to={`${portalBase}/property-management`}
-              title="Property Management"
-              fontIcon="bi-archive"
-              icon="element-plus"
-            />
+            <>
+              <SidebarMenuItem
+                to={`${portalBase}/property-management`}
+                title="Property Management"
+                fontIcon="bi-archive"
+                icon="element-plus"
+              />
+              <SidebarMenuItem
+                to={`${portalBase}/property-offers`}
+                title="Property Offers"
+                fontIcon="bi-archive"
+                icon="element-plus"
+              />
+            </>
           )}
 
           {hasModule("service_management") && (

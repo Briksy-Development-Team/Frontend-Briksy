@@ -12,6 +12,34 @@ export type PropertyVideo = {
   sort_order?: number;
 };
 
+export type PropertyOffer = {
+  id: string;
+  organization_id?: string | null;
+  property_listing_id?: string;
+  created_by?: string | null;
+  title: string;
+  tag_label?: string | null;
+  summary?: string | null;
+  description?: string | null;
+  highlights?: string[] | null;
+  terms?: string | null;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  is_active?: boolean;
+  sort_order?: number;
+  creator?: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  property_listing?: {
+    id: string;
+    generated_id?: string | null;
+    title?: string | null;
+    address?: string | null;
+  } | null;
+};
+
 export type Property = {
   id: string;
   generated_id?: string | null;
@@ -58,6 +86,9 @@ export type Property = {
     name: string;
     slug?: string;
   } | null;
+
+  has_briksy_exclusive_offer?: boolean;
+  briksy_exclusive_offers?: PropertyOffer[];
 
   rating?: number;
 
@@ -173,6 +204,9 @@ export type PropertyList = {
     name: string;
     slug?: string;
   } | null;
+
+  has_briksy_exclusive_offer?: boolean;
+  briksy_exclusive_offers?: PropertyOffer[];
 
   images?: PropertyImage[];
   videos?: PropertyVideo[];

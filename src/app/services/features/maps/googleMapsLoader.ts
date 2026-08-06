@@ -1,6 +1,6 @@
 let googleMapsLoaderPromise: Promise<void> | null = null;
 
-export const loadGoogleMapsScript = (): Promise<void> => {
+export const loadGoogleMapsScript = (libraries: string[] = ["places"]): Promise<void> => {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("Google Maps can only be loaded in the browser."));
   }
@@ -39,7 +39,8 @@ export const loadGoogleMapsScript = (): Promise<void> => {
     script.id = "google-maps-script";
     script.async = true;
     script.defer = true;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places,drawing`;
+    const librariesParam = libraries.length > 0 ? `&libraries=${encodeURIComponent(libraries.join(","))}` : "";
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}${librariesParam}`;
     script.onload = () => resolve();
     script.onerror = () => {
       googleMapsLoaderPromise = null;
