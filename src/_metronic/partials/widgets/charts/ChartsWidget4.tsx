@@ -168,7 +168,7 @@ function getChartOptions(
         data: profitData,
       },
       {
-        name: 'Solo Traders',
+        name: 'Trades and Professional',
         data: revenueData,
       },
     ],

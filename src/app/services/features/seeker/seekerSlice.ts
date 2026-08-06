@@ -46,7 +46,7 @@ const seekerSlice = createSlice({
       })
       .addCase(fetchSeekers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch seekers";
+        state.error = action.error.message || "Failed to fetch end users";
       });
   },
 });

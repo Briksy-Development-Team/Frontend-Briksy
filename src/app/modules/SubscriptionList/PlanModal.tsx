@@ -313,8 +313,10 @@ const PlanModal = ({
             }))
           }
         >
-          <option value="property_owner">Real Estate Owners</option>
+          <option value="property_owner">Real Estate</option>
           <option value="trades_professional">Trades & Professionals</option>
+          <option value="buyers_agent">Buyers Agent</option>
+          <option value="builders">Builders</option>
         </select>
       </div>
 

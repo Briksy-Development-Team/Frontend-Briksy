@@ -32,7 +32,7 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const resolveServiceId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
       row.display_id ?? row.generated_id ?? row.id;
-  const canManage = true;
+  const canManage = !isSuperAdmin;
   const [isImportOpen, setIsImportOpen] = useState(false);
   const {
         data,
@@ -89,7 +89,7 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 filtersConfig={serviceListConfig.filters}
         enableRowClick={true}
         getRowLink={(row) => `${portalBase}/services/detail/${resolveServiceId(row)}`}
-        headerActions={[
+        headerActions={canManage ? [
             {
                 label: "Add Service",
                 permission: "service.create",
@@ -105,7 +105,7 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 permission: "service.view",
                 onClick: () => navigate(`${portalBase}/services/map`),
             },
-        ]}
+        ] : []}
                 rowActions={rowActions}
             />
 
@@ -121,7 +121,8 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
 const ServiceListPageWrapper = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const canManage = true;
+    const { isSuperAdmin } = useRoleAccess();
+    const canManage = !isSuperAdmin;
     const {
         saving,
         isModalOpen,

@@ -115,8 +115,8 @@ export const organizationDetailConfig: DetailConfig<any> = {
         { label: "Company Name", accessor: "name", colSpan: 6 },
         { label: "ID", accessor: getOrganizationDisplayId, colSpan: 6 },
         {
-          label: "Type",
-          accessor: (data) => data?.type?.name ?? data?.business_type ?? "—",
+          label: "Category",
+          accessor: (data) => data?.type?.name ?? "—",
           colSpan: 6,
         },
         { label: "Email", accessor: "contact_email", colSpan: 6 },

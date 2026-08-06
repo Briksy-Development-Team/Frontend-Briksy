@@ -1,5 +1,14 @@
 import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
+import {
+  mockBillingAddons,
+  mockBillingPlans,
+  mockBillingSubscriptions,
+  mockCurrentBillingSubscription,
+  mockSuperAdminSubscriptions,
+  queryMockList,
+  useMockListingData,
+} from "../../mock/listingMocks";
 import type {
   Addon,
   BillingCheckoutAddonSelection,
@@ -38,6 +47,10 @@ export const deleteSuperAdminDynamicIdSettingApi = async (id: string) => {
 };
 
 export const fetchSuperAdminAddonsApi = async (): Promise<Addon[]> => {
+  if (useMockListingData) {
+    return mockBillingAddons;
+  }
+
   const response = await axiosInstance.get(`${getBasePath()}/addons`);
   return response.data.data ?? [];
 };
@@ -81,26 +94,54 @@ export const toggleSuperAdminAddonApi = async (id: string, is_active: boolean) =
 };
 
 export const fetchSuperAdminSubscriptionsApi = async (params?: Record<string, string>): Promise<CompanySubscription[]> => {
+  if (useMockListingData) {
+    const { search, ...filters } = params ?? {};
+
+    return queryMockList(mockSuperAdminSubscriptions, {
+      search,
+      filters,
+    }, {
+      searchFields: ["company.name", "plan.name", "latest_invoice_id", "stripe_subscription_id"],
+      filterKeys: ["organization_id", "plan_id", "status", "billing_cycle"],
+    }).data as CompanySubscription[];
+  }
+
   const response = await axiosInstance.get(`${getBasePath()}/subscriptions`, { params });
   return response.data.data ?? [];
 };
 
 export const fetchBillingCurrentSubscriptionApi = async (): Promise<CompanySubscription | null> => {
+  if (useMockListingData) {
+    return mockCurrentBillingSubscription;
+  }
+
   const response = await axiosInstance.get("/admin/billing/current-subscription");
   return response.data.data?.subscription ?? null;
 };
 
 export const fetchBillingPlansApi = async (): Promise<SubscriptionPlanBilling[]> => {
+  if (useMockListingData) {
+    return mockBillingPlans;
+  }
+
   const response = await axiosInstance.get("/admin/billing/plans");
   return response.data.data?.plans ?? [];
 };
 
 export const fetchBillingAddonsApi = async (): Promise<Addon[]> => {
+  if (useMockListingData) {
+    return mockBillingAddons;
+  }
+
   const response = await axiosInstance.get("/admin/billing/addons");
   return response.data.data?.addons ?? [];
 };
 
 export const fetchBillingSubscriptionsApi = async (): Promise<CompanySubscription[]> => {
+  if (useMockListingData) {
+    return mockBillingSubscriptions;
+  }
+
   const response = await axiosInstance.get("/admin/billing/subscriptions");
   return response.data.data?.subscriptions ?? [];
 };

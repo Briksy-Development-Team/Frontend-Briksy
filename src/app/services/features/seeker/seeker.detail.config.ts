@@ -13,7 +13,7 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
     avatarAccessor: "display_name", // We don't have an avatar URL in Seeker type, fallback to initials
     badges: [
       {
-        label: () => "Seeker",
+        label: () => "End User",
         color: "primary",
       },
       {

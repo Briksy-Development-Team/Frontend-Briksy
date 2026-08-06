@@ -20,6 +20,7 @@ const DashboardWrapper = lazy(() =>
 );
 const StaffPage = lazy(() => import("../pages/user management/StaffPage"));
 const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
+const InvoicePage = lazy(() => import("../pages/platform/InvoicePage"));
 const SoloPage = lazy(() => import("../pages/user management/user/SoloPage"));
 const UserPage = lazy(() => import("../pages/user management/UserPage"));
 const CompanyPage = lazy(() => import("../pages/user management/CompanyPage"));
@@ -70,7 +71,8 @@ const PrivateRoutes = () => {
           }
         />
 
-        <Route path="/super-admin/users/*" element={<Navigate to="/super-admin/seekers" replace />} />
+        <Route path="/super-admin/users/*" element={<Navigate to="/super-admin/endusers" replace />} />
+        <Route path="/super-admin/seekers/*" element={<Navigate to="/super-admin/endusers" replace />} />
 
         <Route
           path="/admin/dashboard"
@@ -84,7 +86,7 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path="/super-admin/seekers/*"
+          path="/super-admin/endusers/*"
           element={
             <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
@@ -240,6 +242,11 @@ const PrivateRoutes = () => {
             <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
                 <PropertyOffersPage />
+          path="/super-admin/invoices/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <InvoicePage />
               </SuspensedView>
             </RoleGuard>
           }

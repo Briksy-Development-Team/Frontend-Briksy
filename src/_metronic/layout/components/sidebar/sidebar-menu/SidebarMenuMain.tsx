@@ -35,12 +35,12 @@ const SidebarMenuMain = () => {
             title="User Management"
             fontIcon="bi-archive"
             icon="element-plus"
-            activePaths={[`${portalBase}/seekers`]}
+            activePaths={[`${portalBase}/endusers`]}
           >
             <SidebarMenuItem
-              to={`${portalBase}/seekers`}
+              to={`${portalBase}/endusers`}
               icon="abstract-28"
-              title="Seekers"
+              title="End Users"
               fontIcon="bi-layers"
             />
           </SidebarMenuItemWithSub>
@@ -80,7 +80,7 @@ const SidebarMenuMain = () => {
           <SidebarMenuItem
             to={`${portalBase}/companies/solo-traders`}
             icon="abstract-28"
-            title="Sole Traders"
+            title="Trades and Professional"
             fontIcon="bi-layers"
           />
         </SidebarMenuItemWithSub>
@@ -88,30 +88,21 @@ const SidebarMenuMain = () => {
 
       {isSuperAdmin && (
         <>
-          {(hasPermission("dynamic_id.view") ||
-            hasPermission("addon.view") ||
+          {(hasPermission("addon.view") ||
             hasPermission("plan.view") ||
             hasPermission("subscription.view")) && (
             <SidebarMenuItemWithSub
-              to={`${portalBase}/dynamic-id-settings`}
+              to={`${portalBase}/addons`}
               title="Billing & IDs"
               fontIcon="bi-archive"
               icon="element-plus"
               activePaths={[
                 `${portalBase}/addons`,
                 `${portalBase}/plans`,
+                `${portalBase}/invoices`,
                 `${portalBase}/subscriptions`,
               ]}
             >
-              {hasPermission("dynamic_id.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/dynamic-id-settings`}
-                  icon="abstract-28"
-                  title="Dynamic ID Settings"
-                  fontIcon="bi-layers"
-                />
-              )}
-
               {hasPermission("addon.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/addons`}
@@ -138,7 +129,23 @@ const SidebarMenuMain = () => {
                   fontIcon="bi-layers"
                 />
               )}
+
+              <SidebarMenuItem
+                to={`${portalBase}/invoices`}
+                icon="abstract-28"
+                title="Invoices"
+                fontIcon="bi-layers"
+              />
             </SidebarMenuItemWithSub>
+          )}
+
+          {isSuperAdmin && (
+            <SidebarMenuItem
+              to={`${portalBase}/property-map`}
+              title="Property Map"
+              fontIcon="bi-archive"
+              icon="element-plus"
+            />
           )}
 
           {(hasPermission("email_template.view") || hasPermission("activity_logs.view")) && (

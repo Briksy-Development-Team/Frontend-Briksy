@@ -113,7 +113,7 @@ function getChartOptions(
   const secondaryColor = getCSSVariableValue('--bs-gray-300')
 
   let categories: string[] = []
-  let soloTraderData: number[] = []
+  let tradesProfessionalData: number[] = []
   let organizationData: number[] = []
 
   switch (period) {
@@ -133,7 +133,7 @@ function getChartOptions(
         'Dec',
       ]
 
-      soloTraderData = [
+      tradesProfessionalData = [
         44, 55, 57, 56, 61, 58,
         66, 33, 20, 77, 89, 50,
       ]
@@ -152,7 +152,7 @@ function getChartOptions(
         'Week 4',
       ]
 
-      soloTraderData = [120, 95, 140, 170]
+      tradesProfessionalData = [120, 95, 140, 170]
 
       organizationData = [180, 150, 210, 240]
       break
@@ -168,7 +168,7 @@ function getChartOptions(
         'Sun',
       ]
 
-      soloTraderData = [12, 18, 22, 15, 28, 20, 17]
+      tradesProfessionalData = [12, 18, 22, 15, 28, 20, 17]
 
       organizationData = [22, 35, 30, 25, 40, 28, 24]
       break
@@ -177,8 +177,8 @@ function getChartOptions(
   return {
     series: [
       {
-        name: 'Solo Traders',
-        data: soloTraderData,
+        name: 'Trades and Professional',
+        data: tradesProfessionalData,
       },
       {
         name: 'Organization',

@@ -78,7 +78,7 @@ const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: P
           <select className="form-select form-select-solid" value={form.business_type} onChange={(e) => setForm((prev) => ({ ...prev, business_type: e.target.value as OrganizationFormValues["business_type"] }))}>
             <option value="organisation">Organisation</option>
             <option value="company">Company</option>
-            <option value="solo_trader">Solo Trader</option>
+            <option value="solo_trader">Trades and Professional</option>
           </select>
         </div>
         <div className="col-md-6 fv-row mb-4">

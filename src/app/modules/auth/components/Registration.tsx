@@ -39,7 +39,7 @@ const registrationSchema = Yup.object().shape({
   business_name: Yup.string().min(2, 'Minimum 2 symbols').max(200, 'Maximum 200 symbols').required('Business name is required'),
   trading_name: Yup.string().max(200, 'Maximum 200 symbols'),
   business_type: Yup.string().oneOf(['organisation', 'company', 'solo_trader']).required('Business type is required'),
-  abn_number: Yup.string().matches(/^\d{11}$/, 'ABN must be 11 digits').required('ABN is required'),
+  abn_number: Yup.string().matches(/^(?:\d{9}|\d{11})$/, 'ABN/ACN must be 9 or 11 digits').required('ABN or ACN is required'),
   contact_phone: Yup.string().max(30, 'Maximum 30 symbols'),
   address: Yup.string().max(500, 'Maximum 500 symbols'),
   state: Yup.string().max(50, 'Maximum 50 symbols'),
@@ -89,8 +89,8 @@ export function Registration() {
       try {
         const normalizedAbn = normalizeAbn(values.abn_number)
 
-        if (normalizedAbn.length !== 11) {
-          const message = 'ABN must be 11 digits.'
+        if (normalizedAbn.length !== 9 && normalizedAbn.length !== 11) {
+          const message = 'ABN/ACN must be 9 or 11 digits.'
           setStatus(message)
           formik.setFieldError('abn_number', message)
           setSubmitting(false)
@@ -100,13 +100,16 @@ export function Registration() {
         setAbnVerificationState('loading')
         setAbnVerificationMessage(null)
 
-        const verification = await verifyAbnRequest({
-          abn: normalizedAbn,
-          business_type: values.business_type,
-        })
+        const isAbn = normalizedAbn.length === 11
+        const verification = isAbn
+          ? await verifyAbnRequest({
+              abn: normalizedAbn,
+              business_type: values.business_type,
+            })
+          : null
 
-        if (!verification.valid) {
-          const message = verification.message ?? 'Invalid ABN. Please enter a valid Australian Business Number.'
+        if (isAbn && !verification?.valid) {
+          const message = verification?.message ?? 'Invalid ABN. Please enter a valid Australian Business Number.'
           verifiedSignatureRef.current = ''
           setAbnVerificationState('error')
           setAbnVerificationMessage(message)
@@ -119,28 +122,28 @@ export function Registration() {
         const signature = `${normalizedAbn}:${values.business_type}`
         verifiedSignatureRef.current = signature
         setAbnVerificationState('success')
-        setAbnVerificationMessage(null)
+        setAbnVerificationMessage(isAbn ? null : 'ACN accepted. Business details can be entered manually.')
 
-        void formik.setFieldValue('abn_verified', true, false)
-        void formik.setFieldValue('entity_type', verification.entityType, false)
-        void formik.setFieldValue('gst_registered', verification.gstRegistered ? 'yes' : 'no', false)
-        void formik.setFieldValue('business_name', verification.entityName, false)
-        void formik.setFieldValue('state', verification.state ?? '', false)
-        void formik.setFieldValue('postcode', verification.postcode ?? '', false)
+        void formik.setFieldValue('abn_verified', isAbn, false)
+        void formik.setFieldValue('entity_type', verification?.entityType ?? values.entity_type, false)
+        void formik.setFieldValue('gst_registered', verification ? (verification.gstRegistered ? 'yes' : 'no') : values.gst_registered, false)
+        void formik.setFieldValue('business_name', verification?.entityName ?? values.business_name, false)
+        void formik.setFieldValue('state', verification?.state ?? values.state, false)
+        void formik.setFieldValue('postcode', verification?.postcode ?? values.postcode, false)
 
         const homeRoute = await register({
           first: values.first,
           last: values.last,
           email: values.email,
-          business_name: verification.entityName,
+          business_name: verification?.entityName ?? values.business_name,
           trading_name: values.trading_name,
           business_type: values.business_type as 'organisation' | 'company' | 'solo_trader',
           abn_number: normalizedAbn,
           contact_email: values.email,
           contact_phone: values.contact_phone,
           address: values.address,
-          state: verification.state ?? values.state,
-          postcode: verification.postcode ?? values.postcode,
+          state: verification?.state ?? values.state,
+          postcode: verification?.postcode ?? values.postcode,
           password: values.password,
           password_confirmation: values.password_confirmation,
           referral_code: values.referral_code || referralCodeFromUrl || undefined,
@@ -163,6 +166,7 @@ export function Registration() {
   const currentAbn = normalizeAbn(formik.values.abn_number)
   const currentSignature = `${currentAbn}:${formik.values.business_type}`
   const isAbnVerified = formik.values.abn_verified && verifiedSignatureRef.current === currentSignature
+  const isAcnEntry = currentAbn.length === 9
 
   useEffect(() => {
     if (referralCodeFromUrl && !formik.values.referral_code) {
@@ -265,9 +269,9 @@ export function Registration() {
       </div>
 
       <div className='fv-row mb-8'>
-        <label className='form-label fw-bolder text-gray-900 fs-6'>ABN</label>
+        <label className='form-label fw-bolder text-gray-900 fs-6'>ABN / ACN</label>
         <input
-          placeholder='12345678901'
+          placeholder='123456789 or 12345678901'
           type='text'
           autoComplete='off'
           value={formik.values.abn_number}
@@ -286,16 +290,21 @@ export function Registration() {
             { 'is-valid': formik.touched.abn_number && !formik.errors.abn_number }
           )}
         />
-        <div className='form-text'>Required for Australian business verification.</div>
+        <div className='form-text'>Enter either your 11-digit ABN or 9-digit ACN.</div>
         {abnVerificationState === 'loading' && (
           <div className='text-primary fw-semibold mt-2 d-flex align-items-center gap-2'>
             <span className='spinner-border spinner-border-sm'></span>
-            Verifying ABN with the Australian Business Register...
+            {isAcnEntry ? 'ACN accepted, skipping ABR verification...' : 'Verifying ABN with the Australian Business Register...'}
           </div>
         )}
         {abnVerificationState === 'success' && isAbnVerified && (
           <div className='text-success fw-semibold mt-2'>
             ABN verified. Business details have been populated.
+          </div>
+        )}
+        {abnVerificationState === 'success' && !isAbnVerified && abnVerificationMessage && (
+          <div className='text-success fw-semibold mt-2'>
+            {abnVerificationMessage}
           </div>
         )}
         {abnVerificationState === 'error' && abnVerificationMessage && (
