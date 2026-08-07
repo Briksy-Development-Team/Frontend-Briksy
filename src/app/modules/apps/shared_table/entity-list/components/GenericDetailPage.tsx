@@ -169,6 +169,14 @@ const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
           }
         }
 
+        // If we navigated from the list and have the row data, keep it visible.
+        // The refetch failing (e.g. network blip) shouldn't blank a page that was
+        // already showing valid data.
+        if (initialData) {
+          setIsLoading(false)
+          return
+        }
+
         setData(null)
         setError(fetchError instanceof Error ? fetchError.message : 'Failed to load entity data')
       })

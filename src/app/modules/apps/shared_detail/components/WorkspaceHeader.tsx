@@ -101,6 +101,29 @@ export default function WorkspaceHeader<T>({
                       if (badge.showIf && !badge.showIf(data)) return null;
                       const label = resolveString(badge.label);
                       const color = typeof badge.color === "function" ? badge.color(data) : badge.color;
+
+                      // Premium badge for Briksy Exclusive
+                      if (label === "Briksy Exclusive") {
+                        return (
+                          <span
+                            key={idx}
+                            className="d-inline-flex align-items-center gap-1 ms-2 fw-bold fs-8"
+                            style={{
+                              background: "linear-gradient(90deg, #f5551a 0%, #bf9f7d 100%)",
+                              color: "#fff",
+                              borderRadius: 20,
+                              padding: "3px 10px",
+                              letterSpacing: "0.03em",
+                              boxShadow: "0 2px 8px rgba(245,85,26,0.25)",
+                              fontSize: 11,
+                            }}
+                          >
+                            <span style={{ fontSize: 10, lineHeight: 1 }}>★</span>
+                            Briksy Exclusive
+                          </span>
+                        );
+                      }
+
                       return (
                         <span key={idx} className={`badge badge-light-${color} fw-semibold ms-2`}>
                           {label}

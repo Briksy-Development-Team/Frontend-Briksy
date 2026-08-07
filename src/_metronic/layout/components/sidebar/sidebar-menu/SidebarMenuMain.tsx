@@ -78,9 +78,9 @@ const SidebarMenuMain = () => {
             excludePaths={[`${portalBase}/companies/solo-traders`]}
           />
           <SidebarMenuItem
-            to={`${portalBase}/companies/solo-traders`}
+            to={`${portalBase}/companies/sole-traders`}
             icon="abstract-28"
-            title="Trades and Professional"
+            title="Sole traders"
             fontIcon="bi-layers"
           />
         </SidebarMenuItemWithSub>

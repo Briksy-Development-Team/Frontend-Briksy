@@ -62,7 +62,7 @@ const SoloPage = () => {
   if (error) {
     return (
       <Content>
-        <PageHeader title="Trades and Professional" subtitle="Filter and inspect trades and professional organizations" />
+        <PageHeader title="Sole traders" subtitle="Filter and inspect trades and professional organizations" />
         <div className="text-danger">{error}</div>
       </Content>
     );
@@ -70,7 +70,7 @@ const SoloPage = () => {
 
   return (
     <Content>
-      <PageHeader title="Trades and Professional" subtitle="Trades and professional organizations and service tags" />
+      <PageHeader title="Sole traders" subtitle="Trades and professional organizations and service tags" />
       <EntityList
         data={data}
         total={total}
@@ -88,8 +88,8 @@ const SoloPage = () => {
 const SoloPageWrapper = () => (
   <>
     <Routes>
-        <Route index element={<SoloPage />} />
-        <Route path="detail/:id" element={<SoloDetailPage />} />
+      <Route index element={<SoloPage />} />
+      <Route path="detail/:id" element={<SoloDetailPage />} />
     </Routes>
   </>
 );
@@ -108,22 +108,22 @@ const SoloDetailPage = () => {
   const rowActions = [
     ...(canUpdate
       ? [
-          {
-            label: "Edit",
-            permission: "company.update",
-            onClick: (row: Organization) => setEditingOrganization(row),
-          },
-        ]
+        {
+          label: "Edit",
+          permission: "company.update",
+          onClick: (row: Organization) => setEditingOrganization(row),
+        },
+      ]
       : []),
     ...(canDelete
       ? [
-          {
-            label: "Delete",
-            permission: "company.delete",
-            className: "text-danger",
-            onClick: (row: Organization) => setDeletingOrganization(row),
-          },
-        ]
+        {
+          label: "Delete",
+          permission: "company.delete",
+          className: "text-danger",
+          onClick: (row: Organization) => setDeletingOrganization(row),
+        },
+      ]
       : []),
   ];
 

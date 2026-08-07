@@ -11,7 +11,12 @@ export const serviceDetailConfig: DetailConfig<any> = {
       {
         label: "status",
         color: (data) => (data.status === "active" ? "success" : "warning"),
-      }
+      },
+      {
+        label: () => "Briksy Exclusive",
+        color: () => "warning",
+        showIf: (data: any) => (data?.organization?.is_briksy_exclusive ?? data?.is_briksy_exclusive ?? true),
+      },
     ],
     metrics: [
       {
