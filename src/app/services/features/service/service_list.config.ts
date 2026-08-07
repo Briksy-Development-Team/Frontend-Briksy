@@ -87,6 +87,11 @@ export const serviceListConfig = {
       label: "Created Date",
       type: "dateRange" as const,
     },
+    {
+      key: "briksy_exclusive",
+      label: "Briksy Exclusive",
+      type: "boolean" as const,
+    },
   ],
 
   addAction: null,

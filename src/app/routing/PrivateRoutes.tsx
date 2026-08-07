@@ -108,7 +108,7 @@ const PrivateRoutes = () => {
         />
 
         <Route
-          path="/super-admin/companies/solo-traders/*"
+          path="/super-admin/companies/sole-traders/*"
           element={
             <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
@@ -242,6 +242,12 @@ const PrivateRoutes = () => {
             <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
                 <PropertyOffersPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/super-admin/invoices/*"
           element={
             <RoleGuard allow={["super_admin"]}>

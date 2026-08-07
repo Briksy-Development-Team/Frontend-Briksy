@@ -86,6 +86,11 @@ export const organizationConfig = {
       label: "Created Date",
       type: "dateRange",
     },
+    {
+      key: "briksy_exclusive",
+      label: "Briksy Exclusive",
+      type: "boolean",
+    },
   ],
 
   addAction: null, // null = no Add button for this module

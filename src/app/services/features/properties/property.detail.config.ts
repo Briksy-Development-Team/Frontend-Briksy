@@ -22,6 +22,11 @@ export const propertyDetailConfig: DetailConfig<any> = {
         label: (data) => (data?.location_verified ? "Location verified" : "Location unverified"),
         color: (data) => (data?.location_verified ? "success" : "warning"),
       },
+      {
+        label: () => "Briksy Exclusive",
+        color: () => "warning",
+        showIf: (data: any) => (data?.organization?.is_briksy_exclusive ?? data?.is_briksy_exclusive ?? true),
+      },
     ],
     metrics: [
       {

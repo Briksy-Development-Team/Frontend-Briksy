@@ -83,6 +83,11 @@ export const propertyListConfig = {
       label: "Verified Only",
       type: "boolean" as const,
     },
+    {
+      key: "briksy_exclusive",
+      label: "Briksy Exclusive",
+      type: "boolean" as const,
+    },
   ],
 
   addAction: null,

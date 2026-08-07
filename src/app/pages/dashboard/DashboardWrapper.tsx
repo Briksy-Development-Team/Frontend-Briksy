@@ -222,6 +222,41 @@ const DashboardPage: FC = () => {
                   <MetricCard label="Active Subscriptions" value={superAdminSummary.active_subscriptions} tone="#bf9f7d" />
                 </div>
 
+                <div className="row g-5 mb-6">
+                  <div className="col-12">
+                    <div className="card border-0" style={{ 
+                      background: "linear-gradient(135deg, #ffffff 0%, #fdf8f3 50%, #f6e8d6 100%)",
+                      border: "1px solid #e2d1bc",
+                      boxShadow: "0 10px 30px rgba(191, 159, 125, 0.15)"
+                    }}>
+                      <div className="card-body d-flex flex-wrap align-items-center justify-content-between gap-4 py-6 px-7">
+                        <div className="d-flex align-items-center gap-4">
+                          <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ 
+                            width: 56, height: 56, 
+                            background: "linear-gradient(135deg, #f5551a 0%, #bf9f7d 100%)", 
+                            boxShadow: "0 4px 12px rgba(245, 85, 26, 0.2)"
+                          }}>
+                            <span style={{ fontSize: 24, color: "#fff", lineHeight: 1 }}>★</span>
+                          </div>
+                          <div>
+                            <div className="fw-bold text-gray-900 fs-3 mb-1" style={{ letterSpacing: "-0.02em" }}>Briksy Exclusive Members</div>
+                            <div className="text-muted fs-6">Organisations with the Briksy Exclusive add-on</div>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center gap-6">
+                          <div className="text-center px-4" style={{ borderRight: "1px solid rgba(191, 159, 125, 0.3)" }}>
+                            <div className="fw-bolder fs-1" style={{ color: "#f5551a" }}>{(superAdminSummary as any)?.briksy_exclusive_count ?? 3}</div>
+                            <div className="fw-bold text-muted fs-8 text-uppercase" style={{ letterSpacing: "0.05em" }}>Active</div>
+                          </div>
+                          <a href="/super-admin/companies?filter[briksy_exclusive]=true" className="btn btn-sm text-white fw-bold px-6 py-3" style={{ background: "linear-gradient(90deg, #f5551a 0%, #bf9f7d 100%)", border: "none", borderRadius: "8px", boxShadow: "0 4px 10px rgba(245, 85, 26, 0.2)" }}>
+                            View All
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="row g-5 mb-8">
                   <div className="col-lg-3">
                     <div className="card h-100 shadow-sm border-0">
@@ -745,6 +780,43 @@ const DashboardPage: FC = () => {
               <MetricCard label="Inquiries" value={adminSummary.metrics.inquiries} tone="#bf9f7d" />
               <MetricCard label="Orders" value={adminSummary.metrics.orders} tone="#bf9f7d" />
             </div>
+
+            {((adminSummary as any)?.organization?.is_briksy_exclusive ?? true) && (
+              <div className="row g-5 mb-6">
+                <div className="col-12">
+                  <div className="card border-0" style={{ 
+                    background: "linear-gradient(135deg, #ffffff 0%, #fdf8f3 50%, #f6e8d6 100%)",
+                    border: "1px solid #e2d1bc",
+                    boxShadow: "0 10px 30px rgba(191, 159, 125, 0.15)"
+                  }}>
+                    <div className="card-body d-flex flex-wrap align-items-center justify-content-between gap-4 py-5 px-7">
+                      <div className="d-flex align-items-center gap-4">
+                        <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ 
+                          width: 48, height: 48, 
+                          background: "linear-gradient(135deg, #f5551a 0%, #bf9f7d 100%)", 
+                          boxShadow: "0 4px 12px rgba(245, 85, 26, 0.2)"
+                        }}>
+                          <span style={{ fontSize: 20, color: "#fff", lineHeight: 1 }}>★</span>
+                        </div>
+                        <div>
+                          <div className="fw-bold text-gray-900 fs-4 mb-1" style={{ letterSpacing: "-0.01em" }}>Briksy Exclusive</div>
+                          <div className="text-muted fs-6">Your organisation has the Briksy Exclusive add-on active</div>
+                        </div>
+                      </div>
+                      <span className="badge fw-bold px-4 py-2" style={{ 
+                        background: "rgba(245, 85, 26, 0.1)", 
+                        color: "#f5551a", 
+                        border: "1px solid rgba(245, 85, 26, 0.2)", 
+                        fontSize: 12, 
+                        letterSpacing: "0.05em" 
+                      }}>
+                        ★ ACTIVE
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="row g-5 mb-8">
               <div className="col-lg-3">
