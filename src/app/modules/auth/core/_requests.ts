@@ -110,6 +110,7 @@ export async function getPermissionsByToken() {
         trial_started_at?: string | null;
         trial_ends_at?: string | null;
         subscription_activated_at?: string | null;
+        has_briksy_exclusive_addon?: boolean;
       };
     };
     grouped: Array<{ module: string; permissions: Array<Record<string, unknown>> }>;

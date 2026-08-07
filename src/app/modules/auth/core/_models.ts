@@ -84,6 +84,20 @@ export interface UserModel {
     trial_started_at?: string | null;
     trial_ends_at?: string | null;
     subscription_activated_at?: string | null;
+    has_briksy_exclusive_addon?: boolean;
+    addons?: Array<{
+      id?: string;
+      addon_id?: string;
+      quantity?: number;
+      amount?: number | null;
+      billing_cycle?: string | null;
+      addon?: {
+        id?: string;
+        name?: string;
+        slug?: string;
+        feature_key?: string;
+      } | null;
+    }>;
     plan?: {
       id: string;
       name: string;

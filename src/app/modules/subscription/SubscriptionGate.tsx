@@ -13,7 +13,9 @@ const SubscriptionGate = () => {
   const { data: plans, loading } = useSelector((state: RootState) => state.plans);
 
   const subscription = currentUser?.subscription;
-  const isExpired = subscription?.status === "expired" || subscription?.status === "inactive";
+  const hasBriksyExclusiveAddon = subscription?.has_briksy_exclusive_addon === true;
+  const isExpired =
+    !hasBriksyExclusiveAddon && (subscription?.status === "expired" || subscription?.status === "inactive");
 
   useEffect(() => {
     if (isExpired && plans.length === 0 && !loading) {

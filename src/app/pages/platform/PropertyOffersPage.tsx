@@ -40,7 +40,7 @@ export default function PropertyOffersPage() {
     try {
       const [offers, propertyResponse] = await Promise.all([
         fetchPropertyOffersApi(),
-        fetchPropertyListApi({ per_page: 200, sort: "created_at", direction: "desc" }),
+        fetchPropertyListApi({ per_page: 100, sort: "created_at", direction: "desc" }),
       ]);
 
       setItems(offers);
