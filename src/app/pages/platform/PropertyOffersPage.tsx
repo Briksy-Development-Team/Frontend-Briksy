@@ -26,6 +26,8 @@ const emptyOffer: OfferForm = {
   sort_order: 0,
 };
 
+const FIXED_TAG_LABEL = "BRIKSY EXCLUSIVE";
+
 export default function PropertyOffersPage() {
   const [items, setItems] = useState<PropertyOffer[]>([]);
   const [properties, setProperties] = useState<PropertyList[]>([]);
@@ -76,6 +78,7 @@ export default function PropertyOffersPage() {
           ...editing,
           property_listing_id: editing.property_listing_id,
           title: editing.title,
+          tag_label: FIXED_TAG_LABEL,
           highlights: editing.highlights_text
             ? editing.highlights_text.split("\n").map((line) => line.trim()).filter(Boolean)
             : editing.highlights ?? [],
@@ -210,11 +213,7 @@ export default function PropertyOffersPage() {
             </div>
             <div className="col-md-6">
               <label className="form-label">Tag Label</label>
-              <input
-                className="form-control form-control-solid"
-                value={editing.tag_label ?? "BRIKSY EXCLUSIVE"}
-                onChange={(e) => setEditing((current) => ({ ...current, tag_label: e.target.value }))}
-              />
+              <input className="form-control form-control-solid" value={FIXED_TAG_LABEL} readOnly />
             </div>
             <div className="col-md-3">
               <label className="form-label">Sort Order</label>
