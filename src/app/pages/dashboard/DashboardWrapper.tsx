@@ -14,6 +14,7 @@ import {
 } from "../../services/features/dashboard/dashboard.api";
 import { formatDateTime } from "../../services/utils/dateFormat";
 import DashboardChart from "./components/DashboardChart";
+import Logoex from "../../../../public/media/logos/logoex.svg"
 
 const MetricCard = ({
   label,
@@ -224,31 +225,31 @@ const DashboardPage: FC = () => {
 
                 <div className="row g-5 mb-6">
                   <div className="col-12">
-                    <div className="card border-0" style={{ 
-                      background: "linear-gradient(135deg, #ffffff 0%, #fdf8f3 50%, #f6e8d6 100%)",
+                    <div className="card border-0" style={{
+                      background: "linear-gradient(135deg, #79241D 0%, #79241D 50%, #DF4235 100%)",
                       border: "1px solid #e2d1bc",
                       boxShadow: "0 10px 30px rgba(191, 159, 125, 0.15)"
                     }}>
                       <div className="card-body d-flex flex-wrap align-items-center justify-content-between gap-4 py-6 px-7">
                         <div className="d-flex align-items-center gap-4">
-                          <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ 
-                            width: 56, height: 56, 
-                            background: "linear-gradient(135deg, #f5551a 0%, #bf9f7d 100%)", 
-                            boxShadow: "0 4px 12px rgba(245, 85, 26, 0.2)"
-                          }}>
-                            <span style={{ fontSize: 24, color: "#fff", lineHeight: 1 }}>★</span>
-                          </div>
+
+                          <img src={Logoex} alt="" />
+
                           <div>
-                            <div className="fw-bold text-gray-900 fs-3 mb-1" style={{ letterSpacing: "-0.02em" }}>Briksy Exclusive Members</div>
-                            <div className="text-muted fs-6">Organisations with the Briksy Exclusive add-on</div>
+                            <div className="fw-bold  fs-3 mb-1" style={{ letterSpacing: "-0.02em", color: "#F8F4EE" }}>Briksy Exclusive </div>
+                            <div className=" fs-6" style={{ color: "#F8F4EE" }}>Organisations with the Briksy Exclusive add-on</div>
                           </div>
                         </div>
                         <div className="d-flex align-items-center gap-6">
                           <div className="text-center px-4" style={{ borderRight: "1px solid rgba(191, 159, 125, 0.3)" }}>
-                            <div className="fw-bolder fs-1" style={{ color: "#f5551a" }}>{(superAdminSummary as any)?.briksy_exclusive_count ?? 3}</div>
-                            <div className="fw-bold text-muted fs-8 text-uppercase" style={{ letterSpacing: "0.05em" }}>Active</div>
+                            <div className="fw-bolder fs-1" style={{ color: "#F8F4EE" }}>{(superAdminSummary as any)?.briksy_exclusive_count ?? 3}</div>
+                            <div className="fw-bold  fs-8 text-uppercase " style={{ letterSpacing: "0.05em", color: "#F8F4EE" }}>Active</div>
                           </div>
-                          <a href="/super-admin/companies?filter[briksy_exclusive]=true" className="btn btn-sm text-white fw-bold px-6 py-3" style={{ background: "linear-gradient(90deg, #f5551a 0%, #bf9f7d 100%)", border: "none", borderRadius: "8px", boxShadow: "0 4px 10px rgba(245, 85, 26, 0.2)" }}>
+                          <a href="/super-admin/companies?filter[briksy_exclusive]=true" className="btn btn-sm text-white fw-bold px-6 py-3" style={{
+                            border: "2px solid #F8F4EE",
+                            borderRadius: "8px",
+                          }}
+                          >
                             View All
                           </a>
                         </div>
@@ -407,11 +408,11 @@ const DashboardPage: FC = () => {
                   </div>
                 </div>
 
-            <div className="row g-5 gx-xxl-8 mb-8">
-              <div className="col-xxl-6">
-                <DashboardChart
-                  className="h-100"
-                  title="Platform Conversion"
+                <div className="row g-5 gx-xxl-8 mb-8">
+                  <div className="col-xxl-6">
+                    <DashboardChart
+                      className="h-100"
+                      title="Platform Conversion"
                       subtitle="Monthly subscription conversion rate"
                       chartType="area"
                       actions={
@@ -467,45 +468,45 @@ const DashboardPage: FC = () => {
                           </table>
                         </div>
                       </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="row g-5 gx-xxl-8 mb-8">
-              <div className="col-12">
-                <DashboardChart
-                  className="h-100 shadow-sm border-0"
-                  title="Lead Funnel"
-                  subtitle="Visited -> inquiry -> qualified -> won"
-                  chartType="bar"
-                  horizontal
-                  showLegend={false}
-                  actions={
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-light"
-                      onClick={() =>
-                        downloadCsv(
-                          "platform_lead_funnel.csv",
-                          ["Stage", "Value"],
-                          superAdminSummary.lead_funnel.map((row) => [row.stage, row.value]),
-                        )
+                <div className="row g-5 gx-xxl-8 mb-8">
+                  <div className="col-12">
+                    <DashboardChart
+                      className="h-100 shadow-sm border-0"
+                      title="Lead Funnel"
+                      subtitle="Visited -> inquiry -> qualified -> won"
+                      chartType="bar"
+                      horizontal
+                      showLegend={false}
+                      actions={
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-light"
+                          onClick={() =>
+                            downloadCsv(
+                              "platform_lead_funnel.csv",
+                              ["Stage", "Value"],
+                              superAdminSummary.lead_funnel.map((row) => [row.stage, row.value]),
+                            )
+                          }
+                        >
+                          Export CSV
+                        </button>
                       }
-                    >
-                      Export CSV
-                    </button>
-                  }
-                  categories={superAdminSummary.lead_funnel.map((row) => row.stage)}
-                  series={[
-                    { name: "Leads", data: superAdminSummary.lead_funnel.map((row) => row.value) },
-                  ]}
-                />
-              </div>
-            </div>
+                      categories={superAdminSummary.lead_funnel.map((row) => row.stage)}
+                      series={[
+                        { name: "Leads", data: superAdminSummary.lead_funnel.map((row) => row.value) },
+                      ]}
+                    />
+                  </div>
+                </div>
 
-            <div className="row g-5 gx-xxl-8 mb-8">
-              <div className="col-xxl-5">
-                {superAdminSummary.lead_source_funnel.length > 0 ? (
+                <div className="row g-5 gx-xxl-8 mb-8">
+                  <div className="col-xxl-5">
+                    {superAdminSummary.lead_source_funnel.length > 0 ? (
                       <DashboardChart
                         className="h-100 shadow-sm border-0"
                         title="Lead Source Funnel"
@@ -638,35 +639,35 @@ const DashboardPage: FC = () => {
                     )}
                   </div>
                   <div className="col-xxl-7">
-                <div className="card h-100 shadow-sm border-0">
-                  <div className="card-header border-0 pt-5">
-                    <h3 className="card-title align-items-start flex-column">
-                      <span className="card-label fw-bold fs-3 mb-1">Top Agents</span>
-                      <span className="text-muted mt-1 fw-semibold fs-7">Revenue, leads, orders, and conversion rate</span>
-                    </h3>
-                    <div className="card-toolbar">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-light"
-                        onClick={() =>
-                          downloadCsv(
-                            "top_agents.csv",
-                            ["Agent", "Company", "Leads", "Orders", "Revenue", "Conversion %"],
-                            superAdminSummary.agent_leaderboard.map((row) => [
-                              row.name,
-                              row.organization ?? "",
-                              row.inquiries,
-                              row.orders,
-                              row.revenue,
-                              row.conversion_rate,
-                            ]),
-                          )
-                        }
-                      >
-                        Export CSV
-                      </button>
-                    </div>
-                  </div>
+                    <div className="card h-100 shadow-sm border-0">
+                      <div className="card-header border-0 pt-5">
+                        <h3 className="card-title align-items-start flex-column">
+                          <span className="card-label fw-bold fs-3 mb-1">Top Agents</span>
+                          <span className="text-muted mt-1 fw-semibold fs-7">Revenue, leads, orders, and conversion rate</span>
+                        </h3>
+                        <div className="card-toolbar">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-light"
+                            onClick={() =>
+                              downloadCsv(
+                                "top_agents.csv",
+                                ["Agent", "Company", "Leads", "Orders", "Revenue", "Conversion %"],
+                                superAdminSummary.agent_leaderboard.map((row) => [
+                                  row.name,
+                                  row.organization ?? "",
+                                  row.inquiries,
+                                  row.orders,
+                                  row.revenue,
+                                  row.conversion_rate,
+                                ]),
+                              )
+                            }
+                          >
+                            Export CSV
+                          </button>
+                        </div>
+                      </div>
                       <div className="card-body pt-0">
                         <div className="table-responsive">
                           <table className="table align-middle table-row-dashed fs-6 gy-3">
@@ -784,31 +785,26 @@ const DashboardPage: FC = () => {
             {((adminSummary as any)?.organization?.is_briksy_exclusive ?? true) && (
               <div className="row g-5 mb-6">
                 <div className="col-12">
-                  <div className="card border-0" style={{ 
-                    background: "linear-gradient(135deg, #ffffff 0%, #fdf8f3 50%, #f6e8d6 100%)",
+                  <div className="card border-0" style={{
+                    background: "linear-gradient(135deg, #79241D 0%, #79241D 50%, #DF4235 100%)",
                     border: "1px solid #e2d1bc",
                     boxShadow: "0 10px 30px rgba(191, 159, 125, 0.15)"
                   }}>
                     <div className="card-body d-flex flex-wrap align-items-center justify-content-between gap-4 py-5 px-7">
                       <div className="d-flex align-items-center gap-4">
-                        <div className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style={{ 
-                          width: 48, height: 48, 
-                          background: "linear-gradient(135deg, #f5551a 0%, #bf9f7d 100%)", 
-                          boxShadow: "0 4px 12px rgba(245, 85, 26, 0.2)"
-                        }}>
-                          <span style={{ fontSize: 20, color: "#fff", lineHeight: 1 }}>★</span>
-                        </div>
+                        <img src={Logoex} alt="" />
+
                         <div>
-                          <div className="fw-bold text-gray-900 fs-4 mb-1" style={{ letterSpacing: "-0.01em" }}>Briksy Exclusive</div>
-                          <div className="text-muted fs-6">Your organisation has the Briksy Exclusive add-on active</div>
+                          <div className="fw-bold text-[#F8F4EE] fs-4 mb-1" style={{ letterSpacing: "-0.01em", color: "#F8F4EE" }}>Briksy Exclusive</div>
+                          <div className=" fs-6" style={{ color: "#F8F4EE" }}>Your organisation has the Briksy Exclusive add-on active</div>
                         </div>
                       </div>
-                      <span className="badge fw-bold px-4 py-2" style={{ 
-                        background: "rgba(245, 85, 26, 0.1)", 
-                        color: "#f5551a", 
-                        border: "1px solid rgba(245, 85, 26, 0.2)", 
-                        fontSize: 12, 
-                        letterSpacing: "0.05em" 
+                      <span className="badge fw-bold px-4 py-2" style={{
+                        background: "rgba(245, 85, 26, 0.1)",
+                        color: "#F8F4EE",
+                        border: "1px solid rgba(245, 85, 26, 0.2)",
+                        fontSize: 12,
+                        letterSpacing: "0.05em"
                       }}>
                         ★ ACTIVE
                       </span>
@@ -1207,27 +1203,27 @@ const DashboardPage: FC = () => {
                 )}
               </div>
               <div className="col-xxl-7">
-                  <div className="card h-100 shadow-sm border-0">
-                    <div className="card-header border-0 pt-5">
-                      <h3 className="card-title align-items-start flex-column">
-                        <span className="card-label fw-bold fs-3 mb-1">Top Agents</span>
-                        <span className="text-muted mt-1 fw-semibold fs-7">Leads, orders, revenue, and conversion rate</span>
-                      </h3>
-                      <div className="card-toolbar">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-light"
-                          onClick={() =>
-                            downloadCsv(
-                              "admin_top_agents.csv",
-                              ["Agent", "Leads", "Orders", "Revenue", "Conversion %"],
-                              adminSummary.agent_leaderboard.map((row) => [row.name, row.inquiries, row.orders, row.revenue, row.conversion_rate]),
-                            )
-                          }
-                        >
-                          Export CSV
-                        </button>
-                      </div>
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-header border-0 pt-5">
+                    <h3 className="card-title align-items-start flex-column">
+                      <span className="card-label fw-bold fs-3 mb-1">Top Agents</span>
+                      <span className="text-muted mt-1 fw-semibold fs-7">Leads, orders, revenue, and conversion rate</span>
+                    </h3>
+                    <div className="card-toolbar">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-light"
+                        onClick={() =>
+                          downloadCsv(
+                            "admin_top_agents.csv",
+                            ["Agent", "Leads", "Orders", "Revenue", "Conversion %"],
+                            adminSummary.agent_leaderboard.map((row) => [row.name, row.inquiries, row.orders, row.revenue, row.conversion_rate]),
+                          )
+                        }
+                      >
+                        Export CSV
+                      </button>
+                    </div>
                   </div>
                   <div className="card-body pt-0">
                     <div className="table-responsive">

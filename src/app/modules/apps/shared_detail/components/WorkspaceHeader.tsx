@@ -107,9 +107,9 @@ export default function WorkspaceHeader<T>({
                         return (
                           <span
                             key={idx}
-                            className="d-inline-flex align-items-center gap-1 ms-2 fw-bold fs-8"
+                            className="d-inline-flex align-items-center gap-1 ms-2 fw-bold fs-6"
                             style={{
-                              background: "linear-gradient(90deg, #f5551a 0%, #bf9f7d 100%)",
+                              background: "linear-gradient(135deg, #79241D 0%, #79241D 50%, #DF4235 100%)",
                               color: "#fff",
                               borderRadius: 20,
                               padding: "3px 10px",
