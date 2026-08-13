@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { KTIcon } from "../../../../../../../_metronic/helpers";
 import { MenuComponent } from "../../../../../../../_metronic/assets/ts/components";
 
@@ -22,7 +22,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
 // ── Date preset helpers ──────────────────────────────────────────────────
-const fmt = (d: Date) => d.toISOString().slice(0, 10);
+const fmt = (d: Date) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
 
 const getPresetRange = (preset: string): DateRange => {
   const now = new Date();
@@ -72,6 +77,7 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
   const [values, setValues] = useState<Record<string, FilterValue>>({});
   const [open, setOpen] = useState<string | null>(null);
   const [activePreset, setActivePreset] = useState<Record<string, string>>({});
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setTimeout(() => MenuComponent.reinitialization(), 0);
@@ -164,6 +170,7 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
   return (
     <div className="position-relative">
       <button
+        ref={triggerRef}
         type="button"
         className={`btn d-flex align-items-center gap-2 ${activeFiltersCount > 0 ? "btn-primary" : "btn-light-primary"}`}
         data-kt-menu-trigger="click"
@@ -333,14 +340,17 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
         </div>
 
         <div className="px-5 py-4 d-flex gap-2 border-top">
-          <button className="btn btn-light btn-sm w-100" onClick={handleReset}>
+          <button className="btn btn-light btn-sm w-100" onClick={() => {
+            handleReset();
+            triggerRef.current?.click();
+          }}>
             Reset
           </button>
           <button
             className="btn btn-primary btn-sm w-100"
             onClick={() => {
               onFilterChange(values);
-              // close dropdown programmatically if we want, but keeping it open allows rapid filtering
+              triggerRef.current?.click();
             }}
           >
             Apply

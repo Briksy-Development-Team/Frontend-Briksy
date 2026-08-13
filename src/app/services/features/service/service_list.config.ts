@@ -83,14 +83,18 @@ export const serviceListConfig = {
 
   filters: [
     {
+      key: "is_active",
+      label: "Status",
+      type: "select" as const,
+      options: [
+        { label: "Active", value: "true" },
+        { label: "Inactive", value: "false" }
+      ],
+    },
+    {
       key: "created_at",
       label: "Created Date",
       type: "dateRange" as const,
-    },
-    {
-      key: "briksy_exclusive",
-      label: "Briksy Exclusive",
-      type: "boolean" as const,
     },
   ],
 

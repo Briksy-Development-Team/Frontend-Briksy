@@ -62,24 +62,6 @@ export const seekerConfig = {
 
   filters: [
     {
-      key: "email_verified",
-      label: "Email Status",
-      type: "select" as const,
-      options: [
-        { label: "Verified", value: 1 },
-        { label: "Not Verified", value: 0 },
-      ],
-    },
-    {
-      key: "mobile_verified",
-      label: "Mobile Status",
-      type: "select" as const,
-      options: [
-        { label: "Verified", value: 1 },
-        { label: "Not Verified", value: 0 },
-      ],
-    },
-    {
       key: "created_at",
       label: "Created Date",
       type: "dateRange" as const,

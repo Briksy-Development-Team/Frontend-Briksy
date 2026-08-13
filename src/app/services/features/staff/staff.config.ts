@@ -75,20 +75,14 @@ export const staffConfig = {
 
   filters: [
     {
-      key: "status",
-      label: "Status",
+      key: "roles",
+      label: "Roles",
       type: "select",
-      options: ["Active", "Inactive", "Blocked"],
+      options: ["admin", "super_admin", "seeker"],
     },
-
     {
       key: "created_at",
       label: "Created Date",
-      type: "dateRange",
-    },
-    {
-      key: "updated_at",
-      label: "Updated Date",
       type: "dateRange",
     },
   ],

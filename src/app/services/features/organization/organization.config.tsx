@@ -76,20 +76,9 @@ export const organizationConfig = {
       options: ["pending", "verified", "rejected"],
     },
     {
-      key: "status",
-      label: "Status",
-      type: "select",
-      options: ["Active", "Inactive", "Blocked"],
-    },
-    {
       key: "created_at",
       label: "Created Date",
       type: "dateRange",
-    },
-    {
-      key: "briksy_exclusive",
-      label: "Briksy Exclusive",
-      type: "boolean",
     },
   ],
 
