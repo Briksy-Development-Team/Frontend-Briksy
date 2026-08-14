@@ -21,7 +21,6 @@ const DashboardWrapper = lazy(() =>
 const StaffPage = lazy(() => import("../pages/user management/StaffPage"));
 const SeekerPage = lazy(() => import("../pages/user management/SeekerPgae"));
 const InvoicePage = lazy(() => import("../pages/platform/InvoicePage"));
-const SoloPage = lazy(() => import("../pages/user management/user/SoloPage"));
 const UserPage = lazy(() => import("../pages/user management/UserPage"));
 const CompanyPage = lazy(() => import("../pages/user management/CompanyPage"));
 const Subscription = lazy(() => import("../pages/Subscription/Subscription"));
@@ -102,17 +101,6 @@ const PrivateRoutes = () => {
             <RoleGuard allow={["super_admin"]}>
               <SuspensedView>
                 <UserPage />
-              </SuspensedView>
-            </RoleGuard>
-          }
-        />
-
-        <Route
-          path="/super-admin/companies/sole-traders/*"
-          element={
-            <RoleGuard allow={["super_admin"]}>
-              <SuspensedView>
-                <SoloPage />
               </SuspensedView>
             </RoleGuard>
           }

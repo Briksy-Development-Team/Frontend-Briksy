@@ -72,12 +72,13 @@ const UserPage = () => {
     <>
       <Routes>
         <Route element={<Outlet />}>
-          <Route path="organization" element={<OrganizationPage rowActions={organizationRowActions} />} />
+          <Route path="organization" element={<Navigate to="organization/real-estate" replace />} />
+          <Route path="organization/real-estate" element={<OrganizationPage key="real-estate" rowActions={organizationRowActions} title="Real Estate" subtitle="All registered real estate organisations" typeSlugs={["real-estate"]} businessTypes={["organisation"]} />} />
+          <Route path="organization/buyers-agent" element={<OrganizationPage key="buyers-agent" rowActions={organizationRowActions} title="Buyers Agent" subtitle="All registered buyers agent organisations" typeSlugs={["buyers-agent"]} businessTypes={["organisation"]} />} />
+          <Route path="organization/builders" element={<OrganizationPage key="builders" rowActions={organizationRowActions} title="Builders" subtitle="All registered builder companies" typeSlugs={["builders"]} businessTypes={["company"]} />} />
+          <Route path="organization/trades-professionals" element={<OrganizationPage key="trades-professionals" rowActions={organizationRowActions} title="Trades & Professionals" subtitle="All registered trade and professional companies" typeSlugs={["trades-professionals"]} businessTypes={["company"]} />} />
           <Route path="organization/:id" element={<GenericDetailPage rowActions={organizationRowActions} />} />
-
-          <Route path="solo/:id" element={<GenericDetailPage rowActions={organizationRowActions} />} />
-
-          <Route index element={<Navigate to="organization" />} />
+          <Route index element={<Navigate to="organization/real-estate" replace />} />
         </Route>
       </Routes>
 

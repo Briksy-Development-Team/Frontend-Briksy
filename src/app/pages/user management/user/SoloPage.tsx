@@ -36,7 +36,7 @@ const SoloPage = () => {
 
   const { params, handleParamsChange } = useEntityTable(
     (p) => dispatch(fetchOrganization(p)),
-    { filters: { type_slug: ["solo-traders"] } }
+    { filters: { business_type: ["solo_trader"] } }
   );
 
   const handleSoloParamsChange = (next: typeof params) => {
@@ -44,7 +44,7 @@ const SoloPage = () => {
       ...next,
       filters: {
         ...(next.filters ?? {}),
-        type_slug: ["solo-traders"],
+        business_type: ["solo_trader"],
       },
     });
   };
@@ -62,7 +62,7 @@ const SoloPage = () => {
   if (error) {
     return (
       <Content>
-        <PageHeader title="Sole traders" subtitle="Filter and inspect trades and professional organizations" />
+        <PageHeader title="Sole traders" subtitle="All registered sole trader businesses" />
         <div className="text-danger">{error}</div>
       </Content>
     );
@@ -70,7 +70,7 @@ const SoloPage = () => {
 
   return (
     <Content>
-      <PageHeader title="Sole traders" subtitle="Trades and professional organizations and service tags" />
+      <PageHeader title="Sole traders" subtitle="All registered sole trader businesses and service tags" />
       <EntityList
         data={data}
         total={total}

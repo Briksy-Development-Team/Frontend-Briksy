@@ -15,6 +15,14 @@ import { getDisplayId } from '../../services/utils/displayId'
 const flattenPermissionIds = (groups: PermissionGroup[]) =>
   groups.flatMap((group) => group.permissions.map((permission) => permission.id))
 
+const hideWebhookPermissions = (groups: PermissionGroup[]) =>
+  groups
+    .filter((group) => group.module !== 'webhook')
+    .map((group) => ({
+      ...group,
+      permissions: group.permissions.filter((permission) => permission.module !== 'webhook'),
+    }))
+
 const PermissionsPageContent = () => {
   const { hasPermission } = usePermissionAccess()
   const [loading, setLoading] = useState(false)
@@ -42,8 +50,8 @@ const PermissionsPageContent = () => {
           fetchRolesApi(),
           fetchUsersApi(),
         ])
-        setPermissions(permissionsRes.data.items)
-        setGrouped(permissionsRes.data.grouped)
+        setPermissions(permissionsRes.data.items.filter((permission) => permission.module !== 'webhook'))
+        setGrouped(hideWebhookPermissions(permissionsRes.data.grouped))
         setRoles(rolesRes.data)
         setUsers(usersRes.data)
 
@@ -51,7 +59,7 @@ const PermissionsPageContent = () => {
         if (firstRole) {
           setSelectedRoleId(firstRole.id)
           const roleRes = await fetchRolePermissionsApi(firstRole.id)
-          setRolePermissionIds(flattenPermissionIds(roleRes.data.grouped))
+          setRolePermissionIds(flattenPermissionIds(hideWebhookPermissions(roleRes.data.grouped)))
         }
       } catch (caught) {
         setError(caught instanceof Error ? caught.message : 'Failed to load permissions.')
@@ -84,7 +92,7 @@ const PermissionsPageContent = () => {
     const loadRole = async () => {
       try {
         const response = await fetchRolePermissionsApi(selectedRoleId)
-        setRolePermissionIds(flattenPermissionIds(response.data.grouped))
+        setRolePermissionIds(flattenPermissionIds(hideWebhookPermissions(response.data.grouped)))
       } catch (caught) {
         setError(caught instanceof Error ? caught.message : 'Failed to load role permissions.')
       }

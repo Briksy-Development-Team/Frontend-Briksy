@@ -8,5 +8,5 @@ type PlanRequestApi = PlanRequest & {
 export const mapPlanRequest = (item: PlanRequestApi): PlanRequest => ({
   ...item,
   request_code: item.request_code ?? null,
-  display_id: item.display_id ?? item.request_code ?? null,
+  display_id: item.request_code ?? item.display_id ?? null,
 });

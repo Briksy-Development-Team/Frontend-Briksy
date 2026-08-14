@@ -68,19 +68,35 @@ const SidebarMenuMain = () => {
           title="Organisations"
           fontIcon="bi-archive"
           icon="element-plus"
-          activePaths={[`${portalBase}/companies/solo-traders`]}
+          activePaths={[
+            `${portalBase}/companies/organization/real-estate`,
+            `${portalBase}/companies/organization/buyers-agent`,
+            `${portalBase}/companies/organization/builders`,
+            `${portalBase}/companies/organization/trades-professionals`,
+          ]}
         >
           <SidebarMenuItem
-            to={`${portalBase}/companies`}
+            to={`${portalBase}/companies/organization/real-estate`}
             icon="abstract-28"
-            title="Organisations"
+            title="Real Estate"
             fontIcon="bi-layers"
-            excludePaths={[`${portalBase}/companies/solo-traders`]}
           />
           <SidebarMenuItem
-            to={`${portalBase}/companies/sole-traders`}
+            to={`${portalBase}/companies/organization/buyers-agent`}
             icon="abstract-28"
-            title="Sole traders"
+            title="Buyers Agent"
+            fontIcon="bi-layers"
+          />
+          <SidebarMenuItem
+            to={`${portalBase}/companies/organization/builders`}
+            icon="abstract-28"
+            title="Builders"
+            fontIcon="bi-layers"
+          />
+          <SidebarMenuItem
+            to={`${portalBase}/companies/organization/trades-professionals`}
+            icon="abstract-28"
+            title="Trades & Professionals"
             fontIcon="bi-layers"
           />
         </SidebarMenuItemWithSub>

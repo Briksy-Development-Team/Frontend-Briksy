@@ -158,6 +158,7 @@ const ProfileDetails: FC = () => {
                   type='text'
                   className='form-control form-control-lg form-control-solid'
                   placeholder='Company website'
+                  disabled
                   {...formik.getFieldProps('companySite')}
                 />
                 {formik.touched.companySite && formik.errors.companySite && (

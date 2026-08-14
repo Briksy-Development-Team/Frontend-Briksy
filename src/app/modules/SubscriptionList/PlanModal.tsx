@@ -302,7 +302,7 @@ const PlanModal = ({
       isValid={isValid}
     >
       <div className="fv-row mb-7">
-        <label className="fw-bold fs-6 mb-2">Plan Family</label>
+        <label className="fw-bold fs-6 mb-2">Category</label>
         <select
           className="form-select form-select-solid"
           value={form.plan_family}
