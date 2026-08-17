@@ -14,6 +14,7 @@ import {
 } from "../../services/features/dashboard/dashboard.api";
 import { formatDateTime } from "../../services/utils/dateFormat";
 import DashboardChart from "./components/DashboardChart";
+import CategoryDashboard from "./components/CategoryDashboard";
 import Logoex from "../../../../public/media/logos/logoex.svg"
 
 const MetricCard = ({
@@ -104,9 +105,16 @@ const DashboardPage: FC = () => {
   }, [isSuperAdmin, filters]);
 
   const superAdminSummary = isSuperAdmin ? (summary as SuperAdminDashboardSummary | null) : null;
-  const adminSummary = !isSuperAdmin ? (summary as AdminDashboardSummary | null) : null;
+  const adminSummary = (!isSuperAdmin ? (summary as AdminDashboardSummary | null) : null) as AdminDashboardSummary;
   const agentOptions = (isSuperAdmin ? superAdminSummary?.agent_leaderboard : adminSummary?.agent_leaderboard) ?? [];
   const companyOptions = superAdminSummary?.recent_companies ?? [];
+  const dashboardConfig = adminSummary?.dashboard_config ?? {
+    title: "Business Dashboard",
+    primary_metric: "New Inquiries",
+    primary_metric_key: "new_inquiries",
+    recent_title: "Recent Activity",
+  };
+  const isRealEstateDashboard = adminSummary?.category === "real-estate";
 
   const setFilter = (key: keyof DashboardFilters, value: string) => {
     setFilters((current) => ({
@@ -775,6 +783,9 @@ const DashboardPage: FC = () => {
               </div>
             </div>
 
+            <CategoryDashboard summary={adminSummary} />
+
+            {false && (<>
             <div className="row g-5 mb-6">
               <MetricCard label="Team Members" value={adminSummary.metrics.team_members} tone="#bf9f7d" />
               <MetricCard label="Properties" value={adminSummary.metrics.properties} tone="#bf9f7d" />
@@ -897,23 +908,23 @@ const DashboardPage: FC = () => {
                       <div className="d-flex flex-column gap-3">
                         <div className="d-flex justify-content-between gap-3">
                           <span className="text-muted">Plan</span>
-                          <strong>{adminSummary.current_subscription.plan_name ?? "—"}</strong>
+                          <strong>{adminSummary.current_subscription!.plan_name ?? "—"}</strong>
                         </div>
                         <div className="d-flex justify-content-between gap-3">
                           <span className="text-muted">Billing cycle</span>
-                          <strong className="text-capitalize">{adminSummary.current_subscription.billing_cycle ?? "—"}</strong>
+                          <strong className="text-capitalize">{adminSummary.current_subscription!.billing_cycle ?? "—"}</strong>
                         </div>
                         <div className="d-flex justify-content-between gap-3">
                           <span className="text-muted">Status</span>
-                          <strong className="text-capitalize">{adminSummary.current_subscription.status ?? "—"}</strong>
+                          <strong className="text-capitalize">{adminSummary.current_subscription!.status ?? "—"}</strong>
                         </div>
                         <div className="d-flex justify-content-between gap-3">
                           <span className="text-muted">Current total</span>
-                          <strong>{formatMoney(adminSummary.current_subscription.amount, adminSummary.current_subscription.currency ?? "AUD")}</strong>
+                          <strong>{formatMoney(adminSummary.current_subscription!.amount, adminSummary.current_subscription!.currency ?? "AUD")}</strong>
                         </div>
                         <div className="d-flex justify-content-between gap-3">
                           <span className="text-muted">Renewal date</span>
-                          <strong>{adminSummary.current_subscription.current_period_end ? formatDateTime(adminSummary.current_subscription.current_period_end, { withRelative: false }) : "—"}</strong>
+                          <strong>{adminSummary.current_subscription!.current_period_end ? formatDateTime(adminSummary.current_subscription!.current_period_end, { withRelative: false }) : "—"}</strong>
                         </div>
                       </div>
                     ) : (
@@ -1019,7 +1030,7 @@ const DashboardPage: FC = () => {
                         <thead>
                           <tr className="text-start text-muted fw-bold fs-7 text-uppercase">
                             <th>Month</th>
-                            <th>Properties</th>
+                            <th>{isRealEstateDashboard ? "Properties" : "Activity"}</th>
                             <th>Inquiries</th>
                             <th>Orders</th>
                             <th>Lead Conv.</th>
@@ -1259,9 +1270,9 @@ const DashboardPage: FC = () => {
               <div className="col-lg-4">
                 <div className="card h-100 shadow-sm border-0">
                   <div className="card-body">
-                    <div className="text-muted fs-7">Published Properties</div>
-                    <div className="fw-bold fs-2 text-dark">{adminSummary.metrics.published_properties}</div>
-                    <div className="text-gray-600 mt-2">Active listings currently visible to end users.</div>
+                    <div className="text-muted fs-7">{dashboardConfig.primary_metric}</div>
+                    <div className="fw-bold fs-2 text-dark">{Number(adminSummary.metrics[dashboardConfig.primary_metric_key as keyof typeof adminSummary.metrics] ?? 0)}</div>
+                    <div className="text-gray-600 mt-2">{isRealEstateDashboard ? "Active listings currently visible to end users." : "Live records in this category workflow."}</div>
                   </div>
                 </div>
               </div>
@@ -1290,12 +1301,14 @@ const DashboardPage: FC = () => {
                 <div className="card h-100 shadow-sm border-0">
                   <div className="card-header border-0 pt-5">
                     <h3 className="card-title align-items-start flex-column">
-                      <span className="card-label fw-bold fs-3 mb-1">Recent Properties</span>
-                      <span className="text-muted mt-1 fw-semibold fs-7">Newest listings in your account</span>
+                      <span className="card-label fw-bold fs-3 mb-1">{dashboardConfig.recent_title}</span>
+                      <span className="text-muted mt-1 fw-semibold fs-7">{isRealEstateDashboard ? "Newest listings in your account" : "Newest activity in your account"}</span>
                     </h3>
                   </div>
                   <div className="card-body pt-0">
-                    {adminSummary.recent_properties.length === 0 ? (
+                    {!isRealEstateDashboard ? (
+                      <div className="alert alert-light border mb-0">Category-specific activity records are not available in the current schema.</div>
+                    ) : adminSummary.recent_properties.length === 0 ? (
                       <div className="alert alert-light border mb-0">No recent properties found.</div>
                     ) : (
                       <div className="table-responsive">
@@ -1412,6 +1425,7 @@ const DashboardPage: FC = () => {
                 </Link>
               </div>
             </div>
+            </>)}
           </>
         )}
       </Content>

@@ -228,6 +228,14 @@ const SidebarMenuMain = () => {
             />
           )}
 
+          {hasModule("buyer_management") && (
+            <SidebarMenuItem to={`${portalBase}/buyer-briefs`} title="Buyer Briefs" fontIcon="bi-people" icon="element-plus" />
+          )}
+
+          {hasModule("builder_management") && (
+            <SidebarMenuItem to={`${portalBase}/builder-projects`} title="Builder Projects" fontIcon="bi-building" icon="element-plus" />
+          )}
+
           {hasPermission("permission.view") && (
             <SidebarMenuItem
               to={`${portalBase}/permissions`}
@@ -328,14 +336,6 @@ const SidebarMenuMain = () => {
             fontIcon="bi-archive"
             icon="element-plus"
           />
-          {isAdmin && hasPermission("webhook.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/webhooks`}
-              title="Webhooks"
-              fontIcon="bi-archive"
-              icon="diagram-3"
-            />
-          )}
         </>
       )}
     </>

@@ -29,6 +29,8 @@ const PropertyListPage = lazy(() => import("../pages/user management/PropertyLis
 const PropertyMapPage = lazy(() => import("../pages/platform/PropertyMapPage"));
 const PropertyOffersPage = lazy(() => import("../pages/platform/PropertyOffersPage"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
+const BuyerBriefPage = lazy(() => import("../pages/platform/BuyerBriefPage"));
+const BuilderProjectPage = lazy(() => import("../pages/platform/BuilderProjectPage"));
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
 const PermissionsPage = lazy(() => import("../pages/platform/PermissionsPage"));
 const SettingsPage = lazy(() => import("../pages/platform/SettingsPage"));
@@ -375,6 +377,9 @@ const PrivateRoutes = () => {
           }
         />
 
+        <Route path="/admin/buyer-briefs/*" element={<RoleGuard allow={["admin", "admin_staff"]}><ModuleGuard anyOf={["buyer_management"]}><SuspensedView><BuyerBriefPage /></SuspensedView></ModuleGuard></RoleGuard>} />
+        <Route path="/admin/builder-projects/*" element={<RoleGuard allow={["admin", "admin_staff"]}><ModuleGuard anyOf={["builder_management"]}><SuspensedView><BuilderProjectPage /></SuspensedView></ModuleGuard></RoleGuard>} />
+
         <Route
           path="/admin/property-management/*"
           element={
@@ -392,11 +397,13 @@ const PrivateRoutes = () => {
           path="/admin/property-map/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <PermissionGuard anyOf={["property.view"]}>
-                <SuspensedView>
-                  <PropertyMapPage />
-                </SuspensedView>
-              </PermissionGuard>
+              <ModuleGuard anyOf={["property_management"]}>
+                <PermissionGuard anyOf={["property.view"]}>
+                  <SuspensedView>
+                    <PropertyMapPage />
+                  </SuspensedView>
+                </PermissionGuard>
+              </ModuleGuard>
             </RoleGuard>
           }
         />

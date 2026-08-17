@@ -76,6 +76,14 @@ export type SuperAdminDashboardSummary = {
 };
 
 export type AdminDashboardSummary = {
+  category?: string | null;
+  dashboard_config?: {
+    title: string;
+    primary_metric: string;
+    primary_metric_key: string;
+    recent_title: string;
+  };
+  capabilities?: Record<string, boolean>;
   organization: {
     id: string;
     name: string;
@@ -102,6 +110,9 @@ export type AdminDashboardSummary = {
     rejected_properties?: number;
     archived_properties?: number;
     services: number;
+    service_regions?: number;
+    buyer_briefs?: number;
+    builder_projects?: number;
     inquiries: number;
     new_inquiries: number;
     orders: number;
@@ -115,6 +126,10 @@ export type AdminDashboardSummary = {
   trend_series: Array<{
     label: string;
     properties: number;
+    services: number;
+    service_regions: number;
+    buyer_briefs: number;
+    builder_projects: number;
     inquiries: number;
     orders: number;
     revenue: number;

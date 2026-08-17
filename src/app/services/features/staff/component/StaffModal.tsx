@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import clsx from "clsx"
 import { ModalShell } from "../../../../modules/apps/component/ModalShell"
 import { useModuleAccess, useRoleAccess } from "../../../../modules/auth"
+import { fetchStaffDefaultsApi } from "../staff.api"
 import {
   ADMIN_PERMISSIONS,
   SUPER_ADMIN_PERMISSIONS,
@@ -58,6 +59,23 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
         password: "",
         permissions: initialValues.permissions,
       })
+      return
+    }
+
+    let cancelled = false
+    fetchStaffDefaultsApi().then((permissions) => {
+      if (!cancelled) {
+        setForm((current) => ({
+          ...current,
+          permissions: permissions.filter((permission) =>
+            (availablePermissions as readonly string[]).includes(permission),
+          ) as PlatformPermission[],
+        }))
+      }
+    }).catch(() => undefined)
+
+    return () => {
+      cancelled = true
     }
   }, [initialValues])
 
@@ -162,7 +180,8 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
 
       {/* Permissions */}
       <div className="fv-row mb-7">
-        <label className="fw-bold fs-6 mb-4 d-block">Permissions</label>
+        <label className="fw-bold fs-6 mb-1 d-block">Permissions</label>
+        {!isEdit && <div className="text-muted fs-7 mb-4">Role defaults loaded. You can customize this staff member before saving.</div>}
         <div className="d-flex flex-column gap-4">
           {availablePermissions.map((perm, i) => (
             <div key={perm}>

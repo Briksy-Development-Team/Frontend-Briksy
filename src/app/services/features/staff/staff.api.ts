@@ -26,6 +26,11 @@ export const createStaffApi = async (payload: StaffFormValues) => {
   return res.data;
 };
 
+export const fetchStaffDefaultsApi = async () => {
+  const res = await axiosInstance.get(`${getStaffBasePath()}/staff/defaults`);
+  return (res.data?.data?.permissions ?? []) as string[];
+};
+
 export const updateStaffApi = async (id: string, payload: StaffFormValues) => {
   const res = await axiosInstance.put(
     `${getStaffBasePath()}/staff/${id}`,
