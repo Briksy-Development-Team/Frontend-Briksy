@@ -17,7 +17,11 @@ export const fetchOrganizationApi = async (params: GetOrganizationParams) => {
   if (useMockListingData) {
     return queryMockList(mockOrganizations, params, {
       searchFields: ["name", "slug", "abn", "acn", "contact_email", "type.name"],
+<<<<<<< HEAD
       filterKeys: ["business_type", "business_verification_status", "status", "created_at", "type_slug"],
+=======
+      filterKeys: ["business_type", "business_verification_status", "created_at"],
+>>>>>>> a441a84 (filter, responsive, table)
     });
   }
 

@@ -15,7 +15,14 @@ export const buildApiParams = (params: {
     ? Object.fromEntries(
         Object.entries(params.filters)
           .filter(([, v]) => v !== undefined && v !== null && v !== "")
-          .map(([k, v]) => [k, Array.isArray(v) ? v.join(",") : v])
+          .map(([k, v]) => {
+            if (Array.isArray(v)) return [k, v.join(",")];
+            if (v && typeof v === "object") {
+              if ("from" in v || "to" in v) return [k, `${v.from || ""}~${v.to || ""}`];
+              if ("min" in v || "max" in v) return [k, `${v.min ?? ""}~${v.max ?? ""}`];
+            }
+            return [k, v];
+          })
       )
     : undefined,
 });

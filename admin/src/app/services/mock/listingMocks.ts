@@ -81,14 +81,26 @@ const matchesFilter = (itemValue: unknown, filterValue: unknown) => {
 
     if (range.from || range.to) {
       const itemDate = itemValue ? new Date(String(itemValue)).getTime() : NaN;
-      const from = range.from ? new Date(range.from).getTime() : Number.NEGATIVE_INFINITY;
-      const to = range.to ? new Date(range.to).getTime() : Number.POSITIVE_INFINITY;
+      
+      let fromTime = Number.NEGATIVE_INFINITY;
+      if (range.from) {
+        const d = new Date(range.from);
+        d.setHours(0, 0, 0, 0);
+        fromTime = d.getTime();
+      }
+
+      let toTime = Number.POSITIVE_INFINITY;
+      if (range.to) {
+        const d = new Date(range.to);
+        d.setHours(23, 59, 59, 999);
+        toTime = d.getTime();
+      }
 
       if (Number.isNaN(itemDate)) {
         return false;
       }
 
-      return itemDate >= from && itemDate <= to;
+      return itemDate >= fromTime && itemDate <= toTime;
     }
   }
 

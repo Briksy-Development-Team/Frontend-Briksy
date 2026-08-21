@@ -34,7 +34,7 @@ export const fetchServiceGroupApi = async (params: GetServiceListParams) => {
   if (useMockListingData) {
     return queryMockList(mockServices, params, {
       searchFields: ["name", "title", "slug", "description", "service_area", "organization_type.name"],
-      filterKeys: ["created_at"],
+      filterKeys: ["is_active", "created_at"],
     });
   }
 

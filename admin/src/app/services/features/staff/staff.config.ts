@@ -1,91 +1,91 @@
 import type { Column } from "../../../modules/apps/shared_table/entity-list/EntityList";
-import type { Seeker } from "./seeker.types";
+import type { Staff } from "./staff.types";
 import { formatDateTime } from "../../utils/dateFormat";
+import { getDisplayId } from "../../utils/displayId";
 
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
 
-export const seekerConfig = {
+export const staffConfig = {
   columns: [
     {
       Header: "ID",
       accessor: "display_id",
       sortable: true,
       alwaysVisible: true,
-      Cell: ({ row, value }: { row: any; value: any }) => {
-        if (value) {
-          return value;
-        }
-
-        const index = Number(row?.index ?? 0) + 1;
-        return `USR-${String(index).padStart(3, "0")}`;
-      },
+      Cell: ({ row, value }: { row: any; value: any }) => value || getDisplayId(row),
     },
+
     {
       Header: "Name",
       accessor: "name",
       sortable: true,
     },
+
     {
       Header: "Display Name",
       accessor: "display_name",
       sortable: true,
     },
+
+    {
+      Header: "Organization ID",
+      accessor: "organization_id",
+    },
+
     {
       Header: "Email",
       accessor: "email",
       sortable: true,
     },
+
     {
       Header: "Mobile",
       accessor: "mobile_number",
     },
+
+    {
+      Header: "Roles",
+      accessor: "roles",
+      Cell: ({ value }) =>
+        Array.isArray(value) ? (value as string[]).join(", ") : "—",
+    },
+
     {
       Header: "Email Verified",
       accessor: "email_verified_at",
       sortable: true,
-      Cell: ({ value }: { value: any }) => safeDate(value),
+      Cell: ({ value }) => safeDate(value),
     },
+
     {
       Header: "Mobile Verified",
       accessor: "mobile_verified_at",
       sortable: true,
-      Cell: ({ value }: { value: any }) => safeDate(value),
+      Cell: ({ value }) => safeDate(value),
     },
+
     {
       Header: "Created At",
       accessor: "created_at",
       sortable: true,
-      Cell: ({ value }: { value: any }) => safeDate(value),
+      Cell: ({ value }) => safeDate(value),
     },
-  ] satisfies Column<Seeker>[],
+  ] satisfies Column<Staff>[],
 
   filters: [
     {
-      key: "email_verified",
-      label: "Email Status",
-      type: "select" as const,
-      options: [
-        { label: "Verified", value: 1 },
-        { label: "Not Verified", value: 0 },
-      ],
-    },
-    {
-      key: "mobile_verified",
-      label: "Mobile Status",
-      type: "select" as const,
-      options: [
-        { label: "Verified", value: 1 },
-        { label: "Not Verified", value: 0 },
-      ],
+      key: "roles",
+      label: "Roles",
+      type: "select",
+      options: ["admin", "super_admin", "seeker"],
     },
     {
       key: "created_at",
       label: "Created Date",
-      type: "dateRange" as const,
+      type: "dateRange",
     },
   ],
-
-  addAction: null,
-  rowActions: [],
+  addAction: { label: "Add Staff" },
+  rowActions: [{ label: "Edit" }],
 };

@@ -18,7 +18,7 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
   if (useMockListingData) {
     return queryMockList(mockEndUsers, params, {
       searchFields: ["name", "display_name", "email", "mobile_number", "organization_id"],
-      filterKeys: ["email_verified", "mobile_verified", "role", "created_at"],
+      filterKeys: ["role", "created_at"],
     });
   }
 
