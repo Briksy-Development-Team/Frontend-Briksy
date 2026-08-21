@@ -1,0 +1,121 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-helvetica: "HelveticaNow", sans-serif;
+  --font-instrument: "InstrumentCustom", serif;
+  --font-inter: "Inter", sans-serif;
+  --color-primary: #562f00;
+  --color-primary-brown: #342511;
+  --color-primary-light-brown: #7C5F42;
+
+  --color-gray-50: #e5e3d8;
+  --color-gray-100: #6b6b6b;
+  --color-yellowgray-50: #88867a;
+  --color-white-50: #fbfaf3;
+  --color-white-100: #eeece0;
+}
+/* html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+} */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+  background-color: #f8f4ee;
+}
+@font-face {
+  font-family: "HelveticaNow";
+  src: url("./assest/font/HelveticaNeueLight.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNow";
+  src: url("./assest/font/HelveticaNeueRoman.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HelveticaNow";
+  src: url("./assest/font/HelveticaNeueMedium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "InstrumentCustom";
+  src: url("./assest/font/InstrumentSerif-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+
+.dual-range-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none; /* track itself is unclickable */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Thumb — this is the only part that should catch pointer events */
+.dual-range-input::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3d2c1d;
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  margin-top: 0;
+}
+
+.dual-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #3d2c1d;
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+/* Hide default tracks completely (we draw our own fill in the component) */
+.dual-range-input::-webkit-slider-runnable-track {
+  background: transparent;
+  pointer-events: none;
+}
+
+.dual-range-input::-moz-range-track {
+  background: transparent;
+  pointer-events: none;
+}
