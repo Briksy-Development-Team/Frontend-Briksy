@@ -1,0 +1,25 @@
+{
+  "name": "frontend-briksy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "admin": "npm run dev --prefix admin",
+    "website": "npm run dev --prefix website",
+    "dev": "concurrently \"npm run admin\" \"npm run website\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Briksy-Development-Team/Frontend-Briksy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Briksy-Development-Team/Frontend-Briksy/issues"
+  },
+  "homepage": "https://github.com/Briksy-Development-Team/Frontend-Briksy#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
