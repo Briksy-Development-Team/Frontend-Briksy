@@ -160,7 +160,7 @@ const Community = () => {
       <div className="relative h-full w-full max-w-[90rem]">
         
         <div className="absolute inset-0 flex items-center justify-center">
-          <canvas ref={canvasRef} className="h-[32.5625rem] w-[54.75rem] mix-blend-mode"
+          <canvas ref={canvasRef} className="h-[32.5625rem] w-[54.75rem] "
           />
         </div>
 

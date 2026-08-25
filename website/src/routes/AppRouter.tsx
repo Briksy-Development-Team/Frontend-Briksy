@@ -13,7 +13,7 @@ import Coming from "../components/coming/Coming";
 import HomeB from "../pages/home/Home.tsx";
 import Notification from "../components/notification/Notification.tsx";
 import Help from "../components/help/Help.tsx";
-import PropertyDetail from "../pages/detail/PropertyDetail";
+import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
 

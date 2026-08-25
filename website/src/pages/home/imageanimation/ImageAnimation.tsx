@@ -61,7 +61,7 @@ const cards: Card[] = [
 const ImageAnimation = () => {
   return (
     <div className="relative flex h-screen w-full font-helvetica overflow-hidden  ">
-      <div className="relative my-auto ml-auto h-[80vh] w-[40vw] overflow-hidden bg-[#6D6D6D] px-12">
+      <div className="relative my-auto ml-auto h-[80vh]  w-[40vw] overflow-hidden  px-12">
         <img
           src={WholeBg}
           alt=""
@@ -80,7 +80,7 @@ const ImageAnimation = () => {
           speed={2500}
           allowTouchMove={false}
           autoplay={{
-            delay: 0,   
+            delay: 0,
             disableOnInteraction: false,
           }}
           modules={[Autoplay]}
@@ -115,9 +115,51 @@ const ImageAnimation = () => {
         </Swiper>
       </div>
 
-      {/* RIGHT */}
-      <div className="h-full w-1/2 bg-red-600" />
+      <div className="my-auto  h-[80vh] w-1/2 flex flex-col justify-evenly  ">
+        <div className=" flex flex-col justify-center space-y-[1.5rem] w-[70%] mx-auto ">
+          <p className="text-[0.875rem]">HOW BRIKSY WORKS</p>
+          <span className="text-[3rem] leading-12">
+            <p>
+              Everything property.
+              <br />
+              Everyone you need.
+            </p>
+          </span>
+          <p className="text-[1rem]">
+            From finding a property to building, improving, and managing it
+            connect with the right people and services in one place.
+          </p>
+          <button className="bg-primary-brown text-nowrap text-[0.875rem] text-white w-[30%] py-[0.75rem] px-[1.5rem] rounded-[1048575rem]">
+            Get Started Now
+          </button>
+        </div>
+        <div className=" wrap-break-word flex  justify-between  w-[70%] mx-auto gap-[1rem] ">
+          <div className="w-[70%] space-y-[1rem]">
+            <p>
+              “Briksy made it easier to find the right professionals and manage
+              everything around our property without jumping between different
+              platforms.”
+            </p>
 
+            <span>
+              <p className="text-[1rem] font-bold">Briksy Member</p>
+              <p className="text-[1rem] text-black/65">
+                Property & Project User
+              </p>
+            </span>
+          </div>
+
+          <div className="flex  items-end">
+            <span>
+              <img
+                src=""
+                alt=""
+                className="h-[5.5625rem] w-[4.5rem]  rounded-[67.5rem] bg-gray-100"
+              />
+            </span>
+          </div>
+        </div>
+      </div>
       {/* TRANSITION */}
       {/* <Transition /> */}
     </div>

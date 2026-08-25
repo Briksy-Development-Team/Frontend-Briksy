@@ -27,7 +27,7 @@ const BuilderList = () => {
 
                 <Swiper
                     modules={[Mousewheel]}
-                    spaceBetween={24}
+                    spaceBetween={12}
                     slidesPerView={1}
                     watchOverflow={false}
                     grabCursor={true}
@@ -41,16 +41,16 @@ const BuilderList = () => {
                             slidesPerView: 1.2,
                         },
                         640: {
-                            slidesPerView: 1.5,
+                            slidesPerView: 1.9,
                         },
                         768: {
-                            slidesPerView: 2.1,
+                            slidesPerView: 2.6,
                         },
                         1024: {
-                            slidesPerView: 3.2,
+                            slidesPerView: 4.2,
                         },
                         1440: {
-                            slidesPerView: 4,
+                            slidesPerView: 4.6,
                         },
                     }}
                     className="[overscroll-behavior-x:contain] touch-pan-y"

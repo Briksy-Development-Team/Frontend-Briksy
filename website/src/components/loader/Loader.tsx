@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Logos from "../../assets/loader/Logos.svg";
-import LoaderA from "../../assets/loader/LoaderA.svg"; 
+import DominoLoader from "./DominoLoader";
 
 type Props = {
   appReady: boolean;
@@ -10,7 +10,6 @@ type Props = {
 const Loader = ({ appReady, onComplete }: Props) => {
   const [canExit, setCanExit] = useState(false);
 
-  
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
@@ -19,16 +18,14 @@ const Loader = ({ appReady, onComplete }: Props) => {
     };
   }, []);
 
-  
   useEffect(() => {
     const minDisplayTimer = setTimeout(() => {
       setCanExit(true);
-    }, 2000); 
+    }, 2000);
 
     return () => clearTimeout(minDisplayTimer);
   }, []);
 
-  
   useEffect(() => {
     if (appReady && canExit) {
       document.body.style.overflow = "";
@@ -40,11 +37,7 @@ const Loader = ({ appReady, onComplete }: Props) => {
     <div className="fixed inset-0 z-[9999] flex flex-col items-center space-y-3 justify-center bg-[#f4f8ee]">
       <img loading="eager" src={Logos} alt="Briksy" className="w-[180px] md:w-[300px]" />
 
-      <img loading="lazy"
-        src={LoaderA}
-        alt="Loading..."
-        className="w-[220px] md:w-[350px]"
-      />
+      <DominoLoader barColor="#BF9F7D" />
     </div>
   );
 };

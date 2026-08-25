@@ -1,8 +1,14 @@
 import { ServiceHeader, ServiceTabs } from "./components/ServiceMain";
-import { ServiceAbout, ServiceList, ServiceRecentWork, ServiceLocation } from "./components/ServiceDetails";
+import {
+  ServiceAbout,
+  ServiceList,
+  ServiceRecentWork,
+  ServiceLocation,
+} from "./components/ServiceDetails";
 import { ServiceSidebar } from "./components/ServiceSidebar";
 import Reviews from "../../../components/reviews/Reviews";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
+import { Share, Heart } from "lucide-react";
 
 export const serviceData = {
   id: 1,
@@ -55,7 +61,13 @@ export const serviceData = {
   },
 
   servicesData: {
-    tags: ["Electricians", "Solar installers", "EV chargers", "Data & cabling", "Security & alarms"],
+    tags: [
+      "Electricians",
+      "Solar installers",
+      "EV chargers",
+      "Data & cabling",
+      "Security & alarms",
+    ],
     offer: {
       title: "$50 off your first job",
       subtitle:
@@ -120,9 +132,20 @@ export const serviceData = {
   },
 
   location: {
-    description: "Based in Footscray VIC 3011. Serving 20 suburbs — results are ordered by distance from the office.",
-    mapSrc: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50554.60553700944!2d144.8674488!3d-37.8001059!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4f9b0f6e63%3A0x502cb20e4bfa6350!2sFootscray%20VIC%203011!5e0!3m2!1sen!2sau!4v1000000000000",
-    suburbs: ["Footscray", "Yarraville", "Seddon", "Kingsville", "West Footscray", "Maidstone", "Braybrook", "Newport"],
+    description:
+      "Based in Footscray VIC 3011. Serving 20 suburbs — results are ordered by distance from the office.",
+    mapSrc:
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50554.60553700944!2d144.8674488!3d-37.8001059!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4f9b0f6e63%3A0x502cb20e4bfa6350!2sFootscray%20VIC%203011!5e0!3m2!1sen!2sau!4v1000000000000",
+    suburbs: [
+      "Footscray",
+      "Yarraville",
+      "Seddon",
+      "Kingsville",
+      "West Footscray",
+      "Maidstone",
+      "Braybrook",
+      "Newport",
+    ],
     moreCount: 12,
   },
 
@@ -142,17 +165,27 @@ const ServiceDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white-50 font-helvetica flex flex-col">
-      <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 md:px-8 py-6">
-        <Breadcrumb items={breadcrumbs} />
+    <div className="min-h-screen  mt-20 font-helvetica flex flex-col">
+      <main className="flex-1 w-full max-w-[90%] mx-auto px-4 md:px-8 py-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+          <Breadcrumb items={breadcrumbs} />
 
-        <div className="flex flex-col lg:flex-row gap-10 items-start relative">
-          <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
+          <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0">
+            <button className="flex items-center gap-2 hover:opacity-70 transition">
+              <Share size={18} /> Share
+            </button>
+            <button className="flex items-center gap-2 hover:opacity-70 transition">
+              <Heart size={18} /> Like
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col w-full lg:flex-row gap-10 items-start relative">
+          <div className="w-full flex flex-col gap-10 ">
             <ServiceHeader service={serviceData} />
+
             <ServiceTabs />
 
-            <div className="flex flex-col gap-16 pb-8">
-              
+            <div className="flex flex-col gap-16 pb-8 w-[90%]">
               <div id="overview">
                 <ServiceAbout about={serviceData.about} showTitle={false} />
               </div>
@@ -162,7 +195,10 @@ const ServiceDetail = () => {
               </div>
 
               <div id="services">
-                <ServiceList servicesData={serviceData.servicesData} name={serviceData.name} />
+                <ServiceList
+                  servicesData={serviceData.servicesData}
+                  name={serviceData.name}
+                />
               </div>
 
               <div id="reviews">
@@ -170,30 +206,47 @@ const ServiceDetail = () => {
               </div>
 
               <div id="location">
-                <ServiceLocation location={serviceData.location} name={serviceData.name} />
+                <ServiceLocation
+                  location={serviceData.location}
+                  name={serviceData.name}
+                />
               </div>
             </div>
 
-            
-            <div className="text-center py-4 border-t border-gray-50">
+            <div className="text-center py-4 border-t border-gray-50 w-[90%]">
               <p className="text-[0.75rem] text-primary-light-brown">
-                Only use contact details shown on Briksy. We never ask you to pay a deposit outside the platform.
+                Only use contact details shown on Briksy. We never ask you to
+                pay a deposit outside the platform.
               </p>
             </div>
 
-            
             <div className="flex items-center gap-2 pb-16">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 2v12M3 2h8l-2 3.5L11 9H3" stroke="#8B6F54" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 2v12M3 2h8l-2 3.5L11 9H3"
+                  stroke="#8B6F54"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
-              <button className="text-[0.875rem] text-primary-light-brown hover:text-primary-brown transition-colors">
+              <button className="text-[0.875rem] text-black transition-colors">
                 Report {serviceData.name}
               </button>
             </div>
           </div>
 
-          <aside className="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-32">
-            <ServiceSidebar contact={serviceData.contact} name={serviceData.name} />
+          <aside className="w-full lg:w-[30%] shrink-0 lg:sticky lg:top-32">
+            <ServiceSidebar
+              contact={serviceData.contact}
+              name={serviceData.name}
+            />
           </aside>
         </div>
       </main>

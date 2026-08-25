@@ -7,7 +7,7 @@ export function ServiceAbout({ about, showTitle = true }: { about: any; showTitl
       {showTitle && (
         <h2 className="text-[1.25rem] font-bold text-primary-brown">About</h2>
       )}
-      <div className="text-[0.9375rem] text-primary-brown leading-relaxed">
+      <div className="text-[0.875rem] text-primary-brown leading-relaxed">
         {about.description}
       </div>
     </div>
@@ -144,14 +144,14 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
 export function ServiceList({ servicesData, name }: { servicesData: any; name: string }) {
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="text-[1.25rem] font-bold text-primary-brown">What {name} does</h2>
+      <h2 className="text-[1.5rem] font-medium text-primary-brown">What {name} does</h2>
 
       
       <div className="flex flex-wrap gap-2">
         {servicesData.tags.map((tag: string, index: number) => (
           <span
             key={index}
-            className="rounded-full bg-white-100 text-primary-brown px-4 py-1.5 text-[0.8125rem] font-medium"
+            className="rounded-full bg-[#E2CBB3] text-primary-brown px-4 py-1.5 text-[0.75rem] font-medium"
           >
             {tag}
           </span>
@@ -160,14 +160,14 @@ export function ServiceList({ servicesData, name }: { servicesData: any; name: s
 
       
       {servicesData.offer && (
-        <div className="bg-white-100 rounded-[1rem] px-5 py-4 flex flex-col gap-1">
+        <div className="bg-[#E2CBB3] rounded-[1rem] px-5 py-4 flex flex-col gap-1">
           <div className="flex items-center gap-2.5">
-            <span className="text-[0.9375rem] font-bold text-primary-brown">{servicesData.offer.title}</span>
-            <span className="bg-white rounded-full px-2.5 py-0.5 text-[0.6875rem] font-bold text-primary-brown uppercase tracking-wide border border-primary-light-brown/60">
+            <span className="text-[0.875rem] font-bold text-primary-brown">{servicesData.offer.title}</span>
+            <span className="bg-white rounded-full px-2.5 py-0.5 text-[0.75rem]  text-primary-brown  tracking-wide border border-primary-light-brown/60">
               Offer
             </span>
           </div>
-          <p className="text-[0.8125rem] text-primary-light-brown leading-snug">{servicesData.offer.subtitle}</p>
+          <p className="text-[0.75rem] text-primary-light-brown leading-snug">{servicesData.offer.subtitle}</p>
         </div>
       )}
 
@@ -181,10 +181,10 @@ export function ServiceList({ servicesData, name }: { servicesData: any; name: s
             }`}
           >
             <div className="flex-1 pr-4">
-              <p className="text-[0.9375rem] font-semibold text-primary-brown leading-snug">{s.title}</p>
-              <p className="text-[0.8125rem] text-primary-light-brown mt-0.5 leading-snug">{s.description}</p>
+              <p className="text-[0.875rem] font-medium text-primary-brown leading-snug">{s.title}</p>
+              <p className="text-[0.75rem] text-primary-light-brown mt-0.5 leading-snug">{s.description}</p>
             </div>
-            <div className="text-[0.9375rem] font-bold text-primary-brown whitespace-nowrap shrink-0">
+            <div className="text-[0.875rem] font-medium text-primary-brown whitespace-nowrap shrink-0">
               {s.price}
             </div>
           </div>
@@ -200,10 +200,10 @@ export function ServiceList({ servicesData, name }: { servicesData: any; name: s
 
 export function ServiceLocation({ location, name }: { location: any; name: string }) {
   return (
-    <div className="flex flex-col gap-5 bg-gray-50 rounded-[1.5rem] p-6 md:p-8">
-      <div>
-        <h2 className="text-[1.25rem] font-bold text-primary-brown">Where {name} works</h2>
-        <p className="text-[0.8125rem] text-primary-light-brown mt-1">{location.description}</p>
+    <div className="flex flex-col gap-5  rounded-[1.5rem] p-6 md:p-8">
+      <div className='space-y-3'>
+        <h2 className="text-[1.5rem] font-bold text-primary-brown">Where {name} works</h2>
+        <p className="text-[0.75rem] text-primary-light-brown mt-1">{location.description}</p>
       </div>
 
       
@@ -227,12 +227,12 @@ export function ServiceLocation({ location, name }: { location: any; name: strin
           {location.suburbs.map((suburb: string) => (
             <span
               key={suburb}
-              className="text-[0.8125rem] text-primary-brown border border-primary-light-brown/50 rounded-full px-3.5 py-1 bg-white"
+              className="text-[0.75rem] text-primary-brown border border-primary-light-brown/50 rounded-full px-3.5 py-1 "
             >
               {suburb}
             </span>
           ))}
-          <span className="text-[0.8125rem] text-primary-light-brown border border-primary-light-brown/50 rounded-full px-3.5 py-1 bg-white">
+          <span className="text-[0.75rem] text-primary-light-brown border border-primary-light-brown/50 rounded-full px-3.5 py-1">
             +{location.moreCount} more
           </span>
         </div>
