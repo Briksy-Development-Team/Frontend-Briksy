@@ -15,18 +15,9 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <Heroone />
-      {/* <div className="flex h-screen w-screen items-center justify-center ">
-        <video
-          src="/try.mp4"
-          className="h-[300px]  mix-blend-color-burn"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-      </div> */}
-      <Community />
+   
       <ImageAnimation />
+      <Community />
 
       <About />
       <BuilderList />

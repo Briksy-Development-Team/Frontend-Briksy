@@ -1,0 +1,76 @@
+
+
+.domino-loader {
+  --bar-colour: #342511;
+  --bar-animation-duration: 2.8s;
+  --loader-width: 420px;
+  --bar-width: 20px;
+  --bar-height: 60px;
+  --bar-count: 14;
+
+  --sweep: calc(var(--loader-width) - var(--bar-width));
+
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: var(--loader-width);
+  height: var(--bar-height);
+  list-style: none;
+}
+
+.domino-loader li {
+  display: block;
+  position: absolute;
+  right: 0;
+  width: var(--bar-width);
+  height: var(--bar-height);
+  border-radius: 1px;
+  transform-origin: 50% 100%;
+  background-color: var(--bar-colour);
+  opacity: 0;
+  animation: domino-bar linear var(--bar-animation-duration) infinite;
+  animation-delay: calc(
+    (var(--bar-animation-duration) / var(--bar-count)) * var(--i) * -1
+  );
+  will-change: transform, opacity;
+}
+
+
+@keyframes domino-bar {
+  0% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  14.28% {
+    transform: translateX(calc(var(--sweep) * -0.142857)) rotate(0deg);
+    opacity: 1;
+  }
+  28.56% {
+    transform: translateX(calc(var(--sweep) * -0.285714)) rotate(0deg);
+    opacity: 1;
+  }
+  37.12% {
+    transform: translateX(calc(var(--sweep) * -0.371429)) rotate(0deg);
+    opacity: 1;
+  }
+  42.84% {
+    transform: translateX(calc(var(--sweep) * -0.428571)) rotate(10deg);
+    opacity: 1;
+  }
+  57.12% {
+    transform: translateX(calc(var(--sweep) * -0.571429)) rotate(40deg);
+    opacity: 1;
+  }
+  71.4% {
+    transform: translateX(calc(var(--sweep) * -0.714286)) rotate(62deg);
+    opacity: 1;
+  }
+  85.68% {
+    transform: translateX(calc(var(--sweep) * -0.857143)) rotate(72deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(var(--sweep) * -1)) rotate(74deg);
+    opacity: 0;
+  }
+}

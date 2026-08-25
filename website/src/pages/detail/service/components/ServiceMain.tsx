@@ -3,50 +3,43 @@ import { Star } from 'lucide-react';
 export function ServiceHeader({ service }: { service: any }) {
   return (
     <div className="w-full flex flex-col gap-6">
-      
+
       <div className="w-full h-[200px] md:h-[260px] rounded-[1.5rem] overflow-hidden bg-white-100">
         <img src={service.bannerImage} alt="Banner" className="w-full h-full object-cover" />
       </div>
 
-      
+
       <div className="flex flex-col md:flex-row gap-5 items-start">
+
         
-        <div className="w-[90px] h-[90px] shrink-0 rounded-[1rem] overflow-hidden shadow border border-gray-50 bg-white -mt-10 ml-4 relative z-10">
-          <img src={service.logo} alt={service.name} className="w-full h-full object-cover" />
-        </div>
 
-        <div className="flex flex-col gap-1.5 pt-1 min-w-0">
-          <h1 className="text-2xl md:text-[1.875rem] font-bold text-primary-brown leading-tight">
-            {service.name}
-          </h1>
-          <p className="text-[0.8125rem] text-primary-light-brown">{service.registration}</p>
-          <p className="text-[0.875rem] font-medium text-primary-brown">{service.address}</p>
+        <div className="flex flex-col  md:flex-row gap-6 items-start">
+          <div className=" 0 h-36 shrink-0 rounded-2xl overflow-hidden shadow-sm bg-white">
+            <img src={service.logo} alt={service.name} className="w-full h-full object-cover" />
+          </div>
 
-          <div className="flex flex-wrap items-center gap-3 mt-1">
-            
-            <div className="flex items-center gap-1 text-[0.875rem] text-primary-brown">
-              <Star size={14} className="fill-[#E2541D] text-[#E2541D]" />
-              <span className="font-bold">{service.rating}</span>
-              <span className="text-gray-100">({service.reviewsCount} reviews)</span>
-            </div>
+          <div className="flex  flex-col gap-2 pt-2">
+            <h1 className="text-[1rem] md:text-[1.875rem] font-medium text-primary-brown leading-tight">
+              {service.name}
+            </h1>
+            <p className="text-[0.875rem] text-primary-light-brown">
+              {service.registration}
+            </p>
+            <p className="text-[1rem]  text-primary-brown">
+              {service.address}
+            </p>
 
-            <span className="text-primary-light-brown/40">·</span>
-
-            
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-2">
-                {service.teamAvatars.map((src: string, i: number) => (
-                  <img
-                    key={i}
-                    src={src}
-                    alt="Team member"
-                    className="w-7 h-7 rounded-full border-2 border-white-50 object-cover"
-                  />
-                ))}
+            <div className="flex flex-wrap items-center gap-3 mt-1 text-[0.875rem] text-primary-brown">
+              <div className="flex items-center gap-1">
+                <Star size={16} className="fill-orange-500 text-orange-500" />
+                <span className="font-medium">{service.rating}</span>
+                <span className="text-gray-100">({service.reviewsCount} reviews)</span>
               </div>
-              <span className="text-[0.875rem] text-primary-brown">
-                {service.teamSize} people work here
-              </span>
+              <span className="text-gray-100">•</span>
+              <div className="flex items-center gap-1">
+                {/* <img src={Approves} className="h-5 w-auto" alt="Verified" /> */}
+                <span>{service.teamSize} people work here</span>
+              </div>
             </div>
           </div>
         </div>
@@ -80,11 +73,10 @@ export function ServiceTabs() {
           <button
             key={tab}
             onClick={() => handleScroll(tab)}
-            className={`py-4 text-[0.875rem] font-medium transition-colors ${
-              i === 0
+            className={`py-4 text-[0.875rem] font-medium transition-colors ${i === 0
                 ? "text-primary-brown border-b-2 border-primary-brown"
                 : "text-primary-light-brown hover:text-primary-brown border-b-2 border-transparent"
-            }`}
+              }`}
           >
             {tab}
           </button>
