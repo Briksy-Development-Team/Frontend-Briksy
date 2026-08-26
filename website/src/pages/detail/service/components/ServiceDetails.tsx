@@ -1,15 +1,141 @@
-import { Play, X } from 'lucide-react';
-import { useState } from 'react';
+import { X, ShieldCheck } from "lucide-react";
+import { useState } from "react";
 
-export function ServiceAbout({ about, showTitle = true }: { about: any; showTitle?: boolean }) {
+export function ServiceList({ servicesData }: { servicesData: any }) {
   return (
-    <div className="flex flex-col gap-4">
-      {showTitle && (
-        <h2 className="text-[1.25rem] font-bold text-primary-brown">About</h2>
-      )}
-      <div className="text-[0.875rem] text-primary-brown leading-relaxed">
-        {about.description}
+    <div className="flex flex-col gap-5">
+      <h2 className="text-[1.25rem] font-medium text-primary-brown">
+        Services & Rates
+      </h2>
+      <p className="text-[0.875rem] text-primary-light-brown">
+        General estimate due to external variables involved
+      </p>
+
+      <div className="flex flex-col gap-4 w-full">
+        {servicesData.list.map((s: any) => (
+          <div
+            key={s.id}
+            className="flex items-center gap-5 p-2 rounded-[1.5rem] bg-white/0 border border-gray-50 shadow-sm"
+          >
+            <div className="w-32 h-32  shrink-0 rounded-[1.5rem] overflow-hidden bg-gray-100">
+              <img
+                src={s.image}
+                alt={s.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1 flex flex-col justify-center">
+              <p className="text-[0.875rem] font-medium text-primary-brown leading-snug">
+                {s.title}
+              </p>
+              <p className="text-[0.875rem] text-primary-light-brown mt-1 leading-snug">
+                {s.description}
+              </p>
+              <div className="flex items-center gap-2 mt-2 text-[0.875rem]">
+                <span className="font-medium text-primary-brown">
+                  {s.price}
+                </span>
+                <span className="text-gray-300">/</span>
+                <span className="text-primary-light-brown font-medium">
+                  {s.duration}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+      <p className="text-[0.75rem] text-[#6C6C6C] mt-2">
+        *Actual price will change after on-site review changes
+      </p>
+    </div>
+  );
+}
+
+export function ServiceQualifications({
+  companyName,
+  companyLogo,
+  qualifications,
+}: {
+  companyName: string;
+  companyLogo: string;
+  qualifications: any[];
+}) {
+  return (
+    <div className="flex flex-col gap-6">
+      <h2 className="text-[1.5rem] font-medium text-primary-brown">
+        My qualifications
+      </h2>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="w-full md:w-[30%] bg-white rounded-3xl p-6 border border-gray-50 shadow-sm flex flex-col items-center justify-center text-center gap-3">
+          <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-sm">
+            <img
+              src={companyLogo}
+              alt={companyName}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <p className="font-medium text-[1.25rem] text-primary-brown">
+              {companyName}
+            </p>
+            <p className="text-[0.75rem] text-primary-light-brown mt-1">
+              Employer / Company
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col justify-center gap-6">
+          {qualifications.map((q, idx) => (
+            <div key={idx} className="flex gap-4 items-start">
+              <div className="mt-1 text-primary-brown">
+                {idx === 0 ? (
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                ) : idx === 1 ? (
+                  <ShieldCheck size={20} />
+                ) : (
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 8v4l3 3"></path>
+                  </svg>
+                )}
+              </div>
+              <div>
+                <p className="text-[0.875rem] font-medium text-primary-brown leading-snug">
+                  {q.title}
+                </p>
+                <p className="text-[0.75rem] text-primary-light-brown leading-snug mt-1">
+                  {q.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button className="w-full py-3.5 bg-[#EFEBE4] rounded-xl text-primary-brown font-medium  text-[0.9375rem] hover:bg-[#e4dfd5] transition-colors mt-2">
+        Message {companyName.split(" ")[0]}
+      </button>
     </div>
   );
 }
@@ -19,77 +145,50 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[1.25rem] font-bold text-primary-brown">Recent work</h2>
-        <button
-          onClick={() => setModalOpen(true)}
-          className="text-[0.8125rem] text-primary-light-brown hover:text-primary-brown font-medium transition-colors"
-        >
-          Show all {recentWork.totalPhotos} photos and {recentWork.totalVideos} videos
-        </button>
-      </div>
+      <h2 className="text-[1.5rem] font-medium text-primary-brown">
+        My gallery
+      </h2>
 
-      
-      <div className="flex gap-3 h-[280px] md:h-[340px]">
-        
+      <div className="flex gap-2 h-[280px] md:h-[400px]">
         <div
-          className="flex-1 rounded-[1rem] overflow-hidden cursor-pointer bg-white-100"
+          className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100"
           onClick={() => setModalOpen(true)}
         >
-          <img src={recentWork.items[0].src} alt="Recent work" className="w-full h-full object-cover" />
+          <img
+            src={recentWork.items[0].src}
+            alt="Recent work"
+            className="w-full h-full object-cover"
+          />
         </div>
 
-        
-        <div className="flex-1 flex flex-col gap-3 h-full">
-          
+        <div className="w-[35%] flex flex-col gap-2 h-full">
           <div
-            className="flex-1 rounded-[1rem] overflow-hidden cursor-pointer relative bg-[#1a1a1a]"
+            className="flex-1 rounded-xl overflow-hidden cursor-pointer relative bg-white-100"
             onClick={() => setModalOpen(true)}
           >
             <img
               src={recentWork.items[1].src}
-              alt="Video thumbnail"
-              className="w-full h-full object-cover opacity-40"
+              alt="Recent work"
+              className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-              <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center shadow-md">
-                <Play className="fill-primary-brown text-primary-brown translate-x-[2px]" size={18} />
-              </div>
-              <span className="text-white text-[0.75rem] font-medium">{recentWork.items[1].duration}</span>
-            </div>
           </div>
 
-          
           <div
-            className="flex-1 rounded-[1rem] overflow-hidden cursor-pointer bg-white-100"
+            className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100 relative"
             onClick={() => setModalOpen(true)}
           >
-            <img src={recentWork.items[2].src} alt="Recent work" className="w-full h-full object-cover" />
+            <img
+              src={recentWork.items[2].src}
+              alt="Recent work"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <span className="text-white text-3xl">...</span>
+            </div>
           </div>
         </div>
       </div>
 
-      
-      <div className="flex gap-4">
-        <div className="flex-1">
-          {recentWork.items[0].title && (
-            <>
-              <p className="text-[0.875rem] font-semibold text-primary-brown">{recentWork.items[0].title}</p>
-              <p className="text-[0.75rem] text-primary-light-brown mt-0.5">{recentWork.items[0].subtitle}</p>
-            </>
-          )}
-        </div>
-        <div className="flex-1">
-          {recentWork.items[1].title && (
-            <>
-              <p className="text-[0.875rem] font-semibold text-primary-brown">{recentWork.items[1].title}</p>
-              <p className="text-[0.75rem] text-primary-light-brown mt-0.5">{recentWork.items[1].subtitle}</p>
-            </>
-          )}
-        </div>
-      </div>
-
-      
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
           <button
@@ -102,35 +201,22 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
           <div className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
               <h3 className="text-[1.125rem] font-bold text-primary-brown">
-                Recent work · {recentWork.totalPhotos} photos and {recentWork.totalVideos} videos
+                Gallery · {recentWork.totalPhotos} photos
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {recentWork.items.map((item: any, idx: number) => (
-                  <div key={idx} className="aspect-square rounded-xl overflow-hidden relative bg-white-100">
+                  <div
+                    key={idx}
+                    className="aspect-square rounded-xl overflow-hidden relative bg-white-100"
+                  >
                     <img
                       src={item.src}
-                      className={`w-full h-full object-cover ${item.type === 'video' ? 'opacity-40' : ''}`}
+                      className="w-full h-full object-cover"
                       alt=""
                     />
-                    {item.type === 'video' && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
-                          <Play className="fill-primary-brown text-primary-brown translate-x-[2px]" size={20} />
-                        </div>
-                      </div>
-                    )}
-                    {item.title && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                        <p className="text-white text-[0.75rem] font-medium">{item.title}</p>
-                      </div>
-                    )}
                   </div>
-                ))}
-                
-                {Array.from({ length: Math.max(0, 9 - recentWork.items.length) }).map((_, i) => (
-                  <div key={`ph-${i}`} className="aspect-square rounded-xl bg-gray-50" />
                 ))}
               </div>
             </div>
@@ -141,73 +227,19 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
   );
 }
 
-export function ServiceList({ servicesData, name }: { servicesData: any; name: string }) {
+export function ServiceLocation({ location }: { location: any }) {
   return (
-    <div className="flex flex-col gap-5">
-      <h2 className="text-[1.5rem] font-medium text-primary-brown">What {name} does</h2>
-
-      
-      <div className="flex flex-wrap gap-2">
-        {servicesData.tags.map((tag: string, index: number) => (
-          <span
-            key={index}
-            className="rounded-full bg-[#E2CBB3] text-primary-brown px-4 py-1.5 text-[0.75rem] font-medium"
-          >
-            {tag}
-          </span>
-        ))}
+    <div className="flex flex-col gap-[1.5rem]">
+      <div className="space-y-[1.5rem]">
+        <h2 className="text-[1.5rem] font-medium text-primary-brown">
+          I'll come to you
+        </h2>
+        <p className="text-[0.875rem] text-primary-light-brown">
+          {location.description}
+        </p>
       </div>
 
-      
-      {servicesData.offer && (
-        <div className="bg-[#E2CBB3] rounded-[1rem] px-5 py-4 flex flex-col gap-1">
-          <div className="flex items-center gap-2.5">
-            <span className="text-[0.875rem] font-bold text-primary-brown">{servicesData.offer.title}</span>
-            <span className="bg-white rounded-full px-2.5 py-0.5 text-[0.75rem]  text-primary-brown  tracking-wide border border-primary-light-brown/60">
-              Offer
-            </span>
-          </div>
-          <p className="text-[0.75rem] text-primary-light-brown leading-snug">{servicesData.offer.subtitle}</p>
-        </div>
-      )}
-
-      
-      <div className="flex flex-col w-full border border-gray-50 rounded-[1rem] overflow-hidden bg-white">
-        {servicesData.list.map((s: any, i: number) => (
-          <div
-            key={s.id}
-            className={`flex items-start justify-between px-5 py-4 ${
-              i !== servicesData.list.length - 1 ? 'border-b border-gray-50' : ''
-            }`}
-          >
-            <div className="flex-1 pr-4">
-              <p className="text-[0.875rem] font-medium text-primary-brown leading-snug">{s.title}</p>
-              <p className="text-[0.75rem] text-primary-light-brown mt-0.5 leading-snug">{s.description}</p>
-            </div>
-            <div className="text-[0.875rem] font-medium text-primary-brown whitespace-nowrap shrink-0">
-              {s.price}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <p className="text-[0.75rem] text-primary-light-brown">
-        Prices are indicative starting points supplied by the business. Confirm on your quote.
-      </p>
-    </div>
-  );
-}
-
-export function ServiceLocation({ location, name }: { location: any; name: string }) {
-  return (
-    <div className="flex flex-col gap-5  rounded-[1.5rem] p-6 md:p-8">
-      <div className='space-y-3'>
-        <h2 className="text-[1.5rem] font-bold text-primary-brown">Where {name} works</h2>
-        <p className="text-[0.75rem] text-primary-light-brown mt-1">{location.description}</p>
-      </div>
-
-      
-      <div className="w-full h-[240px] rounded-[1rem] overflow-hidden border border-gray-50">
+      <div className="w-full h-[25.875rem] rounded-[1.5rem] overflow-hidden">
         <iframe
           src={location.mapSrc}
           width="100%"
@@ -220,23 +252,10 @@ export function ServiceLocation({ location, name }: { location: any; name: strin
         />
       </div>
 
-      
-      <div>
-        <h3 className="text-[0.875rem] font-semibold text-primary-brown mb-3">Suburbs served</h3>
-        <div className="flex flex-wrap gap-2">
-          {location.suburbs.map((suburb: string) => (
-            <span
-              key={suburb}
-              className="text-[0.75rem] text-primary-brown border border-primary-light-brown/50 rounded-full px-3.5 py-1 "
-            >
-              {suburb}
-            </span>
-          ))}
-          <span className="text-[0.75rem] text-primary-light-brown border border-primary-light-brown/50 rounded-full px-3.5 py-1">
-            +{location.moreCount} more
-          </span>
-        </div>
-      </div>
+      <p className="text-[0.75rem] text-primary-light-brown">
+        You can also come to me once the job is booked: Flinders Street Station,
+        Melbourne, VIC 3000
+      </p>
     </div>
   );
 }

@@ -7,7 +7,7 @@
   --font-inter: "Inter", sans-serif;
   --color-primary: #562f00;
   --color-primary-brown: #342511;
-  --color-primary-light-brown: #7C5F42;
+  --color-primary-light-brown: #7c5f42;
 
   --color-gray-50: #e5e3d8;
   --color-gray-100: #6b6b6b;
@@ -25,7 +25,7 @@ body {
   margin: 0;
   padding: 0;
   overscroll-behavior: none;
-  background-color: #F0EAE6;
+  background-color: #F8F4EE;
 }
 @font-face {
   font-family: "HelveticaNow";
@@ -109,7 +109,6 @@ body {
   cursor: pointer;
 }
 
-/* Hide default tracks completely (we draw our own fill in the component) */
 .dual-range-input::-webkit-slider-runnable-track {
   background: transparent;
   pointer-events: none;
@@ -119,3 +118,5 @@ body {
   background: transparent;
   pointer-events: none;
 }
+
+

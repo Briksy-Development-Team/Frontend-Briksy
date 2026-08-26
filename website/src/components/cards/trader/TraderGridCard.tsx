@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Heart, MapPin, Star, ArrowRight } from "lucide-react";
+import { MapPin, Star, ArrowRight } from "lucide-react";
 import type { Trader } from "../../../types/trader";
+import FavoriteButton from "../../custom/FavoriteButton";
 import Approves from "../../../assets/logo/apprrove.svg";
 
 type Props = {
@@ -22,16 +23,11 @@ const BuilderGridCard = ({ item }: Props) => {
           className="absolute inset-0 h-full w-full object-cover"
         />
 
-        <button className="absolute right-4 top-3 flex items-center justify-center">
-          <Heart
-            size={24}
-            className={
-              item.isFavourite
-                ? "fill-primary-brown text-primary-brown"
-                : "fill-white text-primary-brown"
-            }
-          />
-        </button>
+        <FavoriteButton
+          initialIsFavourite={item.isFavourite}
+          className="absolute right-4 top-3"
+          variant="overlay"
+        />
       </div>
 
       <div className="relative flex shrink-0 items-end justify-between px-4">

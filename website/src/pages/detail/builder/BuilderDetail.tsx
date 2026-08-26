@@ -1,7 +1,18 @@
-import { BuilderHeader, BuilderTabs, BuilderAbout, BuilderContact } from "./components/BuilderMain";
-import { BuilderSnapshot, BuilderHomes, BuilderPerformance, BuilderTeam } from "./components/BuilderPortfolio";
+import {
+  BuilderHeader,
+  BuilderTabs,
+  BuilderAbout,
+  BuilderContact,
+} from "./components/BuilderMain";
+import {
+  BuilderSnapshot,
+  BuilderHomes,
+  BuilderPerformance,
+  BuilderTeam,
+} from "./components/BuilderPortfolio";
 import { BuilderSidebar } from "./components/BuilderSidebar";
 import Reviews from "../../../components/reviews/Reviews";
+import { Share } from "lucide-react";
 
 export const builderData = {
   id: 1,
@@ -153,42 +164,68 @@ export const builderData = {
 };
 
 import Breadcrumb from "../../../components/nav/Breadcrumb";
+import FavoriteButton from "../../../components/custom/FavoriteButton";
 
 const BuilderDetail = () => {
-  const addressParts = builderData.address.split(', ');
-  const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
+  const addressParts = builderData.address.split(", ");
+  const suburbStateZip = addressParts[addressParts.length - 1].split(" ");
   const state = suburbStateZip[suburbStateZip.length - 2] || "NSW";
-  const suburb = suburbStateZip.slice(0, -2).join(' ') || "Camden";
+  const suburb = suburbStateZip.slice(0, -2).join(" ") || "Camden";
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
     { label: "Find a builder", isBack: true },
     { label: "New home builders" },
     { label: `${suburb} ${state}` },
-    { label: builderData.name }
+    { label: builderData.name },
   ];
 
   return (
     <div className="min-h-screen mt-20 font-helvetica flex flex-col">
       <main className="flex-1 w-full  px-[5%]  py-6">
-        <Breadcrumb items={breadcrumbs} />
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+          <Breadcrumb items={breadcrumbs} />
 
+          <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0">
+            <button className="flex items-center gap-2 hover:opacity-70 transition">
+              <Share size={18} /> Share
+            </button>
+            <FavoriteButton
+              variant="inline"
+              showText={true}
+              iconSize={18}
+              className="hover:opacity-70 transition text-primary-brown"
+            />
+          </div>
+        </div>
         <div className="flex flex-col lg:flex-row gap-10 items-start relative">
           <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
             <BuilderHeader builder={builderData} />
             <BuilderTabs />
 
             <div className="flex flex-col gap-16">
-              <div id="snapshot"><BuilderSnapshot snapshot={builderData.snapshot} /></div>
-              <div id="homes"><BuilderHomes homes={builderData.homes} /></div>
-              <div id="performance"><BuilderPerformance performance={builderData.performance} /></div>
-              <div id="team"><BuilderTeam team={builderData.team} /></div>
-              <div id="about"><BuilderAbout about={builderData.about} /></div>
-              <div id="reviews"><Reviews data={builderData.reviews} /></div>
+              <div id="snapshot">
+                <BuilderSnapshot snapshot={builderData.snapshot} />
+              </div>
+              <div id="homes">
+                <BuilderHomes homes={builderData.homes} />
+              </div>
+              <div id="performance">
+                <BuilderPerformance performance={builderData.performance} />
+              </div>
+              <div id="team">
+                <BuilderTeam team={builderData.team} />
+              </div>
+              <div id="about">
+                <BuilderAbout about={builderData.about} />
+              </div>
+              <div id="reviews">
+                <Reviews data={builderData.reviews} />
+              </div>
             </div>
           </div>
 
-          <aside className="w-full lg:w-[360px] shrink-0 lg:sticky lg:top-32">
+          <aside className="w-full lg:w-[25%] shrink-0 lg:sticky lg:top-32">
             <BuilderSidebar price={builderData.fixedPrice} />
           </aside>
         </div>

@@ -5,7 +5,8 @@ import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, Pro
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 import StaffGrid from "../../../components/grids/StaffGrid";
-import { ShieldCheck, Share, Heart } from "lucide-react";
+import { ShieldCheck, Share } from "lucide-react";
+import FavoriteButton from "../../../components/custom/FavoriteButton";
 
 const property = {
   title: 'Modern Townhouse Near Transport - 2',
@@ -18,11 +19,11 @@ const property = {
     'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80',
     'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=600&q=80',
   ],
-  agent: { 
-    name: 'Sunrise Property Group', 
-    role: 'Property Management • Since 2016', 
+  agent: {
+    name: 'Sunrise Property Group',
+    role: 'Property Management • Since 2016',
     verified: 'Verified [ Builder / Org. ]',
-    avatar: 'https://i.pravatar.cc/150?img=11', 
+    avatar: 'https://i.pravatar.cc/150?img=11',
   },
   about: 'Low-maintenance living with open-plan design and secure parking. This modern townhouse offers the perfect blend of style and convenience, located just minutes from Richmond Station and the vibrant Church Street precinct. Enjoy easy access to Melbourne CBD, local cafes, boutiques, and parks — all within walking distance.',
   amenities: [
@@ -103,31 +104,34 @@ const PropertyDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen mt-20 font-helvetica flex flex-col bg-[#F9F7F2]">
-      <main className="flex-1 w-[90%]  mx-auto px-4 md:px-8 py-6">
-        
+    <div className="min-h-screen mt-20 font-helvetica flex flex-col ">
+      <main className="flex-1 w-full  px-[5%]  py-6">
+
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
-          
+
           <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0">
             <button className="flex items-center gap-2 hover:opacity-70 transition">
               <Share size={18} /> Share
             </button>
-            <button className="flex items-center gap-2 hover:opacity-70 transition">
-              <Heart size={18} /> Like
-            </button>
+            <FavoriteButton
+              variant="inline"
+              showText={true}
+              iconSize={18}
+              className="hover:opacity-70 transition text-primary-brown"
+            />
           </div>
         </div>
 
-        
+
         <div className="mb-10 w-full">
           <PropertyGallery images={property.images} />
         </div>
 
-        
+
         <div className="flex flex-col lg:flex-row gap-10 items-start relative">
           <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
-            
+
             <PropertyTitle title={property.title} subtitle={property.subtitle} />
             <PropertyAgentCard agent={property.agent} />
 
@@ -135,7 +139,7 @@ const PropertyDetail = () => {
               <div id="about">
                 <PropertyAbout about={property.about} />
               </div>
-              
+
               <div className="w-full h-[1px] bg-[#EBE5D9]" />
 
               <div id="amenities">
@@ -149,18 +153,18 @@ const PropertyDetail = () => {
               </div>
 
               <div className="w-full h-[1px] bg-[#EBE5D9]" />
-              
+
               <div id="company">
                 <PropertyCompanyDetails company={property.company} />
               </div>
-              
+
               <div id="host">
                 <div className="mb-4">
                   <h2 className="text-[1.25rem] font-bold text-primary-brown">Meet The Host</h2>
                 </div>
                 <StaffGrid staff={property.hosts} />
               </div>
-              
+
               <div className="w-full flex justify-center py-4">
                 <div className="bg-white border border-[#EBE5D9] rounded-xl py-4 px-6 flex items-center gap-3 w-full max-w-[800px] shadow-sm">
                   <ShieldCheck className="text-[#B98A44]" size={24} />

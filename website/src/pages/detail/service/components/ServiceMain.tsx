@@ -4,7 +4,7 @@ export function ServiceHeader({ service }: { service: any }) {
   return (
     <div className="w-full flex flex-col gap-6">
 
-      <div className="w-full h-[200px] md:h-[260px] rounded-[1.5rem] overflow-hidden bg-white-100">
+      <div className="w-[30%] h-[200px] md:h-[260px] rounded-[1.5rem] overflow-hidden bg-white-100">
         <img src={service.bannerImage} alt="Banner" className="w-full h-full object-cover" />
       </div>
 
