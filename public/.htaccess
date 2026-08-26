@@ -1,0 +1,22 @@
+Options +FollowSymLinks
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Serve Laravel storage files.
+  RewriteRule ^storage/(.*)$ backend/public/storage/$1 [L]
+  RewriteRule ^api/storage/(.*)$ backend/public/storage/$1 [L]
+
+  # Route Laravel API and documentation requests.
+  RewriteRule ^api(?:/(.*))?$ backend/public/index.php [L]
+  RewriteRule ^docs(?:/(.*))?$ backend/public/index.php [L]
+
+  # Keep admin and super-admin deep links on the admin entry point. Existing assets are served normally.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(?:admin|super-admin)(?:/.*)?$ admin/index.html [L]
+
+  # Website SPA fallback.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>

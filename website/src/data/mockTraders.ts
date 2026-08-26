@@ -1,0 +1,136 @@
+import type { Trader } from "../types/trader";
+import Ava from "../assets/place holder/serviceholder.svg";
+import Bg from "../assets/place holder/builderbg.svg";
+
+export const mockTraders: Trader[] = [
+  {
+    id: 1,
+    name: "James Wilson",
+    tagLine: "Trusted Local Expert",
+    role: "Interior Designer",
+    location: "Richmond, VIC",
+    avatar: Ava,
+    bannerImage: Bg,
+
+    rating: 4.8,
+    reviews: 156,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 2,
+    name: "Olivia Taylor",
+    tagLine: "Premium Design Solutions",
+    role: "Architect",
+    bannerImage: Bg,
+
+    location: "Bondi, NSW",
+    avatar: Ava,
+    rating: 4.9,
+    reviews: 203,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 3,
+    name: "Liam Anderson",
+    tagLine: "Fast & Reliable",
+    bannerImage: Bg,
+
+    role: "Electrician",
+    location: "South Brisbane, QLD",
+    avatar: Ava,
+    rating: 4.7,
+    reviews: 97,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 4,
+    name: "Charlotte Brown",
+    tagLine: "Building Better Spaces",
+    bannerImage: Bg,
+
+    role: "Builder",
+    location: "Parramatta, NSW",
+    avatar: Ava,
+    rating: 4.8,
+    reviews: 141,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 5,
+    name: "Noah Harris",
+    bannerImage: Bg,
+
+    tagLine: "Quality Work Guaranteed",
+    role: "Plumber",
+    location: "Fremantle, WA",
+    avatar: Ava,
+    rating: 4.6,
+    reviews: 112,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 6,
+    name: "Amelia White",
+    tagLine: "Creative Outdoor Living",
+    bannerImage: Bg,
+
+    role: "Landscape Designer",
+    location: "Glenelg, SA",
+    avatar: Ava,
+    rating: 4.9,
+    reviews: 184,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 7,
+    name: "Ethan Martin",
+    tagLine: "Property Maintenance Specialists",
+    bannerImage: Bg,
+
+    role: "Handyman",
+    location: "St Kilda, VIC",
+    avatar: Ava,
+    rating: 4.5,
+    reviews: 76,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 8,
+    name: "Sophie Walker",
+    tagLine: "Professional Painting Services",
+    bannerImage: Bg,
+
+    role: "Painter",
+    location: "Canberra, ACT",
+    avatar: Ava,
+    rating: 4.8,
+    reviews: 129,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 9,
+    name: "Jack Thompson",
+    tagLine: "Flooring Specialists",
+    role: "Flooring Contractor",
+    bannerImage: Bg,
+
+    location: "Docklands, VIC",
+    avatar: Ava,
+    rating: 4.7,
+    reviews: 88,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+  {
+    id: 10,
+    name: "Grace Evans",
+    bannerImage: Bg,
+
+    tagLine: "Modern Kitchen Experts",
+    role: "Kitchen Renovator",
+    location: "New Farm, QLD",
+    avatar: Ava,
+    rating: 4.9,
+    reviews: 167,
+    tags: ["Kitchen Design", "Cabinetry", "Renovation","Cabinetry", "Renovation"],
+  },
+];

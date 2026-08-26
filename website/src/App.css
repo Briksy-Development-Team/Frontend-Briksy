@@ -1,0 +1,42 @@
+
+::-webkit-scrollbar {
+  width: 0;
+  background-color: transparent;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+.search-expanded {
+  width: fit-content;
+}
+
+.search-expanded .search-pill {
+  width: 50rem;
+  height: 4rem;
+}
+
+.search-collapsed .search-pill {
+  width: 18rem;
+  height: 2.75rem;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+  background-color: #f8f4ee;
+}
+
+@keyframes aura-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
