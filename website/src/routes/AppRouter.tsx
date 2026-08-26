@@ -1,7 +1,6 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Profile from "../pages/profile/Profile";
 import Home from "../pages/home/Home";
-import Login from "../pages/auth/login/Login";
 import MainLayout from "./MainLayout";
 import Register from "../pages/auth/register/Register";
 
@@ -39,9 +38,9 @@ const AppRouter = () => {
       </Route>
       <Route path="/error" element={<Error />} />
       <Route path="/coming-soon" element={<Coming />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Navigate to="/admin/login" replace />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/reset-password" element={<Login />} />
+      <Route path="/reset-password" element={<Navigate to="/admin/login" replace />} />
     </Routes>
   );
 };

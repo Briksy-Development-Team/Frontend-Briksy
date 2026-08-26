@@ -26,7 +26,7 @@ const ProfileDropdown = () => {
 
     const handleLoginNav = () => {
         setDropdownOpen(false);
-        navigate("/login");
+        navigate("/admin/login");
     };
 
     const handleComingSoonNav = () => {

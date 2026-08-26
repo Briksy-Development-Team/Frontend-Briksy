@@ -18,8 +18,6 @@ import { App } from '../App'
  *
  * @see https://facebook.github.io/create-react-app/docs/using-the-public-folder
  */
-const { BASE_URL } = import.meta.env
-
 const AppRoutes: FC = () => {
   const {currentUser, isBootstrapping} = useAuth()
   const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
@@ -33,7 +31,7 @@ const AppRoutes: FC = () => {
   }
 
   return (
-    <BrowserRouter basename={BASE_URL}>
+    <BrowserRouter>
       <Routes>
         <Route element={<App />}>
           <Route path='error/*' element={<ErrorsPage />} />
@@ -45,8 +43,9 @@ const AppRoutes: FC = () => {
             </>
           ) : (
             <>
+              <Route path='admin/*' element={<AuthPage />} />
               <Route path='auth/*' element={<AuthPage />} />
-              <Route path='*' element={<Navigate to='/auth' />} />
+              <Route path='*' element={<Navigate to='/admin/login' />} />
             </>
           )}
         </Route>

@@ -3,7 +3,8 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/",
+  envDir: "..",
+  base: "/admin/",
 
   css: {
     preprocessorOptions: {
@@ -19,6 +20,8 @@ export default defineConfig({
   },
 
   build: {
+    outDir: "../dist/admin",
+    emptyOutDir: false,
     target: "esnext",
     chunkSizeWarningLimit: 600,
     rollupOptions: {

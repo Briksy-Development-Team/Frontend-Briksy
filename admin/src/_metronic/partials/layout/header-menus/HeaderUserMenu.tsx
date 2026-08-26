@@ -1,12 +1,13 @@
 
 import { FC } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../../app/modules/auth'
 import { toAbsoluteUrl } from '../../../helpers'
 import { getRoleHomeRoute, getRolePortalBaseRoute } from '../../../../app/modules/auth/core/roleRoutes'
 
 const HeaderUserMenu: FC = () => {
   const { currentUser, logout } = useAuth()
+  const navigate = useNavigate()
   const roles = currentUser?.roles ?? []
   const homeRoute = getRoleHomeRoute(roles)
   const portalBase = getRolePortalBaseRoute(roles)
@@ -54,7 +55,7 @@ const HeaderUserMenu: FC = () => {
           href='#'
           onClick={(event) => {
             event.preventDefault()
-            void logout()
+            void logout().finally(() => navigate('/'))
           }}
           className='menu-link px-5'
         >
