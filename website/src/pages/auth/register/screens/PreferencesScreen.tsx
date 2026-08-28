@@ -14,7 +14,7 @@ export const PreferencesScreen = ({ go }: { go: (step: RegisterStep) => void }) 
     setSelectedPrefs(prev => prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref]);
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.5rem] flex flex-col gap-[1.5rem] max-w-[40.625rem] mx-auto text-[#342511]">
+    <ScreenWrapper className="w-full px-[3rem] py-[2.5rem] flex flex-col gap-[1.5rem] max-w-[40.625rem] mx-auto text-[primary-brown]">
       <StepIndicator step={3} go={go} />
       <AuthHeader title="Personalize your Briksy" subtitle="Select what you're interested in so we can customize your experience." />
 
@@ -25,7 +25,7 @@ export const PreferencesScreen = ({ go }: { go: (step: RegisterStep) => void }) 
             <button
               key={pref}
               onClick={() => togglePref(pref)}
-              className={`px-[1rem] h-[2.75rem] rounded-full border text-[0.875rem] font-medium transition-colors ${selectedPrefs.includes(pref) ? 'bg-[#342511] text-[#EEECE0] border-[#342511]' : 'border-[#CBD5E1] text-[#342511] hover:border-[#342511]'}`}
+              className={`px-[1rem] h-[2.75rem] rounded-full border text-[0.875rem] font-medium transition-colors ${selectedPrefs.includes(pref) ? 'bg-[primary-brown] text-[#EEECE0] border-[primary-brown]' : 'border-[#CBD5E1] text-[primary-brown] hover:border-[primary-brown]'}`}
             >
               {pref}
             </button>

@@ -1,7 +1,7 @@
 import { type Screen, ScreenWrapper, Btn, IconBubble, AuthHeader } from '../shared';
 
 export const UpdatedScreen = ({ go }: { go: (s: Screen) => void }) => (
-  <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[#342511] text-center">
+  <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[primary-brown] text-center">
     <div className="flex justify-center">
       <IconBubble>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C5F42" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

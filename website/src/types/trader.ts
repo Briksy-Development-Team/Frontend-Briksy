@@ -3,7 +3,6 @@ export interface Trader {
   name: string;
   tagLine: string;
   bannerImage: string;
-
   role: string;
   location: string;
   avatar: string;
@@ -11,4 +10,5 @@ export interface Trader {
   reviews: number;
   tags: string[];
   isFavourite?: boolean;
+  category?: string; // matches subcategory items in MegaMenu e.g. "Electricians"
 }

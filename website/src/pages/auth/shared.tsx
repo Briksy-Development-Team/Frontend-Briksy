@@ -19,8 +19,8 @@ export const ScreenWrapper = ({ children, className = 'space-y-4' }: { children:
 
 export const AuthHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div className="flex flex-col gap-[0.25rem]">
-    <h2 className="text-[1.875rem] font-bold text-[#342511] leading-[1.2] tracking-tight">{title}</h2>
-    <p className="text-[0.875rem] text-[#7C5F42]">{subtitle}</p>
+    <h2 className="text-[1.875rem] font-bold text-[primary-brown] leading-[1.2] tracking-tight">{title}</h2>
+    <p className="text-[0.875rem] text-[primary-light-brown]">{subtitle}</p>
   </div>
 );
 
@@ -36,7 +36,7 @@ export const Field = ({ label, error, children, ...props }: { label: string; err
 );
 
 export const Btn = ({ children, className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button {...props} className={`w-full bg-[#342511] text-[#EEECE0] font-medium text-[1.25rem] rounded-[0.875rem] h-[4.25rem] hover:bg-[#342511]/90 transition-colors disabled:opacity-50 ${className}`}>
+  <button {...props} className={`w-full bg-[primary-brown] text-[#EEECE0] font-medium text-[1.25rem] rounded-[0.875rem] h-[4.25rem] hover:bg-[primary-brown]/90 transition-colors disabled:opacity-50 ${className}`}>
     {children}
   </button>
 );
@@ -56,11 +56,11 @@ export const Divider = () => (
 export const StepIndicator = ({ step, go }: { step: number; go?: (step: RegisterStep) => void }) => (
   <div className="flex flex-col gap-[0.125rem]">
     <div className="flex gap-[0.375rem]">
-      {[1, 2, 3].map(i => <div key={i} className={`h-[0.25rem] flex-1 rounded-full ${i <= step ? 'bg-[#342511]' : 'bg-[#EDE8E4]'}`} />)}
+      {[1, 2, 3].map(i => <div key={i} className={`h-[0.25rem] flex-1 rounded-full ${i <= step ? 'bg-[primary-brown]' : 'bg-[#EDE8E4]'}`} />)}
     </div>
-    <div className="flex justify-between items-center text-[0.75rem] text-[#7C5F42] mt-[0.25rem]">
+    <div className="flex justify-between items-center text-[0.75rem] text-[primary-light-brown] mt-[0.25rem]">
       <span>Step {step} of 3</span>
-      {step === 3 && go && <button onClick={() => go('welcome')} className="text-[#342511] underline hover:opacity-75 transition-opacity">Skip for now</button>}
+      {step === 3 && go && <button onClick={() => go('welcome')} className="text-[primary-brown] underline hover:opacity-75 transition-opacity">Skip for now</button>}
     </div>
   </div>
 );

@@ -9,7 +9,6 @@ import Pricing from "../pages/home/subscription/Pricing";
 import SearchPage from "../pages/search/SearchPage";
 import Error from "../components/error/Error";
 import Coming from "../components/coming/Coming";
-import HomeB from "../pages/home/Home.tsx";
 import Notification from "../components/notification/Notification.tsx";
 import Help from "../components/help/Help.tsx";
 import PropertyDetail from "../pages/detail/property/PropertyDetail";
@@ -29,7 +28,6 @@ const AppRouter = () => {
         <Route path="/help-support" element={<Help />} />
 
         <Route path="/" element={<Home />} />
-        <Route path="/v2" element={<HomeB />} />
 
         <Route path="/result" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />

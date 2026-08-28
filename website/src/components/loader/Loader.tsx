@@ -34,7 +34,7 @@ const Loader = ({ appReady, onComplete }: Props) => {
   }, [appReady, canExit, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center space-y-3 justify-center bg-[#f4f8ee]">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center space-y-3 justify-center bg-[#F0EAE6]">
       <img loading="eager" src={Logos} alt="Briksy" className="w-[180px] md:w-[300px]" />
 
       <DominoLoader barColor="#BF9F7D" />

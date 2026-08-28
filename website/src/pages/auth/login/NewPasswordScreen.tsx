@@ -15,7 +15,7 @@ export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
   ];
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[#342511]">
+    <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[primary-brown]">
       <AuthHeader title="Set a new password" subtitle="Choose something you don't use anywhere else." />
 
       <div className="flex flex-col gap-[0.75rem]">
@@ -26,7 +26,7 @@ export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
           value={pw}
           onChange={e => setPw(e.target.value)}
         >
-          <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[#342511] transition-colors">
+          <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[primary-brown] transition-colors">
             {showPw ? <EyeOff className="w-[1.25rem] h-[1.25rem]" /> : <Eye className="w-[1.25rem] h-[1.25rem]" />}
           </button>
         </Field>
@@ -37,7 +37,7 @@ export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
           value={confirm}
           onChange={e => setConfirm(e.target.value)}
         >
-          <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[#342511] transition-colors">
+          <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[primary-brown] transition-colors">
             {showConfirm ? <EyeOff className="w-[1.25rem] h-[1.25rem]" /> : <Eye className="w-[1.25rem] h-[1.25rem]" />}
           </button>
         </Field>

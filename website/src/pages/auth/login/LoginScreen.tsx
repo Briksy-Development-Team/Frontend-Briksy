@@ -19,13 +19,13 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
   };
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] w-full mx-auto  text-[#342511]">
+    <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] w-full mx-auto  text-[primary-brown]">
       <AuthHeader title="Log in" subtitle="Welcome back — good to see you." />
 
       <div className="flex flex-col gap-[0.75rem]">
         <Field label="Email Address" type="email" placeholder="you@example.com" value={email} onChange={e => { setEmail(e.target.value); setErrors(v => ({ ...v, email: '' })); }} error={errors.email} />
         <Field label="Password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={e => { setPassword(e.target.value); setErrors(v => ({ ...v, password: '' })); }} error={errors.password}>
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[#342511] transition-colors">
+          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[primary-brown] transition-colors">
             {showPassword ? <EyeOff className="w-[1.25rem] h-[1.25rem]" /> : <Eye className="w-[1.25rem] h-[1.25rem]" />}
           </button>
         </Field>
@@ -36,7 +36,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
           <input type="checkbox" className="accent-primary-brown rounded w-[1rem] h-[1rem]" />
           Keep me signed in
         </label>
-        <button onClick={() => go('forgot')} className="text-[0.75rem] text-[#7C5F42] hover:text-[#3D2C1E] underline transition-colors">
+        <button onClick={() => go('forgot')} className="text-[0.75rem] text-[primary-light-brown] hover:text-[#3D2C1E] underline transition-colors">
           Forgot password?
         </button>
       </div>

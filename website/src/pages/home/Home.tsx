@@ -1,9 +1,7 @@
 import About from "./about/About";
 import Community from "./community/Community";
-
 import Contact from "../../components/contact/Contact";
 import Blogs from "./blogs/Blogs";
-
 import ImageAnimation from "./imageanimation/ImageAnimation";
 import BuilderList from "../v2/builderlist/BuilderList";
 import TrendingProperty from "../v2/trendingproperty/TrendingProperty";
@@ -15,15 +13,13 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <Heroone />
-   
+
       <ImageAnimation />
       <Community />
-
       <About />
       <BuilderList />
       <TrendingProperty />
       <ServiceList />
-
       <Blogs />
       <Contact />
       <AppPreview />

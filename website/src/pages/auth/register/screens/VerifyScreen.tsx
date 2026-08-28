@@ -20,7 +20,7 @@ export const VerifyScreen = ({ go }: { go: (step: RegisterStep) => void }) => {
   };
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.5rem] flex flex-col gap-[1rem] max-w-[40.625rem] mx-auto text-[#342511]">
+    <ScreenWrapper className="w-full px-[3rem] py-[2.5rem] flex flex-col gap-[1rem] max-w-[40.625rem] mx-auto text-[primary-brown]">
       <StepIndicator step={2} />
       <AuthHeader title="Confirm your email" subtitle="We sent a 6-digit code to your email address. It expires in 10 minutes." />
 
@@ -34,7 +34,7 @@ export const VerifyScreen = ({ go }: { go: (step: RegisterStep) => void }) => {
             value={val}
             onChange={e => setDigit(i, e.target.value)}
             onKeyDown={e => handleKeyDown(i, e)}
-            className="w-[3rem] h-[4rem] sm:w-[4rem] sm:h-[4.625rem] border border-[#EDE8E4] rounded-xl text-center text-[1.5rem] font-medium text-[#342511] outline-none focus:border-[#342511] focus:ring-1 focus:ring-[#342511] transition-all"
+            className="w-[3rem] h-[4rem] sm:w-[4rem] sm:h-[4.625rem] border border-[#EDE8E4] rounded-xl text-center text-[1.5rem] font-medium text-[primary-brown] outline-none focus:border-[primary-brown] focus:ring-1 focus:ring-[primary-brown] transition-all"
           />
         ))}
       </div>
@@ -42,8 +42,8 @@ export const VerifyScreen = ({ go }: { go: (step: RegisterStep) => void }) => {
       <Btn onClick={() => go('preferences')}>Verify and continue</Btn>
 
       <div className="flex flex-col items-center gap-[0.25rem] text-[0.75rem]">
-        <div className="text-[#7C5F42]">Didn't get it? Resend in 0:42</div>
-        <button onClick={() => go('details')} className="text-[#342511] underline hover:opacity-75">Use a different email address</button>
+        <div className="text-[primary-light-brown]">Didn't get it? Resend in 0:42</div>
+        <button onClick={() => go('details')} className="text-[primary-brown] underline hover:opacity-75">Use a different email address</button>
       </div>
     </ScreenWrapper>
   );
