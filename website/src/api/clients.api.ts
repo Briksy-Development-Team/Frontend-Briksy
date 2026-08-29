@@ -21,6 +21,37 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status
+    const requestUrl = String(error?.config?.url ?? '')
+    const hasBearerAuth = Boolean(error?.config?.headers?.Authorization)
+
+    const isSeekerAuthFailure =
+      status === 401 &&
+      hasBearerAuth &&
+      (requestUrl.startsWith('/seeker/auth/me') ||
+        requestUrl.startsWith('/seeker/auth/logout') ||
+        requestUrl.startsWith('/seeker/favorites') ||
+        requestUrl.startsWith('/seeker/inquiries') ||
+        requestUrl.startsWith('/seeker/profile') ||
+        requestUrl.startsWith('/seeker/saved-searches')) &&
+      !requestUrl.includes('/seeker/auth/login') &&
+      !requestUrl.includes('/seeker/auth/register')
+
+    if (isSeekerAuthFailure && typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('briksy:seeker-auth-unauthorized', {
+          detail: { url: requestUrl },
+        })
+      )
+    }
+
+    return Promise.reject(error)
+  }
+);
+
 export const testConnection = async () => {
   try {
     const res = await api.get("/");

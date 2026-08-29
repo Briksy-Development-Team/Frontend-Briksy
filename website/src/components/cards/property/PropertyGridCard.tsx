@@ -1,13 +1,46 @@
-import { Link } from "react-router-dom";
-import { Heart, ArrowRight } from "lucide-react";
-import type { Property } from "../../../types/property";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ArrowRight, Heart, LoaderCircle } from 'lucide-react'
+import type { Property } from '../../../types/property'
+import { useAuth } from '../../../auth/AuthContext'
+import { storePendingFavoriteAction } from '../../../auth/auth.intent'
+import { isLocalFavorite } from '../../../favorites/localFavorites'
+import { toggleSeekerPropertyFavorite } from '../../../seeker/seeker.api'
 
 type Props = {
-  item: Property;
-};
+  item: Property
+}
 
-const PropertyGridCard = ({ item }: Props) => (
-  <Link to={`/property/${item.id}`} className="flex h-[25rem] w-full flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary">
+const PropertyGridCard = ({ item }: Props) => {
+  const { isAuthenticated, isSeeker } = useAuth();
+  const navigate = useNavigate();
+  const [isFavourite, setIsFavourite] = useState(() => isLocalFavorite(item.id) || item.isFavourite);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleFavouriteClick = async () => {
+    if (isProcessing) {
+      return
+    }
+
+    if (!isAuthenticated || !isSeeker) {
+      storePendingFavoriteAction(String(item.id), `/property/${item.id}`)
+      navigate('/login')
+      return
+    }
+
+    try {
+      setIsProcessing(true)
+      const result = await toggleSeekerPropertyFavorite(String(item.id))
+      setIsFavourite(result.isFavourite)
+    } catch (error) {
+      console.error('Failed to toggle favourite.', error)
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  return (
+    <Link to={`/property/${item.id}`} className="mx-auto flex h-[25rem] w-full flex-col overflow-hidden rounded-3xl border border-transparent bg-white text-left text-primary-brown transition-colors duration-200 hover:border-primary">
     <div className="relative h-[60%] shrink-0 overflow-hidden">
       <img loading="lazy"
         src={item.image}
@@ -22,17 +55,27 @@ const PropertyGridCard = ({ item }: Props) => (
       )}
 
       <button
+        type="button"
+        onClick={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          void handleFavouriteClick()
+        }}
         className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/85"
-        aria-label={item.isFavourite ? "Remove from favourites" : "Add to favourites"}
+        aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
       >
-        <Heart
-          size={18}
-          className={
-            item.isFavourite
-              ? "fill-primary-brown text-primary-brown"
-              : "fill-transparent text-primary-brown stroke-[1.5]"
-          }
-        />
+        {isProcessing ? (
+          <LoaderCircle className="h-4 w-4 animate-spin text-primary-brown" />
+        ) : (
+          <Heart
+            size={18}
+            className={
+              isFavourite
+                ? 'fill-primary-brown text-primary-brown'
+                : 'fill-transparent text-primary-brown stroke-[1.5]'
+            }
+          />
+        )}
       </button>
     </div>
 
@@ -69,7 +112,8 @@ const PropertyGridCard = ({ item }: Props) => (
         </div>
       </div>
     </div>
-  </Link>
-);
+    </Link>
+  )
+}
 
-export default PropertyGridCard;
+export default PropertyGridCard

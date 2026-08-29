@@ -1,21 +1,20 @@
-import {Navigate, Outlet, useLocation} from 'react-router-dom'
-import {useAuth} from '../auth/AuthContext'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 
 const ProtectedRoute = () => {
-  const {isAuthenticated, isBootstrapping} = useAuth()
+  const { isAuthenticated, isBootstrapping, isSeeker } = useAuth()
   const location = useLocation()
 
   if (isBootstrapping) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-black text-white'>
-        <p className='text-sm tracking-wide text-zinc-400'>Loading your account...</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#f8f4ee] text-[#342511]">
+        <p className="text-sm tracking-wide text-[#7c5f42]">Loading your account...</p>
       </div>
     )
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to='/login' replace state={{from: location.pathname}} />
-    
+  if (!isAuthenticated || !isSeeker) {
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
   }
 
   return <Outlet />

@@ -1,15 +1,35 @@
 import {configureStore, createSlice, type PayloadAction} from '@reduxjs/toolkit'
 import {getSeekerProfile, loginSeeker, logoutSeeker, registerSeeker} from './auth.api'
 import {clearStoredAuth, getStoredAuth, setStoredAuth} from './auth.storage'
-import type {AuthResponse, AuthUser, LoginPayload, RegisterPayload, StoredAuth} from './auth.types'
+import type {AuthResponse, AuthRole, AuthUser, LoginPayload, RegisterPayload, StoredAuth} from './auth.types'
 
 export interface SeekerAuthState {
   user: AuthUser | null
   token: string | null
   tokenType: string | null
   abilities: string[]
+  roles: AuthRole[]
   isAuthenticated: boolean
   isBootstrapping: boolean
+}
+
+const ADMIN_ROLES: AuthRole[] = ['super_admin', 'admin', 'super_admin_employee', 'admin_staff']
+const SEEKER_ROLES: AuthRole[] = ['seeker']
+
+const extractRoles = (user: AuthUser | null): AuthRole[] => {
+  const roles = user?.roles ?? []
+
+  return roles.filter((role): role is AuthRole => [...ADMIN_ROLES, ...SEEKER_ROLES].includes(role as AuthRole))
+}
+
+const isSeekerOnlyAccount = (user: AuthUser | null): boolean => {
+  const roles = extractRoles(user)
+
+  if (roles.length === 0) {
+    return false
+  }
+
+  return roles.some((role) => SEEKER_ROLES.includes(role)) && !roles.some((role) => ADMIN_ROLES.includes(role))
 }
 
 const createInitialState = (): SeekerAuthState => {
@@ -20,6 +40,7 @@ const createInitialState = (): SeekerAuthState => {
     token: storedAuth?.token ?? null,
     tokenType: storedAuth?.tokenType ?? null,
     abilities: storedAuth?.abilities ?? [],
+    roles: extractRoles(storedAuth?.user ?? null),
     isAuthenticated: Boolean(storedAuth?.token),
     isBootstrapping: true,
   }
@@ -44,6 +65,7 @@ const seekerAuthSlice = createSlice({
       state.token = action.payload.token
       state.tokenType = action.payload.tokenType
       state.abilities = action.payload.abilities
+      state.roles = extractRoles(action.payload.user)
       state.isAuthenticated = true
       state.isBootstrapping = false
     },
@@ -52,6 +74,7 @@ const seekerAuthSlice = createSlice({
       state.token = null
       state.tokenType = null
       state.abilities = []
+      state.roles = []
       state.isAuthenticated = false
       state.isBootstrapping = false
     },
@@ -81,6 +104,12 @@ export const bootstrapSeekerAuth = async (dispatch: SeekerAuthDispatch): Promise
 
   try {
     const response = await getSeekerProfile()
+    if (!isSeekerOnlyAccount(response.data.user)) {
+      clearStoredAuth()
+      dispatch(clearSession())
+      return
+    }
+
     const nextAuth: StoredAuth = {
       ...storedAuth,
       user: response.data.user,
@@ -105,6 +134,12 @@ export const loginSeekerSession = async (
   })
 
   const nextAuth = buildStoredAuth(response.data)
+
+  if (!isSeekerOnlyAccount(nextAuth.user)) {
+    clearStoredAuth()
+    dispatch(clearSession())
+    throw new Error('This account is not allowed to access the seeker website.')
+  }
 
   setStoredAuth(nextAuth)
   dispatch(setSession(nextAuth))

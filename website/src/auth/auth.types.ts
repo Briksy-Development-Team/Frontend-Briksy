@@ -5,7 +5,13 @@ export interface AuthUser {
   organization_id: string | null
   id_verified: boolean
   email_verified_at: string | null
+  generated_id?: string
+  display_id?: string
+  mobile_number?: string | null
+  display_name?: string | null
   roles?: string[]
+  permissions?: string[]
+  permission_names?: string[]
   created_at?: string
 }
 
@@ -39,4 +45,12 @@ export interface RegisterPayload {
   email: string
   password: string
   password_confirmation: string
+}
+
+export type AuthRole = 'seeker' | 'admin' | 'admin_staff' | 'super_admin' | 'super_admin_employee'
+
+export interface PendingFavoriteAction {
+  type: 'favorite'
+  propertyId: string
+  fromPath?: string
 }

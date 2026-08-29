@@ -8,13 +8,11 @@ import Lenis from "lenis";
 import AppRouter from "./routes/AppRouter";
 import ScrollToTop from "./components/utils/ScrollToTop";
 import Loader from "./components/loader/Loader";
+import { AuthProvider } from "./auth/AuthContext";
+import { lenisInstance } from "./lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
-
-export const lenisInstance: { current: Lenis | null } = {
-  current: null,
-};
 
 const V2Button = () => {
   const navigate = useNavigate();
@@ -49,35 +47,52 @@ const V2Button = () => {
   );
 };
 
+const LoaderGate = ({ enabled, onComplete }: { enabled: boolean; onComplete: () => void }) => {
+  const [appReady, setAppReady] = useState(false)
+
+  useEffect(() => {
+    if (!enabled) {
+      return
+    }
+
+    const timer = window.setTimeout(() => setAppReady(true), 3000)
+    return () => window.clearTimeout(timer)
+  }, [enabled])
+
+  if (!enabled) {
+    return null
+  }
+
+  return (
+    <Loader
+      appReady={appReady}
+      onComplete={onComplete}
+    />
+  )
+}
+
 const AppContent = () => {
   const { pathname } = useLocation();
-  const [appReady, setAppReady] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
 
   const needsLoader = pathname === '/' || pathname === '/v2';
 
   useEffect(() => {
-    if (!needsLoader) {
-      setShowLoader(false);
-      return;
-    }
-    setShowLoader(true);
-    setAppReady(false);
-    const timer = setTimeout(() => setAppReady(true), 3000);
-    return () => clearTimeout(timer);
-  }, [pathname]);
+    setShowLoader(needsLoader);
+  }, [needsLoader]);
 
   return (
     <>
-      {showLoader && (
-        <Loader
-          appReady={appReady}
+      {showLoader ? (
+        <LoaderGate
+          key={pathname}
+          enabled={needsLoader}
           onComplete={() => {
             setShowLoader(false);
             window.dispatchEvent(new Event("hero-loader-complete"));
           }}
         />
-      )}
+      ) : null}
 
       <ScrollToTop />
       <V2Button />
@@ -116,7 +131,9 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

@@ -1,50 +1,162 @@
-import { type RegisterStep } from '../Register';
-import googleIcon from '../../../../assets/login/google.svg';
-import appleIcon from '../../../../assets/login/apple.svg';
-import { Eye, EyeOff, Check } from 'lucide-react';
-import { useState } from 'react';
-import { StepIndicator, AuthHeader, Field, Btn, ScreenWrapper } from '../../shared';
+import { useState } from 'react'
+import { Eye, EyeOff, LoaderCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useAuth, getAuthErrorMessage } from '../../../../auth/AuthContext'
+import { AuthHeader, Btn, Field, ScreenWrapper } from '../../shared'
 
-export const DetailsScreen = ({ go }: { go: (step: RegisterStep) => void }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [agreed, setAgreed] = useState(false);
+const TERMS_LABEL = 'I agree to the Briksy Terms and Privacy Policy'
+
+export const DetailsScreen = () => {
+  const { register } = useAuth()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [passwordConfirmation, setPasswordConfirmation] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [agreed, setAgreed] = useState(false)
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    passwordConfirmation: false,
+  })
+
+  const nameError = touched.name && !name.trim() ? 'Name is required' : ''
+  const emailError = touched.email && !email.trim() ? 'Email is required' : ''
+  const passwordError = touched.password && password.length < 8 ? 'Use at least 8 characters' : ''
+  const confirmError =
+    touched.passwordConfirmation && passwordConfirmation !== password
+      ? 'Passwords do not match'
+      : ''
+
+  const submit = async (): Promise<void> => {
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+      passwordConfirmation: true,
+    })
+
+    if (!name.trim() || !email.trim() || password.length < 8 || passwordConfirmation !== password || !agreed) {
+      if (!agreed) {
+        setError('You need to accept the terms before creating an account.')
+      }
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError('')
+      await register({
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+      })
+    } catch (authError) {
+      setError(getAuthErrorMessage(authError))
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.5rem] flex flex-col gap-[1.5rem] max-w-[40.625rem] mx-auto text-[#342511]">
-      <StepIndicator step={1} />
-      <AuthHeader title="Create your account" subtitle="Sign up to access exclusive property listings and features." />
+    <ScreenWrapper className="w-full max-w-[40.625rem] px-6 py-10 text-[#342511] sm:px-10 sm:py-12">
+      <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+        <AuthHeader title="Create your seeker account" subtitle="Register to save properties, send enquiries and manage your Briksy activity." />
 
-      <div className="flex flex-col gap-[1rem]">
-        <Field label="Name" placeholder="Full name" />
-        <Field label="Email" type="email" placeholder="Email address" />
-        <Field label="Phone" type="tel" placeholder="Phone number" />
-        <Field label="Password" type={showPassword ? 'text' : 'password'} placeholder="Create a password">
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[#342511] transition-colors">
-            {showPassword ? <EyeOff className="w-[1.25rem] h-[1.25rem]" /> : <Eye className="w-[1.25rem] h-[1.25rem]" />}
-          </button>
-        </Field>
-      </div>
+        <div className="space-y-4">
+          <Field
+            label="Full name"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value)
+              setError('')
+            }}
+            onBlur={() => setTouched((value) => ({ ...value, name: true }))}
+            error={nameError}
+          />
 
-      <div className="flex gap-[0.5rem]">
-        <button className="flex-1 h-[3rem] border border-[#E2E8F0] rounded-xl flex items-center justify-center hover:bg-[#F8F4EE] transition-colors">
-          <img src={googleIcon} alt="Google" className="w-[1.25rem] h-[1.25rem]" />
-        </button>
-        <button className="flex-1 h-[3rem] border border-[#E2E8F0] rounded-xl flex items-center justify-center hover:bg-[#F8F4EE] transition-colors">
-          <img src={appleIcon} alt="Apple" className="w-[1.25rem] h-[1.25rem]" />
-        </button>
-      </div>
+          <Field
+            label="Email address"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              setError('')
+            }}
+            onBlur={() => setTouched((value) => ({ ...value, email: true }))}
+            error={emailError}
+          />
 
-      <Btn onClick={() => go('verify')}>Continue</Btn>
+          <Field
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Create a password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value)
+              setError('')
+            }}
+            onBlur={() => setTouched((value) => ({ ...value, password: true }))}
+            error={passwordError}
+          >
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b6f54] transition-colors hover:text-[#342511]"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </Field>
 
-      <label className="flex gap-[0.75rem] items-start cursor-pointer group">
-        <div className={`mt-[0.125rem] w-[1.25rem] h-[1.25rem] rounded border flex items-center justify-center transition-colors shrink-0 ${agreed ? 'bg-[#342511] border-[#342511]' : 'border-[#CBD5E1] group-hover:border-[#342511]'}`}>
-          {agreed && <Check className="w-[0.875rem] h-[0.875rem] text-white" />}
+          <Field
+            label="Confirm password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Repeat your password"
+            value={passwordConfirmation}
+            onChange={(e) => {
+              setPasswordConfirmation(e.target.value)
+              setError('')
+            }}
+            onBlur={() => setTouched((value) => ({ ...value, passwordConfirmation: true }))}
+            error={confirmError}
+          />
         </div>
-        <input type="checkbox" className="hidden" checked={agreed} onChange={e => setAgreed(e.target.checked)} />
-        <span className="text-[0.875rem] text-[#7C5F42] leading-tight">
-          I agree to the <a href="#" className="text-[#342511] hover:underline">Terms of Service</a> and <a href="#" className="text-[#342511] hover:underline">Privacy Policy</a>
-        </span>
-      </label>
+
+        <label className="flex items-start gap-3 rounded-2xl border border-[#ede8e4] bg-[#fbfaf3] px-4 py-3 text-sm text-[#7c5f42]">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-[#8b6f54] text-[#342511]"
+          />
+          <span>{TERMS_LABEL}</span>
+        </label>
+
+        {error ? (
+          <div className="rounded-2xl border border-[#ecd7cf] bg-[#fff6f3] px-4 py-3 text-sm text-[#8b4d38]">
+            {error}
+          </div>
+        ) : null}
+
+        <Btn onClick={() => void submit()} disabled={loading} className="flex items-center justify-center gap-2">
+          {loading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : null}
+          {loading ? 'Creating account' : 'Register'}
+        </Btn>
+
+        <div className="flex items-center justify-between text-sm text-[#7c5f42]">
+          <span>Already a member?</span>
+          <Link to="/login" className="font-medium text-[#342511] underline underline-offset-2">
+            Log in
+          </Link>
+        </div>
+      </div>
     </ScreenWrapper>
-  );
-};
+  )
+}

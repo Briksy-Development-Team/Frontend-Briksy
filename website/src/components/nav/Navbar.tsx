@@ -6,6 +6,7 @@ import { SCROLL_THRESHOLD } from "../search/FloatingSearch";
 import LanguageModal from "./LanguageModal.tsx";
 import ProfileDropdown from "./ProfileDropdown.tsx";
 import Briskybrown from "../../assets/logo/briskybrown.svg";
+import { useAuth } from "../../auth/AuthContext";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
@@ -25,6 +26,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
     label: "English",
     region: "UK",
   });
+  const { isAuthenticated, isSeeker } = useAuth();
 
   const [pastHero, setPastHero] = useState(!hasHero);
   const pastHeroRef = useRef(pastHero);
@@ -133,14 +135,24 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
               <Globe size={18} color="white" />
             </button>
 
-            <Link
-              to="/admin/login"
-              className="whitespace-nowrap text-sm font-medium text-white transition hover:opacity-70"
-            >
-              Sign In
-            </Link>
-
-            <ProfileDropdown />
+            {!isAuthenticated || !isSeeker ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/login"
+                  className="whitespace-nowrap text-sm font-medium text-white transition hover:opacity-70"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="whitespace-nowrap rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                >
+                  Register
+                </Link>
+              </div>
+            ) : (
+              <ProfileDropdown />
+            )}
           </div>
         </div>
       </nav>
