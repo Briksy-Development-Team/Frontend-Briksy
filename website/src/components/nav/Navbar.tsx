@@ -133,13 +133,6 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
               <Globe size={18} color="white" />
             </button>
 
-            <Link
-              to="/admin/login"
-              className="whitespace-nowrap text-sm font-medium text-white transition hover:opacity-70"
-            >
-              Sign In
-            </Link>
-
             <ProfileDropdown />
           </div>
         </div>

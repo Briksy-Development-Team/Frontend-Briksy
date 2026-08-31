@@ -64,8 +64,9 @@ const Register = () => {
   }, [title]);
 
   return (
-    <div className="min-h-screen flex items-start sm:items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
-      <div ref={containerRef} className="flex rounded-[24px] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-w-[1080px] bg-white mx-auto origin-center">
+    <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
+      <div ref={containerRef} className="flex rounded-[24px] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-h-[51rem] max-w-[67.5rem]
+       bg-white mx-auto origin-center">
 
         <div className="relative shrink-0 hidden md:block" style={{ width: '26.875rem' }}>
           <img src={Brandpanel} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -81,7 +82,7 @@ const Register = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center min-h-[25rem]">
+        <div className="flex-1 flex flex-col overflow-hidden">
           <Screen go={go} />
         </div>
 

@@ -31,7 +31,7 @@ const Heroone = () => {
                     filter: "blur(0px)",
                     duration: 1.6,
                     ease: "power3.out",
-                }
+                },
             );
         };
 
@@ -46,34 +46,34 @@ const Heroone = () => {
                 className="relative h-screen overflow-clip bg-[#C2B4AA] font-helvetica"
             >
                 <div className="relative z-20 flex flex-col items-center pt-20">
-                    <div className="mb-6 flex items-center gap-3">
-                        <div className="flex -space-x-2">
+                    <div className="mb-6 flex items-center gap-2">
+                        <div className="flex -space-x-3">
                             {AVATARS.map((src, i) => (
                                 <img
                                     key={i}
                                     src={src}
                                     alt=""
-                                    className="h-10 w-10 rounded-xl border-2 border-[#FFFFFF52] object-cover"
+                                    className="h-10 w-10 rounded-xl border-2 border-white object-cover"
                                 />
                             ))}
                         </div>
-                        <span className="text-[0.875rem] font-medium ">
+                        <span className="text-[0.875rem]  ">
                             Trusted by 108+ clients across industries
                         </span>
                     </div>
 
-                    <h1 className="max-w-4xl text-center text-[3rem] sm:text-[4rem] lg:text-[3.625rem] font-medium leading-[1.05] text-primary-brown">
+                    <h1 className="max-w-4xl text-center text-[3rem] sm:text-[4rem] lg:text-[3.25rem] font-medium leading-[0.9] text-primary-brown">
                         Find your place for
                         <br />
                         you and yours
                     </h1>
 
-                    <p className="mt-6 max-w-2xl text-center text-[1rem] font-medium text-primary-brown">
+                    <p className="mt-6 max-w-2xl text-center text-[1rem]  text-primary-brown">
                         We partner with leadership teams to simplify complex challenges.
                     </p>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 z-10 overflow-hidden pointer-events-none">
+                <div className="absolute inset-x-0 bottom-10 z-10 overflow-hidden pointer-events-none">
                     <img
                         ref={houseRef}
                         src={House}
@@ -82,12 +82,10 @@ const Heroone = () => {
                     />
                 </div>
 
-                
                 <div className="absolute left-1/2 bottom-8 z-30 w-full max-w-5xl -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />
                 </div>
             </section>
-
         </>
     );
 };

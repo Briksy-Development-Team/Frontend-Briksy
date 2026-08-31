@@ -14,6 +14,7 @@ import Help from "../components/help/Help.tsx";
 import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
+import Login from "../pages/auth/login/Login.tsx";
 
 const AppRouter = () => {
   return (
@@ -36,9 +37,9 @@ const AppRouter = () => {
       </Route>
       <Route path="/error" element={<Error />} />
       <Route path="/coming-soon" element={<Coming />} />
-      <Route path="/login" element={<Navigate to="/admin/login" replace />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/reset-password" element={<Navigate to="/admin/login" replace />} />
+      <Route path="/reset-password" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };

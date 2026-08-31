@@ -1,49 +1,81 @@
-import { type RegisterStep } from '../Register';
-import { useRef, useState } from 'react';
-import { StepIndicator, AuthHeader, Btn, ScreenWrapper } from '../../shared';
+import { useRef, useState } from "react";
+import { StepIndicator, AuthHeader, Btn, ScreenWrapper } from "../../shared";
+import { type RegisterStep } from "../Register";
 
-const CODE_LENGTH = 6;
+// ponytail: mock OTP | upgrade: call /api/verify-otp
+const VALID_CODE = "417293";
 
-export const VerifyScreen = ({ go }: { go: (step: RegisterStep) => void }) => {
-  const [code, setCode] = useState(() => Array.from({ length: CODE_LENGTH }, (_, i) => '417'[i] ?? ''));
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+export const VerifyScreen = ({ go }: { go: (s: RegisterStep) => void }) => {
+  const [code, setCode] = useState(["4", "1", "7", "", "", ""]);
+  const [error, setError] = useState("");
+  const refs = useRef<(HTMLInputElement | null)[]>([]);
+  const focus = (i: number) => refs.current[i]?.focus();
 
-  const setDigit = (index: number, value: string) => {
+  const onInput = (i: number, v: string) => {
     const next = [...code];
-    next[index] = value.slice(-1);
+    next[i] = v.replace(/\D/, "").slice(-1);
     setCode(next);
-    if (value && index < CODE_LENGTH - 1) inputs.current[index + 1]?.focus();
+    setError("");
+    if (v && i < 5) focus(i + 1);
+  };
+  const onKey = (i: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !code[i] && i > 0) focus(i - 1);
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !code[index] && index > 0) inputs.current[index - 1]?.focus();
+  const full = code.every(Boolean);
+  const verify = () => {
+    if (code.join("") === VALID_CODE) go("preferences");
+    else setError("Incorrect code. Please try again.");
   };
+
+  const focusIdx = code.findIndex((c) => !c);
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.5rem] flex flex-col gap-[1rem] max-w-[40.625rem] mx-auto text-[primary-brown]">
+    <ScreenWrapper>
       <StepIndicator step={2} />
-      <AuthHeader title="Confirm your email" subtitle="We sent a 6-digit code to your email address. It expires in 10 minutes." />
-
-      <div className="flex justify-center gap-[0.75rem] pt-[0.5rem] pb-[1.5rem]">
+      <AuthHeader 
+        title="Confirm your email"
+        subtitle="We sent a 6-digit code to abhiguleria1599@gmail.com. It expires in 10 minutes."
+      />
+      <div className="flex gap-[0.75rem] my-[1rem]">
         {code.map((val, i) => (
           <input
             key={i}
-            ref={el => { inputs.current[i] = el; }}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
             type="text"
             inputMode="numeric"
+            maxLength={1}
             value={val}
-            onChange={e => setDigit(i, e.target.value)}
-            onKeyDown={e => handleKeyDown(i, e)}
-            className="w-[3rem] h-[4rem] sm:w-[4rem] sm:h-[4.625rem] border border-[#EDE8E4] rounded-xl text-center text-[1.5rem] font-medium text-[primary-brown] outline-none focus:border-[primary-brown] focus:ring-1 focus:ring-[primary-brown] transition-all"
+            onChange={(e) => onInput(i, e.target.value)}
+            onKeyDown={(e) => onKey(i, e)}
+            className={`flex-1 h-[3.5rem] w-[1rem] rounded-xl text-center text-xl font-medium text-primary-brown outline-none transition-all border-2 ${
+              error
+                ? "border-red-400"
+                : i === focusIdx
+                  ? "border-primary-brown"
+                  : "border-[#EDE8E4]"
+            } focus:border-primary-brown`}
           />
         ))}
       </div>
-
-      <Btn onClick={() => go('preferences')}>Verify and continue</Btn>
-
-      <div className="flex flex-col items-center gap-[0.25rem] text-[0.75rem]">
-        <div className="text-[primary-light-brown]">Didn't get it? Resend in 0:42</div>
-        <button onClick={() => go('details')} className="text-[primary-brown] underline hover:opacity-75">Use a different email address</button>
+      {error && (
+        <p className="text-[0.75rem] text-red-500 text-center">{error}</p>
+      )}
+      <Btn onClick={verify} disabled={!full}>
+        Verify and continue
+      </Btn>
+      <div className="flex flex-col items-center gap-4 text-[0.75rem]">
+        <p className="text-primary-light-brown">
+          Didn't get it? Resend in 0:42
+        </p>
+        <button
+          onClick={() => go("details")}
+          className="text-primary-brown underline "
+        >
+          Use a different email address
+        </button>
       </div>
     </ScreenWrapper>
   );
