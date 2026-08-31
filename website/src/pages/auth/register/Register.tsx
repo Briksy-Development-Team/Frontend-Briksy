@@ -5,24 +5,22 @@ import { Flip } from 'gsap/Flip';
 import Brandpanel from '../../../assets/login/loginleft.png';
 import BriksyLogo from '../../../assets/logo/briskybrown.svg';
 import { DetailsScreen } from './screens/DetailsScreen';
-import { VerifyScreen } from './screens/VerifyScreen';
 import { PreferencesScreen } from './screens/PreferencesScreen';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 
 gsap.registerPlugin(Flip);
 
-export type RegisterStep = 'details' | 'verify' | 'preferences' | 'welcome';
+export type RegisterStep = 'details' | 'preferences' | 'welcome';
 
 const SCREENS: Record<RegisterStep, React.ComponentType<{ go: (s: RegisterStep) => void }>> = {
   details: DetailsScreen,
-  verify: VerifyScreen,
   preferences: PreferencesScreen,
   welcome: WelcomeScreen,
 };
 
 const LINK_CLASS = 'text-white underline underline-offset-2 hover:text-white/90 transition-opacity';
 
-const LEFT_CONFIG: Record<'default' | 'welcome', { title: string; linkLabel: string; linkTo: string; prompt: string }> = {
+const LEFT_CONFIG = {
   default: { title: 'Join Briksy', prompt: 'Already a member?', linkLabel: 'Log in', linkTo: '/login' },
   welcome: { title: "You're in", prompt: 'Run a business?', linkLabel: 'List it on Briksy', linkTo: '/business' },
 };
@@ -31,7 +29,6 @@ const Register = () => {
   const [step, setStep] = useState<RegisterStep>('details');
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-
   const titleRef = useRef<HTMLHeadingElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const flipState = useRef<ReturnType<typeof Flip.getState> | null>(null);
@@ -42,17 +39,12 @@ const Register = () => {
 
   const go = (s: RegisterStep) => {
     if (s === step) return;
-    if (containerRef.current) {
-      flipState.current = Flip.getState(containerRef.current, { props: 'width,height' });
-    }
+    if (containerRef.current) flipState.current = Flip.getState(containerRef.current, { props: 'width,height' });
     setStep(s);
   };
 
   useLayoutEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
-    }
+    if (!mounted.current) { mounted.current = true; return; }
     if (flipState.current && containerRef.current) {
       Flip.from(flipState.current, { duration: 0.5, ease: 'power3.inOut' });
       flipState.current = null;
@@ -65,8 +57,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
-      <div ref={containerRef} className="flex rounded-[24px] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-h-[51rem] max-w-[67.5rem]
-       bg-white mx-auto origin-center">
+      <div ref={containerRef} className="flex rounded-[24px] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-h-[51rem] max-w-[67.5rem] bg-white mx-auto origin-center">
 
         <div className="relative shrink-0 hidden md:block" style={{ width: '26.875rem' }}>
           <img src={Brandpanel} alt="" className="absolute inset-0 w-full h-full object-cover" />

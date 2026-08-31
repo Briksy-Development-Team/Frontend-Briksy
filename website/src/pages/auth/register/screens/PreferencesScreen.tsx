@@ -13,7 +13,7 @@ export const PreferencesScreen = ({ go }: { go: (s: RegisterStep) => void }) => 
 
   return (
     <ScreenWrapper>
-      <StepIndicator step={3} go={go} />
+      <StepIndicator step={2} go={go} />
       <AuthHeader title="What are you here for?" subtitle="So your searches and alerts start out useful. You can change all of this later." />
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium">I'm interested in</label>

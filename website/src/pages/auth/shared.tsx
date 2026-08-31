@@ -43,11 +43,11 @@ export const Btn = ({ children, className = '', ...props }: ButtonHTMLAttributes
 export const StepIndicator = ({ step, go }: { step: number; go?: (s: RegisterStep) => void }) => (
   <div className="flex flex-col gap-1">
     <div className="flex gap-1.5">
-      {[1, 2, 3].map(i => <div key={i} className={`h-[3px] flex-1 rounded-full ${i <= step ? 'bg-primary-brown' : 'bg-[#EDE8E4]'}`} />)}
+      {[1, 2].map(i => <div key={i} className={`h-[3px] flex-1 rounded-full ${i <= step ? 'bg-primary-brown' : 'bg-[#EDE8E4]'}`} />)}
     </div>
     <div className="flex justify-between text-[0.7rem] text-primary-light-brown">
-      <span>Step {step} of 3</span>
-      {step === 3 && go && <button onClick={() => go('welcome')} className="text-primary-brown underline hover:opacity-75">Skip for now</button>}
+      <span>Step {step} of 2</span>
+      {step === 2 && go && <button onClick={() => go('welcome')} className="text-primary-brown underline hover:opacity-75">Skip for now</button>}
     </div>
   </div>
 );

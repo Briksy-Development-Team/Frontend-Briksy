@@ -29,28 +29,28 @@ body {
 }
 @font-face {
   font-family: "HelveticaNow";
-  src: url("./assest/font/HelveticaNeueLight.otf") format("opentype");
+  src: url("./assets/font/HelveticaNeueLight.otf") format("opentype");
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: "HelveticaNow";
-  src: url("./assest/font/HelveticaNeueRoman.otf") format("opentype");
+  src: url("./assets/font/HelveticaNeueRoman.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: "HelveticaNow";
-  src: url("./assest/font/HelveticaNeueMedium.otf") format("opentype");
+  src: url("./assets/font/HelveticaNeueMedium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
   font-family: "InstrumentCustom";
-  src: url("./assest/font/InstrumentSerif-Italic.ttf") format("truetype");
+  src: url("./assets/font/InstrumentSerif-Italic.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getStoredAuth } from "../auth/auth.storage";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const API_URL = import.meta.env.VITE_APP_API_URL || "http://localhost:8000/api";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -15,11 +15,44 @@ api.interceptors.request.use((config) => {
 
   if (auth?.token) {
     config.headers = config.headers ?? {};
-    (config.headers as Record<string, string>).Authorization = `Bearer ${auth.token}`;
+    const tokenType = auth.tokenType || "Bearer";
+    (config.headers as Record<string, string>).Authorization =
+      `${tokenType} ${auth.token}`;
   }
 
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const requestUrl = String(error?.config?.url ?? "");
+    const hasBearerAuth = Boolean(error?.config?.headers?.Authorization);
+
+    const isSeekerAuthFailure =
+      status === 401 &&
+      hasBearerAuth &&
+      (requestUrl.startsWith("/seeker/auth/me") ||
+        requestUrl.startsWith("/seeker/auth/logout") ||
+        requestUrl.startsWith("/seeker/favorites") ||
+        requestUrl.startsWith("/seeker/inquiries") ||
+        requestUrl.startsWith("/seeker/profile") ||
+        requestUrl.startsWith("/seeker/saved-searches")) &&
+      !requestUrl.includes("/seeker/auth/login") &&
+      !requestUrl.includes("/seeker/auth/register");
+
+    if (isSeekerAuthFailure && typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("briksy:seeker-auth-unauthorized", {
+          detail: { url: requestUrl },
+        }),
+      );
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 export const testConnection = async () => {
   try {
@@ -36,4 +69,3 @@ export const testConnection = async () => {
 };
 
 export default api;
-    
