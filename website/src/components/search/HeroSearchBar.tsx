@@ -1,277 +1,209 @@
 import { useEffect, useRef, useState } from "react";
-import { Search, SlidersHorizontal, Sparkles, AudioLines } from "lucide-react";
-import AiVoiceModal from "./AiVoiceModal";
+import {
+  SlidersHorizontal,
+  Sparkles,
+  ChevronDown,
+  Check,
+  
+} from "lucide-react";
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
 import { useNavigate } from "react-router-dom";
 import type { ResultType } from "../../types/search";
+import All from "../../assets/icons/search/search.svg"
+import Build from "../../assets/icons/search/build.svg"
+import Prop from "../../assets/icons/search/property.svg"
+import Trader from "../../assets/icons/search/trades.svg"
 
-type DropdownOption = { label: string; short: string };
 
-type Tab = {
+
+type Category = {
+  id: string;
   label: string;
+  title: string;
+  desc: string;
+  icon: string;
   resultType: ResultType;
-  dropdown?: DropdownOption[];
 };
-type Mode = "collapsed" | "search" | "ai";
-const TABS: Tab[] = [
-  { label: "Buy", resultType: "property" },
-  { label: "Sold", resultType: "property" },
-  { label: "Builders", resultType: "builder" },
+
+const CATEGORIES: Category[] = [
   {
-    label: "Agents",
-    resultType: "trader",
-    dropdown: [
-      { label: "Real Estate Agents", short: "Real Estate" },
-      { label: "Buyers Agents", short: "Buyers Agent" },
-    ],
+    id: "all",
+    label: "All Categories",
+    title: "ALL",
+    desc: "Explore everything BRIKSY offers",
+    icon: All,
+    resultType: "property",
   },
   {
-    label: "Traders",
+    id: "properties",
+    label: "Properties",
+    title: "PROPERTIES",
+    desc: "Find properties to buy or rent",
+    icon: Build,
+    resultType: "property",
+  },
+  {
+    id: "builders",
+    label: "Builders & Organisations",
+    title: "BUILDERS / ORGANISATIONS",
+    desc: "Discover trusted property businesses",
+    icon: Prop,
+    resultType: "builder",
+  },
+  {
+    id: "professionals",
+    label: "Professionals",
+    title: "PROFESSIONALS",
+    desc: "Connect with skilled independent experts",
+    icon: Trader,
     resultType: "trader",
-    dropdown: [
-      { label: "Electrical", short: "Electrical" },
-      { label: "Plumbing", short: "Plumbing" },
-      { label: "Fencing", short: "Fencing" },
-      { label: "Landscapers", short: "Landscapers" },
-      { label: "Conveyancers", short: "Conveyancers" },
-    ],
   },
 ];
 
-const PLACEHOLDERS: Record<string, string> = {
-  Buy: "Search Your Desired Location...",
-  Sold: "Search suburb or address for sold prices...",
-  Builders: "Search builder name or suburb...",
-  Agents: "Search agent name or suburb...",
-  
-  Traders: "Search a service, e.g. 'electrician'...",
-};
-
-const tabClass = (active: boolean) =>
-  `h-11 w-full rounded-xl px-6 py-2 text-[0.875rem] font-normal truncate transition-all  lg:text-[1rem] ${active
-    ? "border border-[#DBDAD3] bg-primary-brown text-white hover:border hover:border-primary"
-    : "border border-[#EDE8E4] bg-white-50 text-primary-brown"
-  }`;
-
-const FadeButton = ({
-  children,
-  className,
-  onClick,
-}: {
-  children: React.ReactNode;
-  className: string;
-  onClick: () => void;
-}) => {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setVisible(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-  return (
-    <button
-      onClick={onClick}
-      className={`${className} transition-opacity  duration-200 ${visible ? "opacity-100" : "opacity-0"}`}
-    >
-      {children}
-    </button>
-  );
-};
+type Mode = "collapsed" | "search" | "ai";
 type Props = { mode: Mode; setMode: (m: Mode) => void };
 
-function DropdownTab({
-  tab,
-  isActive,
-  category,
-  onSelectTab,
-  onSelectCategory,
-}: {
-  tab: Tab;
-  isActive: boolean;
-  category: string;
-  onSelectTab: () => void;
-  onSelectCategory: (label: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const openMenu = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setOpen(true);
-  };
-  const closeMenu = () => {
-    closeTimer.current = setTimeout(() => setOpen(false), 150);
-  };
-
-  const short =
-    tab.dropdown?.find((o) => o.label === category)?.short ?? tab.label;
-
-  return (
-    <div className="relative" onMouseEnter={openMenu} onMouseLeave={closeMenu}>
-      <button onClick={onSelectTab} className={tabClass(isActive)}>
-        {isActive ? short : tab.label}
-      </button>
-
-      {open && (
-        <div className="absolute left-0 top-full z-[200] mt-0 w-48  rounded-xl bg-white shadow-lg">
-          {tab.dropdown!.map((opt, idx) => (
-            <div key={opt.label}>
-              <button
-                onClick={() => {
-                  onSelectTab();
-                  onSelectCategory(opt.label);
-                  setOpen(false);
-                }}
-                className="block w-full px-4 py-3 text-left text-[0.875rem] transition hover:bg-gray-50"
-              >
-                {opt.label}
-              </button>
-              {idx !== tab.dropdown!.length - 1 && (
-                <div className="mx-4 h-px bg-gray-200" />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SearchBarActions({
-  isAi,
-  onFilterClick,
-  onVoiceClick,
-  onSubmit,
-}: {
-  isAi: boolean;
-  onFilterClick: () => void;
-  onVoiceClick: () => void;
-  onSubmit: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-x-3">
-      <button
-        onClick={isAi ? onVoiceClick : onFilterClick}
-        className="flex h-12 w-12 items-center justify-center rounded-[4px] text-gray-500 transition hover:text-gray-700"
-      >
-        {isAi ? <AudioLines size={20} /> : <SlidersHorizontal size={20} />}
-      </button>
-
-      <button
-        onClick={isAi ? undefined : onSubmit}
-        className="flex h-12 w-12 items-center justify-center rounded-[15px] bg-[#562F00] text-white transition hover:bg-[#2f2008]"
-      >
-        {isAi ? <Sparkles size={18} /> : <Search size={18} />}
-      </button>
-    </div>
-  );
-}
-
 const HeroSearchBar = ({ mode, setMode }: Props) => {
-  const [activeIdx, setActiveIdx] = useState(0);
   const [query, setQuery] = useState("");
-  const [voiceOpen, setVoiceOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-
-  const [categories, setCategories] = useState<Record<string, string>>({
-    Agents: "Real Estate Agents",
-    Traders: "Electrical",
-  });
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selected, setSelected] = useState(CATEGORIES[0]);
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   useScrollFade(rootRef, "out");
   const navigate = useNavigate();
 
-  const isAi = mode === "ai";
-  const activeTab = TABS[activeIdx];
-  const activeCategory = categories[activeTab.label];
-
-  const placeholder = isAi
-    ? "Ask what you are looking for..."
-    : activeTab.dropdown
-      ? `Search ${activeCategory.toLowerCase()} by name or suburb...`
-      : PLACEHOLDERS[activeTab.label];
+  useEffect(() => {
+    const close = (e: Event) => {
+      if (e instanceof KeyboardEvent && e.key !== "Escape") return;
+      if (
+        e instanceof MouseEvent &&
+        dropdownRef.current?.contains(e.target as Node)
+      )
+        return;
+      setDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, []);
 
   const goToResults = () => {
-    const params = new URLSearchParams({ type: activeTab.resultType });
-    if (activeTab.dropdown) params.set("category", activeCategory);
+    if (mode === "ai") return;
+    const params = new URLSearchParams({ type: selected.resultType });
+    if (query) params.set("q", query);
     navigate(`/result?${params.toString()}`);
   };
 
   return (
-    <div
-      ref={rootRef}
-      className="mx-auto flex flex-col items-center gap-y-3 bg-white rounded-3xl p-3 shadow-xl"
-   
-    >
-      <div className="grid w-[95%] grid-cols-2 gap-1.5 sm:w-[80%] sm:grid-cols-3 lg:w-full lg:grid-cols-5">
-        {TABS.map((tab, i) =>
-          tab.dropdown ? (
-            <DropdownTab
-              key={tab.label}
-              tab={tab}
-              isActive={activeIdx === i}
-              category={categories[tab.label]}
-              onSelectTab={() => setActiveIdx(i)}
-              onSelectCategory={(label) =>
-                setCategories((prev) => ({ ...prev, [tab.label]: label }))
-              }
-            />
-          ) : (
-            <button
-              key={tab.label}
-              onClick={() => setActiveIdx(i)}
-              className={tabClass(activeIdx === i)}
-            >
-              {tab.label}
-            </button>
-          ),
-        )}
-      </div>
-
-      <div className="flex w-[95%] items-center gap-x-[17px] sm:w-[80%] lg:w-full">
-        {isAi && (
-          <FadeButton
-            onClick={() => setMode("search")}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] bg-white text-[#3D2A0B] shadow-md hover:border hover:border-primary sm:h-12 sm:w-12 lg:h-16 lg:w-16"
-          >
-            <Search size={18} />
-          </FadeButton>
-        )}
-
-        <div className="flex h-11 flex-1 items-center justify-between overflow-hidden rounded-xl border border-[#D9D9D9] bg-white pl-8 pr-2 py-2 sm:h-12 lg:h-14">
+    <div ref={rootRef} className="mx-auto w-full  max-w-4xl relative">
+      <div className="flex w-full items-center p-2 rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md shadow-lg">
+        <div className="flex flex-1 items-center bg-white rounded-xl h-14 px-5 shadow-sm relative">
           <input
-            type="text"
-            value={isAi ? undefined : query}
-            onChange={isAi ? undefined : (e) => setQuery(e.target.value)}
-            placeholder={placeholder}
-            className="h-full w-full pr-4 text-base outline-none placeholder:text-[#6B7280]"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && goToResults()}
+            placeholder="Try '3-bedroom house in Richmond' or 'mortgage broker in Sydney'"
+            className="flex-1 bg-transparent outline-none text-gray-700 placeholder:text-gray-500 text-[15px]"
           />
-          <SearchBarActions
-            isAi={isAi}
-            onFilterClick={() => setFilterOpen(true)}
-            onVoiceClick={() => setVoiceOpen(true)}
-            onSubmit={goToResults}
-          />
+          <div className="w-[1px] h-6 bg-gray-200 mx-4 hidden sm:block" />
+
+          <div className="relative ml-10 hidden sm:block" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen((v) => !v)}
+              aria-expanded={dropdownOpen}
+              className="flex items-center gap-2 text-gray-500 text-[15px] hover:text-gray-700 transition max-w-[160px]"
+            >
+              <span className="truncate">{selected.label}</span>
+              <ChevronDown
+                size={16}
+                className={`flex-shrink-0 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {dropdownOpen && (
+              <div
+                role="menu"
+                className="absolute -left-30 bottom-full mb-10 w-[25rem] bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 z-50"
+              >
+                <h3 className="text-[0.875rem] font-medium text-primary-brown  mb-3 px-2">
+                  Categories options
+                </h3>
+                <div className="flex flex-col gap-1 max-h-80 overflow-y-auto ">
+                  {CATEGORIES.map((cat) => {
+                    const active = selected.id === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        role="menuitemradio"
+                        aria-checked={active}
+                        onClick={() => {
+                          setSelected(cat);
+                          setDropdownOpen(false);
+                        }}
+                        className={`flex items-center gap-4 p-2 rounded-xl text-left transition ${active ? "bg-[#A65B40]/10" : "hover:bg-gray-50"}`}
+                      >
+                        <div
+                          className={`w-14 h-14 flex-shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4] ${active ? " text-white" : " text-[#A65B40]"}`}
+                        >
+                          <img src={cat.icon} alt="" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-primary-brown tracking-wide uppercase">
+                            {cat.title}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-0.5">
+                            {cat.desc}
+                          </div>
+                        </div>
+                        {active && (
+                          <Check
+                            size={18}
+                            className="text-[#A65B40] flex-shrink-0"
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => setFilterOpen(true)}
+            className="ml-4 text-gray-500 hover:text-gray-800 transition"
+          >
+            <SlidersHorizontal size={20} />
+          </button>
         </div>
 
-        {!isAi && (
-          <FadeButton
-            onClick={() => setMode("ai")}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] bg-white shadow-md hover:border hover:border-primary sm:h-12 sm:w-12 lg:h-16 lg:w-16"
-          >
-            <Sparkles size={20} />
-          </FadeButton>
-        )}
+        <button
+          onClick={() => setMode("ai")}
+          className="ml-2 flex flex-shrink-0   items-center justify-center gap-2 h-14 px-4 py-[0.5rem] rounded-xl bg-gradient-to-br from-[#79241D] to-[#DF4235] text-white font-medium shadow-md shadow-red-900/20 hover:from-[#d13a3a] hover:to-[#9e1c1c] transition border border-red-800/30"
+        >
+          <Sparkles size={18} fill="white" />
+          Ask Ai
+        </button>
       </div>
 
       <Filter
         isOpen={filterOpen}
         onClose={() => setFilterOpen(false)}
-        initialTab={activeTab.label as any}
-        agentCategory={activeCategory ?? ""}
+        initialTab={
+          selected.id === "builders"
+            ? "Builders"
+            : selected.id === "professionals"
+              ? "Traders"
+              : "Buy"
+        }
+        agentCategory=""
       />
-      <AiVoiceModal isOpen={voiceOpen} onClose={() => setVoiceOpen(false)} />
     </div>
   );
 };

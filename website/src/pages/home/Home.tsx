@@ -15,6 +15,7 @@ const Home = () => {
       <Heroone />
 
       <ImageAnimation />
+
       <Community />
       <About />
       <BuilderList />

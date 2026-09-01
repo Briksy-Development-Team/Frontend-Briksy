@@ -15,17 +15,12 @@
   --color-white-50: #fbfaf3;
   --color-white-100: #eeece0;
 }
-/* html {
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
-} */
-
 html,
 body {
   margin: 0;
   padding: 0;
   overscroll-behavior: none;
-  background-color: #F0EAE6;
+  background-color: #F0EAE5;
 }
 @font-face {
   font-family: "HelveticaNow";
@@ -117,4 +112,18 @@ body {
 .dual-range-input::-moz-range-track {
   background: transparent;
   pointer-events: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #d1d5db;
 }
