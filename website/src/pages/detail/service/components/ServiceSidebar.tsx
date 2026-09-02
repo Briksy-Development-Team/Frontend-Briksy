@@ -13,11 +13,13 @@ export function ServiceSidebar({
       <div className="w-full  rounded-xl overflow-hidden flex flex-col items-center">
         <div className="w-full h-48  overflow-hidden">
           {service.bannerImage ? (
-            <img
-              src={service.bannerImage}
-              alt="Banner"
-              className="w-full h-full object-cover rounded-xl"
-            />
+           
+              <img
+                src={service.bannerImage}
+                alt="Banner"
+                className="w-full h-full object-cover rounded-xl"
+              />
+          
           ) : null}
         </div>
 

@@ -96,12 +96,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
               Builders
             </Link>
 
-            <Link
-              to="/questions"
-              className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Questions
-            </Link>
+         
 
             <Link
               to="/blogs"

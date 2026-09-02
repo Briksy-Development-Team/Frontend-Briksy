@@ -1,9 +1,12 @@
 import { ArrowUpRight } from "lucide-react";
+import Verify from "../../../../assets/icons/verify.svg"
 
 export const PropertySidebar = ({ sidebar }: { sidebar: any }) => {
   return (
     <div className="space-y-4 ">
-      <div className="bg-white h-12 w-full flex justify-center items-center rounded-xl text-[0.875rem] font-medium text-primary-brown  ">
+      <div className="bg-white h-12 w-full space-x-2 flex justify-center items-center rounded-xl text-[0.875rem] font-medium text-primary-brown  ">
+        <img src={Verify} alt="" />
+
         <p className=" ">Verified by Briksy</p>
       </div>
 

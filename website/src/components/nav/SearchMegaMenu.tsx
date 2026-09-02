@@ -219,7 +219,6 @@ export default function SearchMegaMenu({
                   ))}
                 </div>
 
-                {/* Featured image */}
                 <div className="w-[220px] shrink-0 hidden xl:flex flex-col gap-3">
                   <img
                     src={cats.find(c => c.id === activeTab)?.image}

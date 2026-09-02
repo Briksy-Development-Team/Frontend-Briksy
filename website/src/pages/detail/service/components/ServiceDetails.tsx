@@ -1,5 +1,7 @@
 import { X, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import Approves from "../../../../assets/logo/apprrove.svg";
+
 
 export function ServiceList({ servicesData }: { servicesData: any }) {
   return (
@@ -68,13 +70,22 @@ export function ServiceQualifications({
 
       <div className="flex flex-col md:flex-row gap-6">
         <div className="w-full md:w-[30%] bg-white rounded-3xl p-6 border border-gray-50 shadow-sm flex flex-col items-center justify-center text-center gap-3">
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-sm">
+            <div className="flex w-fit flex-col items-center">
+          <img
+            loading="lazy"
+            src={companyLogo}
+            alt="dewd"
+            className="mb-[-24px] h-[78px] w-[78px] rounded-full object-cover"
+          />
+          <div className="relative h-8 w-8 rounded-full border border-[#f8f4ee] bg-[#e2cbb3] overflow-hidden">
             <img
-              src={companyLogo}
-              alt={companyName}
-              className="w-full h-full object-cover"
+              loading="lazy"
+              src={Approves}
+              alt="Verified"
+              className="h-full w-full object-cover"
             />
           </div>
+        </div>
           <div>
             <p className="font-medium text-[1.25rem] text-primary-brown">
               {companyName}

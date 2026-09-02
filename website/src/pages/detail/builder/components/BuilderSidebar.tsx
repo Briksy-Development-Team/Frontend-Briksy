@@ -1,10 +1,10 @@
-import { ShieldCheck } from 'lucide-react';
+import Verify from "../../../../assets/icons/verify.svg"
 
 export function BuilderSidebar({ price }: { price: number }) {
   return (
     <div className="flex flex-col gap-6 w-full">
       <div className="w-full bg-white rounded-[1.25rem] py-4 px-6 shadow-sm border border-gray-50 flex justify-center items-center gap-2">
-        <ShieldCheck className="text-primary-brown" size={20} />
+        <img src={Verify} alt="" />
         <span className="font-semibold text-primary-brown">Verified by Briksy</span>
       </div>
 
