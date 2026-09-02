@@ -1,8 +1,8 @@
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { ResultType } from "../../types/search";
 
-// ponytail: all mock data here — swap for API call when backend is ready
+import Category from "../../assets/hero/category.svg"
 const MOCK_CATEGORIES: Record<ResultType, { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[]> = {
   builder: [
     {
@@ -141,29 +141,33 @@ export default function SearchMegaMenu({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  // ponytail: simple timer ref for hover-close delay | upgrade: @floating-ui if positioning complexity grows
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openMenu = (tabId?: string) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setIsOpen(true);
+    if (tabId) setActiveTab(tabId);
+    else if (!activeTab) setActiveTab(cats[0]?.id);
+  };
+  const closeMenu = () => { closeTimer.current = setTimeout(() => setIsOpen(false), 150); };
 
   const cats = MOCK_CATEGORIES[resultType];
   if (!cats || cats.length === 0) return null;
 
   return (
-    <div className="mb-6 relative">
+    <div className="mb-6 relative font-helvetica" onMouseLeave={closeMenu}>
       <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
         <button
-          onClick={() => { setIsOpen(!isOpen); if (!activeTab) setActiveTab(cats[0].id); }}
-          className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border shrink-0 ${isOpen ? 'bg-[primary-brown] border-[primary-brown] text-white' : 'bg-[#4B3B2B] border-[#4B3B2B] text-white hover:bg-[primary-brown]'}`}
+          onMouseEnter={() => openMenu()}
+          className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 bg-primary-brown border-[primary-brown] text-white border shrink-0`}
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <rect x="3" y="3" width="7" height="7" rx="1" strokeWidth="2"/>
-            <rect x="14" y="3" width="7" height="7" rx="1" strokeWidth="2"/>
-            <rect x="3" y="14" width="7" height="7" rx="1" strokeWidth="2"/>
-            <rect x="14" y="14" width="7" height="7" rx="1" strokeWidth="2"/>
-          </svg>
+          <img src={Category} alt="" />
           Categories
         </button>
         {cats.map(c => (
           <button
             key={c.id}
-            onClick={() => { setIsOpen(true); setActiveTab(c.id); }}
+            onMouseEnter={() => openMenu(c.id)}
             className={`px-4 py-2.5 rounded-lg font-medium text-sm transition-colors border shrink-0 ${activeTab === c.id && isOpen ? 'bg-[#8B6F54] border-[#8B6F54] text-white' : 'bg-transparent border-[#E0D8D0] text-[#5C4D40] hover:bg-white hover:border-[#E0D8D0]'}`}
           >
             {c.label}
@@ -173,10 +177,11 @@ export default function SearchMegaMenu({
 
       {isOpen && activeTab && (
         <>
-          {/* Click-away backdrop */}
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-
-          <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_16px_40px_rgba(52,37,17,0.16)] border border-[#EDE8E4] z-50 flex flex-col overflow-hidden">
+          <div
+            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_16px_40px_rgba(52,37,17,0.16)] border border-[#EDE8E4] z-50 flex flex-col overflow-hidden"
+            onMouseEnter={() => { if (closeTimer.current) clearTimeout(closeTimer.current); }}
+            onMouseLeave={closeMenu}
+          >
             <div className="flex">
               {/* Left sidebar */}
               <div className="w-[240px] shrink-0 border-r border-[#EDE8E4] py-4 px-3">

@@ -146,7 +146,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
                           setSelected(cat);
                           setDropdownOpen(false);
                         }}
-                        className={`flex items-center gap-4 p-2 rounded-xl text-left transition ${active ? "bg-[#A65B40]/10" : "hover:bg-gray-50"}`}
+                        className={`flex items-center gap-4 p-2 rounded-xl text-left border border-white  transition ${active ? "bg-[#A65B40]/10" : "  hover:border-gray-50"}`}
                       >
                         <div
                           className={`w-14 h-14 flex-shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4] ${active ? " text-white" : " text-[#A65B40]"}`}

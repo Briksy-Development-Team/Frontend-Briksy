@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Map, X, ChevronDown } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import type { ResultType, SortType } from "../../types/search";
 import { mockProperties } from "../../data/mockProperties";
 import { mockBuilders } from "../../data/mockBuilders";
@@ -8,6 +8,7 @@ import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import MapSplitView from "./MapSplitView";
+import MapIcon from "../../assets/icons/search/map.svg?react";
 
 const GRID = "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 const DISTANCE_OPTIONS = ["Within 5 km", "Within 10 km", "Within 25 km", "Within 50 km"];
@@ -84,8 +85,9 @@ export default function ResultsView({ resultType, selectedSub, sort, setSort, on
         {filters.minRating && <button onClick={() => toggle("minRating", null)} className={chip}>{filters.minRating} and above <X className="w-3.5 h-3.5" /></button>}
         <FilterDropdown active={filters} onToggle={toggle} />
         <div className="ml-auto flex items-center gap-2.5">
-          <button onClick={onToggleMap} className={`px-4 h-10 rounded-full text-[0.875rem] font-medium flex items-center gap-2 transition-colors border ${showMap ? "bg-[primary-brown] text-white border-[primary-brown]" : "bg-white border-[#EDE8E4] text-[primary-brown] hover:bg-[#F8F4EE]"}`}>
-            <Map className="w-4 h-4" /> Show map
+          <button onClick={onToggleMap} className={`px-4 h-10 rounded-full text-[0.875rem] font-medium flex items-center gap-2 transition-colors border ${showMap ? "bg-primary-brown text-white " : "bg-white border-[#EDE8E4] text-primary-brown "}`}>
+            <MapIcon className="w-5 h-5" />
+                         Show map
           </button>
           <button onClick={() => setSort(SORT_CYCLE[(SORT_CYCLE.indexOf(sort) + 1) % SORT_CYCLE.length])}
             className="px-4 h-10 bg-white border border-[#EDE8E4] rounded-full text-[0.875rem] text-[primary-brown] flex items-center gap-2 hover:bg-[#F8F4EE] transition-colors">
@@ -98,8 +100,8 @@ export default function ResultsView({ resultType, selectedSub, sort, setSort, on
 
       {showMap ? <MapSplitView resultType={resultType} selectedSub={selectedSub} /> : (
         <>
-          {resultType === "trader"   && <div className={GRID}>{displayTraders.map(item => <TraderGridCard key={item.id} item={item} />)}</div>}
-          {resultType === "builder"  && <div className={GRID}>{mockBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}
+          {resultType === "trader" && <div className={GRID}>{displayTraders.map(item => <TraderGridCard key={item.id} item={item} />)}</div>}
+          {resultType === "builder" && <div className={GRID}>{mockBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}
           {resultType === "property" && <div className={GRID}>{mockProperties.map(item => <PropertyGridCard key={item.id} item={item} />)}</div>}
         </>
       )}

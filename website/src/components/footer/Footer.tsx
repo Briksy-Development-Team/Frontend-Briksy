@@ -44,7 +44,7 @@ const Footer = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 sm:gap-10 lg:gap-20">
                         {footerLinks.map((column) => (
                             <div key={column.title}>
-                                <h4 className="font-medium text-primary-light-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
+                                <h4 className="font-medium text-primary-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
                                     {column.title}
                                 </h4>
 
@@ -64,7 +64,7 @@ const Footer = () => {
                         ))}
 
                         <div>
-                            <h4 className="font-medium text-primary-light-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
+                            <h4 className="font-medium text-primary-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
                                 Connect
                             </h4>
 

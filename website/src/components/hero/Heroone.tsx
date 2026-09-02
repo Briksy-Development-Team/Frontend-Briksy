@@ -2,7 +2,7 @@ import { useOutletContext } from "react-router-dom";
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import HeroSearchBar from "../search/HeroSearchBar";
-import Blur from "../../assets/hero/blur.svg"
+// import Blur from "../../assets/hero/blur.svg"
 
 import House from "../../assets/hero/house.svg";
 
@@ -74,21 +74,29 @@ const Heroone = () => {
                     </p>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 z-10 overflow-hidden pointer-events-none">
+                <div className="absolute  inset-x-0 bottom-0 z-10 pointer-events-none overflow-visible">
+
                     <img
                         ref={houseRef}
                         src={House}
-                        alt="Modern house exterior at dusk"
-                        className="w-full h-[50vh] xl:h-[55vh]  mb-10 object-cover pointer-events-none select-none"
-                    />
-                    <img
-                        src={Blur}
                         alt=""
-                        aria-hidden="true"
-                        className="absolute inset-x-0 -bottom-10 m-0 w-[120vw] pointer-events-none select-none"
+                        className="w-full h-[55vh] aspect-[197/102]"
                     />
+
+                    <div
+                        className="
+            absolute
+            left-[-10%]
+            right-[-10%]
+            bottom-[-60px]
+            h-[180px]
+            bg-[#F0EAE5]
+            blur-[25px]
+        "
+                    />
+
                 </div>
-                <div className="absolute left-1/2 bottom-20 z-30 w-full max-w-5xl -translate-x-1/2 px-6">
+                <div className="absolute left-1/2 bottom-40 z-30 w-full max-w-5xl -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />
                 </div>
             </section>

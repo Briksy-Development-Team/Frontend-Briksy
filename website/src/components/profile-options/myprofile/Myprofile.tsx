@@ -74,8 +74,8 @@ const Myprofile = () => {
       </div>
 
       {!user?.id_verified && (
-        <div className="w-full rounded-xl bg-[#EDE8E4] px-7 py-4 flex items-center gap-5">
-          <span className="w-9 h-9 rounded-full bg-primary-light-brown/50 flex items-center justify-center text-[#3D2B1F]">i</span>
+        <div className="w-full rounded-xl bg-[#dbd0c7] px-7 py-4 flex items-center gap-5">
+          <span className="w-9 h-9 rounded-full bg-[#E2CBB3] flex items-center justify-center text-[#3D2B1F]">i</span>
           <p className="text-sm text-[#3D2B1F]">Please verify your mobile number to access all features.</p>
         </div>
       )}

@@ -131,7 +131,7 @@ const Notification = () => {
   
   const hasData = MOCK_NOTIFICATIONS.length > 0;
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-10 py-24  lg:pt-10 lg:pb-20">
+    <div className="w-full max-w-2xl mx-auto space-y-10 py-24  lg:pt-20 lg:pb-20">
       <h1 className="text-center text-[1.875rem] font-medium text-primary-brown">
         Notifications
       </h1>

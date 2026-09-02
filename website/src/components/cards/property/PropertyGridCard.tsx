@@ -39,7 +39,7 @@ const PropertyGridCard = ({ item }: Props) => {
           {item.title}
         </h3>
 
-        <p className="mt-2 text-[1rem] font-bold">
+        <p className="mt-2 text-[1rem] ">
           ${item.price.toLocaleString()}
         </p>
 
