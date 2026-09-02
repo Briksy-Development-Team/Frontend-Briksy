@@ -75,7 +75,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
 
           <div className="hidden flex-1 items-center justify-center gap-6 lg:flex">
             <Link
-              to="/buyer-seller"
+              to="/result?type=property"
               className="relative whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
             >
               Buyer/Seller
@@ -83,14 +83,14 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
             </Link>
 
             <Link
-              to="/agents-finder"
+              to="/result?type=trader"
               className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
             >
               Agents Finder
             </Link>
 
             <Link
-              to="/builders"
+              to="/result?type=builder"
               className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
             >
               Builders
