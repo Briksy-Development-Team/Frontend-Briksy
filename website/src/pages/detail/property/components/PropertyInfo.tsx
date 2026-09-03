@@ -34,11 +34,7 @@ export const PropertyAbout = ({ about }: { about: string }) => (
   <div className="flex flex-col border-y border-[#E2CBB3] py-10 gap-6">
     <h2 className="text-[1.25rem] font-medium text-primary-brown">About this property</h2>
     <p className="text-[1rem] text-primary-brown leading-relaxed tracking-wider whitespace-pre-line">{about}</p>
-    <div>
-      <button className="mt-4 px-3 py-2.5  rounded-[0.5rem] text-[0.875rem] font-medium text-black bg-white transition-colors">
-        Show More
-      </button>
-    </div>
+  
   </div>
 );
 
@@ -55,7 +51,7 @@ export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => (
     </div>
     <div>
       <button className="mt-4 px-4 py-3 rounded-[0.5rem] text-[0.875rem] font-medium text-primary-brown bg-white transition-colors">
-        Show All Amenities
+        Show All 
       </button>
     </div>
   </div>

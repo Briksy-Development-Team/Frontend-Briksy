@@ -83,8 +83,10 @@ const property = {
   },
   sidebar: {
     builder: 'Sunrise Property Group',
+    builderName: 'Sunrise Property Group',
     availability: 'Mon - Sat · 9 AM - 6 PM',
     location: 'Richmond, VIC 3121',
+    price: 850000,
   }
 };
 

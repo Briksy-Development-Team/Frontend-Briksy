@@ -17,13 +17,13 @@ export function ServiceList({ servicesData }: { servicesData: any }) {
         {servicesData.list.map((s: any) => (
           <div
             key={s.id}
-            className="flex items-center gap-5 p-2 rounded-[1.5rem] bg-white/0 border border-gray-50 shadow-sm"
+            className="flex items-center gap-5 p-2 rounded-[1.5rem]  border bg-[#FFFFFF] border-gray-50 "
           >
             <div className="w-32 h-32  shrink-0 rounded-[1.5rem] overflow-hidden bg-gray-100">
               <img
                 src={s.image}
                 alt={s.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full rounded-[1.5rem] object-cover"
               />
             </div>
             <div className="flex-1 flex flex-col justify-center">

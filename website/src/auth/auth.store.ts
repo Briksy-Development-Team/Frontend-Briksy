@@ -133,11 +133,6 @@ export const bootstrapSeekerAuth = async (
 
   try {
     const response = await getSeekerProfile();
-    if (!isSeekerOnlyAccount(response.data.user)) {
-      clearStoredAuth();
-      dispatch(clearSession());
-      return;
-    }
 
     const nextAuth: StoredAuth = {
       ...storedAuth,
@@ -157,33 +152,15 @@ export const loginSeekerSession = async (
   dispatch: SeekerAuthDispatch,
   payload: LoginPayload,
 ): Promise<void> => {
-  try {
-    const response = await loginSeeker({
-      email: payload.email.trim(),
-      password: payload.password,
-    });
+  const response = await loginSeeker({
+    email: payload.email.trim(),
+    password: payload.password,
+  });
 
-    console.log("=== LOGIN API RESPONSE DATA ===", response.data);
-    alert(`LOGIN SUCCESS!\n\nToken: ${response.data.token}\nToken Type: ${response.data.token_type || 'NONE'}`);
+  const nextAuth = buildStoredAuth(response.data);
 
-    const nextAuth = buildStoredAuth(response.data);
-
-    if (!isSeekerOnlyAccount(nextAuth.user)) {
-      clearStoredAuth();
-      dispatch(clearSession());
-      alert("LOGIN FAILED: Account not allowed to access seeker website.");
-      throw new Error(
-        "This account is not allowed to access the seeker website.",
-      );
-    }
-
-    setStoredAuth(nextAuth);
-    dispatch(setSession(nextAuth));
-  } catch (error: any) {
-    console.error("Login Error:", error);
-    alert("LOGIN API REQUEST FAILED!\n\n" + (error?.response?.data?.message || error.message || "Unknown error"));
-    throw error;
-  }
+  setStoredAuth(nextAuth);
+  dispatch(setSession(nextAuth));
 };
 
 export const registerSeekerSession = async (

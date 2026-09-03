@@ -2,13 +2,13 @@ import {
   BuilderHeader,
   BuilderTabs,
   BuilderAbout,
-  BuilderContact,
+  // BuilderContact,
 } from "./components/BuilderMain";
 import {
   BuilderSnapshot,
   BuilderHomes,
   BuilderPerformance,
-  BuilderTeam,
+  // BuilderTeam,
 } from "./components/BuilderPortfolio";
 import { BuilderSidebar } from "./components/BuilderSidebar";
 import Reviews from "../../../components/reviews/Reviews";
@@ -213,9 +213,9 @@ const BuilderDetail = () => {
               <div id="performance">
                 <BuilderPerformance performance={builderData.performance} />
               </div>
-              <div id="team">
+              {/* <div id="team">
                 <BuilderTeam team={builderData.team} />
-              </div>
+              </div> */}
               <div id="about">
                 <BuilderAbout about={builderData.about} />
               </div>
@@ -230,9 +230,9 @@ const BuilderDetail = () => {
           </aside>
         </div>
 
-        <div className="mt-16 w-full lg:w-[calc(100%-400px)]">
+        {/* <div className="mt-16 w-full lg:w-[calc(100%-400px)]">
           <BuilderContact />
-        </div>
+        </div> */}
       </main>
     </div>
   );

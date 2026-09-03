@@ -55,12 +55,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
       // Only navigate after successful login
       navigate('/profile', { replace: true });
     } catch (error) {
-      console.error('Login failed:', error);
-
-      setErrors({
-        email: '',
-        password: 'Invalid email or password',
-      });
+      setErrors({ email: '', password: 'Invalid email or password' });
     } finally {
       setIsLoading(false);
     }

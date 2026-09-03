@@ -1,97 +1,78 @@
 import { Star, Share } from "lucide-react";
 import FavoriteButton from "../../../../components/custom/FavoriteButton";
+import { DetailSidebar } from "../../shared/DetailSidebar";
 
 export function ServiceSidebar({
   contact,
   service,
 }: {
-  contact: any;
-  service: any;
+  contact: { price: number; rateType?: string };
+  service: {
+    bannerImage?: string;
+    avatar: string;
+    name: string;
+    registration: string;
+    rating: number;
+    reviewsCount: number;
+  };
 }) {
   return (
-    <div className="flex flex-col gap-6 w-full">
-      <div className="w-full  rounded-xl overflow-hidden flex flex-col items-center">
-        <div className="w-full h-48  overflow-hidden">
-          {service.bannerImage ? (
-           
-              <img
-                src={service.bannerImage}
-                alt="Banner"
-                className="w-full h-full object-cover rounded-xl"
-              />
-          
-          ) : null}
+    <div className="flex flex-col gap-4 w-full">
+      {/* Profile card — banner + overlapping avatar */}
+      <div className="relative w-full rounded-xl overflow-visible pb-[70px]">
+        {/* Banner */}
+        <div
+          className="w-full h-[204px] rounded-xl overflow-hidden"
+          style={{ background: "#E2CBB3" }}
+        >
+          {service.bannerImage && (
+            <img src={service.bannerImage} alt="Banner" className="w-full h-full object-cover" />
+          )}
         </div>
 
-        <div className="relative -mt-10 mb-10">
-          <div className="w-20 h-20 rounded-full border-4 border-[#FAF8F5] overflow-hidden bg-white">
-            <img
-              src={service.avatar}
-              alt={service.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center px-6 pb-6 text-center">
-          <div className="flex flex-col gap-[0.8125rem]">
-            {" "}
-            <h1 className="text-[1.875rem] font-medium text-primary-brown leading-tight">
-              {service.name}
-            </h1>
-            <p className="text-[1rem] text-primary-brown ">
-              {service.registration}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-1 mt-4 text-[0.875rem] text-primary-brown">
-            <Star size={16} className="fill-[#F05537] text-[#F05537]" />
-            <span className="font-medium text-primary-brown">
-              {service.rating}
-            </span>
-            <span className="font-medium text-primary-brown">
-              ({service.reviewsCount} reviews)
-            </span>
-          </div>
-          <p className="text-[0.75rem] mt-1">
-            Has a ZIP image by VIP category is optional here
-          </p>
-
-          <div className="flex items-center gap-4 mt-6 text-primary-light-brown">
-            <button className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-colors ">
-              <Share size={18} />
-            </button>
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-colors ">
-              <FavoriteButton
-                variant="inline"
-                showText={false}
-                iconSize={18}
-                className="text-primary-light-brown hover:text-primary-brown transition-colors"
-              />
-            </div>
+        {/* Avatar — absolute overlapping */}
+        <div
+          className="absolute left-1/2 -translate-x-1/2"
+          style={{ top: "118px" }}
+        >
+          <div
+            className="w-[139px] h-[139px] rounded-full overflow-hidden border-[5px] border-white bg-white"
+            style={{ boxShadow: "0px 13px 39px 0px rgba(0,0,0,0.10), 0px 0px 0px 1.6px rgba(0,0,0,0.02)" }}
+          >
+            <img src={service.avatar} alt={service.name} className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
 
-      {/* Pricing / Contact Card */}
-      <div className="w-full bg-white rounded-3xl p-[1.25rem]  border border-gray-50 flex items-center justify-between">
-        <div className="flex flex-col">
-          <div className="flex items-baseline gap-1">
-            <span className="text-[1.25rem] font-medium text-primary-brown">
-              From ${contact.price}
-            </span>
-            <span className="text-[0.75rem] text-primary-light-brown">
-              /hour
-            </span>
-          </div>
-          <span className="text-[0.75rem] font-medium text-[#F05537] mt-0.5">
-            {contact.rateType}
-          </span>
+      {/* Name / info — centered below avatar */}
+      <div className="flex flex-col items-center gap-3 text-center px-4">
+        <div className="flex flex-col gap-[0.8125rem]">
+          <h1 className="text-[1.875rem] font-medium text-primary-brown leading-tight">{service.name}</h1>
+          <p className="text-[1rem] text-primary-brown">{service.registration}</p>
         </div>
-        <button className="bg-primary-brown text-white px-[1.625rem] py-[0.875rem] rounded-full font-semibold text-[0.875rem] hover:bg-[#4a361a] transition-colors">
-          Contact {service.name.split(" ")[0]}
-        </button>
+
+        <div className="flex items-center gap-1 text-[0.875rem] text-primary-brown">
+          <Star size={16} className="fill-[#F05537] text-[#F05537]" />
+          <span className="font-medium">{service.rating}</span>
+          <span className="font-medium">({service.reviewsCount} reviews)</span>
+        </div>
+
+        <div className="flex items-center gap-4 text-primary-light-brown mt-2">
+          <button className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-colors">
+            <Share size={18} />
+          </button>
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-colors">
+            <FavoriteButton variant="inline" showText={false} iconSize={18} className="text-primary-light-brown hover:text-primary-brown transition-colors" />
+          </div>
+        </div>
       </div>
+
+      {/* Enquiry sidebar — no description/footer for traders */}
+      <DetailSidebar
+        price={`$${contact.price}`}
+        priceLabel="/hour"
+        buttonText={`Contact ${service.name.split(" ")[0]}`}
+      />
     </div>
   );
 }

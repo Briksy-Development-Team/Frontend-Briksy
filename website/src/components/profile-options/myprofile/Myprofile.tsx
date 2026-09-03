@@ -27,7 +27,6 @@ const Myprofile = () => {
     const fetchProfile = async () => {
       try {
         const res = await getSeekerProfile();
-        console.log("=== SEEKER PROFILE DATA ===", res.data);
         setBudgetMin(res.data?.preferred_budget_min?.toString() || '');
         setBudgetMax(res.data?.preferred_budget_max?.toString() || '');
       } catch (err) {
