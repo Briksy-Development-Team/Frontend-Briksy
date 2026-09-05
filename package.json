@@ -6,7 +6,7 @@
   "scripts": {
     "admin": "npm run dev --prefix admin",
     "website": "npm run dev --prefix website",
-    "dev": "concurrently \"npm run admin\" \"npm run website\"",
+    "dev": "npm run website",
     "build": "npm run build:website && npm run build:admin && npm run copy:htaccess",
     "build:website": "npm run build --prefix website",
     "build:admin": "npm run build --prefix admin",
