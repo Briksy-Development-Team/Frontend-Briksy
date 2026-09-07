@@ -1,10 +1,17 @@
 import { useState, useRef, useEffect } from "react";
+
 import { Globe } from "lucide-react";
-import { Link } from "react-router-dom";
+
+import { Link, useLocation } from "react-router-dom";
+
 import { NavSearchButton, SearchOverlay } from "./NavSearchBar";
+
 import { SCROLL_THRESHOLD } from "../search/FloatingSearch";
+
 import LanguageModal from "./LanguageModal.tsx";
+
 import ProfileDropdown from "./ProfileDropdown.tsx";
+
 import Briskybrown from "../../assets/logo/briskybrown.svg";
 import { useAuth } from "../../auth/AuthContext";
 
@@ -19,6 +26,16 @@ type Lang = {
   region: string;
 };
 
+const navItems = [
+  { label: "Buy", to: "/result?type=property&intent=buy" },
+  { label: "Sell", to: "/result?type=property&intent=sell" },
+  { label: "Rent", to: "/result?type=property&intent=rent" },
+  { label: "Agents", to: "/result?type=trader" },
+  { label: "Builders", to: "/result?type=builder" },
+  { label: "Blogs", to: "/blogs" },
+  { label: "Commercials", to: "/commercials" },
+];  
+
 const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
 
@@ -29,9 +46,11 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
   const { isAuthenticated, isSeeker } = useAuth();
 
   const [pastHero, setPastHero] = useState(!hasHero);
+
   const pastHeroRef = useRef(pastHero);
 
-  // The overlay handles its own 'search' or 'ai' mode, but we control open/close
+  const location = useLocation();
+
   const isSearchOpen = mode !== "collapsed";
 
   useEffect(() => {
@@ -60,12 +79,32 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [hasHero, setMode]);
 
+  const isNavItemActive = (to: string) => {
+    const url = new URL(to, window.location.origin);
+
+    // Check pathname
+    if (location.pathname !== url.pathname) {
+      return false;
+    }
+
+    // Check query parameters
+    const targetParams = new URLSearchParams(url.search);
+
+    for (const [key, value] of targetParams.entries()) {
+      if (location.search.includes(`${key}=${value}`) === false) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   return (
     <>
-      <nav
-        className="fixed left-0 right-0 top-0 z-50 border-b border-[#d8d8d8] bg-primary-brown text-white h-16"
-      >
+      <nav className="fixed left-0 right-0 top-0 z-50 h-16 border-b border-[#d8d8d8] bg-primary-brown text-white">
         <div className="flex h-16 items-center justify-between px-2 sm:px-4 lg:px-10">
+
+          {/* Logo */}
           <Link to="/" className="shrink-0">
             <img
               loading="eager"
@@ -75,73 +114,61 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
             />
           </Link>
 
+          {/* Navigation */}
           <div className="hidden flex-1 items-center justify-center gap-6 lg:flex">
-            <Link
-              to="/result?type=property"
-              className="relative whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Buyer/Seller
-              <span className="absolute -bottom-2 left-0 h-[1px] w-full bg-white" />
-            </Link>
+            {navItems.map((item) => {
+              const active = isNavItemActive(item.to);
 
-            <Link
-              to="/result?type=trader"
-              className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Agents Finder
-            </Link>
-
-            <Link
-              to="/result?type=builder"
-              className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Builders
-            </Link>
-
-         
-
-            <Link
-              to="/blogs"
-              className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Blogs
-            </Link>
-
-            <Link
-              to="/commercials"
-              className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Commercials
-            </Link>
+              return (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  className={`relative whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${active ? "border-b border-white" : ""
+                    }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
 
+          {/* Right Side */}
           <div className="flex shrink-0 items-center gap-6">
+
+            {/* Search */}
             {pastHero && !isSearchOpen && (
               <NavSearchButton
                 onClick={() => setMode("search")}
               />
             )}
 
+            {/* Language */}
             <button
               onClick={() => setLangModalOpen(true)}
               className="transition hover:opacity-70"
               aria-label="Language and region"
             >
-              <Globe size={18} color="white" />
+              <Globe
+                size={18}
+                color="white"
+              />
             </button>
 
+            {/* Profile */}
             <ProfileDropdown />
+
           </div>
         </div>
       </nav>
 
-      {/* Renders fixed inset-0 over the whole screen */}
-      <SearchOverlay 
-        open={isSearchOpen} 
-        mode={mode === "ai" ? "ai" : "search"} 
-        onClose={() => setMode("collapsed")} 
+      {/* Search Overlay */}
+      <SearchOverlay
+        open={isSearchOpen}
+        mode={mode === "ai" ? "ai" : "search"}
+        onClose={() => setMode("collapsed")}
       />
 
+      {/* Language Modal */}
       <LanguageModal
         isOpen={langModalOpen}
         onClose={() => setLangModalOpen(false)}

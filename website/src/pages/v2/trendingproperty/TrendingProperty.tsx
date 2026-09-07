@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getProperties, type PublicProperty } from "../../../api/public.api";
+import { getProperties, type PublicProperty } from "../../../api/property/property.api";
 import { propertyToCard } from "../../../api/public.mappers";
 import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
 import "swiper/css";

@@ -137,10 +137,6 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
         {isLoading ? 'Logging in...' : 'Login'}
       </Btn>
 
-        <Btn onClick={() => void submit()} disabled={loading} className="flex items-center justify-center gap-2">
-          {loading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : null}
-          {loading ? 'Signing in' : 'Login'}
-        </Btn>
 
       <div className="flex gap-[0.75rem]">
         <button

@@ -1,7 +1,8 @@
 import type { Builder } from "../types/builder";
 import type { Property } from "../types/property";
 import type { Trader } from "../types/trader";
-import type { PublicOrganization, PublicProperty } from "./public.api";
+import type { PublicOrganization } from "./seeker/organization.api";
+import type { PublicProperty } from "./property/property.api";
 import BusinessPlaceholder from "../assets/place holder/bussinessholder.svg";
 import ServicePlaceholder from "../assets/place holder/serviceholder.svg";
 import BuilderBackground from "../assets/place holder/builderbg.svg";

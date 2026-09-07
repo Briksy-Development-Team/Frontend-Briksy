@@ -13,7 +13,7 @@ import Myprivacy from "../../components/profile-options/myprivacy/Myprivacy";
 const Profile = () => {
     const [selectedProfile, setSelectedProfile] = useState("profile");
 
-    
+
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [selectedProfile]);
@@ -43,7 +43,7 @@ const Profile = () => {
             icon: Privacy,
             show: Myprivacy,
         },
-      
+
     ];
 
     const selectedItem = profileData.find(

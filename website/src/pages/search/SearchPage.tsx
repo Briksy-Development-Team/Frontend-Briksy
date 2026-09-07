@@ -1,34 +1,47 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { ResultType, SortType } from "../../types/search";
+import type { SortType } from "../../types/search";
+import type { FilterTab } from "../../components/filter/filterTypes";
 import type { BreadcrumbItem } from "../../components/nav/Breadcrumb";
 import Breadcrumb from "../../components/nav/Breadcrumb";
-import SearchMegaMenu from "../../components/nav/SearchMegaMenu";
+import SearchToolbar, { SEARCH_CATEGORIES } from "./SearchToolbar";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 
-const HEADERS: Record<ResultType, { title: string; crumb: string }> = {
-  builder:  { title: "Find a builder",       crumb: "Find a builder" },
-  trader:   { title: "Find a professional",  crumb: "Find a professional" },
-  property: { title: "Find a property",      crumb: "Find a property" },
+const HEADERS: Record<string, { title: string; crumb: string }> = {
+  all: { title: "Find anything", crumb: "Search" },
+  properties: { title: "Find a property", crumb: "Find a property" },
+  builders: { title: "Find a builder", crumb: "Find a builder" },
+  professionals: { title: "Find a professional", crumb: "Find a professional" },
+  commercial: { title: "Find commercial", crumb: "Commercial" },
 };
 
 const SearchPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sort, setSort] = useState<SortType>("featured");
   const [showMap, setShowMap] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSub, setSelectedSub] = useState<string | null>(null);
 
-  const resultType: ResultType = (searchParams.get("type") as ResultType | null) ?? "property";
-  const { title, crumb } = HEADERS[resultType];
+  // Sync state with URL if needed, or just use URL as truth
+  const typeParam = searchParams.get("type");
+  const queryParam = searchParams.get("q") || "";
 
-  const breadcrumbs: BreadcrumbItem[] = selectedSub
+  // Map URL `type` to one of our category IDs (all, properties, builders, professionals, commercial)
+  const activeCategoryId =
+    SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
+
+  const [activeTab, setActiveTab] = useState<FilterTab | null>(null);
+
+  const activeCategory =
+    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
+  const resultType = activeCategory.resultType;
+
+  const { crumb } = HEADERS[activeCategoryId] || HEADERS.all;
+
+  const breadcrumbs: BreadcrumbItem[] = activeTab
     ? [
         { label: "Home", href: "/" },
-        { label: crumb, onClick: () => { setSelectedCategory(null); setSelectedSub(null); setShowMap(false); } },
-        { label: selectedCategory! },
-        { label: selectedSub },
+        { label: crumb, onClick: () => setActiveTab(null) },
+        { label: activeTab },
       ]
     : [{ label: "Home", href: "/" }, { label: crumb }];
 
@@ -36,23 +49,25 @@ const SearchPage = () => {
     <div className="min-h-screen bg-[#F8F4EE] pt-24 pb-16 font-helvetica">
       <div className="mx-auto px-[5%]">
         <Breadcrumb items={breadcrumbs} />
-        {!selectedSub && <h1 className="text-[2.5rem] font-bold text-[primary-brown] mb-6">{title}</h1>}
 
-        <SearchMegaMenu
-          resultType={resultType}
-          onSelect={(cat, sub) => { setSelectedCategory(cat); setSelectedSub(sub); setShowMap(false); }}
+        <SearchToolbar
+          activeCategoryId={activeCategoryId}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          sort={sort}
+          onSortChange={setSort}
+          showMap={showMap}
+          onToggleMap={() => setShowMap((v) => !v)}
+          query={queryParam}
+          onQueryChange={(q) => setSearchParams({ type: activeCategoryId, q })}
         />
 
-        <div className="mt-4 flex flex-col gap-6">
-          {selectedSub ? (
+        <div className="mt-8 flex flex-col gap-6">
+          {activeTab || showMap ? (
             <ResultsView
               resultType={resultType}
-              selectedSub={selectedSub}
-              sort={sort}
-              setSort={setSort}
-              onClearSub={() => { setSelectedCategory(null); setSelectedSub(null); setShowMap(false); }}
+              selectedSub={activeTab || ""}
               showMap={showMap}
-              onToggleMap={() => setShowMap(v => !v)}
             />
           ) : (
             <BrowseView resultType={resultType} />

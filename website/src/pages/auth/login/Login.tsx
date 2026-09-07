@@ -46,7 +46,6 @@ const Login = () => {
     <div className="h-screen flex items-start sm:items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
       <div className="flex rounded-[1.5rem] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-w-[55.5rem] bg-white mx-auto origin-center
        min-h-[38.75rem]">
-
         <div className="relative shrink-0 hidden md:block" style={{ width: '23.875rem' }}>
           <img src={Brandpanel} alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#1a110a]/20 via-[#1a110a]/40 to-[#1a110a]/80" />
@@ -67,7 +66,7 @@ const Login = () => {
               Create an account
             </Link>
           </div>
-        </aside>
+        </div>
 
         <main className="flex flex-1 items-center justify-center">
           <LoginScreen />

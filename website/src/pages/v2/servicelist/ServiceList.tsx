@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getOrganizations, type PublicOrganization } from "../../../api/public.api";
+import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { organizationToTrader } from "../../../api/public.mappers";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";

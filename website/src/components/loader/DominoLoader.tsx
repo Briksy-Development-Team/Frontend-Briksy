@@ -17,7 +17,7 @@ type DominoLoaderProps = {
 const DominoLoader = ({
   className = "",
   barColor,
-  barCount = 10,
+  barCount = 5,
 }: DominoLoaderProps) => {
   return (
     <ul

@@ -1,6 +1,7 @@
 import type { ResultType } from "../../types/search";
 import { useEffect, useState } from "react";
-import { getOrganizations, getProperties, type PublicOrganization, type PublicProperty } from "../../api/public.api";
+import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
+import { getProperties, type PublicProperty } from "../../api/property/property.api";
 import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";

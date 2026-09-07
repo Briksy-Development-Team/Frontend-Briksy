@@ -47,7 +47,7 @@ const DAYS_ON_MARKET_OPTIONS = Array.from({ length: 366 }, (_, i) => ({
 
 type PropertyFiltersProps =
   | {
-    mode: "Buy";
+    mode: "Buy" | "Rent";
     values: BuyFilters;
     onChange: (v: BuyFilters) => void;
   }

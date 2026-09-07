@@ -4,7 +4,7 @@ import gsap from "gsap";
 import HeroSearchBar from "../search/HeroSearchBar";
 // import Blur from "../../assets/hero/blur.svg"
 
-import House from "../../assets/hero/house.svg";
+import House from "../../assets/hero/houses.svg";
 
 const AVATARS = [
     "https://randomuser.me/api/portraits/women/44.jpg",
@@ -80,7 +80,7 @@ const Heroone = () => {
                         ref={houseRef}
                         src={House}
                         alt=""
-                        className="w-full h-[55vh] aspect-[197/102]"
+                        className="w-full "
                     />
 
                     <div
@@ -88,15 +88,15 @@ const Heroone = () => {
             absolute
             left-[-10%]
             right-[-10%]
-            bottom-[-60px]
-            h-[180px]
+            bottom-[-50px]
+            h-[120px]
             bg-[#F0EAE5]
             blur-[25px]
         "
-                    />
+                    /> 
 
                 </div>
-                <div className="absolute left-1/2 bottom-40 z-30 w-full max-w-5xl -translate-x-1/2 px-6">
+                <div className="absolute left-1/2 bottom-25 z-30 w-full max-w-5xl -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />
                 </div>
             </section>

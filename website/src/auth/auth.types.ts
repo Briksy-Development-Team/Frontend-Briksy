@@ -59,11 +59,3 @@ export interface PendingFavoriteAction {
   propertyId: string;
   fromPath?: string;
 }
-
-export type AuthRole = 'seeker' | 'admin' | 'admin_staff' | 'super_admin' | 'super_admin_employee'
-
-export interface PendingFavoriteAction {
-  type: 'favorite'
-  propertyId: string
-  fromPath?: string
-}

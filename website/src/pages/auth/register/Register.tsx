@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useLayoutEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import Brandpanel from '../../../assets/login/loginleft.png';
@@ -51,32 +51,32 @@ const Register = () => {
     }
   }, [step]);
 
-  useEffect(() => {
-    if (isBootstrapping || !isAuthenticated || redirectingRef.current) {
-      return
-    }
-
-    redirectingRef.current = true
-    const pending = readPendingFavoriteAction()
-
-    const finish = async (): Promise<void> => {
-      try {
-        if (pending?.type === 'favorite' && pending.propertyId) {
-          await toggleSeekerPropertyFavorite(pending.propertyId)
-          clearPendingFavoriteAction()
-          navigate(pending.fromPath ?? fromPath, { replace: true })
-          return
-        }
-
-        navigate(fromPath, { replace: true })
-      } catch (error) {
-        console.error('Failed to complete pending seeker action.', error)
-        navigate(fromPath, { replace: true })
-      }
-    }
-
-    void finish()
-  }, [fromPath, isAuthenticated, isBootstrapping, navigate])
+  // useEffect(() => {
+  //   if (isBootstrapping || !isAuthenticated || redirectingRef.current) {
+  //     return
+  //   }
+  //
+  //   redirectingRef.current = true
+  //   const pending = readPendingFavoriteAction()
+  //
+  //   const finish = async (): Promise<void> => {
+  //     try {
+  //       if (pending?.type === 'favorite' && pending.propertyId) {
+  //         await toggleSeekerPropertyFavorite(pending.propertyId)
+  //         clearPendingFavoriteAction()
+  //         navigate(pending.fromPath ?? fromPath, { replace: true })
+  //         return
+  //       }
+  //
+  //       navigate(fromPath, { replace: true })
+  //     } catch (error) {
+  //       console.error('Failed to complete pending seeker action.', error)
+  //       navigate(fromPath, { replace: true })
+  //     }
+  //   }
+  //
+  //   void finish()
+  // }, [/* fromPath, isAuthenticated, isBootstrapping, navigate */])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
@@ -107,10 +107,6 @@ const Register = () => {
         <div className="flex-1 flex flex-col overflow-hidden">
           <Screen go={go} />
         </div>
-
-        <main className="flex flex-1 items-center justify-center">
-          <DetailsScreen />
-        </main>
       </div>
     </div>
   )

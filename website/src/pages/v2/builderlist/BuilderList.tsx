@@ -2,7 +2,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getOrganizations, type PublicOrganization } from "../../../api/public.api";
+import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { organizationToBuilder } from "../../../api/public.mappers";
 import "swiper/css";
 import BuilderGridCard from "../../../components/cards/builder/BuilderGridCard";

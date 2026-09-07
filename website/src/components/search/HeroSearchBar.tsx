@@ -4,7 +4,7 @@ import {
   Sparkles,
   ChevronDown,
   Check,
-  
+
 } from "lucide-react";
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
@@ -14,7 +14,7 @@ import All from "../../assets/icons/search/search.svg"
 import Build from "../../assets/icons/search/build.svg"
 import Prop from "../../assets/icons/search/property.svg"
 import Trader from "../../assets/icons/search/trades.svg"
-
+import Comercial from "../../assets/icons/search/comercial.svg"
 
 
 type Category = {
@@ -40,15 +40,15 @@ const CATEGORIES: Category[] = [
     label: "Properties",
     title: "PROPERTIES",
     desc: "Find properties to buy or rent",
-    icon: Build,
+    icon: Prop,
     resultType: "property",
   },
   {
     id: "builders",
-    label: "Builders & Organisations",
+    label: "BUILDERS / Org.",
     title: "BUILDERS / ORGANISATIONS",
     desc: "Discover trusted property businesses",
-    icon: Prop,
+    icon: Build,
     resultType: "builder",
   },
   {
@@ -58,6 +58,14 @@ const CATEGORIES: Category[] = [
     desc: "Connect with skilled independent experts",
     icon: Trader,
     resultType: "trader",
+  },
+  {
+    id: "Commercial",
+    label: "Commercial",
+    title: "Commercial",
+    desc: "Find properties to  rent",
+    icon: Comercial,
+    resultType: "comercial",
   },
 ];
 
@@ -129,12 +137,12 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
             {dropdownOpen && (
               <div
                 role="menu"
-                className="absolute -left-30 bottom-full mb-10 w-[25rem] bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 z-50"
+                className="absolute -left-30 bottom-full mb-10  w-[25rem] bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 z-50"
               >
                 <h3 className="text-[0.875rem] font-medium text-primary-brown  mb-3 px-2">
                   Categories options
                 </h3>
-                <div className="flex flex-col gap-1 max-h-80 overflow-y-auto ">
+                <div className="flex flex-col gap-1 overflow-y-auto ">
                   {CATEGORIES.map((cat) => {
                     const active = selected.id === cat.id;
                     return (
@@ -146,7 +154,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
                           setSelected(cat);
                           setDropdownOpen(false);
                         }}
-                        className={`flex items-center gap-4 p-2 rounded-xl text-left border border-white  transition ${active ? "bg-[#A65B40]/10" : "  hover:border-gray-50"}`}
+                        className={`flex items-center gap-4 p-2 rounded-xl text-left border border-white  transition ${active ? "bg-[#F3F4F3]" : "  hover:border-primary-brown"}`}
                       >
                         <div
                           className={`w-14 h-14 flex-shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4] ${active ? " text-white" : " text-[#A65B40]"}`}
@@ -195,6 +203,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       <Filter
         isOpen={filterOpen}
         onClose={() => setFilterOpen(false)}
+        category={selected.id}
         initialTab={
           selected.id === "builders"
             ? "Builders"

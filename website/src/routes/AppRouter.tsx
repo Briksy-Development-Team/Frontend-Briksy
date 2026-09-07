@@ -1,12 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from '../pages/home/Home'
 import MainLayout from './MainLayout'
-import Login from '../pages/auth/login/Login'
 import Register from '../pages/auth/register/Register'
-import AccountLayout from '../pages/account/AccountLayout'
-import AccountProfile from '../pages/account/Profile'
-import LikedProperties from '../pages/account/LikedProperties'
-import Inquiries from '../pages/account/Inquiries'
+
 
 import Terms from "../pages/home/terms/Terms";
 import Pricing from "../pages/home/subscription/Pricing";
@@ -19,6 +15,8 @@ import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
 import Login from "../pages/auth/login/Login.tsx";
+import ProtectedRoute from './ProtectedRoute.tsx'
+import Profile from '../pages/profile/Profile.tsx'
 
 const AppRouter = () => {
   return (
@@ -32,15 +30,10 @@ const AppRouter = () => {
         <Route path="/subs" element={<Pricing />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/account" element={<AccountLayout />}>
-            <Route index element={<Navigate to="/account/profile" replace />} />
-            <Route path="profile" element={<AccountProfile />} />
-            <Route path="liked-properties" element={<LikedProperties />} />
-            <Route path="inquiries" element={<Inquiries />} />
-          </Route>
+            <Route path="profile" element={<Profile />} />
+      
         </Route>
 
-        <Route path="/profile" element={<Navigate to="/account/profile" replace />} />
         <Route path="/notification" element={<Notification />} />
         <Route path="/help-support" element={<Help />} />
 
