@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Heart, MapPin, Star, ArrowRight } from "lucide-react";
+import { MapPin, Star, ArrowRight } from "lucide-react";
 import type { Builder } from "../../../types/builder";
+import FavoriteButton from "../../custom/FavoriteButton";
 import Approves from "../../../assets/logo/apprrove.svg";
 
 type Props = {
@@ -11,10 +12,10 @@ const BuilderGridCard = ({ item }: Props) => {
   return (
     <Link
       to={`/builder/${item.id}`}
-      className="block rounded-[20px] w-full pb-[6px]  h-[25rem] border border-transparent transition-colors duration-200 overflow-hidden mx-auto md:w-auto text-primary-brown bg-white hover:border-primary"
+      className="flex flex-col w-[19.4375rem] h-[25rem] pb-[6px] rounded-[20px] border border-transparent
+       transition-colors duration-200 overflow-hidden mx-auto text-primary-brown bg-white hover:border-primary"
     >
-      
-      <div className="relative h-[40%] bg-[#bed6d7] rounded-t-[20px] overflow-hidden">
+      <div className="relative h-[35%] shrink-0 bg-[#bed6d7] rounded-t-[20px] overflow-hidden">
         <img
           loading="lazy"
           src={item.bannerImage}
@@ -22,20 +23,14 @@ const BuilderGridCard = ({ item }: Props) => {
           className="h-full w-full object-cover"
         />
 
-        <button className="absolute right-3 top-4">
-          <Heart
-            size={24}
-            className={
-              item.isFavourite
-                ? "fill-primary-brown text-primary-brown"
-                : "fill-white text-primary-brown"
-            }
-          />
-        </button>
+        <FavoriteButton
+          initialIsFavourite={item.isFavourite}
+          className="absolute right-3 top-4"
+          variant="overlay"
+        />
       </div>
 
-      
-      <div className="relative -mt-9 flex w-fit flex-col items-center pl-8">
+      <div className="relative -mt-9 flex w-fit flex-col items-center pl-8 shrink-0">
         <img
           loading="lazy"
           src={item.avatar}
@@ -52,7 +47,7 @@ const BuilderGridCard = ({ item }: Props) => {
         </div>
       </div>
 
-      <div className="relative px-4">
+      <div className="relative flex flex-1 min-h-0 flex-col px-4">
         <div className="mt-3">
           <h3 className="text-[1rem] leading-6 font-bold text-primary-brown">
             {item.name}
@@ -75,11 +70,13 @@ const BuilderGridCard = ({ item }: Props) => {
               </span>
             ))}
           </div>
+        </div>
 
-          <div className="mt-3 h-px bg-[#ede8e4]" />
+        <div className="mt-auto pt-2">
+          <div className="h-px bg-[#ede8e4]" />
 
-          <div className="mt-3 flex items-center justify-between">
-            <div className="flex items-end gap-1.5">
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
               <Star size={20} className="fill-[#e2cbb3] text-[#e2cbb3]" />
               <span className="text-[1rem] leading-6 font-bold text-primary-brown">
                 {item.rating}

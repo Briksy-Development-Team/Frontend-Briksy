@@ -2,11 +2,11 @@ import { Star } from 'lucide-react';
 
 export default function Reviews({ data, name }: { data: any; name?: string }) {
   const stars = [5, 4, 3, 2, 1];
-  
+
   return (
     <div className="flex flex-col gap-8 w-full max-w-3xl">
       <div className="flex flex-col gap-2">
-        <h2 className="text-[1.25rem] font-bold text-primary-brown">
+        <h2 className="text-[1.5rem] font-medium text-primary-brown">
           {name ? `${name}'s reviews` : 'Ratings and reviews'}
         </h2>
         <p className="text-[0.875rem] text-primary-light-brown">
@@ -26,7 +26,7 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
           </div>
           <div className="text-[0.75rem] text-primary-light-brown mt-3">{data.count} reviews</div>
         </div>
-        
+
         <div className="flex-1 flex flex-col gap-3 w-full">
           {stars.map((star) => (
             <div key={star} className="flex items-center gap-3">
@@ -34,7 +34,7 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
                 {star}<Star size={10} className="fill-current" />
               </div>
               <div className="flex-1 h-2 bg-white-100 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-primary-light-brown rounded-full"
                   style={{ width: `${data.distribution[star]}%` }}
                 />
@@ -54,7 +54,7 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                 <div>
-                  <div className="font-semibold text-primary-brown text-[0.875rem]">{review.author}</div>
+                  <div className="font-medium text-primary-brown text-[0.875rem]">{review.author}</div>
                   <div className="text-[0.75rem] text-primary-light-brown">{review.context}</div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -63,7 +63,7 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
                   ))}
                 </div>
               </div>
-              <p className="text-[0.875rem] text-primary-brown leading-relaxed italic">
+              <p className="text-[1rem] text-primary-brown leading-relaxed italic">
                 "{review.text}"
               </p>
             </div>
@@ -75,6 +75,8 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
         <button className="bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors">
           Show all {data.count} reviews
         </button>
+        <p className='text-[0.875rem] mt-3 '>Reviews can only be left by customers who enquired through BRIKSY. </p>
+
       </div>
     </div>
   );

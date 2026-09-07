@@ -1,44 +1,47 @@
-import type { PendingFavoriteAction } from './auth.types'
+import type { PendingFavoriteAction } from "./auth.types";
 
-const PENDING_AUTH_ACTION_KEY = 'briksy-website-pending-auth-action'
+const PENDING_AUTH_ACTION_KEY = "briksy-website-pending-auth-action";
 
-export const storePendingFavoriteAction = (propertyId: string, fromPath?: string): void => {
-  if (typeof window === 'undefined') {
-    return
+export const storePendingFavoriteAction = (
+  propertyId: string,
+  fromPath?: string,
+): void => {
+  if (typeof window === "undefined") {
+    return;
   }
 
   const payload: PendingFavoriteAction = {
-    type: 'favorite',
+    type: "favorite",
     propertyId,
     fromPath,
-  }
+  };
 
-  window.localStorage.setItem(PENDING_AUTH_ACTION_KEY, JSON.stringify(payload))
-}
+  window.localStorage.setItem(PENDING_AUTH_ACTION_KEY, JSON.stringify(payload));
+};
 
 export const readPendingFavoriteAction = (): PendingFavoriteAction | null => {
-  if (typeof window === 'undefined') {
-    return null
+  if (typeof window === "undefined") {
+    return null;
   }
 
-  const rawValue = window.localStorage.getItem(PENDING_AUTH_ACTION_KEY)
+  const rawValue = window.localStorage.getItem(PENDING_AUTH_ACTION_KEY);
   if (!rawValue) {
-    return null
+    return null;
   }
 
   try {
-    return JSON.parse(rawValue) as PendingFavoriteAction
+    return JSON.parse(rawValue) as PendingFavoriteAction;
   } catch (error) {
-    console.error('Unable to parse pending auth action.', error)
-    window.localStorage.removeItem(PENDING_AUTH_ACTION_KEY)
-    return null
+    console.error("Unable to parse pending auth action.", error);
+    window.localStorage.removeItem(PENDING_AUTH_ACTION_KEY);
+    return null;
   }
-}
+};
 
 export const clearPendingFavoriteAction = (): void => {
-  if (typeof window === 'undefined') {
-    return
+  if (typeof window === "undefined") {
+    return;
   }
 
-  window.localStorage.removeItem(PENDING_AUTH_ACTION_KEY)
-}
+  window.localStorage.removeItem(PENDING_AUTH_ACTION_KEY);
+};

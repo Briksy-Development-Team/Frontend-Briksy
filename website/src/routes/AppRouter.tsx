@@ -8,18 +8,17 @@ import AccountProfile from '../pages/account/Profile'
 import LikedProperties from '../pages/account/LikedProperties'
 import Inquiries from '../pages/account/Inquiries'
 
-import Terms from '../pages/home/terms/Terms'
-import Pricing from '../pages/home/subscription/Pricing'
-import SearchPage from '../pages/search/SearchPage'
-import Error from '../components/error/Error'
-import Coming from '../components/coming/Coming'
-import HomeB from '../pages/home/Home.tsx'
-import Notification from '../components/notification/Notification.tsx'
-import Help from '../components/help/Help.tsx'
-import PropertyDetail from '../pages/detail/PropertyDetail'
-import BuilderDetail from '../pages/detail/builder/BuilderDetail'
-import ServiceDetail from '../pages/detail/service/ServiceDetail'
-import ProtectedRoute from './ProtectedRoute'
+import Terms from "../pages/home/terms/Terms";
+import Pricing from "../pages/home/subscription/Pricing";
+import SearchPage from "../pages/search/SearchPage";
+import Error from "../components/error/Error";
+import Coming from "../components/coming/Coming";
+import Notification from "../components/notification/Notification.tsx";
+import Help from "../components/help/Help.tsx";
+import PropertyDetail from "../pages/detail/property/PropertyDetail";
+import BuilderDetail from "../pages/detail/builder/BuilderDetail";
+import ServiceDetail from "../pages/detail/service/ServiceDetail";
+import Login from "../pages/auth/login/Login.tsx";
 
 const AppRouter = () => {
   return (
@@ -46,7 +45,6 @@ const AppRouter = () => {
         <Route path="/help-support" element={<Help />} />
 
         <Route path="/" element={<Home />} />
-        <Route path="/v2" element={<HomeB />} />
 
         <Route path="/result" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
@@ -55,6 +53,9 @@ const AppRouter = () => {
       </Route>
       <Route path="/error" element={<Error />} />
       <Route path="/coming-soon" element={<Coming />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/reset-password" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }

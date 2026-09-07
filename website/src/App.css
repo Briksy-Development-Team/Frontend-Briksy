@@ -27,7 +27,6 @@ body {
   margin: 0;
   padding: 0;
   overscroll-behavior: none;
-  background-color: #f8f4ee;
 }
 
 @keyframes aura-pulse {

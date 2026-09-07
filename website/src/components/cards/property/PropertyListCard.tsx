@@ -83,7 +83,7 @@ const PropertyListCard = ({ item }: Props) => {
       </div>
 
       <p className=" text-[1rem] text-primary-brown font-bold">
-        ${item.price.toLocaleString()}
+          {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
       </p>
 
       <p className="text-[0.875rem] text-primary-brown">

@@ -44,7 +44,7 @@ const Footer = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 sm:gap-10 lg:gap-20">
                         {footerLinks.map((column) => (
                             <div key={column.title}>
-                                <h4 className="font-medium text-primary-light-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
+                                <h4 className="font-medium text-primary-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
                                     {column.title}
                                 </h4>
 
@@ -64,7 +64,7 @@ const Footer = () => {
                         ))}
 
                         <div>
-                            <h4 className="font-medium text-primary-light-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
+                            <h4 className="font-medium text-primary-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
                                 Connect
                             </h4>
 
@@ -104,12 +104,12 @@ const Footer = () => {
                             alt="Briksy"
                             className=" w-full sm:w-[19.9363rem] sm:h-[6.2138rem] lg:w-[37.3125rem] lg:h-[11.6297rem]"
                         />
-
+{/* 
                         <div className="mb-3 text-primary-light-brown text-[0.75rem] sm:text-[0.875rem] lg:text-[0.875rem] leading-6">
                             <p>Architecture</p>
                             <p>Interior Design</p>
                             <p>Project Management</p>
-                        </div>
+                        </div> */}
                     </div>
                     <span className="hidden sm:flex "> © 2025 Briksy. All Rights Reserved.</span>
 

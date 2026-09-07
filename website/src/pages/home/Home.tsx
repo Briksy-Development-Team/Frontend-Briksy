@@ -1,9 +1,7 @@
 import About from "./about/About";
 import Community from "./community/Community";
-
 import Contact from "../../components/contact/Contact";
 import Blogs from "./blogs/Blogs";
-
 import ImageAnimation from "./imageanimation/ImageAnimation";
 import BuilderList from "../v2/builderlist/BuilderList";
 import TrendingProperty from "../v2/trendingproperty/TrendingProperty";
@@ -15,24 +13,14 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       <Heroone />
-      {/* <div className="flex h-screen w-screen items-center justify-center ">
-        <video
-          src="/try.mp4"
-          className="h-[300px]  mix-blend-color-burn"
-          autoPlay
-          muted
-          loop
-          playsInline
-        />
-      </div> */}
-      <Community />
+
       <ImageAnimation />
 
+      <Community />
       <About />
       <BuilderList />
       <TrendingProperty />
       <ServiceList />
-
       <Blogs />
       <Contact />
       <AppPreview />

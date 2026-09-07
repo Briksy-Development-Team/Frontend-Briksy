@@ -1,161 +1,89 @@
-import { useState } from 'react'
-import { Eye, EyeOff, LoaderCircle } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useAuth, getAuthErrorMessage } from '../../../../auth/AuthContext'
-import { AuthHeader, Btn, Field, ScreenWrapper } from '../../shared'
+import { useState } from 'react';
+import { Eye, EyeOff, Check, LoaderCircle } from 'lucide-react';
+import googleIcon from '../../../../assets/login/google.svg';
+import appleIcon from '../../../../assets/login/apple.svg';
+import { StepIndicator, AuthHeader, Field, Btn, ScreenWrapper } from '../../shared';
+import { type RegisterStep } from '../Register';
+import { useAuth, getAuthErrorMessage } from '../../../../auth/AuthContext';
 
-const TERMS_LABEL = 'I agree to the Briksy Terms and Privacy Policy'
+const Rule = ({ met, label }: { met: boolean; label: string }) => (
+  <div className="flex items-center gap-2.5">
+    <div className={`w-4 h-4 rounded-full shrink-0 ${met ? 'bg-primary-brown' : 'bg-[#EDE8E4]'}`} />
+    <span className={`text-[0.75rem] ${met ? 'text-primary-brown font-medium' : 'text-primary-light-brown'}`}>{label}</span>
+  </div>
+);
 
-export const DetailsScreen = () => {
-  const { register } = useAuth()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirmation, setPasswordConfirmation] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [agreed, setAgreed] = useState(false)
-  const [touched, setTouched] = useState({
-    name: false,
-    email: false,
-    password: false,
-    passwordConfirmation: false,
-  })
+export const DetailsScreen = ({ go }: { go: (s: RegisterStep) => void }) => {
+  const { register } = useAuth();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [pw, setPw] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const nameError = touched.name && !name.trim() ? 'Name is required' : ''
-  const emailError = touched.email && !email.trim() ? 'Email is required' : ''
-  const passwordError = touched.password && password.length < 8 ? 'Use at least 8 characters' : ''
-  const confirmError =
-    touched.passwordConfirmation && passwordConfirmation !== password
-      ? 'Passwords do not match'
-      : ''
+  const hasLength = pw.length >= 10;
+  const hasSymbol = /[\d!@#$%^&*]/.test(pw);
+  const valid = firstName && email && pw && hasLength && hasSymbol && agreed;
 
-  const submit = async (): Promise<void> => {
-    setTouched({
-      name: true,
-      email: true,
-      password: true,
-      passwordConfirmation: true,
-    })
-
-    if (!name.trim() || !email.trim() || password.length < 8 || passwordConfirmation !== password || !agreed) {
-      if (!agreed) {
-        setError('You need to accept the terms before creating an account.')
-      }
-      return
-    }
-
+  const submit = async () => {
+    if (!valid) return;
     try {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError('');
       await register({
-        name,
-        email,
-        password,
-        password_confirmation: passwordConfirmation,
-      })
-    } catch (authError) {
-      setError(getAuthErrorMessage(authError))
+        name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+        email: email.trim(),
+        password: pw,
+        password_confirmation: pw,
+      });
+      go('preferences');
+    } catch (e) {
+      setError(getAuthErrorMessage(e));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <ScreenWrapper className="w-full max-w-[40.625rem] px-6 py-10 text-[#342511] sm:px-10 sm:py-12">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6">
-        <AuthHeader title="Create your seeker account" subtitle="Register to save properties, send enquiries and manage your Briksy activity." />
-
-        <div className="space-y-4">
-          <Field
-            label="Full name"
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value)
-              setError('')
-            }}
-            onBlur={() => setTouched((value) => ({ ...value, name: true }))}
-            error={nameError}
-          />
-
-          <Field
-            label="Email address"
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value)
-              setError('')
-            }}
-            onBlur={() => setTouched((value) => ({ ...value, email: true }))}
-            error={emailError}
-          />
-
-          <Field
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-              setError('')
-            }}
-            onBlur={() => setTouched((value) => ({ ...value, password: true }))}
-            error={passwordError}
-          >
-            <button
-              type="button"
-              onClick={() => setShowPassword((value) => !value)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8b6f54] transition-colors hover:text-[#342511]"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-          </Field>
-
-          <Field
-            label="Confirm password"
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Repeat your password"
-            value={passwordConfirmation}
-            onChange={(e) => {
-              setPasswordConfirmation(e.target.value)
-              setError('')
-            }}
-            onBlur={() => setTouched((value) => ({ ...value, passwordConfirmation: true }))}
-            error={confirmError}
-          />
+    <ScreenWrapper>
+      <StepIndicator step={1} />
+      <AuthHeader title="Create your account" subtitle="Free for anyone buying, renting or hiring. Takes about a minute." />
+      <div className="flex gap-4">
+        <Field label="First name" placeholder="First name" value={firstName} onChange={e => setFirstName(e.target.value)} />
+        <Field label="Last name" placeholder="Last name" value={lastName} onChange={e => setLastName(e.target.value)} />
+      </div>
+      <Field label="Email Address" type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} />
+      <Field label="Password" type={showPw ? 'text' : 'password'} placeholder="Create a password" value={pw} onChange={e => { setPw(e.target.value); setError(''); }}>
+        <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-light-brown hover:text-primary-brown transition-colors">
+          {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+        </button>
+      </Field>
+      <div className="flex flex-col gap-2">
+        <Rule met={hasLength} label="At least 10 characters" />
+        <Rule met={hasSymbol} label="One number or symbol" />
+      </div>
+      <label className="flex gap-3 items-start cursor-pointer group">
+        <div className={`mt-0.5 w-[1.375rem] h-[1.375rem] rounded-[5px] border flex items-center justify-center transition-colors shrink-0 ${agreed ? 'bg-primary-brown border-primary-brown' : 'border-[#EDE8E4] group-hover:border-primary-brown'}`}>
+          {agreed && <Check className="w-3.5 h-3.5 text-white" />}
         </div>
-
-        <label className="flex items-start gap-3 rounded-2xl border border-[#ede8e4] bg-[#fbfaf3] px-4 py-3 text-sm text-[#7c5f42]">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-[#8b6f54] text-[#342511]"
-          />
-          <span>{TERMS_LABEL}</span>
-        </label>
-
-        {error ? (
-          <div className="rounded-2xl border border-[#ecd7cf] bg-[#fff6f3] px-4 py-3 text-sm text-[#8b4d38]">
-            {error}
-          </div>
-        ) : null}
-
-        <Btn onClick={() => void submit()} disabled={loading} className="flex items-center justify-center gap-2">
-          {loading ? <LoaderCircle className="h-5 w-5 animate-spin" /> : null}
-          {loading ? 'Creating account' : 'Register'}
-        </Btn>
-
-        <div className="flex items-center justify-between text-sm text-[#7c5f42]">
-          <span>Already a member?</span>
-          <Link to="/login" className="font-medium text-[#342511] underline underline-offset-2">
-            Log in
-          </Link>
-        </div>
+        <input type="checkbox" className="hidden" checked={agreed} onChange={e => setAgreed(e.target.checked)} />
+        <span className="text-[1rem] text-primary-brown">I agree to Briksy's <a href="#" className="underline hover:opacity-75">Terms of Use</a> and <a href="#" className="underline hover:opacity-75">Privacy Policy</a></span>
+      </label>
+      {error && <div className="rounded-xl border border-[#ecd7cf] bg-[#fff6f3] px-4 py-3 text-sm text-[#8b4d38]">{error}</div>}
+      <Btn onClick={() => void submit()} disabled={!valid || loading} className="flex items-center justify-center gap-2">
+        {loading && <LoaderCircle className="w-5 h-5 animate-spin" />}
+        {loading ? 'Creating account…' : 'Continue'}
+      </Btn>
+      <div className="flex items-center gap-3"><div className="flex-1 border-t border-[#EDE8E4]" /><span className="text-sm text-primary-light-brown">Or sign up with</span><div className="flex-1 border-t border-[#EDE8E4]" /></div>
+      <div className="flex gap-3">
+        {[{ src: googleIcon, label: 'Google' }, { src: appleIcon, label: 'Apple' }].map(({ src, label }) => (
+          <button key={label} className="flex-1 h-12 border border-[#8B6F54] rounded-xl flex items-center justify-center gap-2 hover:bg-[#F8F4EE] transition-colors text-sm text-primary-brown font-medium">
+            <img src={src} alt={label} className="w-5 h-5" /> {label}
+          </button>
+        ))}
       </div>
     </ScreenWrapper>
   )

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockTraders } from "../../../data/mockTraders";
+import { getOrganizations, type PublicOrganization } from "../../../api/public.api";
+import { organizationToTrader } from "../../../api/public.mappers";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
@@ -13,16 +14,14 @@ const TABS = [
   "Conveyancers",
 ];
 
-const rotate = <T,>(arr: T[], n: number): T[] => [
-  ...arr.slice(n % arr.length),
-  ...arr.slice(0, n % arr.length),
-];
-
 const ServiceList = () => {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
-
-  const items = rotate(mockTraders, activeIdx);
+  useEffect(() => {
+    getOrganizations({ type: "trades-professionals", service_slug: TABS[activeIdx].toLowerCase() })
+      .then((response) => setItems(response.data)).catch(console.error);
+  }, [activeIdx]);
 
   return (
     <section className="py-20 font-helvetica">
@@ -31,7 +30,7 @@ const ServiceList = () => {
           <h2 className="text-[30px] font-medium  lg:text-[44px]">
             Top Professionals
           </h2>
-          <p className="text-[0.875rem] lg:text-[1rem]">Trusted agencies and builders</p>
+          <p className="text-[0.875rem] lg:text-[1rem]">Verified solo traders and specialists</p>
 
           <button
             onClick={() => navigate("/result?type=trader")}
@@ -57,30 +56,30 @@ const ServiceList = () => {
 
         <div key={activeIdx} className="animate-fade-in gap-3">
           <Swiper
-            spaceBetween={24}
+            spaceBetween={12}
             slidesPerView={1}
             breakpoints={{
               480: {
                 slidesPerView: 1.2,
               },
               640: {
-                slidesPerView: 1.5,
+                slidesPerView: 1.9,
               },
               768: {
-                slidesPerView: 2.1,
+                slidesPerView: 2.6,
               },
               1024: {
-                slidesPerView: 3.2,
+                slidesPerView: 4.2,
               },
               1440: {
-                slidesPerView: 4,
+                slidesPerView: 4.6,
               },
             }}
             className="[overscroll-behavior-x:contain] touch-pan-y"
           >
             {items.map((item) => (
               <SwiperSlide key={item.id}>
-                <TraderGridCard item={item} />
+                <TraderGridCard item={organizationToTrader(item)} />
               </SwiperSlide>
             ))}
           </Swiper>

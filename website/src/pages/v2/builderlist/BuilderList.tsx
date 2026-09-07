@@ -1,12 +1,16 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
-import { mockBuilders } from "../../../data/mockBuilders";
+import { useEffect, useState } from "react";
+import { getOrganizations, type PublicOrganization } from "../../../api/public.api";
+import { organizationToBuilder } from "../../../api/public.mappers";
 import "swiper/css";
 import BuilderGridCard from "../../../components/cards/builder/BuilderGridCard";
 
 const BuilderList = () => {
     const navigate = useNavigate();
+    const [items, setItems] = useState<PublicOrganization[]>([]);
+    useEffect(() => { getOrganizations({ type: "builders", verified_only: true }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
         <section className="py-20 font-helvetica">
             <div className="lg:w-full px-[5%] lg:px-0 lg:ml-10">
@@ -27,7 +31,7 @@ const BuilderList = () => {
 
                 <Swiper
                     modules={[Mousewheel]}
-                    spaceBetween={24}
+                    spaceBetween={12}
                     slidesPerView={1}
                     watchOverflow={false}
                     grabCursor={true}
@@ -41,23 +45,23 @@ const BuilderList = () => {
                             slidesPerView: 1.2,
                         },
                         640: {
-                            slidesPerView: 1.5,
+                            slidesPerView: 1.9,
                         },
                         768: {
-                            slidesPerView: 2.1,
+                            slidesPerView: 2.6,
                         },
                         1024: {
-                            slidesPerView: 3.2,
+                            slidesPerView: 4.2,
                         },
                         1440: {
-                            slidesPerView: 4,
+                            slidesPerView: 4.6,
                         },
                     }}
                     className="[overscroll-behavior-x:contain] touch-pan-y"
                 >
-                    {mockBuilders.map((item) => (
+                    {items.map((item) => (
                         <SwiperSlide key={item.id}>
-                            <BuilderGridCard item={item} />
+                            <BuilderGridCard item={organizationToBuilder(item)} />
                         </SwiperSlide>
                     ))}
                 </Swiper>

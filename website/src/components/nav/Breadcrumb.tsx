@@ -4,6 +4,7 @@ export type BreadcrumbItem = {
   label: string;
   href?: string;
   isBack?: boolean;
+  onClick?: () => void;
 };
 
 export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
@@ -16,7 +17,14 @@ export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
         
         return (
           <div key={index} className="flex items-center gap-2">
-            {item.isBack && !isLast ? (
+            {item.onClick && !isLast ? (
+              <button 
+                onClick={item.onClick}
+                className="hover:text-primary-brown transition-colors cursor-pointer"
+              >
+                {item.label}
+              </button>
+            ) : item.isBack && !isLast ? (
               <button 
                 onClick={() => navigate(-1)} 
                 className="hover:text-primary-brown transition-colors cursor-pointer"

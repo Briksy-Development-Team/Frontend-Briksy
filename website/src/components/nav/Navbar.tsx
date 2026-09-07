@@ -77,7 +77,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
 
           <div className="hidden flex-1 items-center justify-center gap-6 lg:flex">
             <Link
-              to="/buyer-seller"
+              to="/result?type=property"
               className="relative whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
             >
               Buyer/Seller
@@ -85,25 +85,20 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
             </Link>
 
             <Link
-              to="/agents-finder"
+              to="/result?type=trader"
               className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
             >
               Agents Finder
             </Link>
 
             <Link
-              to="/builders"
+              to="/result?type=builder"
               className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
             >
               Builders
             </Link>
 
-            <Link
-              to="/questions"
-              className="whitespace-nowrap text-sm font-normal text-white/90 transition hover:text-white"
-            >
-              Questions
-            </Link>
+         
 
             <Link
               to="/blogs"
@@ -135,24 +130,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
               <Globe size={18} color="white" />
             </button>
 
-            {!isAuthenticated || !isSeeker ? (
-              <div className="flex items-center gap-3">
-                <Link
-                  to="/login"
-                  className="whitespace-nowrap text-sm font-medium text-white transition hover:opacity-70"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  className="whitespace-nowrap rounded-full border border-white/30 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
-                >
-                  Register
-                </Link>
-              </div>
-            ) : (
-              <ProfileDropdown />
-            )}
+            <ProfileDropdown />
           </div>
         </div>
       </nav>

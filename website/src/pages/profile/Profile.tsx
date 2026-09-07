@@ -4,13 +4,11 @@ import Notification from "../../assets/icons/profile/notification.svg?react";
 import Placeholder from "../../assets/icons/profile/placeholder.svg?react";
 import Save from "../../assets/icons/profile/save.svg?react";
 import Privacy from "../../assets/icons/profile/privacy.svg?react";
-import Account from "../../assets/icons/profile/account.svg?react";
 
 import Myprofile from "../../components/profile-options/myprofile/Myprofile";
 import Mysavedata from "../../components/profile-options/mysavedata/Mysavedata";
 import Mynotification from "../../components/profile-options/mynotification/Mynotification";
 import Myprivacy from "../../components/profile-options/myprivacy/Myprivacy";
-import Myaccounts from "../../components/profile-options/myaccounts/Myaccounts";
 
 const Profile = () => {
     const [selectedProfile, setSelectedProfile] = useState("profile");
@@ -45,12 +43,7 @@ const Profile = () => {
             icon: Privacy,
             show: Myprivacy,
         },
-        {
-            id: "accounts",
-            label: "Accounts",
-            icon: Account,
-            show: Myaccounts,
-        },
+      
     ];
 
     const selectedItem = profileData.find(

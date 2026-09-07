@@ -60,8 +60,10 @@ const mapAuthResponse = (response: AuthResponse): AuthModel => ({
   }
 
   try {
-    const data = await getUserByToken()
-    const permissions = await getPermissionsByToken()
+    const [data, permissions] = await Promise.all([
+      getUserByToken(),
+      getPermissionsByToken(),
+    ])
 
     dispatch(setAuthState(storedAuth))
     dispatch(setCurrentUser(data.data.user))

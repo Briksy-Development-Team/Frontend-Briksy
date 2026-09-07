@@ -43,10 +43,12 @@ const Login = () => {
   }, [fromPath, isAuthenticated, isBootstrapping, navigate])
 
   return (
-    <div className="min-h-screen bg-[#f8f4ee] px-4 py-4 font-helvetica sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-[1080px] overflow-hidden rounded-[24px] bg-white shadow-[0_24px_60px_rgba(52,37,17,0.3)]">
-        <aside className="relative hidden w-[26.875rem] shrink-0 md:block">
-          <img src={Brandpanel} alt="" className="absolute inset-0 h-full w-full object-cover" />
+    <div className="h-screen flex items-start sm:items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
+      <div className="flex rounded-[1.5rem] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-w-[55.5rem] bg-white mx-auto origin-center
+       min-h-[38.75rem]">
+
+        <div className="relative shrink-0 hidden md:block" style={{ width: '23.875rem' }}>
+          <img src={Brandpanel} alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#1a110a]/20 via-[#1a110a]/40 to-[#1a110a]/80" />
           <div className="absolute left-6 top-6 z-10">
             <img src={BriksyLogo} alt="Briksy" className="h-7 w-auto brightness-0 invert" />
