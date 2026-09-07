@@ -1,5 +1,5 @@
 export interface Trader {
-  id: number;
+  id: string | number;
   name: string;
   tagLine: string;
   bannerImage: string;

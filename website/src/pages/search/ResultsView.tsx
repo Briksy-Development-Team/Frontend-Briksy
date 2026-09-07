@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, ChevronDown } from "lucide-react";
 import type { ResultType, SortType } from "../../types/search";
-import { mockProperties } from "../../data/mockProperties";
-import { mockBuilders } from "../../data/mockBuilders";
-import { mockTraders } from "../../data/mockTraders";
+import { getOrganizations, getProperties, type PublicOrganization, type PublicProperty } from "../../api/public.api";
+import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
@@ -66,15 +65,28 @@ export default function ResultsView({ resultType, selectedSub, sort, setSort, on
   showMap: boolean; onToggleMap: () => void;
 }) {
   const [filters, setFilters] = useState<ActiveFilters>({ distance: null, licenceVerified: false, minRating: null });
+  const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
+  const [properties, setProperties] = useState<PublicProperty[]>([]);
   const toggle = (k: keyof ActiveFilters, v: string | boolean | number | null) => setFilters(f => ({ ...f, [k]: v }));
+
+  useEffect(() => {
+    const serviceSlug = selectedSub.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+    if (resultType === "property") {
+      getProperties({ verified_only: true, search: selectedSub }).then((r) => setProperties(r.data)).catch(console.error);
+    } else {
+      getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", service_slug: resultType === "trader" ? serviceSlug : undefined, verified_only: true })
+        .then((r) => setOrganizations(r.data)).catch(console.error);
+    }
+  }, [resultType, selectedSub]);
 
   const chip = "px-[14px] py-2 bg-[#E2CBB3] rounded-full text-[0.875rem] text-[primary-brown] flex items-center gap-1.5 hover:bg-[#D9C0A5] transition-colors";
 
   const displayTraders = (() => {
-    const byCat = mockTraders.filter(t => t.category === selectedSub);
-    const base = byCat.length > 0 ? byCat : mockTraders;
+    const base = organizations.map(organizationToTrader);
     return filters.minRating ? base.filter(t => t.rating >= filters.minRating!) : base;
   })();
+  const displayBuilders = organizations.map(organizationToBuilder);
+  const displayProperties = properties.map(propertyToCard);
 
   return (
     <>
@@ -96,13 +108,13 @@ export default function ResultsView({ resultType, selectedSub, sort, setSort, on
         </div>
       </div>
 
-      <p className="text-[0.75rem] text-[#8B6F54] mb-5">{displayTraders.length * 12} verified professionals · Showing 1–{Math.min(12, displayTraders.length)}</p>
+      <p className="text-[0.75rem] text-[#8B6F54] mb-5">{resultType === "property" ? displayProperties.length : organizations.length} verified results</p>
 
       {showMap ? <MapSplitView resultType={resultType} selectedSub={selectedSub} /> : (
         <>
           {resultType === "trader" && <div className={GRID}>{displayTraders.map(item => <TraderGridCard key={item.id} item={item} />)}</div>}
-          {resultType === "builder" && <div className={GRID}>{mockBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}
-          {resultType === "property" && <div className={GRID}>{mockProperties.map(item => <PropertyGridCard key={item.id} item={item} />)}</div>}
+          {resultType === "builder" && <div className={GRID}>{displayBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}
+          {resultType === "property" && <div className={GRID}>{displayProperties.map(item => <PropertyGridCard key={item.id} item={item} />)}</div>}
         </>
       )}
     </>

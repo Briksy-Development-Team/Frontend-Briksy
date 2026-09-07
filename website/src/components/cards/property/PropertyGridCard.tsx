@@ -40,11 +40,11 @@ const PropertyGridCard = ({ item }: Props) => {
         </h3>
 
         <p className="mt-2 text-[1rem] ">
-          ${item.price.toLocaleString()}
+          {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
         </p>
 
         <p className="mt-1 truncate text-[0.875rem] text-primary-brown">
-          {item.beds} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{item.baths} Bath&nbsp;&nbsp;•&nbsp;&nbsp;{item.sqm} sqm
+          {item.beds || "—"} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{item.baths || "—"} Bath&nbsp;&nbsp;•&nbsp;&nbsp;{item.sqm || "—"} sqm
         </p>
 
         <div className="mt-auto">

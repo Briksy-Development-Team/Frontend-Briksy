@@ -1,11 +1,15 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useNavigate } from "react-router-dom";
-import { mockProperties } from "../../../data/mockProperties";
+import { useEffect, useState } from "react";
+import { getProperties, type PublicProperty } from "../../../api/public.api";
+import { propertyToCard } from "../../../api/public.mappers";
 import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
 import "swiper/css";
 
 const TrendingProperty = () => {
     const navigate = useNavigate();
+    const [items, setItems] = useState<PublicProperty[]>([]);
+    useEffect(() => { getProperties({ verified_only: true, sort: "rating" }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
         <section className="py-20 font-helvetica">
             <div className="lg:w-full px-[5%] lg:px-0  lg:ml-10">
@@ -46,9 +50,9 @@ const TrendingProperty = () => {
                     className="[overscroll-behavior-x:contain] touch-pan-y"
 
                 >
-                    {mockProperties.map((item) => (
+                    {items.map((item) => (
                         <SwiperSlide key={item.id}>
-                            <PropertyGridCard item={item} />
+                            <PropertyGridCard item={propertyToCard(item)} />
                         </SwiperSlide>
                     ))}
                 </Swiper>

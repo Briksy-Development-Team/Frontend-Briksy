@@ -45,19 +45,6 @@ const extractRoles = (user: AuthUser | null): AuthRole[] => {
   );
 };
 
-const isSeekerOnlyAccount = (user: AuthUser | null): boolean => {
-  const roles = extractRoles(user);
-
-  if (roles.length === 0) {
-    return false;
-  }
-
-  return (
-    roles.some((role) => SEEKER_ROLES.includes(role)) &&
-    !roles.some((role) => ADMIN_ROLES.includes(role))
-  );
-};
-
 const createInitialState = (): SeekerAuthState => {
   const storedAuth = getStoredAuth();
 
