@@ -1,5 +1,5 @@
-import api from '../api/clients.api'
-import type {ApiEnvelope, AuthResponse, AuthUser, LoginPayload, RegisterPayload} from './auth.types'
+import api from '../clients.api'
+import type {ApiEnvelope, AuthResponse, AuthUser, LoginPayload, RegisterPayload} from '../../auth/auth.types'
 
 export const registerSeeker = async (
   payload: RegisterPayload

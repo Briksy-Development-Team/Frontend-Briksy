@@ -20,7 +20,10 @@ const AppContent = () => {
   const [showLoader, setShowLoader] = useState(pathname === "/");
 
   useEffect(() => {
-    if (pathname !== "/") { setShowLoader(false); return; }
+    if (pathname !== "/") {
+      setShowLoader(false);
+      return;
+    }
     setShowLoader(true);
     setAppReady(false);
     const t = setTimeout(() => setAppReady(true), 3000);
@@ -46,17 +49,29 @@ const AppContent = () => {
 
 function App() {
   useEffect(() => {
-    const lenis = new Lenis({ duration: 1.1, smoothWheel: true, autoRaf: false });
+    const lenis = new Lenis({
+      duration: 1.1,
+      smoothWheel: true,
+      autoRaf: false,
+    });
     lenisInstance.current = lenis;
     lenis.on("scroll", ScrollTrigger.update);
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
     ScrollTrigger.refresh();
-    return () => { gsap.ticker.remove(raf); lenis.destroy(); lenisInstance.current = null; };
+    return () => {
+      gsap.ticker.remove(raf);
+      lenis.destroy();
+      lenisInstance.current = null;
+    };
   }, []);
 
-  return <BrowserRouter><AppContent /></BrowserRouter>;
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
 
 export default App;

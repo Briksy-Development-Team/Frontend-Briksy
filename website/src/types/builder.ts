@@ -1,5 +1,5 @@
 export interface Builder {
-  id: number;
+  id: string | number;
   name: string;
   location: string;
   avatar: string;

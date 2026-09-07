@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Logos from "../../assets/loader/Logos.svg";
+import Logos from "../../assets/logo/loaderbg.svg";
 import DominoLoader from "./DominoLoader";
 
 type Props = {
@@ -34,10 +34,10 @@ const Loader = ({ appReady, onComplete }: Props) => {
   }, [appReady, canExit, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center space-y-3 justify-center bg-[#F0EAE6]">
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center space-y-3 justify-center bg-[#C2B4AA]">
       <img loading="eager" src={Logos} alt="Briksy" className="w-[180px] md:w-[300px]" />
 
-      <DominoLoader barColor="#BF9F7D" />
+      <DominoLoader barColor="#342511" />
     </div>
   );
 };

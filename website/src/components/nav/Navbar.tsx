@@ -13,6 +13,7 @@ import LanguageModal from "./LanguageModal.tsx";
 import ProfileDropdown from "./ProfileDropdown.tsx";
 
 import Briskybrown from "../../assets/logo/briskybrown.svg";
+import { useAuth } from "../../auth/AuthContext";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
@@ -42,6 +43,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
     label: "English",
     region: "UK",
   });
+  const { isAuthenticated, isSeeker } = useAuth();
 
   const [pastHero, setPastHero] = useState(!hasHero);
 

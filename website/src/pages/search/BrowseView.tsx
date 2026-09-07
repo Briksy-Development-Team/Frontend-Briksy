@@ -1,7 +1,8 @@
 import type { ResultType } from "../../types/search";
-import { mockProperties } from "../../data/mockProperties";
-import { mockBuilders } from "../../data/mockBuilders";
-import { mockTraders } from "../../data/mockTraders";
+import { useEffect, useState } from "react";
+import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
+import { getProperties, type PublicProperty } from "../../api/property/property.api";
+import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
@@ -23,19 +24,28 @@ function SectionHead({ title, count }: { title: string; count: number }) {
 }
 
 export default function BrowseView({ resultType }: { resultType: ResultType }) {
+  const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
+  const [properties, setProperties] = useState<PublicProperty[]>([]);
+  useEffect(() => {
+    if (resultType === "property") getProperties({ verified_only: true }).then((r) => setProperties(r.data)).catch(console.error);
+    else getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: true }).then((r) => setOrganizations(r.data)).catch(console.error);
+  }, [resultType]);
+  const builders = organizations.map(organizationToBuilder);
+  const traders = organizations.map(organizationToTrader);
+  const propertyCards = properties.map(propertyToCard);
   return (
     <>
       {resultType === "trader" && (
         <>
           <SectionHead title="Popular Professionals" count={20} />
           <div className={GRID}>
-            {mockTraders.slice(0, 4).map((item) => (
+            {traders.slice(0, 4).map((item) => (
               <TraderGridCard key={item.id} item={item} />
             ))}
           </div>
           <SectionHead title="Newly Traders" count={20} />
           <div className={GRID}>
-            {mockTraders.slice(4, 8).map((item) => (
+            {traders.slice(4, 8).map((item) => (
               <TraderGridCard key={item.id} item={item} />
             ))}
           </div>
@@ -45,13 +55,13 @@ export default function BrowseView({ resultType }: { resultType: ResultType }) {
         <>
           <SectionHead title="Popular Builders" count={20} />
           <div className={GRID}>
-            {mockBuilders.slice(0, 4).map((item) => (
+            {builders.slice(0, 4).map((item) => (
               <BuilderGridCard key={item.id} item={item} />
             ))}
           </div>
           <SectionHead title="Newly Listed Builders" count={20} />
           <div className={GRID}>
-            {mockBuilders.slice(4).map((item) => (
+            {builders.slice(4).map((item) => (
               <BuilderGridCard key={item.id} item={item} />
             ))}
           </div>
@@ -61,13 +71,13 @@ export default function BrowseView({ resultType }: { resultType: ResultType }) {
         <>
           <SectionHead title="Popular Properties" count={20} />
           <div className={GRID}>
-            {mockProperties.slice(0, 4).map((item) => (
+            {propertyCards.slice(0, 4).map((item) => (
               <PropertyGridCard key={item.id} item={item} />
             ))}
           </div>
           <SectionHead title="Newly Listed Properties" count={20} />
           <div className={GRID}>
-            {mockProperties.slice(4).map((item) => (
+            {propertyCards.slice(4).map((item) => (
               <PropertyGridCard key={item.id} item={item} />
             ))}
           </div>

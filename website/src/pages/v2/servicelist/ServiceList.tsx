@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { mockTraders } from "../../../data/mockTraders";
+import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
+import { organizationToTrader } from "../../../api/public.mappers";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
@@ -13,16 +14,14 @@ const TABS = [
   "Conveyancers",
 ];
 
-const rotate = <T,>(arr: T[], n: number): T[] => [
-  ...arr.slice(n % arr.length),
-  ...arr.slice(0, n % arr.length),
-];
-
 const ServiceList = () => {
   const [activeIdx, setActiveIdx] = useState(0);
+  const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
-
-  const items = rotate(mockTraders, activeIdx);
+  useEffect(() => {
+    getOrganizations({ type: "trades-professionals", service_slug: TABS[activeIdx].toLowerCase() })
+      .then((response) => setItems(response.data)).catch(console.error);
+  }, [activeIdx]);
 
   return (
     <section className="py-20 font-helvetica">
@@ -80,7 +79,7 @@ const ServiceList = () => {
           >
             {items.map((item) => (
               <SwiperSlide key={item.id}>
-                <TraderGridCard item={item} />
+                <TraderGridCard item={organizationToTrader(item)} />
               </SwiperSlide>
             ))}
           </Swiper>

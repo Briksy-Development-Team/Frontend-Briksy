@@ -15,13 +15,7 @@
   --color-white-50: #fbfaf3;
   --color-white-100: #eeece0;
 }
-html,
-body {
-  margin: 0;
-  padding: 0;
-  overscroll-behavior: none;
-  background-color: #F0EAE5;
-}
+
 @font-face {
   font-family: "HelveticaNow";
   src: url("./assets/font/HelveticaNeueLight.otf") format("opentype");

@@ -47,7 +47,7 @@ const ProfileDropdown = () => {
                             Help Or Contact Us
                         </span>
                     </button>
-                    
+
                     <div className="border-t border-gray-200 mx-6 my-2" />
 
                     {!isAuthenticated ? (
@@ -76,18 +76,18 @@ const ProfileDropdown = () => {
                                     Notifications
                                 </span>
                             </button>
-                            
+
                             <div className="border-t border-gray-200 mx-6 my-2" />
-                            
+
                             <button
                                 onClick={() => closeAndNav('/profile')}
                                 className="w-full text-left px-6 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
                             >
                                 View Profile
                             </button>
-                            
+
                             <div className="border-t border-gray-200 mx-6 my-2" />
-                            
+
                             <div className="px-6 py-3 hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => closeAndNav('/coming-soon')}>
                                 <div className="text-sm font-semibold text-gray-900">
                                     Become a Agent/Agency
@@ -96,9 +96,9 @@ const ProfileDropdown = () => {
                                     Open Agent/ Agency Panel
                                 </div>
                             </div>
-                            
+
                             <div className="border-t border-gray-200 mx-6 my-2" />
-                            
+
                             <button
                                 onClick={async () => {
                                     setDropdownOpen(false);

@@ -1,8 +1,8 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import Profile from "../pages/profile/Profile";
-import Home from "../pages/home/Home";
-import MainLayout from "./MainLayout";
-import Register from "../pages/auth/register/Register";
+import { Navigate, Route, Routes } from 'react-router-dom'
+import Home from '../pages/home/Home'
+import MainLayout from './MainLayout'
+import Register from '../pages/auth/register/Register'
+
 
 import Terms from "../pages/home/terms/Terms";
 import Pricing from "../pages/home/subscription/Pricing";
@@ -15,16 +15,25 @@ import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
 import Login from "../pages/auth/login/Login.tsx";
+import ProtectedRoute from './ProtectedRoute.tsx'
+import Profile from '../pages/profile/Profile.tsx'
 
 const AppRouter = () => {
   return (
     <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/reset-password" element={<Navigate to="/login" replace />} />
+
       <Route element={<MainLayout />}>
         <Route path="/terms" element={<Terms />} />
         <Route path="/subs" element={<Pricing />} />
 
-        
-        <Route path="/profile" element={<Profile />} />
+        <Route element={<ProtectedRoute />}>
+            <Route path="profile" element={<Profile />} />
+      
+        </Route>
+
         <Route path="/notification" element={<Notification />} />
         <Route path="/help-support" element={<Help />} />
 
@@ -41,7 +50,7 @@ const AppRouter = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/reset-password" element={<Navigate to="/login" replace />} />
     </Routes>
-  );
-};
+  )
+}
 
-export default AppRouter;
+export default AppRouter

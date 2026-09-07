@@ -86,5 +86,5 @@ export const DetailsScreen = ({ go }: { go: (s: RegisterStep) => void }) => {
         ))}
       </div>
     </ScreenWrapper>
-  );
-};
+  )
+}

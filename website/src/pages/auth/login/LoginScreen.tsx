@@ -137,7 +137,6 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
         {isLoading ? 'Logging in...' : 'Login'}
       </Btn>
 
-      <Divider />
 
       <div className="flex gap-[0.75rem]">
         <button

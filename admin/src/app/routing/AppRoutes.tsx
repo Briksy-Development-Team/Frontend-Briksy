@@ -38,11 +38,14 @@ const AppRoutes: FC = () => {
           <Route path='logout' element={<Logout />} />
           {currentUser ? (
             <>
+              <Route path='admin/login' element={<Navigate to={homeRoute} replace />} />
+              <Route path='auth/login' element={<Navigate to={homeRoute} replace />} />
               <Route path='/*' element={<PrivateRoutes />} />
               <Route index element={<Navigate to={homeRoute} />} />
             </>
           ) : (
             <>
+              <Route path='admin' element={<Navigate to='/admin/login' replace />} />
               <Route path='admin/*' element={<AuthPage />} />
               <Route path='auth/*' element={<AuthPage />} />
               <Route path='*' element={<Navigate to='/admin/login' />} />

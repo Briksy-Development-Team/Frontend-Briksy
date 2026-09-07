@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useLayoutEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import Brandpanel from '../../../assets/login/loginleft.png';
@@ -51,9 +51,32 @@ const Register = () => {
     }
   }, [step]);
 
-  useEffect(() => {
-    gsap.fromTo([titleRef.current, footerRef.current], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', stagger: 0.06 });
-  }, [title]);
+  // useEffect(() => {
+  //   if (isBootstrapping || !isAuthenticated || redirectingRef.current) {
+  //     return
+  //   }
+  //
+  //   redirectingRef.current = true
+  //   const pending = readPendingFavoriteAction()
+  //
+  //   const finish = async (): Promise<void> => {
+  //     try {
+  //       if (pending?.type === 'favorite' && pending.propertyId) {
+  //         await toggleSeekerPropertyFavorite(pending.propertyId)
+  //         clearPendingFavoriteAction()
+  //         navigate(pending.fromPath ?? fromPath, { replace: true })
+  //         return
+  //       }
+  //
+  //       navigate(fromPath, { replace: true })
+  //     } catch (error) {
+  //       console.error('Failed to complete pending seeker action.', error)
+  //       navigate(fromPath, { replace: true })
+  //     }
+  //   }
+  //
+  //   void finish()
+  // }, [/* fromPath, isAuthenticated, isBootstrapping, navigate */])
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
@@ -62,24 +85,31 @@ const Register = () => {
         <div className="relative shrink-0 hidden md:block" style={{ width: '26.875rem' }}>
           <img src={Brandpanel} alt="" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#1a110a]/20 via-[#1a110a]/40 to-[#1a110a]/80" />
-          <div className="absolute top-[1.5rem] left-[1.5rem] z-10">
-            <img src={BriksyLogo} alt="BRKSY" className="h-[1.75rem] w-auto brightness-0 invert" />
+          <div className="absolute left-6 top-6 z-10">
+            <img src={BriksyLogo} alt="Briksy" className="h-7 w-auto brightness-0 invert" />
           </div>
-          <div className="absolute top-[4.5rem] left-[1.5rem] right-[1.5rem] z-10">
-            <h2 ref={titleRef} className="text-[#EEECE0] text-[1.875rem] font-medium leading-[1.2] tracking-[-0.03em]">{title}</h2>
+          <div className="absolute left-6 right-6 top-20 z-10">
+            <h2 className="text-[1.875rem] font-medium leading-[1.2] tracking-[-0.03em] text-[#eeece0]">
+              Join Briksy
+            </h2>
+            <p className="mt-3 max-w-sm text-sm leading-6 text-[#eeece0]/80">
+              Create a seeker account to save properties, track inquiries and manage your activity.
+            </p>
           </div>
-          <div ref={footerRef} className="absolute bottom-[1.5rem] left-[1.5rem] right-[1.5rem] z-10 text-[#EEECE0]/80 text-[0.875rem]">
-            {prompt} <button onClick={() => navigate(linkTo)} className={LINK_CLASS}>{linkLabel}</button>
+          <div className="absolute bottom-6 left-6 right-6 z-10 text-sm text-[#eeece0]/85">
+            Already a member?{' '}
+            <Link to="/login" className="underline underline-offset-2 transition hover:text-white">
+              Log in
+            </Link>
           </div>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
           <Screen go={go} />
         </div>
-
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

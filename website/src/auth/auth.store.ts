@@ -8,7 +8,7 @@ import {
   loginSeeker,
   logoutSeeker,
   registerSeeker,
-} from "./auth.api";
+} from "../api/auth/auth.api";
 import { clearStoredAuth, getStoredAuth, setStoredAuth } from "./auth.storage";
 import type {
   AuthResponse,
@@ -42,19 +42,6 @@ const extractRoles = (user: AuthUser | null): AuthRole[] => {
 
   return roles.filter((role): role is AuthRole =>
     [...ADMIN_ROLES, ...SEEKER_ROLES].includes(role as AuthRole),
-  );
-};
-
-const isSeekerOnlyAccount = (user: AuthUser | null): boolean => {
-  const roles = extractRoles(user);
-
-  if (roles.length === 0) {
-    return false;
-  }
-
-  return (
-    roles.some((role) => SEEKER_ROLES.includes(role)) &&
-    !roles.some((role) => ADMIN_ROLES.includes(role))
   );
 };
 
