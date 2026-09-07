@@ -2,14 +2,13 @@ import { Menu, HelpCircle, LogOut, MessageSquare } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Place from "../../assets/place holder/place.svg";
+import { useAuth } from "../../auth/AuthContext";
 
 const ProfileDropdown = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
-
-    // ponytail: mock auth state | upgrade: connect to auth store
-    const isLoggedIn = false; 
+    const { isAuthenticated, logout } = useAuth();
 
     useEffect(() => {
         const close = (e: MouseEvent) => {
@@ -51,7 +50,7 @@ const ProfileDropdown = () => {
                     
                     <div className="border-t border-gray-200 mx-6 my-2" />
 
-                    {!isLoggedIn ? (
+                    {!isAuthenticated ? (
                         <div className="px-6 py-2 flex flex-col gap-3">
                             <button
                                 onClick={() => closeAndNav('/login')}
@@ -101,9 +100,10 @@ const ProfileDropdown = () => {
                             <div className="border-t border-gray-200 mx-6 my-2" />
                             
                             <button
-                                onClick={() => {
-                                    // handle logout logic here
-                                    closeAndNav('/login');
+                                onClick={async () => {
+                                    setDropdownOpen(false);
+                                    await logout();
+                                    navigate('/login');
                                 }}
                                 className="w-full flex items-center gap-3 px-6 py-3 text-red-500 hover:bg-red-50 transition-colors"
                             >

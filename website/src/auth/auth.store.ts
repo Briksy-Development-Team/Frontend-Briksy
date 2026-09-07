@@ -133,6 +133,7 @@ export const bootstrapSeekerAuth = async (
 
   try {
     const response = await getSeekerProfile();
+    console.log('[Auth] Profile response:', response);
 
     const nextAuth: StoredAuth = {
       ...storedAuth,
@@ -156,6 +157,7 @@ export const loginSeekerSession = async (
     email: payload.email.trim(),
     password: payload.password,
   });
+  console.log('[Auth] Login response:', response);
 
   const nextAuth = buildStoredAuth(response.data);
 

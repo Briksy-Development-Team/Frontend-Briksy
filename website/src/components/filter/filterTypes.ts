@@ -79,6 +79,9 @@ export const DEFAULT_BUY_FILTERS: BuyFilters = {
   keyword: "",
 };
 
+export type RentFilters = BuyFilters; // same shape, different intent
+export const DEFAULT_RENT_FILTERS: RentFilters = { ...DEFAULT_BUY_FILTERS };
+
 export type SoldFilters = {
   propertyTypes: string[];
   soldPriceMin: number;
@@ -181,5 +184,5 @@ export const DEFAULT_TRADE_FILTERS: TradeFiltersType = {
   responseTime: [],
 };
 
-export type FilterTab = "Buy" | "Sold" | "Builders" | "Agents" | "Traders";
+export type FilterTab = "Buy" | "Rent" | "Sold" | "Builders" | "Agents" | "Traders";
 export type BuilderMode = "profiles" | "listings";

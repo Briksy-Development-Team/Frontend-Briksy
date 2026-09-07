@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getStoredAuth } from "../auth/auth.storage";
 
-const API_URL = import.meta.env.VITE_APP_API_URL ;
+const API_URL = import.meta.env.VITE_APP_API_URL || "http://127.0.0.1:8000/api" ;
 
 const api = axios.create({
   baseURL: API_URL,
@@ -9,7 +9,7 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-console.log("API URL:", import.meta.env.VITE_APP_API_URL);
+// console.log("API URL:", import.meta.env.VITE_APP_API_URL);
 api.interceptors.request.use((config) => {
   const auth = getStoredAuth();
 

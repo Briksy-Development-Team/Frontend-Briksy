@@ -7,4 +7,4 @@ export type SortType =
   | "price-low"
   | "price-high";
 
-export type ResultType = "property" | "builder" | "trader";
+export type ResultType = "property" | "builder" | "trader" | "comercial";
