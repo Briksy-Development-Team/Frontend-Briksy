@@ -18,23 +18,14 @@ const SCREENS: Record<RegisterStep, React.ComponentType<{ go: (s: RegisterStep) 
   welcome: WelcomeScreen,
 };
 
-const LINK_CLASS = 'text-white underline underline-offset-2 hover:text-white/90 transition-opacity';
 
-const LEFT_CONFIG = {
-  default: { title: 'Join Briksy', prompt: 'Already a member?', linkLabel: 'Log in', linkTo: '/login' },
-  welcome: { title: "You're in", prompt: 'Run a business?', linkLabel: 'List it on Briksy', linkTo: '/business' },
-};
 
 const Register = () => {
   const [step, setStep] = useState<RegisterStep>('details');
-  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const flipState = useRef<ReturnType<typeof Flip.getState> | null>(null);
   const mounted = useRef(false);
 
-  const { title, prompt, linkLabel, linkTo } = LEFT_CONFIG[step === 'welcome' ? 'welcome' : 'default'];
   const Screen = SCREENS[step];
 
   const go = (s: RegisterStep) => {
@@ -51,35 +42,10 @@ const Register = () => {
     }
   }, [step]);
 
-  // useEffect(() => {
-  //   if (isBootstrapping || !isAuthenticated || redirectingRef.current) {
-  //     return
-  //   }
-  //
-  //   redirectingRef.current = true
-  //   const pending = readPendingFavoriteAction()
-  //
-  //   const finish = async (): Promise<void> => {
-  //     try {
-  //       if (pending?.type === 'favorite' && pending.propertyId) {
-  //         await toggleSeekerPropertyFavorite(pending.propertyId)
-  //         clearPendingFavoriteAction()
-  //         navigate(pending.fromPath ?? fromPath, { replace: true })
-  //         return
-  //       }
-  //
-  //       navigate(fromPath, { replace: true })
-  //     } catch (error) {
-  //       console.error('Failed to complete pending seeker action.', error)
-  //       navigate(fromPath, { replace: true })
-  //     }
-  //   }
-  //
-  //   void finish()
-  // }, [/* fromPath, isAuthenticated, isBootstrapping, navigate */])
+  
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
+    <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-white">
       <div ref={containerRef} className="flex rounded-[24px] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-h-[51rem] max-w-[67.5rem] bg-white mx-auto origin-center">
 
         <div className="relative shrink-0 hidden md:block" style={{ width: '26.875rem' }}>

@@ -1,4 +1,4 @@
-import AppP from "../../assets/preview/appPP.png"
+import AppP from "../../assets/preview/imageD.svg"
 const AppPreview = () => {
     return (
         <div className="w-full flex justify-center items-center py-20  ">

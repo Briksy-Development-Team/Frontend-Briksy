@@ -34,14 +34,14 @@ const ServiceList = () => {
 
           <button
             onClick={() => navigate("/result?type=trader")}
-            className="absolute right-0 flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
+            className="absolute right-0 hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
           >
             View All
             <span>↗</span>
           </button>
         </div>
 
-        <div className="flex flex-wrap justify-center  gap-4 pb-6 text-[1rem] sm:justify-start">
+        <div className="flex flex-wrap justify-center  hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start">
           {TABS.map((tab, i) => (
             <button
               key={tab}

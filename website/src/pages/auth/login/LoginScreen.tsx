@@ -1,28 +1,22 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import apple from '../../../assets/login/apple.svg';
-import google from '../../../assets/login/google.svg';
-import {
-  type Screen,
-  ScreenWrapper,
-  Field,
-  Btn,
-  Divider,
-  AuthHeader,
-} from '../shared';
-import { Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../../../auth/AuthContext';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import apple from "../../../assets/login/apple.svg";
+import google from "../../../assets/login/google.svg";
+import { type Screen, ScreenWrapper, Field, Btn, AuthHeader } from "../shared";
+import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../../../auth/AuthContext";
+import LogoM from "../../../assets/logo/logomobile.svg";
 
 export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [errors, setErrors] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -30,8 +24,8 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
 
   const submit = async () => {
     const validationErrors = {
-      email: !email.trim() ? 'Email is required' : '',
-      password: !password ? 'Password is required' : '',
+      email: !email.trim() ? "Email is required" : "",
+      password: !password ? "Password is required" : "",
     };
 
     if (validationErrors.email || validationErrors.password) {
@@ -43,8 +37,8 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
       setIsLoading(true);
 
       setErrors({
-        email: '',
-        password: '',
+        email: "",
+        password: "",
       });
 
       await login({
@@ -52,21 +46,22 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
         password,
       });
 
-      // Only navigate after successful login
-      navigate('/profile', { replace: true });
+      navigate("/profile", { replace: true });
     } catch (error) {
-      setErrors({ email: '', password: 'Invalid email or password' });
+      setErrors({ email: "", password: "Invalid email or password" });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[primary-brown]">
-      <AuthHeader
-        title="Log in"
-        subtitle="Welcome back — good to see you."
+    <ScreenWrapper className="w-full lg:px-[3rem] py-[2.75rem] h-screen lg:h-auto flex flex-col   lg:gap-[1.5rem] mx-auto text-[primary-brown]">
+      <img
+        src={LogoM}
+        alt=""
+        className="block lg:hidden h-[4.1925rem] mx-auto w-[3.0556rem]"
       />
+      <AuthHeader title="Log in" subtitle="Welcome back — good to see you." />
 
       <div className="flex flex-col gap-[0.75rem]">
         <Field
@@ -79,7 +74,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
 
             setErrors((previous) => ({
               ...previous,
-              email: '',
+              email: "",
             }));
           }}
           error={errors.email}
@@ -87,7 +82,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
 
         <Field
           label="Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           placeholder="••••••••"
           value={password}
           onChange={(e) => {
@@ -95,7 +90,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
 
             setErrors((previous) => ({
               ...previous,
-              password: '',
+              password: "",
             }));
           }}
           error={errors.password}
@@ -114,53 +109,58 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
         </Field>
       </div>
 
-      <div className="flex items-center justify-between mt-[-0.25rem]">
-        <label className="flex items-center gap-[0.5rem] text-[0.75rem] text-[#2e2318] cursor-pointer select-none">
+      <div className="flex flex-col-reverse lg:flex-row lg:items-center justify-between mt-[-0.25rem]">
+        <label className="flex items-center gap-[0.5rem]  w-full text-[0.875rem] text-primary-brown cursor-pointer select-none">
           <input
             type="checkbox"
-            className="accent-primary-brown rounded w-[1rem] h-[1rem]"
+            className="accent-primary-brown rounded  w-[1rem] h-[1rem]"
           />
-
           Keep me signed in
         </label>
 
         <button
           type="button"
-          onClick={() => go('forgot')}
-          className="text-[0.75rem] text-[primary-light-brown] hover:text-[#3D2C1E] underline transition-colors"
+          onClick={() => go("forgot")}
+          className="text-[0.75rem] text-[primary-light-brown] text-nowrap  text-end hover:text-[#3D2C1E] underline transition-colors"
         >
           Forgot password?
         </button>
       </div>
 
-      <Btn onClick={submit}>
-        {isLoading ? 'Logging in...' : 'Login'}
-      </Btn>
+      <Btn onClick={submit}>{isLoading ? "Logging in..." : "Login"}</Btn>
 
+      <p className="text-primary-light-brown text-sm   text-center">
+        Or continue with
+      </p>
 
-      <div className="flex gap-[0.75rem]">
+      <div className="flex mt-2 gap-[0.75rem]">
         <button
           type="button"
-          className="flex-1 flex items-center justify-center border border-white-100 rounded-xl py-[0.625rem] hover:bg-white-50 transition-colors"
+          className="flex-1 flex items-center justify-center border border-slate-300 rounded-[56.25rem] py-[0.625rem]  "
         >
-          <img
-            src={apple}
-            className="h-[1.25rem] w-[1.25rem]"
-            alt="Apple"
-          />
+          <img src={apple} className="h-[1.25rem] w-[1.25rem]" alt="Apple" />
         </button>
 
         <button
           type="button"
-          className="flex-1 flex items-center justify-center border border-white-100 rounded-xl py-[0.625rem] hover:bg-white-50 transition-colors"
+          className="flex-1 flex items-center justify-center border border-slate-300 rounded-[56.25rem] py-[0.625rem]  "
         >
-          <img
-            src={google}
-            className="h-[1.25rem] w-[1.25rem]"
-            alt="Google"
-          />
+          <img src={google} className="h-[1.25rem] w-[1.25rem]" alt="Google" />
         </button>
       </div>
+
+      <div className="flex text-sm text-primary-light-brown lg:hidden justify-center gap-x-2 mt-20 w-full">
+        {" "}
+        <p>Not a member yet?</p>
+        <Link
+          to="/register"
+          className="underline underline-offset-2 transition hover:text-white"
+        >
+          Create an account
+        </Link>      </div>
+
+
+
     </ScreenWrapper>
   );
 };

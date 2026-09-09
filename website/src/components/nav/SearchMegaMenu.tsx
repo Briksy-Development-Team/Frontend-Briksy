@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import type { ResultType } from "../../types/search";
 
 import Category from "../../assets/hero/category.svg"
-const MOCK_CATEGORIES: Record<ResultType, { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[]> = {
+const MOCK_CATEGORIES: Partial<Record<ResultType, { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[]>> = {
   builder: [
     {
       id: "building-and-construction",

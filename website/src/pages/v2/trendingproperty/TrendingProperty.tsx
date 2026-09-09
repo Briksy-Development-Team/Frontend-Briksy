@@ -21,7 +21,7 @@ const TrendingProperty = () => {
 
                     <button
                         onClick={() => navigate("/result?type=property")}
-                        className="absolute right-0 flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
+                        className="absolute right-0 hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
                     >
                         View All
                         <span>↗</span>

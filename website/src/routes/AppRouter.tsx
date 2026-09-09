@@ -17,6 +17,8 @@ import ServiceDetail from "../pages/detail/service/ServiceDetail";
 import Login from "../pages/auth/login/Login.tsx";
 import ProtectedRoute from './ProtectedRoute.tsx'
 import Profile from '../pages/profile/Profile.tsx'
+import BlogsPage from "../pages/blogs/BlogsPage";
+import BlogDetail from "../pages/blogs/BlogDetail";
 
 const AppRouter = () => {
   return (
@@ -43,6 +45,9 @@ const AppRouter = () => {
         <Route path="/property/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
+
+        <Route path="/blogs" element={<BlogsPage />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
       </Route>
       <Route path="/error" element={<Error />} />
       <Route path="/coming-soon" element={<Coming />} />

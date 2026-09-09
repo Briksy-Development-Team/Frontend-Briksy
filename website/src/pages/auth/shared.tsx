@@ -12,24 +12,24 @@ export const ScreenWrapper = ({ children, className = '' }: { children: ReactNod
   }, []);
   return (
     <div className={`flex flex-col flex-1 overflow-hidden max-w-[40rem] w-full  mx-auto text-primary-brown ${className}`}>
-      <div className="sticky top-0 bg-white z-10 px-8 pt-5 pb-3 border-b border-[#EDE8E4]">{sticky}</div>
+      <div className="sticky top-0 lg: z-10 px-8 pt-5 pb-3 lg:border-b lg:border-[#EDE8E4]">{sticky}</div>
       <div ref={ref} className="flex-1 overflow-y-auto px-8 py-5 flex flex-col gap-3">{rest}</div>
     </div>
   );
 };
 
 export const AuthHeader = ({ title, subtitle }: { title: string; subtitle: string }) => (
-  <div className="flex flex-col gap-4 ">
-    <h2 className="text-[1.5rem] font-medium text-primary-brown leading-[1.2] tracking-[-0.03em]">{title}</h2>
-    <p className="text-[0.75rem] text-primary-light-brown">{subtitle}</p>
+  <div className="flex flex-col items-center gap-4 ">
+    <h2 className="lg:text-[1.5rem] text-[1.875rem] font-medium  text-center text-primary-brown leading-[1.2] tracking-[-0.03em]">{title}</h2>
+    <p className=" text-[0.875reml text-center lg:text-start g:text-[0.75rem]  text-primary-light-brown">{subtitle}</p>
   </div>
 );
 
 export const Field = ({ label, error, children, ...props }: { label: string; error?: string; children?: ReactNode } & InputHTMLAttributes<HTMLInputElement>) => (
-  <div className="flex flex-col gap-1 w-full">
+  <div className="flex flex-col gap-2 mb-3 lg:mb-0 w-full">
     <label className="text-sm font-medium text-primary-brown">{label}</label>
     <div className="relative">
-      <input {...props} className={`w-full border rounded-xl px-3 py-2 text-sm text-primary-brown placeholder:text-primary-light-brown outline-none transition-colors bg-white ${error ? 'border-red-400' : 'border-[#EDE8E4] focus:border-primary-brown'} ${props.className ?? ''}`} />
+      <input {...props} className={`w-full border rounded-[0.375rem] px-3 py-3 text-sm text-primary-brown placeholder:text-primary-light-brown outline-none transition-colors ${error ? 'border-red-400' : 'border-[#CBD5E1] focus:border-primary-brown'} ${props.className ?? ''}`} />
       {children}
     </div>
     {error && <p className="text-[0.688rem] text-red-500">{error}</p>}
@@ -37,7 +37,7 @@ export const Field = ({ label, error, children, ...props }: { label: string; err
 );
 
 export const Btn = ({ children, className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button {...props} className={`w-full bg-primary-brown text-[#EEECE0] font-medium rounded-[0.875rem] h-12 transition-colors   ${className}`}>{children}</button>
+  <button {...props} className={`w-full bg-primary-brown text-[#EEECE0] font-medium rounded-[56.25rem] lg:rounded-[0.875rem] h-12 transition-colors   ${className}`}>{children}</button>
 );
 
 export const StepIndicator = ({ step, go }: { step: number; go?: (s: RegisterStep) => void }) => (

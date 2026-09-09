@@ -2,10 +2,9 @@ import { useOutletContext } from "react-router-dom";
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import HeroSearchBar from "../search/HeroSearchBar";
-// import Blur from "../../assets/hero/blur.svg"
 
 import House from "../../assets/hero/houses.svg";
-
+import HeroM from "../../assets/hero/HeroM.svg"
 const AVATARS = [
     "https://randomuser.me/api/portraits/women/44.jpg",
     "https://randomuser.me/api/portraits/men/32.jpg",
@@ -44,9 +43,9 @@ const Heroone = () => {
         <>
             <section
                 ref={sectionRef}
-                className="relative h-screen overflow-clip bg-[#C2B4AA] font-helvetica"
+                className="relative h-screen overflow-clip bg-[#C2B4AA]  lg:px-0 font-helvetica"
             >
-                <div className="relative z-20 flex flex-col items-center pt-20">
+                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-20">
                     <div className="mb-6 flex items-center gap-2">
                         <div className="flex -space-x-3">
                             {AVATARS.map((src, i) => (
@@ -58,19 +57,19 @@ const Heroone = () => {
                                 />
                             ))}
                         </div>
-                        <span className="text-[0.875rem]  ">
+                        <span className="lg:text-[0.875rem] text-[0.75rem]  ">
                             Trusted by 108+ clients across industries
                         </span>
                     </div>
 
-                    <h1 className="max-w-4xl text-center text-[3rem] sm:text-[4rem] lg:text-[3.25rem] font-medium leading-[0.9] text-primary-brown">
+                    <h1 className="max-w-4xl text-center mt-5 lg:mt-0  text-[2.5rem] sm:text-[4rem] lg:text-[3.25rem] font-medium leading-[0.9] text-primary-brown">
                         Find your place for
                         <br />
                         you and yours
                     </h1>
 
-                    <p className="mt-6 max-w-2xl text-center text-[1rem]  text-primary-brown">
-                        We partner with leadership teams to simplify complex challenges.
+                    <p className="mt-6 max-w-2xl text-center text-[0.875rem] lg:text-[1rem]  text-black">
+                        We partner with leadership teams to <br className="block lg:hidden" /> simplify complex challenges.
                     </p>
                 </div>
 
@@ -80,7 +79,21 @@ const Heroone = () => {
                         ref={houseRef}
                         src={House}
                         alt=""
-                        className="w-full "
+                        className="hidden lg:block w-full"
+                    />
+
+                    {/* Tablet: sm to lg */}
+                    {/* <img
+                        src={HouseTablet}
+                        alt=""
+                        className="hidden sm:block lg:hidden w-full"
+                    /> */}
+
+                    {/* Mobile: below sm */}
+                    <img
+                        src={HeroM}
+                        alt=""
+                        className="block sm:hidden w-full"
                     />
 
                     <div
@@ -93,10 +106,10 @@ const Heroone = () => {
             bg-[#F0EAE5]
             blur-[25px]
         "
-                    /> 
+                    />
 
                 </div>
-                <div className="absolute left-1/2 bottom-25 z-30 w-full max-w-5xl -translate-x-1/2 px-6">
+                <div className="absolute left-1/2 bottom-1/3 lg:bottom-25  z-30 w-full max-w-5xl -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />
                 </div>
             </section>

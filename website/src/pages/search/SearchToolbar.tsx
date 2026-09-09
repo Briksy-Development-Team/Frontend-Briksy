@@ -24,7 +24,7 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
   {
     id: "all",
     label: "All Categories",
-    resultType: "property",
+    resultType: "all",
     icon: <AllIcon className="w-4 h-4" />,
     tabs: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
   },
