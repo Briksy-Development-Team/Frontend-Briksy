@@ -10,7 +10,7 @@ import BuilderGridCard from "../../../components/cards/builder/BuilderGridCard";
 const BuilderList = () => {
     const navigate = useNavigate();
     const [items, setItems] = useState<PublicOrganization[]>([]);
-    useEffect(() => { getOrganizations({ type: "builders", verified_only: true }).then((r) => setItems(r.data)).catch(console.error); }, []);
+    useEffect(() => { getOrganizations({ type: "builders", verified_only: 1 }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
         <section className="py-20 font-helvetica">
             <div className="lg:w-full px-[5%] lg:px-0 lg:ml-10">

@@ -23,7 +23,9 @@ const adminMiddleware = {
     websiteServer.middlewares.use((request, response, next) => {
       if (
         request.url === "/admin" ||
-        request.url?.startsWith("/admin/")
+        request.url?.startsWith("/admin/") ||
+        request.url === "/super-admin" ||
+        request.url?.startsWith("/super-admin/")
       ) {
         adminServer.middlewares.handle(request, response, next);
         return;

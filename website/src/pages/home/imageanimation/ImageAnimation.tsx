@@ -152,7 +152,7 @@ const ImageAnimation = () => {
           <div className="flex  items-end">
             <span>
               <img
-                src=""
+                src={undefined}
                 alt=""
                 className="h-[5.5625rem] w-[4.5rem]  rounded-[67.5rem] bg-gray-100"
               />

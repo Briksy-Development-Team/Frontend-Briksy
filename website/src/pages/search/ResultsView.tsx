@@ -22,9 +22,9 @@ export default function ResultsView({ resultType, selectedSub, showMap }: {
   useEffect(() => {
     const serviceSlug = selectedSub.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
     if (resultType === "property") {
-      getProperties({ verified_only: true, search: selectedSub }).then((r) => setProperties(r.data)).catch(console.error);
+      getProperties({ verified_only: 1, search: selectedSub }).then((r) => setProperties(r.data)).catch(console.error);
     } else {
-      getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", service_slug: resultType === "trader" ? serviceSlug : undefined, verified_only: true })
+      getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", service_slug: resultType === "trader" ? serviceSlug : undefined, verified_only: 1 })
         .then((r) => setOrganizations(r.data)).catch(console.error);
     }
   }, [resultType, selectedSub]);
@@ -41,7 +41,7 @@ export default function ResultsView({ resultType, selectedSub, showMap }: {
 
       <p className="text-[0.75rem] text-[#8B6F54] mb-5">{resultType === "property" ? displayProperties.length : organizations.length} verified results</p>
 
-      {showMap ? <MapSplitView resultType={resultType} selectedSub={selectedSub} /> : (
+      {showMap ? <MapSplitView resultType={resultType} selectedSub={selectedSub} traders={displayTraders} builders={displayBuilders} properties={displayProperties} /> : (
         <>
           {resultType === "trader" && <div className={GRID}>{displayTraders.map(item => <TraderGridCard key={item.id} item={item} />)}</div>}
           {resultType === "builder" && <div className={GRID}>{displayBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}

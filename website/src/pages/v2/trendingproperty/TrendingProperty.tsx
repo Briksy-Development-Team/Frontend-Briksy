@@ -9,7 +9,7 @@ import "swiper/css";
 const TrendingProperty = () => {
     const navigate = useNavigate();
     const [items, setItems] = useState<PublicProperty[]>([]);
-    useEffect(() => { getProperties({ verified_only: true, sort: "rating" }).then((r) => setItems(r.data)).catch(console.error); }, []);
+    useEffect(() => { getProperties({ verified_only: 1, sort: "rating" }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
         <section className="py-20 font-helvetica">
             <div className="lg:w-full px-[5%] lg:px-0  lg:ml-10">
