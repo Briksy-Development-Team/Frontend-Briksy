@@ -102,7 +102,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
         <div className="flex h-20 items-center justify-between px-2  sm:px-4 lg:px-6">
 
           {/* Logo */}
-          <Link to="/" className="shrink-0 w-[13.75rem]">
+          <Link to="/" className="shrink-0 lg:w-[13.75rem]">
             <img
               loading="eager"
               src={Briskybrown}
@@ -130,7 +130,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
           </div>
 
           {/* Right Side */}
-          <div className="flex shrink-0 items-center justify-end w-[13.75rem]  gap-5">
+          <div className="flex shrink-0 items-center justify-end lg:w-[13.75rem]  gap-5">
 
             {/* Search */}
             {pastHero && !isSearchOpen && (
