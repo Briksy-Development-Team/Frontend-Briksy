@@ -108,7 +108,7 @@ const Blogs = () => {
             Resources
           </h2>
 
-          <button onClick={() => navigate("/coming-soon")} className="mt-10 w-36 rounded-xl bg-primary-brown px-5 py-3 text-sm font-medium text-white">
+          <button onClick={() => navigate("/blogs")} className="mt-10 w-36 rounded-xl bg-primary-brown px-5 py-3 text-sm font-medium text-white">
             View All Articles
           </button>
         </div>

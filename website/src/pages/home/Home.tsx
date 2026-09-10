@@ -1,4 +1,4 @@
-import About from "./about/About";
+// import About from "./about/About";
 import Community from "./community/Community";
 import Contact from "../../components/contact/Contact";
 import Blogs from "./blogs/Blogs";
@@ -17,7 +17,7 @@ const Home = () => {
       <ImageAnimation />
 
       <Community />
-      <About />
+      {/* <About /> */}
       <BuilderList />
       <TrendingProperty />
       <ServiceList />

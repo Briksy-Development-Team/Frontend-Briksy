@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { type Screen, ScreenWrapper, Field, Btn, AuthHeader } from '../shared';
+import { ArrowLeft } from 'lucide-react';
 
 export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
   const [pw, setPw] = useState('');
@@ -15,7 +16,16 @@ export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
   ];
 
   return (
-    <ScreenWrapper className="w-full px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[primary-brown]">
+    <ScreenWrapper className="w-full lg:px-[3rem] py-[2.75rem] flex flex-col gap-[1.5rem] mx-auto text-[primary-brown]">
+     <button
+      type="button"
+      onClick={() => go('link-sent')}
+      className="absolute top-[1.5rem] left-[1.5rem] text-primary-brown hover:text-primary-light-brown transition-colors"
+      aria-label="Back to login"
+    >
+      <ArrowLeft className="w-[1.25rem] h-[1.25rem]" />
+    </button>
+    
       <AuthHeader title="Set a new password" subtitle="Choose something you don't use anywhere else." />
 
       <div className="flex flex-col gap-[0.75rem]">

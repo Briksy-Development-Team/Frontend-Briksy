@@ -40,35 +40,10 @@ const Register = () => {
     }
   }, [step]);
 
-  // useEffect(() => {
-  //   if (isBootstrapping || !isAuthenticated || redirectingRef.current) {
-  //     return
-  //   }
-  //
-  //   redirectingRef.current = true
-  //   const pending = readPendingFavoriteAction()
-  //
-  //   const finish = async (): Promise<void> => {
-  //     try {
-  //       if (pending?.type === 'favorite' && pending.propertyId) {
-  //         await toggleSeekerPropertyFavorite(pending.propertyId)
-  //         clearPendingFavoriteAction()
-  //         navigate(pending.fromPath ?? fromPath, { replace: true })
-  //         return
-  //       }
-  //
-  //       navigate(fromPath, { replace: true })
-  //     } catch (error) {
-  //       console.error('Failed to complete pending seeker action.', error)
-  //       navigate(fromPath, { replace: true })
-  //     }
-  //   }
-  //
-  //   void finish()
-  // }, [/* fromPath, isAuthenticated, isBootstrapping, navigate */])
+  
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-[#F8F4EE]">
+    <div className="min-h-screen flex items-center justify-center p-4 font-helvetica bg-white">
       <div ref={containerRef} className="flex rounded-[24px] shadow-[0px_24px_60px_0px_rgba(52,37,17,0.3)] overflow-hidden w-full max-h-[51rem] max-w-[67.5rem] bg-white mx-auto origin-center">
 
         <div className="relative shrink-0 hidden md:block" style={{ width: '26.875rem' }}>

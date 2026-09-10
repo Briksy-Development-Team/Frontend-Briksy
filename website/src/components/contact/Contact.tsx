@@ -7,7 +7,7 @@ const Contact = () => {
   const navigate = useNavigate();
   return (
     <div className="w-full px-[5%] font-helvetica  py-10 lg:py-14">
-      <div className="w-full bg-[#F0ECE5] rounded-[2rem] lg:px-8 p-4  flex flex-col lg:flex-row items-center justify-between gap-10">
+      <div className="w-full bg-[#F0ECE5] rounded-[2rem] lg:px-8 p-4  flex flex-col-reverse lg:flex-row items-center justify-between gap-10">
         <div className="lg:w-[50%] w-full ">
           <div className=" flex-wrap hidden lg:flex gap-3 mb-8">
             {badges.map((badge) => (
@@ -32,21 +32,21 @@ const Contact = () => {
             services, manage enquiries, and grow your business.
           </p>
 
-          <div className="flex items-center gap-4 mt-10">
-            <button onClick={() => navigate("/coming-soon")} className="sm:px-6 sm:py-3 px-3 py-2  bg-primary-brown text-white rounded-xl text-[0.8rem] sm:text-[1rem] font-medium">
+          <div className="flex flex-col md:flex-row items-center gap-4 mt-10">
+            <button onClick={() => navigate("/coming-soon")} className="sm:px-6 sm:py-3 px-3 py-5 w-full md:w-auto text-center   bg-primary-brown text-white rounded-xl text-[1rem] font-medium">
               List Your Business
             </button>
 
             <Link
               to="/subs"
-              className="sm:px-6 sm:py-3 border px-3 py-2  text-[0.8rem] border-primary-brown text-primary-brown rounded-xl sm:text-[1rem] font-medium bg-white"
+              className="sm:px-6 sm:py-3 border  w-full md:w-auto px-3 py-5  border-primary-brown text-center text-primary-brown rounded-xl text-[1rem] font-medium bg-white"
             >
               View Subscription Plans
             </Link>
           </div>
         </div>
 
-        <div className="lg:w-[40%] bg-gray-400  hidden lg:flex   justify-center">
+        <div className="lg:w-[40%] bg-gray-400     justify-center">
           <video preload="none"
             src={Contacts}
             autoPlay

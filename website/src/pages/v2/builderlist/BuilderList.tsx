@@ -22,7 +22,7 @@ const BuilderList = () => {
 
                     <button
                         onClick={() => navigate("/result?type=builder")}
-                        className="absolute right-0 flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
+                        className="absolute right-0  items-center gap-3 text-lg hidden md:flex font-medium text-[#562F00] transition-all hover:gap-3"
                     >
                         View All
                         <span>↗</span>
