@@ -35,7 +35,7 @@ const PropertyGridCard = ({ item }: Props) => {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col p-4">
-        <h3 className="line-clamp-2 text-[0.9375rem] font-bold leading-[1.3] lg:text-[1.0625rem]">
+        <h3 className="line-clamp-2 text-[0.9375rem]  leading-[1.3] lg:text-[1.0625rem]">
           {item.title}
         </h3>
 

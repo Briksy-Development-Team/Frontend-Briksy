@@ -189,7 +189,7 @@ const PropertyDetail = () => {
 
               <div id="host">
                 <div className="mb-4">
-                  <h2 className="text-[1.25rem] font-bold text-primary-brown">Meet The Host</h2>
+                  <h2 className="text-[1.25rem] font-medium text-primary-brown">Meet The Host</h2>
                 </div>
                 <StaffGrid staff={property.hosts} />
               </div>

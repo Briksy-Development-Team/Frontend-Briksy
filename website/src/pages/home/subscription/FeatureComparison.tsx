@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Trick from "../../../assets/icons/ticks.svg"
 
 import type {
     FeatureSection,
@@ -28,7 +29,8 @@ const FeatureComparison = ({
         }
 
         if (value === true) {
-            return <span>✓</span>;
+            return <img src={Trick} alt="" className="mt-[1px] " />
+                ;
         }
 
         return <span>{value}</span>;
@@ -88,7 +90,7 @@ const FeatureComparison = ({
                                 {plans.map((plan) => (
                                     <div
                                         key={plan.id}
-                                        className="border-l border-[#ede8e4] p-4 text-center text-sm"
+                                        className="border-l border-[#ede8e4] p-4 text-center flex items-center justify-center text-sm"
                                     >
                                         {renderValue(
                                             plan.features[feature.key]
@@ -116,8 +118,8 @@ const FeatureComparison = ({
                             type="button"
                             onClick={() => setSelectedPlan(index)}
                             className={`shrink-0 rounded-full px-4 py-2 text-sm ${selectedPlan === index
-                                    ? "bg-[#342511] text-white"
-                                    : "border border-[#ede8e4] bg-white text-[#342511]"
+                                ? "bg-[#342511] text-white"
+                                : "border border-[#ede8e4] bg-white text-[#342511]"
                                 }`}
                         >
                             {plan.name}

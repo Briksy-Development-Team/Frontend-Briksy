@@ -98,16 +98,16 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
 
   return (
     <>
-      <nav className="fixed left-0 right-0 top-0 z-50 h-16 border-b border-[#d8d8d8] bg-primary-brown text-white">
-        <div className="flex h-16 items-center justify-between px-2 sm:px-4 lg:px-10">
+      <nav className="fixed left-0 right-0 top-0  z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white">
+        <div className="flex h-20 items-center justify-between px-2  sm:px-4 lg:px-6">
 
           {/* Logo */}
-          <Link to="/" className="shrink-0">
+          <Link to="/" className="shrink-0 w-[13.75rem]">
             <img
               loading="eager"
               src={Briskybrown}
               alt="Briksy"
-              className="h-10 w-auto"
+              className="h-12 w-auto"
             />
           </Link>
 
@@ -130,7 +130,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
           </div>
 
           {/* Right Side */}
-          <div className="flex shrink-0 items-center gap-6">
+          <div className="flex shrink-0 items-center justify-end w-[13.75rem]  gap-5">
 
             {/* Search */}
             {pastHero && !isSearchOpen && (

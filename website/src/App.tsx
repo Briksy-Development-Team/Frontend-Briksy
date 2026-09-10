@@ -9,6 +9,7 @@ import AppRouter from "./routes/AppRouter";
 import ScrollToTop from "./components/utils/ScrollToTop";
 import Loader from "./components/loader/Loader";
 import { lenisInstance } from "./lenis";
+import { ReadyProvider, useReady } from "./components/utils/ReadyContext";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -16,6 +17,7 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 const AppContent = () => {
   const [appReady, setAppReady] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
+  const { setReady } = useReady();
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -32,7 +34,7 @@ const AppContent = () => {
           appReady={appReady}
           onComplete={() => {
             setShowLoader(false);
-            window.dispatchEvent(new Event("hero-loader-complete"));
+            setReady(true);
           }}
         />
       )}
@@ -46,10 +48,10 @@ const AppContent = () => {
 function App() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.4,          // was 1.1 — higher = slower deceleration
+      duration: 1.4,
       smoothWheel: true,
-      wheelMultiplier: 0.7,   // was default 1 — less distance per wheel tick
-      touchMultiplier: 1.2,   // was default 2 — less distance per touch drag
+      wheelMultiplier: 0.7,
+      touchMultiplier: 1.2,
       autoRaf: false,
     });
 
@@ -71,9 +73,11 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <AppContent />
-    </BrowserRouter>
+    <ReadyProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </ReadyProvider>
   );
 }
 

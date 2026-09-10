@@ -211,7 +211,7 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
 
           <div className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
-              <h3 className="text-[1.125rem] font-bold text-primary-brown">
+              <h3 className="text-[1.125rem] font-medium text-primary-brown">
                 Gallery · {recentWork.totalPhotos} photos
               </h3>
             </div>

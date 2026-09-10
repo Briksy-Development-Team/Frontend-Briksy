@@ -12,8 +12,8 @@ const TRENDING = ["Electricians*", "Plumbers*", "Builders", "Landscapers", "Pain
 const AI_SUGGESTIONS = ["Electrical Solutions & Services", "Electrical Services & Solutions", "Expert Plumbing Services"];
 
 export const NavSearchButton = ({ onClick }: { onClick: () => void }) => (
-  <button onClick={onClick} className="flex h-10 w-10 items-center justify-center rounded-[0.9375rem] bg-white" aria-label="Open search">
-    <Search size={18} color="black" />
+  <button onClick={onClick} className="flex  items-center justify-center rounded-[0.9375rem]" aria-label="Open search">
+    <Search size={24} color="white" />
   </button>
 );
 

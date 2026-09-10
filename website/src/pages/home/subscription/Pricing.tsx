@@ -81,7 +81,7 @@ const Pricing = () => {
 
             {/* PRICE */}
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-[30px] font-medium leading-9">
+              <span className="text-[30px] font-semibold leading-9">
                 {plan.price}
               </span>
 

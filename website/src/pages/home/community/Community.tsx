@@ -211,7 +211,7 @@ const MobileCommunity = () => {
             className="flex flex-col gap-6 rounded-[1.25rem] bg-white p-7"
           >
             <div className="flex items-start justify-between">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center">
                 <img src={card.icon} alt="" className="h-full w-full" />
               </span>
               <img

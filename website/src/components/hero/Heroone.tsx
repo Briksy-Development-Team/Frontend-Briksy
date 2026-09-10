@@ -1,10 +1,15 @@
 import { useOutletContext } from "react-router-dom";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import HeroSearchBar from "../search/HeroSearchBar";
+import { useReady } from "../utils/ReadyContext"; // adjust path if needed
 
 import House from "../../assets/hero/houses.svg";
-import HeroM from "../../assets/hero/HeroM.svg"
+import HeroM from "../../assets/hero/HeroM.svg";
+
+gsap.registerPlugin(useGSAP);
+
 const AVATARS = [
     "https://randomuser.me/api/portraits/women/44.jpg",
     "https://randomuser.me/api/portraits/men/32.jpg",
@@ -18,26 +23,39 @@ const Heroone = () => {
     }>();
     const sectionRef = useRef<HTMLElement | null>(null);
     const houseRef = useRef<HTMLImageElement | null>(null);
+    const avatarsRef = useRef<HTMLDivElement | null>(null);
+    const { ready } = useReady();
 
-    useEffect(() => {
-        const playHero = () => {
+    useGSAP(() => {
+        if (!ready) return;
+
+        gsap.fromTo(
+            houseRef.current,
+            { yPercent: 100, scale: 1.05, opacity: 0, filter: "blur(6px)" },
+            {
+                yPercent: 0,
+                scale: 1,
+                opacity: 1,
+                filter: "blur(0px)",
+                duration: 1.6,
+                ease: "power3.out",
+            },
+        );
+
+        if (avatarsRef.current) {
             gsap.fromTo(
-                houseRef.current,
-                { yPercent: 100, scale: 1.05, opacity: 0, filter: "blur(6px)" },
+                avatarsRef.current.children,
+                { scale: 0, opacity: 0 },
                 {
-                    yPercent: 0,
                     scale: 1,
                     opacity: 1,
-                    filter: "blur(0px)",
-                    duration: 1.6,
-                    ease: "power3.out",
+                    duration: 1,
+                    ease: "back.out(1.7)",
+                    stagger: 0.5,
                 },
             );
-        };
-
-        window.addEventListener("hero-loader-complete", playHero);
-        return () => window.removeEventListener("hero-loader-complete", playHero);
-    }, []);
+        }
+    }, { scope: sectionRef, dependencies: [ready] });
 
     return (
         <>
@@ -45,9 +63,9 @@ const Heroone = () => {
                 ref={sectionRef}
                 className="relative h-screen overflow-clip bg-[#C2B4AA]  lg:px-0 font-helvetica"
             >
-                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-20">
+                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-24">
                     <div className="mb-6 flex items-center gap-2">
-                        <div className="flex -space-x-3">
+                        <div ref={avatarsRef} className="flex -space-x-3">
                             {AVATARS.map((src, i) => (
                                 <img
                                     key={i}
@@ -74,27 +92,8 @@ const Heroone = () => {
                 </div>
 
                 <div className="absolute  inset-x-0 bottom-0 z-10 pointer-events-none overflow-visible">
-
-                    <img
-                        ref={houseRef}
-                        src={House}
-                        alt=""
-                        className="hidden lg:block w-full"
-                    />
-
-                    {/* Tablet: sm to lg */}
-                    {/* <img
-                        src={HouseTablet}
-                        alt=""
-                        className="hidden sm:block lg:hidden w-full"
-                    /> */}
-
-                    {/* Mobile: below sm */}
-                    <img
-                        src={HeroM}
-                        alt=""
-                        className="block sm:hidden w-full"
-                    />
+                    <img ref={houseRef} src={House} alt="" className="hidden lg:block w-full" />
+                    <img src={HeroM} alt="" className="block sm:hidden w-full" />
 
                     <div
                         className="
@@ -107,7 +106,6 @@ const Heroone = () => {
             blur-[25px]
         "
                     />
-
                 </div>
                 <div className="absolute left-1/2 bottom-1/3 lg:bottom-25  z-30 w-full max-w-5xl -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />

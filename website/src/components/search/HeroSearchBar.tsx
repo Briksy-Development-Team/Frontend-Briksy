@@ -159,14 +159,14 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       <button
         type="button"
         onClick={() => setDropdownOpen((v) => !v)}
-        className="flex items-center gap-2 text-gray-500 text-[15px] hover:text-gray-700 transition max-w-[160px]"
+        className="flex items-center gap-2 text-gray-500 text-[15px] hover:text-gray-700 transition w-[160px]"
       >
         <span className="truncate">{selected.label}</span>
-        <ChevronDown
+        {/* <ChevronDown
           size={16}
           className={`transition-transform ${dropdownOpen ? "rotate-180" : ""
             }`}
-        />
+        /> */}
       </button>
 
       {dropdownOpen && (
@@ -187,9 +187,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
                     setSelected(cat);
                     setDropdownOpen(false);
                   }}
-                  className={`flex items-center gap-4 p-2 rounded-xl text-left border border-white transition ${active
-                    ? "bg-[#F3F4F3]"
-                    : "hover:border-primary-brown"
+                  className={`flex items-center gap-4 p-2 rounded-xl text-left border transition hover:bg-[#F3F4F3] ${active ? "border-primary-brown" : "border-white"
                     }`}
                 >
                   <div className="w-14 h-14 shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4]">
@@ -197,17 +195,14 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className=" text-xs lg:text-sm font-medium text-primary-brown tracking-wide uppercase">
+                    <div className="text-xs lg:text-sm font-medium text-primary-brown tracking-wide uppercase">
                       {cat.title}
                     </div>
-                    <div className=" text-[0.6rem] lg:text-xs text-gray-500 mt-0.5">
+
+                    <div className="text-[0.6rem] lg:text-xs text-gray-500 mt-0.5">
                       {cat.desc}
                     </div>
                   </div>
-
-                  {active && (
-                    <Check size={18} className="text-[#A65B40] shrink-0" />
-                  )}
                 </button>
               );
             })}
