@@ -9,7 +9,7 @@ import local from "../../../assets/about/local.svg";
 import tick from "../../../assets/about/tick.svg";
 import tool from "../../../assets/about/tool.svg";
 import one from "../../../assets/about/one.svg";
-
+import Imges from "../../../assets/dummy/Image.svg"
 import "swiper/css";
 
 // import Transition from "./Transition";
@@ -160,7 +160,7 @@ const ImageAnimation = () => {
           <div className="flex  items-end">
             <span>
               <img
-                src={undefined}
+                src={Imges}
                 alt=""
                 className="h-[5.5625rem] w-[4.5rem]  rounded-[67.5rem] bg-gray-100"
               />

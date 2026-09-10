@@ -155,7 +155,7 @@ const Login = () => {
           </div>
         </div>
 
-        <main className="flex flex-1 items-center justify-center">
+        <main className="flex flex-1  justify-center">
           <ScreenComponent go={setScreen} />
         </main>
       </div>

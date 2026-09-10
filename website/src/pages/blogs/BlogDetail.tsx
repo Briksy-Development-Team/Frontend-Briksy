@@ -44,7 +44,7 @@ const BlogDetail = () => {
 
   return (
     <div className="min-h-screen] pt-28 pb-20 font-helvetica">
-      <div className="mx-auto px-[5%]">
+      <div className="mx-auto px-[3%]">
         <Breadcrumb items={breadcrumbs} />
         
         {/* Header Section */}

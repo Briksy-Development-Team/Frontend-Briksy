@@ -2,18 +2,21 @@ import { List, Play, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface GalleryImage {
-  src: string;
+  src?: string;
   type?: 'image' | 'video';
   videoSrc?: string; // playable video url, used when type === 'video'
 }
 
-export const PropertyGallery = ({ images }: { images: GalleryImage[] }) => {
+// Distinct placeholder colors for each of the 5 boxes when no image data is present
+const PLACEHOLDER_COLORS = ['#c8cfc4', '#b8c4b4', '#d0cdc0', '#c4cfc9', '#cbc4af'];
+
+export const PropertyGallery = ({ images = [] }: { images?: GalleryImage[] }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   // images[0] = hero, images[1..4] = the 2x2 grid tiles
   const hero = images[0];
-  const tiles = images.slice(1, 5);
+  const tiles = [images[1], images[2], images[3], images[4]];
 
   return (
     <>
@@ -21,37 +24,44 @@ export const PropertyGallery = ({ images }: { images: GalleryImage[] }) => {
         {/* Hero image */}
         <div
           className="flex-1 min-w-0 h-full rounded-xl overflow-hidden relative cursor-pointer"
+          style={!hero?.src ? { backgroundColor: PLACEHOLDER_COLORS[0] } : undefined}
           onClick={() => setModalOpen(true)}
         >
-          <img src={hero?.src} className="w-full h-full object-cover" alt="" />
+          {hero?.src && (
+            <img src={hero.src} className="w-full h-full object-cover" alt="" />
+          )}
         </div>
 
         {/* 2x2 tile grid */}
         <div className="hidden md:flex flex-wrap gap-2 content-start w-[488px]">
           {tiles.map((tile, idx) => {
             const isLast = idx === tiles.length - 1;
-            const isVideo = tile.type === 'video';
+            const isVideo = tile?.type === 'video';
+            const hasSrc = Boolean(tile?.src);
 
             return (
               <div
                 key={idx}
-                className="relative w-[240px] h-[236px] rounded-xl overflow-hidden cursor-pointer bg-[#d0cdc0]"
+                className="relative w-[240px] h-[236px] rounded-xl overflow-hidden cursor-pointer"
+                style={{ backgroundColor: PLACEHOLDER_COLORS[idx + 1] }}
                 onClick={() => {
                   if (isVideo) {
-                    setActiveVideo(tile.videoSrc ?? tile.src);
+                    setActiveVideo(tile?.videoSrc ?? tile?.src ?? null);
                   } else {
                     setModalOpen(true);
                   }
                 }}
               >
-                <img src={tile.src} className="w-full h-full object-cover" alt="" />
+                {hasSrc && (
+                  <img src={tile!.src} className="w-full h-full object-cover" alt="" />
+                )}
 
                 {isVideo && (
                   <button
                     className="absolute inset-0 flex items-center justify-center"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setActiveVideo(tile.videoSrc ?? tile.src);
+                      setActiveVideo(tile?.videoSrc ?? tile?.src ?? null);
                     }}
                   >
                     <span className="flex items-center justify-center w-[45px] h-[45px] rounded-full bg-white/90 shadow-sm">
@@ -118,8 +128,14 @@ export const PropertyGallery = ({ images }: { images: GalleryImage[] }) => {
             <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {images.map((img, idx) => (
-                  <div key={idx} className="aspect-square rounded-xl overflow-hidden relative bg-gray-100">
-                    <img src={img.src} className="w-full h-full object-cover" alt="" />
+                  <div
+                    key={idx}
+                    className="aspect-square rounded-xl overflow-hidden relative"
+                    style={{ backgroundColor: PLACEHOLDER_COLORS[idx % PLACEHOLDER_COLORS.length] }}
+                  >
+                    {img.src && (
+                      <img src={img.src} className="w-full h-full object-cover" alt="" />
+                    )}
                     {img.type === 'video' && (
                       <span className="absolute inset-0 flex items-center justify-center">
                         <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90">
