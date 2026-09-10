@@ -19,7 +19,7 @@ const ServiceList = () => {
   const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
   useEffect(() => {
-    getOrganizations({ type: "trades-professionals", service_slug: TABS[activeIdx].toLowerCase() })
+    getOrganizations({ type: "trades-professionals", service_slug: TABS[activeIdx].toLowerCase(), verified_only: 1 })
       .then((response) => setItems(response.data)).catch(console.error);
   }, [activeIdx]);
 

@@ -18,4 +18,5 @@ export type PublicOrganization = {
 export const getOrganizations = async (params: Record<string, string | number | boolean | undefined> = {}) =>
   (await api.get<ApiPage<PublicOrganization>>("/seeker/organizations", { params: { per_page: 100, ...params } })).data;
 
-export const getOrganization = async (id: string) => (await api.get(`/seeker/organizations/${id}`)).data;
+export const getOrganization = async (id: string): Promise<{ data: PublicOrganization }> =>
+  (await api.get<{ data: PublicOrganization }>(`/seeker/organizations/${id}`)).data;

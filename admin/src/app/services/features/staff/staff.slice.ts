@@ -47,8 +47,9 @@ const initialState: StaffState = {
 
 export const fetchStaff = createAsyncThunk(
   "staff/fetch",
-  async (params: GetStaffParams) => {
-    const res = await fetchStaffApi(params);
+  async (params: GetStaffParams & { organizationId?: string }) => {
+    const { organizationId, ...listParams } = params;
+    const res = await fetchStaffApi(listParams, organizationId);
 
     return {
       data: res.data.map(mapStaff),

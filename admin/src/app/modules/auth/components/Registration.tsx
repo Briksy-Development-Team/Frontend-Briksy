@@ -20,7 +20,7 @@ const initialValues = {
   business_type: 'organisation' as BusinessType,
   abn_number: '',
   entity_type: '',
-  gst_registered: '',
+  // gst_registered: '',
   abn_verified: false,
   contact_phone: '',
   address: '',
@@ -71,7 +71,7 @@ export function Registration() {
     setAbnVerificationMessage(null)
     formik?.setFieldValue('abn_verified', false, false)
     formik?.setFieldValue('entity_type', '', false)
-    formik?.setFieldValue('gst_registered', '', false)
+    // formik?.setFieldValue('gst_registered', '', false)
     formik?.setFieldValue('business_name', '', false)
     formik?.setFieldValue('state', '', false)
     formik?.setFieldValue('postcode', '', false)
@@ -126,7 +126,7 @@ export function Registration() {
 
         void formik.setFieldValue('abn_verified', isAbn, false)
         void formik.setFieldValue('entity_type', verification?.entityType ?? values.entity_type, false)
-        void formik.setFieldValue('gst_registered', verification ? (verification.gstRegistered ? 'yes' : 'no') : values.gst_registered, false)
+        // void formik.setFieldValue('gst_registered', verification ? (verification.gstRegistered ? 'yes' : 'no') : values.gst_registered, false)
         void formik.setFieldValue('business_name', verification?.entityName ?? values.business_name, false)
         void formik.setFieldValue('state', verification?.state ?? values.state, false)
         void formik.setFieldValue('postcode', verification?.postcode ?? values.postcode, false)
@@ -333,7 +333,7 @@ export function Registration() {
           />
         </div>
 
-        <div className='col-md-6'>
+        {/* <div className='col-md-6'>
           <label className='form-label fw-bolder text-gray-900 fs-6'>GST registration</label>
           <input
             type='text'
@@ -342,7 +342,7 @@ export function Registration() {
             placeholder='GST registration status'
             className='form-control bg-light'
           />
-        </div>
+        </div> */}
       </div>
 
       <div className='row g-3 mb-8'>

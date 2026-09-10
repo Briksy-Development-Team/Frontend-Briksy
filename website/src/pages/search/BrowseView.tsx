@@ -27,8 +27,8 @@ export default function BrowseView({ resultType }: { resultType: ResultType }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
   useEffect(() => {
-    if (resultType === "property") getProperties({ verified_only: true }).then((r) => setProperties(r.data)).catch(console.error);
-    else getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: true }).then((r) => setOrganizations(r.data)).catch(console.error);
+    if (resultType === "property") getProperties({ verified_only: 1 }).then((r) => setProperties(r.data)).catch(console.error);
+    else getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: 1 }).then((r) => setOrganizations(r.data)).catch(console.error);
   }, [resultType]);
   const builders = organizations.map(organizationToBuilder);
   const traders = organizations.map(organizationToTrader);

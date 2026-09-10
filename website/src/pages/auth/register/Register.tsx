@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useLayoutEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRef, useState, useLayoutEffect } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import Brandpanel from '../../../assets/login/loginleft.png';
@@ -17,8 +17,6 @@ const SCREENS: Record<RegisterStep, React.ComponentType<{ go: (s: RegisterStep) 
   preferences: PreferencesScreen,
   welcome: WelcomeScreen,
 };
-
-
 
 const Register = () => {
   const [step, setStep] = useState<RegisterStep>('details');

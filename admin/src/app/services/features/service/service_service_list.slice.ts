@@ -50,8 +50,9 @@ const initialState: ServiceState = {
 
 export const fetchServiceList = createAsyncThunk(
   "services/fetch",
-  async (params: GetServiceListParams) => {
-    const res = await fetchServiceGroupApi(params);
+  async (params: GetServiceListParams & { organizationId?: string }) => {
+    const { organizationId, ...listParams } = params;
+    const res = await fetchServiceGroupApi(listParams, organizationId);
 
     return {
       data: res.data.map(mapServiceList),

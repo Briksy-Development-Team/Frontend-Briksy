@@ -7,8 +7,11 @@ import { PropertySidebar } from "./components/PropertySidebar";
 import StaffGrid from "../../../components/grids/StaffGrid";
 import { ShieldCheck, Share } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getProperty } from "../../../api/property/property.api";
 
-const property = {
+const mockProperty = {
   title: 'Modern Townhouse Near Transport - 2',
   subtitle: '5 guests • 2 bedrooms • 3 beds • 2 bathrooms',
   address: '12 Maple Street, Toorak VIC 3142',
@@ -91,6 +94,30 @@ const property = {
 };
 
 const PropertyDetail = () => {
+  const { id } = useParams<{ id: string }>();
+  const [propertyData, setPropertyData] = useState(mockProperty);
+
+  useEffect(() => {
+    if (!id) return;
+    getProperty(id).then(({ data }) => {
+      const images = (data.media ?? []).map((media) => media.url).filter((url): url is string => Boolean(url));
+      const address = data.full_address || data.address || [data.location?.suburb, data.location?.postcode].filter(Boolean).join(", ") || mockProperty.address;
+      const organizationName = data.organization?.name || mockProperty.company.name;
+      setPropertyData((current) => ({
+        ...current,
+        title: data.title,
+        subtitle: `${data.bedroom_option || "—"} bedrooms • ${data.bathroom_option || "—"} bathrooms${data.floor_area_sqm ? ` • ${data.floor_area_sqm} sqm` : ""}`,
+        address,
+        images: images.length ? images : current.images,
+        about: data.description || "No description provided for this property.",
+        agent: { ...current.agent, name: organizationName },
+        company: { ...current.company, name: organizationName, location: address },
+        sidebar: { ...current.sidebar, builder: organizationName, builderName: organizationName, location: address },
+      }));
+    }).catch(console.error);
+  }, [id]);
+
+  const property = propertyData;
   const addressParts = property.address.split(', ');
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
   const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";
