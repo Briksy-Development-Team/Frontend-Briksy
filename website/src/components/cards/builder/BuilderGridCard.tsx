@@ -12,7 +12,7 @@ const BuilderGridCard = ({ item }: Props) => {
   return (
     <Link
       to={`/builder/${item.id}`}
-      className="flex flex-col w-[19.4375rem] h-[25rem] pb-[6px] rounded-[20px] border border-transparent
+      className="flex flex-col w-[19.4375rem] h-[28rem] pb-[6px] rounded-[20px] border border-transparent
        transition-colors duration-200 overflow-hidden mx-auto text-primary-brown bg-white hover:border-primary"
     >
       <div className="relative h-[35%] shrink-0 bg-[#bed6d7] rounded-t-[20px] overflow-hidden">
@@ -61,7 +61,7 @@ const BuilderGridCard = ({ item }: Props) => {
           </div>
 
           <div className="mt-1.5 flex flex-wrap gap-1">
-            {item.tags.map((tag, index) => (
+            {item.tags.slice(0,4).map((tag, index) => (
               <span
                 key={index}
                 className="rounded-[14px] border border-white/50 bg-[#ede8e4] text-[#222] px-[10.5px] py-[4px] text-[0.75rem] leading-[1.5]"

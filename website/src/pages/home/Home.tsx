@@ -11,7 +11,7 @@ import Heroone from "../../components/hero/Heroone";
 
 const Home = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-hidden ">
       <Heroone />
 
       <ImageAnimation />

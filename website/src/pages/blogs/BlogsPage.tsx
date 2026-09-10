@@ -57,7 +57,7 @@ const BlogsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pt-28 pb-20 font-helvetica">
-      <div className="mx-auto px-[5%] max-w-7xl">
+      <div className="mx-auto px-[3%] ">
         <Breadcrumb items={breadcrumbs} />
         
         <div className="flex justify-between items-center mb-10 mt-6">

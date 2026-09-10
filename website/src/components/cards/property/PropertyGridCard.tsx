@@ -11,7 +11,7 @@ const PropertyGridCard = ({ item }: Props) => {
   return (
     <Link
       to={`/property/${item.id}`}
-      className="flex h-[25rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
+      className="flex h-[28rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
     >
       <div className="relative h-[60%] shrink-0 overflow-hidden">
         <img

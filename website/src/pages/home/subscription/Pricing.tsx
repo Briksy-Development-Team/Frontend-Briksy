@@ -1,133 +1,165 @@
-import  {  useState } from "react";
+import { useState } from "react";
 
-const plans = [
-  {
-    id: 1,
-    badge: "Seekers",
-    title: "Bronze",
-    price: "$0",
-    description: "Free forever",
-    features: [
-      "Full property search access",
-      "Contact up to 5 agents/month",
-      "Save up to 10 listings",
-      "Email OTP verification",
-      "Basic support",
-    ],
-  },
-  {
-    id: 2,
-    badge: "Most Popular",
-    title: "Silver",
-    price: "$149",
-    description: "per month",
-    features: [
-      "Everything in Bronze",
-      "Up to 5 staff seats",
-      "ABN-verified agency profile",
-      "Unlimited listing management",
-      "Visitor analytics",
-      "Priority support",
-    ],
-  },
-  {
-    id: 3,
-    badge: "Agencies & Builders",
-    title: "Gold",
-    price: "$399",
-    description: "per month",
-    features: [
-      "Everything in Silver",
-      "Unlimited staff seats",
-      "Premium directory placement",
-      "Advanced analytics dashboard",
-      "Dedicated account manager",
-      "Custom onboarding",
-    ],
-  },
-];
+import PlanFeatures from "./PlanFeatures";
+import FeatureComparison from "./FeatureComparison";
+
+import {
+  featureSections,
+  pricingData,
+  pricingTabs,
+  type PricingTab,
+} from "../../../data/pricingData";
 
 const Pricing = () => {
-  const [planType, setPlanType] = useState("agency");
-  const [activeCard, setActiveCard] = useState(2);
+  const [activeTab, setActiveTab] =
+    useState<PricingTab>("Real Estate");
+
+  const data = pricingData[activeTab];
 
   return (
-    <section className="w-full  px-[5%] py-28 lg:py-[15rem]">
-      <div className="flex flex-col items-center text-center">
-        <p className="text-[0.875rem] uppercase tracking-widest text-[#8A8A84]">Subscription Plans</p>
-        <h1 className=" lg:mt-[2rem] text-primary">
-          <span className="block font-inter text-[2.25rem] lg:text-[8rem] font-medium lg:leading-[7.5rem]">Simple, transparent</span>
-          <span className="block font-instrument text-[2.25rem] lg:text-[7rem] italic lg:leading-[7rem]">pricing.</span>
-        </h1>
-        <p className="mt-[2.5rem] lg:w-[70%] text-[1.125rem] lg:text-[1.5rem] text-[#8A8A84]">
-          No hidden fees. No surprises. Choose a plan that fits your workflow — upgrade or downgrade any time.
-          All plans include ABN verification, Stripe-managed billing, and access to our full marketplace.
-        </p>
-      </div>
+    <main className="min-h-screen pt-20 px-[3%] lg:px-[5%] text-[#342511]">
 
-      <div className=" mt-[2rem] lg:mt-[3rem] flex justify-center">
-        <div className="inline-flex rounded-full border border-[#E5E5DE] bg-[#F7F7F4] p-[0.35rem]">
-          {["agency", "agent"].map((type) => (
+      {/* HERO */}
+      <section className="px-5 pb-5 pt-8 text-center md:pb-8">
+
+        <h1 className="text-[30px] font-medium leading-9 tracking-[-0.9px] md:text-5xl">
+          {data.title}
+        </h1>
+
+        <p className="mt-2 text-base text-[#7c5f42] md:hidden">
+          Every plan includes verification and a location map.
+        </p>
+
+        {/* CATEGORY TABS */}
+        <div className="mx-auto mt-10 flex  flex-wrap  gap-2">
+          {pricingTabs.map((tab) => (
             <button
-              key={type}
-              onClick={() => setPlanType(type)}
-              className={`rounded-full px-[2rem] py-[0.8rem] text-[1rem] capitalize transition-all duration-300 ${planType === type ? "bg-primary text-white" : "text-[#8A8A84]"
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`rounded-md px-4 py-2.5 text-sm font-medium ${activeTab === tab
+                  ? "bg-primary-brown text-white"
+                  : "text-[#342511] hover:bg-[#ede8e4]"
                 }`}
             >
-              {type}
+              {tab}
             </button>
           ))}
         </div>
-      </div>
 
-      <div className="mt-[3rem] lg:mt-[5rem] grid grid-cols-1 gap-[2rem] lg:grid-cols-3">
-        {plans.map((plan) => {
-          const on = activeCard === plan.id;
-          return (
-            <div
-              key={plan.id}
-              onClick={() => setActiveCard(plan.id)}
-              className={`flex min-h-[620px] cursor-pointer flex-col justify-between rounded-[1.8rem] border border-[#E5E5DE] p-[2rem] transition-all duration-500 ease-out will-change-transform
-                ${on ? "scale-105 bg-primary" : "scale-95 bg-white"}`}
-            >
-              <div>
-                <span className={`inline-block rounded-full px-[1rem] py-[0.4rem] text-[0.9rem] font-medium transition-colors duration-500
-                  ${on ? "bg-white text-primary" : "bg-[#F3F3EE] text-[#6B6B6B]"}`}>
+      </section>
+
+      {/* PRICING CARDS */}
+      <section className="mx-auto grid  grid-cols-1 gap-4 px-5 md:grid-cols-2 lg:grid-cols-4 md:gap-5">
+
+        {data.plans.map((plan) => (
+          <div
+            key={plan.id}
+            className={`w-full rounded-2xl bg-white p-5 ${plan.badge
+                ? "border-2 border-[#342511]"
+                : "border border-[#ede8e4]"
+              }`}
+          >
+
+            {/* PLAN NAME */}
+            <div className="flex min-h-[32px] items-center gap-2">
+              <h2 className="text-2xl font-medium leading-8">
+                {plan.name}
+              </h2>
+
+              {plan.badge && (
+                <span className="rounded-full bg-[#e2cbb3] px-2.5 py-1 text-[10px]">
                   {plan.badge}
                 </span>
+              )}
+            </div>
 
-                <h2 className={`mt-[1.5rem] text-[2.5rem] transition-colors duration-500 ${on ? "text-white" : "text-primary"}`}>
-                  {plan.title}
-                </h2>
+            {/* DESCRIPTION */}
+            <p className="mt-2 min-h-[36px] text-xs leading-[18px] text-[#7c5f42]">
+              {plan.description}
+            </p>
 
-                <h3 className={`mt-[1rem] text-[4rem] font-semibold leading-none transition-colors duration-500 ${on ? "text-white" : "text-primary"}`}>
-                  {plan.price}
-                </h3>
+            {/* PRICE */}
+            <div className="mt-2 flex items-baseline gap-1">
+              <span className="text-[30px] font-medium leading-9">
+                {plan.price}
+              </span>
 
-                <p className={`mt-[0.5rem] transition-colors duration-500 ${on ? "text-[#D8E2D3]" : "text-[#777777]"}`}>
-                  {plan.description}
-                </p>
+              <span className="text-xs text-[#7c5f42]">
+                /month
+              </span>
+            </div>
 
-                <div className={`mt-[2rem] h-[1px] w-full transition-colors duration-500 ${on ? "bg-[#4B6145]" : "bg-[#E5E5DE]"}`} />
+            {/* BUTTON */}
+            <button
+              type="button"
+              className={`mt-4 h-[50px] w-full rounded-full text-sm font-medium ${plan.badge
+                  ? "bg-[#342511] text-white"
+                  : "border border-[#ede8e4] bg-white text-[#342511]"
+                }`}
+            >
+              {plan.name === "Enterprise" ||
+                plan.name === "Business" ||
+                plan.name === "Agency"
+                ? "Contact Sales"
+                : `Get ${plan.name}`}
+            </button>
 
-                <ul className="mt-[2rem] flex flex-col gap-[1rem]">
-                  {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-[0.7rem] text-[1rem] transition-colors duration-500 ${on ? "text-[#F2F2F2]" : "text-[#4B4B4B]"}`}>
-                      <span>✓</span><span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* CARD FEATURES */}
+            <PlanFeatures
+              features={plan.cardFeatures}
+            />
+          </div>
+        ))}
+
+      </section>
+
+      {/* STATS */}
+      <section className="mx-auto  px-5 py-8">
+        <div className="flex justify-center gap-6 md:gap-10">
+
+          {data.stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-1 flex-col items-center text-center md:flex-none"
+            >
+              <div className="flex items-center">
+                <span className="text-2xl font-medium">
+                  {stat.value}
+                </span>
+
+                {stat.star && (
+                  <span className="ml-0.5">
+                    ★
+                  </span>
+                )}
               </div>
 
-              <button className={`mt-[3rem] w-full rounded-[1rem] py-[1rem] text-[1rem] font-medium transition-colors duration-500
-                ${on ? "bg-white text-primary" : "bg-primary text-white"}`}>
-                Get Started
-              </button>
+              <span className="text-sm text-[#7c5f42]">
+                {stat.label}
+              </span>
             </div>
-          );
-        })}
-      </div>
-    </section>
+          ))}
+
+        </div>
+      </section>
+
+      {/* COMPARISON */}
+      <section className="mx-auto px-5 pb-12">
+
+        <h2 className="mb-5 text-2xl font-medium md:text-3xl">
+          Compare every feature
+        </h2>
+
+        {/* PASS DATA FROM PRICING */}
+        <FeatureComparison
+          sections={featureSections}
+          plans={data.plans}
+        />
+
+      </section>
+
+    </main>
   );
 };
 

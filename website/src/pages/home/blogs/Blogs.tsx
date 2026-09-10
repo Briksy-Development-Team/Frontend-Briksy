@@ -96,7 +96,7 @@ const Blogs = () => {
   const navigate = useNavigate();
   return (
     <section className="w-full font-helvetica">
-      <div className="flex flex-col gap-8 px-[5%] py-20 xl:flex-row">
+      <div className="flex flex-col gap-8 px-[3%] py-20 xl:flex-row">
         <div className="flex flex-col items-center pt-8 xl:w-[24%] lg:items-start">
           <p className="mb-2 text-[0.75rem] font-medium uppercase tracking-[1px] text-yellowgray-50">
             BLOGS

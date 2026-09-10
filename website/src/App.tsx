@@ -1,6 +1,6 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { BrowserRouter, useLocation } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -8,27 +8,22 @@ import Lenis from "lenis";
 import AppRouter from "./routes/AppRouter";
 import ScrollToTop from "./components/utils/ScrollToTop";
 import Loader from "./components/loader/Loader";
+import { lenisInstance } from "./lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
-export const lenisInstance: { current: Lenis | null } = { current: null };
-
 const AppContent = () => {
-  const { pathname } = useLocation();
   const [appReady, setAppReady] = useState(false);
-  const [showLoader, setShowLoader] = useState(pathname === "/");
+  const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
-    if (pathname !== "/") {
-      setShowLoader(false);
-      return;
-    }
-    setShowLoader(true);
-    setAppReady(false);
-    const t = setTimeout(() => setAppReady(true), 3000);
+    const t = setTimeout(() => {
+      setAppReady(true);
+    }, 3000);
+
     return () => clearTimeout(t);
-  }, [pathname]);
+  }, []);
 
   return (
     <>
@@ -41,6 +36,7 @@ const AppContent = () => {
           }}
         />
       )}
+
       <ScrollToTop />
       <AppRouter />
     </>
@@ -50,16 +46,23 @@ const AppContent = () => {
 function App() {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 1.4,          // was 1.1 — higher = slower deceleration
       smoothWheel: true,
+      wheelMultiplier: 0.7,   // was default 1 — less distance per wheel tick
+      touchMultiplier: 1.2,   // was default 2 — less distance per touch drag
       autoRaf: false,
     });
+
     lenisInstance.current = lenis;
+
     lenis.on("scroll", ScrollTrigger.update);
+
     const raf = (time: number) => lenis.raf(time * 1000);
+
     gsap.ticker.add(raf);
     gsap.ticker.lagSmoothing(0);
     ScrollTrigger.refresh();
+
     return () => {
       gsap.ticker.remove(raf);
       lenis.destroy();
