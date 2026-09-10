@@ -4,6 +4,8 @@ type PropertyApi = {
   id: string;
   title: string;
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
+  listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  price?: number | null;
   description?: string | null;
   address?: string | null;
   address_line_1?: string | null;
@@ -93,6 +95,8 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   display_id: (item as any).display_id ?? (item as any).generated_id ?? null,
   title: item.title ?? "",
   status: item.status,
+  listing_purpose: item.listing_purpose ?? null,
+  price: item.price ?? null,
   description: item.description ?? null,
   rating: item.rating ?? undefined,
   address: item.address ?? null,
@@ -134,6 +138,8 @@ export const mapProperty = (item: PropertyApi): Property => ({
   display_id: (item as any).display_id ?? (item as any).generated_id ?? null,
   title: item.title ?? "",
   status: item.status,
+  listing_purpose: item.listing_purpose ?? null,
+  price: item.price ?? null,
   description: item.description ?? null,
   address: item.address ?? null,
   address_line_1: item.address_line_1 ?? null,

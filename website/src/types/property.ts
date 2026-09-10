@@ -12,6 +12,8 @@ export interface Property {
   posterName: string;
   posterAvatar: string;
   badge: string;
+  purpose?: "SELL" | "RENT" | "BOTH" | null;
+  propertyType?: string | null;
   lat: number;
   lng: number;
   isFavourite: boolean;

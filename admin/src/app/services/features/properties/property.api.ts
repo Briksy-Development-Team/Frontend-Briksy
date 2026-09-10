@@ -14,6 +14,8 @@ const toFormData = (payload: PropertyFormValues) => {
 
   formData.append("title", payload.title);
   formData.append("status", payload.status);
+  if (payload.listing_purpose) formData.append("listing_purpose", payload.listing_purpose);
+  if (payload.price !== undefined && payload.price !== null && payload.price !== "") formData.append("price", String(payload.price));
 
   if (payload.description) {
     formData.append("description", payload.description);

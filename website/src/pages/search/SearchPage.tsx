@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
@@ -29,7 +29,13 @@ const SearchPage = () => {
   const activeCategoryId =
     SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
 
-  const [activeTab, setActiveTab] = useState<FilterTab | null>(null);
+  const rawTabParam = searchParams.get("tab");
+  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "sold" ? "Sold" : null;
+  const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
+
+  useEffect(() => {
+    setActiveTab((tabParam as FilterTab) || null);
+  }, [tabParam]);
 
   const activeCategory =
     SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
@@ -59,7 +65,12 @@ const SearchPage = () => {
           showMap={showMap}
           onToggleMap={() => setShowMap((v) => !v)}
           query={queryParam}
-          onQueryChange={(q) => setSearchParams({ type: activeCategoryId, q })}
+          onQueryChange={(q) => {
+            const next = new URLSearchParams(searchParams);
+            next.set("type", activeCategoryId);
+            if (q) next.set("q", q); else next.delete("q");
+            setSearchParams(next);
+          }}
         />
 
         <div className="mt-8 flex flex-col gap-6">
