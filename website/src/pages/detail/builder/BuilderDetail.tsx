@@ -13,6 +13,9 @@ import {
 import { BuilderSidebar } from "./components/BuilderSidebar";
 import Reviews from "../../../components/reviews/Reviews";
 import { Share } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getOrganization } from "../../../api/seeker/organization.api";
 
 export const builderData = {
   id: 1,
@@ -167,7 +170,22 @@ import Breadcrumb from "../../../components/nav/Breadcrumb";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 
 const BuilderDetail = () => {
-  const addressParts = builderData.address.split(", ");
+  const { id } = useParams<{ id: string }>();
+  const [builder, setBuilder] = useState(builderData);
+
+  useEffect(() => {
+    if (!id) return;
+    getOrganization(id).then(({ data }) => setBuilder((current) => ({
+      ...current,
+      name: data.name,
+      address: [data.address, data.state, data.postcode].filter(Boolean).join(", ") || current.address,
+      rating: data.rating || 0,
+      tags: (data.services ?? []).map((service) => service.name),
+      about: { ...current.about, description: `Services offered: ${(data.services ?? []).map((service) => service.name).join(", ") || "Trusted building and property services."}` },
+    }))).catch(console.error);
+  }, [id]);
+
+  const addressParts = builder.address.split(", ");
   const suburbStateZip = addressParts[addressParts.length - 1].split(" ");
   const state = suburbStateZip[suburbStateZip.length - 2] || "NSW";
   const suburb = suburbStateZip.slice(0, -2).join(" ") || "Camden";
@@ -177,7 +195,7 @@ const BuilderDetail = () => {
     { label: "Find a builder", isBack: true },
     { label: "New home builders" },
     { label: `${suburb} ${state}` },
-    { label: builderData.name },
+    { label: builder.name },
   ];
 
   return (
@@ -200,33 +218,33 @@ const BuilderDetail = () => {
         </div>
         <div className="flex flex-col lg:flex-row gap-10 items-start relative">
           <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
-            <BuilderHeader builder={builderData} />
+            <BuilderHeader builder={builder} />
             <BuilderTabs />
 
             <div className="flex flex-col gap-16">
               <div id="snapshot">
-                <BuilderSnapshot snapshot={builderData.snapshot} />
+                <BuilderSnapshot snapshot={builder.snapshot} />
               </div>
               <div id="homes">
-                <BuilderHomes homes={builderData.homes} />
+                <BuilderHomes homes={builder.homes} />
               </div>
               <div id="performance">
-                <BuilderPerformance performance={builderData.performance} />
+                <BuilderPerformance performance={builder.performance} />
               </div>
               {/* <div id="team">
                 <BuilderTeam team={builderData.team} />
               </div> */}
               <div id="about">
-                <BuilderAbout about={builderData.about} />
+                <BuilderAbout about={builder.about} />
               </div>
               <div id="reviews">
-                <Reviews data={builderData.reviews} />
+                <Reviews data={builder.reviews} />
               </div>
             </div>
           </div>
 
           <aside className="w-full lg:w-[25%] shrink-0 lg:sticky lg:top-32">
-            <BuilderSidebar price={builderData.fixedPrice} />
+            <BuilderSidebar price={builder.fixedPrice} />
           </aside>
         </div>
 

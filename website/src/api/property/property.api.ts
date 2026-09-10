@@ -21,4 +21,5 @@ export type PublicProperty = {
 export const getProperties = async (params: Record<string, string | number | boolean | undefined> = {}) =>
   (await api.get<ApiPage<PublicProperty>>("/seeker/properties", { params: { per_page: 100, ...params } })).data;
 
-export const getProperty = async (id: string) => (await api.get(`/seeker/properties/${id}`)).data;
+export const getProperty = async (id: string): Promise<{ data: PublicProperty }> =>
+  (await api.get<{ data: PublicProperty }>(`/seeker/properties/${id}`)).data;

@@ -10,8 +10,11 @@ const getStaffBasePath = () => {
   return abilities.includes("super_admin") ? "/super-admin" : "/admin";
 };
 
-export const fetchStaffApi = async (params: GetStaffParams) => {
-  const res = await axiosInstance.get(`${getStaffBasePath()}/staff`, {
+export const fetchStaffApi = async (params: GetStaffParams, organizationId?: string) => {
+  const path = organizationId
+    ? `${getStaffBasePath()}/organizations/${organizationId}/staff`
+    : `${getStaffBasePath()}/staff`;
+  const res = await axiosInstance.get(path, {
     params: buildApiParams(params),
   });
   const { data, meta } = res.data || {};

@@ -1,97 +1,28 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  Star,
-  MapPin,
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ResultType } from "../../types/search";
-import { mockTraders } from "../../data/mockTraders";
 import type { Trader } from "../../types/trader";
-import Approves from "../../assets/logo/apprrove.svg";
-
-function MapListCard({ item }: { item: Trader }) {
-  return (
-    <Link
-      to={`/service/${item.id}`}
-      className="flex items-start gap-3 p-3 bg-white rounded-2xl border border-[#EDE8E4] hover:border-[#8B6F54] transition-colors"
-    >
-      <div className="relative shrink-0">
-        <img
-          src={item.avatar}
-          alt={item.name}
-          className="w-16 h-16 rounded-full object-cover"
-        />
-        <img
-          src={Approves}
-          alt="Verified"
-          className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-9 h-9"
-        />
-      </div>
-      <div className="flex-1 min-w-0 pt-0.5">
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <h3 className="text-[0.9rem] font-semibold text-primary-brown leading-tight">
-              {item.name}
-            </h3>
-            <p className="text-[0.75rem] text-[primary-light-brown] mt-0.5">
-              {item.role}
-            </p>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Star className="w-3.5 h-3.5 fill-[#E2CBB3] text-[#E2CBB3]" />
-            <span className="text-[0.8rem] font-semibold text-[primary-brown]">
-              {item.rating}
-            </span>
-            <span className="text-[0.75rem] text-[#8B6F54]">
-              ({item.reviews})
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1 mt-1">
-          <MapPin className="w-3 h-3 text-[#8B6F54] shrink-0" />
-          <span className="text-[0.7rem] text-[#8B6F54] truncate">
-            {item.location}
-          </span>
-        </div>
-        <div className="flex flex-wrap gap-1 mt-2">
-          {item.tags.slice(0, 2).map((tag) => (
-            <span
-              key={tag}
-              className="text-[0.65rem] px-2 py-0.5 bg-[#F0EBE4] text-[primary-brown] rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-        <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-[#F0EBE4]">
-          <span className="text-[0.75rem] text-[primary-light-brown] font-medium">
-            View Profile
-          </span>
-          <ArrowRight className="w-3.5 h-3.5 text-[#8B6F54]" />
-        </div>
-      </div>
-    </Link>
-  );
-}
+import type { Builder } from "../../types/builder";
+import type { Property } from "../../types/property";
+import TraderListCard from "../../components/cards/trader/TraderListCard";
+import BuilderListCard from "../../components/cards/builder/BuilderListCard";
+import PropertyListCard from "../../components/cards/property/PropertyListCard";
 
 export default function MapSplitView({
   resultType,
-  selectedSub,
+  selectedSub: _selectedSub,
+  traders,
+  builders,
+  properties,
 }: {
   resultType: ResultType;
   selectedSub: string;
+  traders: Trader[];
+  builders: Builder[];
+  properties: Property[];
 }) {
   const [page, setPage] = useState(1);
   const total = 15;
-  const traders =
-    resultType === "trader"
-      ? mockTraders.some((t) => t.category === selectedSub)
-        ? mockTraders.filter((t) => t.category === selectedSub)
-        : mockTraders
-      : mockTraders;
 
   return (
     <div
@@ -102,9 +33,9 @@ export default function MapSplitView({
         <p className="text-[0.75rem] text-[#8B6F54] shrink-0">
           Over 1,000 professionals near Brisbane
         </p>
-        {traders.map((item) => (
-          <MapListCard key={item.id} item={item} />
-        ))}
+        {resultType === "trader" && traders.map((item) => <TraderListCard key={item.id} item={item} />)}
+        {resultType === "builder" && builders.map((item) => <BuilderListCard key={item.id} item={item} />)}
+        {resultType === "property" && properties.map((item) => <PropertyListCard key={item.id} item={item} />)}
         <div className="flex items-center justify-center gap-1.5 py-4 shrink-0">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}

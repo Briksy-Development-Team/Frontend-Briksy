@@ -157,12 +157,14 @@ const ImageAnimation = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-center">
-            <img
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=150&h=150"
-              alt="Briksy Member"
-              className="h-20 w-20 lg:h-[5.5625rem] lg:w-[4.5rem] rounded-full lg:rounded-[67.5rem] bg-gray-200 object-cover"
-            />
+          <div className="flex  items-end">
+            <span>
+              <img
+                src={undefined}
+                alt=""
+                className="h-[5.5625rem] w-[4.5rem]  rounded-[67.5rem] bg-gray-100"
+              />
+            </span>
           </div>
         </div>
       </div>

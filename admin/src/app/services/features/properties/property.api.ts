@@ -109,7 +109,7 @@ type ApiResponse<T> = {
   };
 };
 
-export const fetchPropertyListApi = async (params: PropertyListParams) => {
+export const fetchPropertyListApi = async (params: PropertyListParams, organizationId?: string) => {
   if (useMockListingData) {
     return queryMockList(mockProperties, params, {
       searchFields: ["title", "suburb", "state", "postcode", "organization.name"],
@@ -117,7 +117,10 @@ export const fetchPropertyListApi = async (params: PropertyListParams) => {
     });
   }
 
-  const res = await axiosInstance.get<ApiResponse<Property[]>>(getBasePath(), {
+  const path = organizationId
+    ? getBasePath().replace("/properties", `/organizations/${organizationId}/properties`)
+    : getBasePath();
+  const res = await axiosInstance.get<ApiResponse<Property[]>>(path, {
     params: buildApiParams(params),
   });
 
