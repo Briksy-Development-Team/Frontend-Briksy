@@ -10,6 +10,7 @@ import PropertyListCard from "../../components/cards/property/PropertyListCard";
 
 export default function MapSplitView({
   resultType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedSub: _selectedSub,
   traders,
   builders,
@@ -35,7 +36,7 @@ export default function MapSplitView({
         </p>
         {resultType === "trader" && traders.map((item) => <TraderListCard key={item.id} item={item} />)}
         {resultType === "builder" && builders.map((item) => <BuilderListCard key={item.id} item={item} />)}
-        {resultType === "property" && properties.map((item) => <PropertyListCard key={item.id} item={item} />)}
+        {(resultType === "property" || resultType === "comercial") && properties.map((item) => <PropertyListCard key={item.id} item={item} />)}
         <div className="flex items-center justify-center gap-1.5 py-4 shrink-0">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}

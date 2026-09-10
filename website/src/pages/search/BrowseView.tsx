@@ -1,88 +1,94 @@
+import React from "react";
 import type { ResultType } from "../../types/search";
-import { useEffect, useState } from "react";
-import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
-import { getProperties, type PublicProperty } from "../../api/property/property.api";
-import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
-import TraderGridCard from "../../components/cards/trader/TraderGridCard";
-import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
-import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
+import { useListingData } from "./useListingData";
+import { LISTING_DISPLAY } from "./listingDisplay";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
+import "swiper/css";
 
-const GRID =
-  "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-
-function SectionHead({ title, count }: { title: string; count: number }) {
+function SectionSwiper({ children }: { children: React.ReactNode[] }) {
   return (
-    <div className="flex items-center justify-between py-2">
-      <h2 className="text-[1.5rem] font-medium text-[primary-brown] tracking-tight">
-        {title}
-      </h2>
-      <button className="text-[0.75rem] text-[#8B6F54] hover:text-[primary-brown] transition-colors">
-        View more ({count})
-      </button>
-    </div>
+    <Swiper
+      modules={[Mousewheel]}
+      spaceBetween={16}
+      slidesPerView="auto"
+      watchOverflow={false}
+      grabCursor
+      mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
+      className="[overscroll-behavior-x:contain] touch-pan-y"
+    >
+      {children.map((child, index) => (
+        <SwiperSlide key={index} className="!w-[20.5rem]">
+          {child}
+        </SwiperSlide>
+      ))}
+    </Swiper>
   );
 }
 
-export default function BrowseView({ resultType }: { resultType: ResultType }) {
-  const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
-  const [properties, setProperties] = useState<PublicProperty[]>([]);
-  useEffect(() => {
-    if (resultType === "property") getProperties({ verified_only: 1 }).then((r) => setProperties(r.data)).catch(console.error);
-    else getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: 1 }).then((r) => setOrganizations(r.data)).catch(console.error);
-  }, [resultType]);
-  const builders = organizations.map(organizationToBuilder);
-  const traders = organizations.map(organizationToTrader);
-  const propertyCards = properties.map(propertyToCard);
+function Section<T extends { id: string | number }>({
+  title,
+  items,
+  Card,
+  onViewMore,
+}: {
+  title: string;
+  items: T[];
+  Card: React.ComponentType<{ item: T }>;
+  onViewMore: () => void;
+}) {
+  return (
+    <section>
+      <div className="flex items-center justify-between py-2">
+        <h2 className="text-[1.5rem] font-medium tracking-tight text-[#342511]">{title}</h2>
+        {items.length > 4 && (
+          <button
+            type="button"
+            onClick={onViewMore}
+            className="text-[0.75rem] text-[#8B6F54] transition-colors hover:text-[#342511]"
+          >
+            View more ({items.length})
+          </button>
+        )}
+      </div>
+
+      <SectionSwiper>
+        {items.slice(0, 10).map((item) => (
+          <div key={item.id}>
+            <Card item={item} />
+          </div>
+        ))}
+      </SectionSwiper>
+    </section>
+  );
+}
+
+export default function BrowseView({
+  resultType,
+  onViewMore,
+}: {
+  resultType: ResultType;
+  onViewMore: (section: "popular" | "newly") => void;
+}) {
+  const items = useListingData(resultType);
+  const { popularTitle, newlyTitle, Card } = LISTING_DISPLAY[resultType];
+
+  const splitIndex = Math.ceil(items.length / 2);
+
   return (
     <>
-      {resultType === "trader" && (
-        <>
-          <SectionHead title="Popular Professionals" count={20} />
-          <div className={GRID}>
-            {traders.slice(0, 4).map((item) => (
-              <TraderGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          <SectionHead title="Newly Traders" count={20} />
-          <div className={GRID}>
-            {traders.slice(4, 8).map((item) => (
-              <TraderGridCard key={item.id} item={item} />
-            ))}
-          </div>
-        </>
-      )}
-      {resultType === "builder" && (
-        <>
-          <SectionHead title="Popular Builders" count={20} />
-          <div className={GRID}>
-            {builders.slice(0, 4).map((item) => (
-              <BuilderGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          <SectionHead title="Newly Listed Builders" count={20} />
-          <div className={GRID}>
-            {builders.slice(4).map((item) => (
-              <BuilderGridCard key={item.id} item={item} />
-            ))}
-          </div>
-        </>
-      )}
-      {resultType === "property" && (
-        <>
-          <SectionHead title="Popular Properties" count={20} />
-          <div className={GRID}>
-            {propertyCards.slice(0, 4).map((item) => (
-              <PropertyGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          <SectionHead title="Newly Listed Properties" count={20} />
-          <div className={GRID}>
-            {propertyCards.slice(4).map((item) => (
-              <PropertyGridCard key={item.id} item={item} />
-            ))}
-          </div>
-        </>
-      )}
+      <Section
+        title={popularTitle}
+        items={items.slice(0, splitIndex)}
+        Card={Card}
+        onViewMore={() => onViewMore("popular")}
+      />
+      <Section
+        title={newlyTitle}
+        items={items.slice(splitIndex)}
+        Card={Card}
+        onViewMore={() => onViewMore("newly")}
+      />
     </>
   );
 }

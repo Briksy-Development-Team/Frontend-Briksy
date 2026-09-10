@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
@@ -7,6 +7,7 @@ import Breadcrumb from "../../components/nav/Breadcrumb";
 import SearchToolbar, { SEARCH_CATEGORIES } from "./SearchToolbar";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
+import FullListView from "./FullListView";
 
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
@@ -16,34 +17,77 @@ const HEADERS: Record<string, { title: string; crumb: string }> = {
   commercial: { title: "Find commercial", crumb: "Commercial" },
 };
 
+type BrowseSection = "all" | "popular" | "newly";
+
+function buildBreadcrumbs({
+  crumb,
+  activeTab,
+  browseSection,
+  clearTab,
+  clearSection,
+}: {
+  crumb: string;
+  activeTab: FilterTab | null;
+  browseSection: BrowseSection;
+  clearTab: () => void;
+  clearSection: () => void;
+}): BreadcrumbItem[] {
+  const home: BreadcrumbItem = { label: "Home", href: "/" };
+
+  if (activeTab) {
+    return [home, { label: crumb, onClick: clearTab }, { label: activeTab }];
+  }
+
+  if (browseSection !== "all") {
+    const noun = crumb.split(" ").pop() || "Results";
+    const label = browseSection === "popular" ? `Popular ${noun}` : `Newly Listed ${noun}`;
+    return [home, { label: crumb, onClick: clearSection }, { label }];
+  }
+
+  return [home, { label: crumb }];
+}
+
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sort, setSort] = useState<SortType>("featured");
   const [showMap, setShowMap] = useState(false);
+  const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
+  const [activeTab, setActiveTab] = useState<FilterTab | null>(null);
 
-  // Sync state with URL if needed, or just use URL as truth
   const typeParam = searchParams.get("type");
   const queryParam = searchParams.get("q") || "";
 
-  // Map URL `type` to one of our category IDs (all, properties, builders, professionals, commercial)
   const activeCategoryId =
     SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
-
-  const [activeTab, setActiveTab] = useState<FilterTab | null>(null);
-
   const activeCategory =
     SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
   const resultType = activeCategory.resultType;
-
   const { crumb } = HEADERS[activeCategoryId] || HEADERS.all;
 
-  const breadcrumbs: BreadcrumbItem[] = activeTab
-    ? [
-        { label: "Home", href: "/" },
-        { label: crumb, onClick: () => setActiveTab(null) },
-        { label: activeTab },
-      ]
-    : [{ label: "Home", href: "/" }, { label: crumb }];
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBrowseSection("all");
+  }, [resultType]);
+
+  const breadcrumbs = buildBreadcrumbs({
+    crumb,
+    activeTab,
+    browseSection,
+    clearTab: () => {
+      setActiveTab(null);
+      setBrowseSection("all");
+    },
+    clearSection: () => setBrowseSection("all"),
+  });
+
+  let content;
+  if (activeTab || showMap) {
+    content = <ResultsView resultType={resultType} selectedSub={activeTab || ""} showMap={showMap} />;
+  } else if (browseSection !== "all") {
+    content = <FullListView resultType={resultType} section={browseSection} />;
+  } else {
+    content = <BrowseView resultType={resultType} onViewMore={setBrowseSection} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pt-24 pb-16 font-helvetica">
@@ -62,17 +106,7 @@ const SearchPage = () => {
           onQueryChange={(q) => setSearchParams({ type: activeCategoryId, q })}
         />
 
-        <div className="mt-8 flex flex-col gap-6">
-          {activeTab || showMap ? (
-            <ResultsView
-              resultType={resultType}
-              selectedSub={activeTab || ""}
-              showMap={showMap}
-            />
-          ) : (
-            <BrowseView resultType={resultType} />
-          )}
-        </div>
+        <div className="mt-8 flex flex-col gap-6">{content}</div>
       </div>
     </div>
   );

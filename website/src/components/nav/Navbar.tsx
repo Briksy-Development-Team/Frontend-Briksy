@@ -32,8 +32,8 @@ const navItems = [
   { label: "Agents", to: "/result?type=trader" },
   { label: "Builders", to: "/result?type=builder" },
   { label: "Blogs", to: "/blogs" },
-  { label: "Commercials", to: "/commercials" },
-];  
+  { label: "Commercials", to: "/result?type=comercial" },
+];
 
 const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
