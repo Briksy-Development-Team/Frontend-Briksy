@@ -12,14 +12,13 @@ import {
 
 import { toggleSeekerPropertyFavorite } from '../../../seeker/seeker.api'
 
-import { type Screen } from '../shared'
+import type { Screen } from '../shared'
 
 import { LoginScreen } from './LoginScreen'
 import { ForgotScreen } from './ForgotScreen'
 import { LinkSentScreen } from './LinkSentScreen'
 import { NewPasswordScreen } from './NewPasswordScreen'
 import { UpdatedScreen } from './UpdatedScreen'
-import type { Screen } from '../shared'
 
 const LOGIN_SCREENS: Record<Screen, ComponentType<{ go: (screen: Screen) => void }>> = {
   login: LoginScreen,
@@ -87,10 +86,6 @@ const Login = () => {
     isBootstrapping,
     navigate,
   ])
-
-  const go = (nextScreen: Screen) => {
-    setScreen(nextScreen as string)
-  }
 
   return (
     <div className="h-screen flex items-start sm:items-center justify-center lg:p-4 font-helvetica bg-white">

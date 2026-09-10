@@ -49,6 +49,8 @@ export type Property = {
   description?: string | null;
 
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
+  listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  price?: number | null;
 
   address?: string | null;
   address_line_1?: string | null;
@@ -150,6 +152,8 @@ export type PropertyFormValues = {
   location_verified_by?: string;
   location_verified_at?: string;
   property_type_id?: string;
+  listing_purpose?: "SELL" | "RENT" | "BOTH";
+  price?: string | number | null;
 
   images?: (File | string)[];
   videos?: (File | string)[];
@@ -163,6 +167,8 @@ export type PropertyList = {
   title: string;
 
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
+  listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  price?: number | null;
 
   description?: string | null;
 

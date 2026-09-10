@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import PropertyFilters from "./panels/PropertyFilters";
 import BuilderFilters from "./panels/BuilderFilters";
@@ -15,6 +15,7 @@ import {
   DEFAULT_BUY_FILTERS, DEFAULT_RENT_FILTERS, DEFAULT_SOLD_FILTERS,
   DEFAULT_BUILDER_PROFILE_FILTERS, DEFAULT_AGENT_FILTERS, DEFAULT_TRADE_FILTERS,
 } from "./filterTypes";
+import { filtersToPropertyParams, propertyQueryToParams } from "../../api/property/propertySearch";
 
 type FilterProps = {
   isOpen: boolean;
@@ -39,11 +40,11 @@ const TABS_BY_CATEGORY: Record<string, FilterTab[]> = {
   properties: ["Buy", "Rent", "Sold"],
   builders: ["Builders", "Agents"],
   professionals: ["Traders"],
-  Commercial: ["Rent"],
+  commercial: ["Buy", "Rent"],
 };
 
 const getVisibleTabs = (category = "all") => {
-  const allowed = TABS_BY_CATEGORY[category] ?? TABS_BY_CATEGORY.all;
+  const allowed = TABS_BY_CATEGORY[category.toLowerCase()] ?? TABS_BY_CATEGORY.all;
   const seen = new Set<FilterTab>();
   return ALL_TABS.filter(
     (t) => allowed.includes(t.value) && !seen.has(t.value) && seen.add(t.value)
@@ -55,6 +56,7 @@ const Filter = ({
   builderMode = "profiles", agentCategory, category = "all",
 }: FilterProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const visibleTabs = getVisibleTabs(category);
   const [activeTab, setActiveTab] = useState<FilterTab>(initialTab);
   const tabsScrollRef = useRef<HTMLDivElement>(null);
@@ -89,6 +91,25 @@ const Filter = ({
 
   useEffect(() => {
     if (!isOpen) return;
+    const query = propertyQueryToParams(new URLSearchParams(location.search));
+    const shared = {
+      ...(query.search ? { keyword: query.search } : {}),
+      ...(query.min_price !== undefined ? { priceMin: query.min_price } : {}),
+      ...(query.max_price !== undefined ? { priceMax: query.max_price } : {}),
+      ...(query.bedrooms !== undefined ? { bedrooms: query.bedrooms } : {}),
+      ...(query.bathrooms !== undefined ? { bathrooms: query.bathrooms } : {}),
+      ...(query.car_spaces !== undefined ? { carSpaces: query.car_spaces } : {}),
+      ...(query.min_land_size !== undefined ? { landSizeMin: query.min_land_size } : {}),
+      ...(query.max_land_size !== undefined ? { landSizeMax: query.max_land_size } : {}),
+      ...(query.features?.length ? { features: query.features.map((feature) => ({ swimming_pool: "Pool", air_conditioning: "Air conditioning", solar_panels: "Solar panels", study: "Study", pet_friendly: "Pet-friendly" } as Record<string, string>)[feature]).filter(Boolean) } : {}),
+      ...(query.category === "commercial" ? { propertyTypes: ["Commercial"] } : {}),
+    };
+    setBuy((current) => ({ ...current, ...shared }));
+    setRent((current) => ({ ...current, ...shared }));
+  }, [isOpen, location.search]);
+
+  useEffect(() => {
+    if (!isOpen) return;
     const scrollY = window.scrollY;
     const body = document.body;
     Object.assign(body.style, { position: "fixed", top: `-${scrollY}px`, left: "0", right: "0", width: "100%", overflow: "hidden" });
@@ -109,6 +130,11 @@ const Filter = ({
       case "Agents": setAgents(DEFAULT_AGENT_FILTERS); break;
       case "Traders": setTrades(DEFAULT_TRADE_FILTERS); break;
     }
+
+    const params = new URLSearchParams(location.search);
+    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab"].forEach((key) => params.delete(key));
+    if (category.toLowerCase() !== "commercial") params.delete("category");
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   };
 
   const handleApply = () => {
@@ -116,8 +142,32 @@ const Filter = ({
       Buy: "property", Rent: "property", Sold: "property",
       Builders: "builder", Agents: "trader", Traders: "trader",
     };
-    const params = new URLSearchParams({ type: typeMap[activeTab], tab: activeTab.toLowerCase() });
+    const params = new URLSearchParams(location.search);
+    params.set("type", typeMap[activeTab]);
+    params.set("tab", activeTab.toLowerCase());
+    params.set("page", "1");
     if (activeTab === "Agents" && agentCategory) params.set("category", agentCategory);
+    if (activeTab === "Buy" || activeTab === "Rent") {
+      const filters = activeTab === "Buy" ? buy : rent;
+      const propertyParams = filtersToPropertyParams(filters);
+      params.delete("q");
+      params.delete("search");
+      params.delete("min_price");
+      params.delete("max_price");
+      ["bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features"].forEach((key) => params.delete(key));
+      params.delete("category");
+      if (propertyParams.search) params.set("q", propertyParams.search);
+      if (propertyParams.min_price !== undefined) params.set("min_price", String(propertyParams.min_price));
+      if (propertyParams.max_price !== undefined) params.set("max_price", String(propertyParams.max_price));
+      if (propertyParams.bedrooms !== undefined) params.set("bedrooms", String(propertyParams.bedrooms));
+      if (propertyParams.bathrooms !== undefined) params.set("bathrooms", String(propertyParams.bathrooms));
+      if (propertyParams.car_spaces !== undefined) params.set("car_spaces", String(propertyParams.car_spaces));
+      if (propertyParams.min_land_size !== undefined) params.set("min_land_size", String(propertyParams.min_land_size));
+      if (propertyParams.max_land_size !== undefined) params.set("max_land_size", String(propertyParams.max_land_size));
+      propertyParams.features?.forEach((feature) => params.append("features[]", feature));
+      if (propertyParams.category) params.set("category", propertyParams.category);
+      params.set("purpose", activeTab === "Buy" ? "sell" : "rent");
+    }
     navigate(`/result?${params.toString()}`);
     onClose();
   };

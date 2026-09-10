@@ -49,7 +49,7 @@ const PropertyListCard = ({ item }: Props) => {
         className="h-full w-full object-cover"
       />
       <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {item.badge}
+        {( { SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string> )[item.purpose || ""] || item.badge}
       </span>
       <button
         type="button"
@@ -87,6 +87,7 @@ const PropertyListCard = ({ item }: Props) => {
       </p>
 
       <p className="text-[0.875rem] text-primary-brown">
+        {item.propertyType && `${item.propertyType} • `}
         {item.beds} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{item.baths} Bath&nbsp;&nbsp;•&nbsp;&nbsp;{item.sqm} sqm
       </p>
 

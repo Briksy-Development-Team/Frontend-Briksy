@@ -6,6 +6,8 @@ import { organizationToBuilder, organizationToTrader, propertyToCard } from "../
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
+import { useSearchParams } from "react-router-dom";
+import { propertyQueryToParams } from "../../api/property/propertySearch";
 
 const GRID =
   "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
@@ -26,13 +28,41 @@ function SectionHead({ title, count }: { title: string; count: number }) {
 export default function BrowseView({ resultType }: { resultType: ResultType }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+  const page = Math.max(1, Number(searchParams.get("page") || 1));
+  const totalPages = Math.max(1, Math.ceil(total / 24));
+  const resetFilters = () => {
+    const next = new URLSearchParams(searchParams);
+    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab"].forEach((key) => next.delete(key));
+    if (resultType !== "comercial") next.delete("category");
+    setSearchParams(next);
+  };
+  const pageControls = (resultType === "property" || resultType === "comercial") && totalPages > 1 ? <div className="mt-8 flex items-center justify-center gap-4 text-sm"><button type="button" disabled={page <= 1} onClick={() => { const next = new URLSearchParams(searchParams); next.set("page", String(page - 1)); setSearchParams(next); }} className="rounded-full border px-4 py-2 disabled:opacity-40">Previous</button><span>Page {page} of {totalPages}</span><button type="button" disabled={page >= totalPages} onClick={() => { const next = new URLSearchParams(searchParams); next.set("page", String(page + 1)); setSearchParams(next); }} className="rounded-full border px-4 py-2 disabled:opacity-40">Next</button></div> : null;
   useEffect(() => {
-    if (resultType === "property") getProperties({ verified_only: 1 }).then((r) => setProperties(r.data)).catch(console.error);
-    else getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: 1 }).then((r) => setOrganizations(r.data)).catch(console.error);
-  }, [resultType]);
+    let active = true;
+    setLoading(true);
+    setError(null);
+    const query = propertyQueryToParams(searchParams);
+    const request = resultType === "property" || resultType === "comercial"
+      ? getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
+      : getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: 1 });
+    request.then((r: any) => {
+      if (!active) return;
+      if (resultType === "property" || resultType === "comercial") { setProperties(r.data); setTotal(r.meta?.pagination?.total ?? r.data.length); }
+      else setOrganizations(r.data);
+    }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [resultType, searchParams.toString()]);
   const builders = organizations.map(organizationToBuilder);
   const traders = organizations.map(organizationToTrader);
   const propertyCards = properties.map(propertyToCard);
+  if (loading) return <p className="py-10 text-center text-sm text-[#8B6F54]">Loading results...</p>;
+  if (error) return <p className="rounded-2xl bg-white p-8 text-center text-red-700">{error}</p>;
+  if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) return <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p><button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button></div>;
   return (
     <>
       {resultType === "trader" && (
@@ -69,18 +99,26 @@ export default function BrowseView({ resultType }: { resultType: ResultType }) {
       )}
       {resultType === "property" && (
         <>
-          <SectionHead title="Popular Properties" count={20} />
+          <SectionHead title="Popular Properties" count={total} />
           <div className={GRID}>
             {propertyCards.slice(0, 4).map((item) => (
               <PropertyGridCard key={item.id} item={item} />
             ))}
           </div>
-          <SectionHead title="Newly Listed Properties" count={20} />
+          <SectionHead title="Newly Listed Properties" count={total} />
           <div className={GRID}>
             {propertyCards.slice(4).map((item) => (
               <PropertyGridCard key={item.id} item={item} />
             ))}
           </div>
+          {pageControls}
+        </>
+      )}
+      {resultType === "comercial" && (
+        <>
+          <SectionHead title="Commercial Properties" count={propertyCards.length} />
+          <div className={GRID}>{propertyCards.map((item) => <PropertyGridCard key={item.id} item={item} />)}</div>
+          {pageControls}
         </>
       )}
     </>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import apple from '../../../assets/login/apple.svg';
 import google from '../../../assets/login/google.svg';
+import LogoM from '../../../assets/logo/logomobile.svg';
 import {
   type Screen,
   ScreenWrapper,

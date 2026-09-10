@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Home from '../pages/home/Home'
 import MainLayout from './MainLayout'
 import Register from '../pages/auth/register/Register'
@@ -19,6 +19,19 @@ import ProtectedRoute from './ProtectedRoute.tsx'
 import Profile from '../pages/profile/Profile.tsx'
 import BlogsPage from "../pages/blogs/BlogsPage";
 import BlogDetail from "../pages/blogs/BlogDetail";
+
+const CommercialsRedirect = () => {
+  const location = useLocation();
+  return <Navigate to={`/result?type=commercial${location.search ? `&${location.search.slice(1)}` : ""}`} replace />;
+};
+
+const ScopedPropertyRedirect = ({ purpose }: { purpose: "buy" | "rent" }) => {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  params.set("type", "property");
+  params.set("intent", purpose);
+  return <Navigate to={`/result?${params.toString()}`} replace />;
+};
 
 const AppRouter = () => {
   return (
@@ -42,6 +55,9 @@ const AppRouter = () => {
         <Route path="/" element={<Home />} />
 
         <Route path="/result" element={<SearchPage />} />
+        <Route path="/buy" element={<ScopedPropertyRedirect purpose="buy" />} />
+        <Route path="/rent" element={<ScopedPropertyRedirect purpose="rent" />} />
+        <Route path="/commercials" element={<CommercialsRedirect />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
