@@ -1,14 +1,12 @@
 import type { ResultType } from "../../types/search";
 import { useEffect, useState } from "react";
-import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
-import { getProperties, type PublicProperty } from "../../api/property/property.api";
-import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useListingData } from "./useListingData";
 
-const GRID = "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+const GRID = "grid grid-cols-1 gap-x-2 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 const ITEMS_PER_PAGE = 12;
 
 export default function FullListView({ 
@@ -18,35 +16,14 @@ export default function FullListView({
   resultType: ResultType; 
   section: "popular" | "newly" 
 }) {
-  const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
-  const [properties, setProperties] = useState<PublicProperty[]>([]);
   const [page, setPage] = useState(1);
+  const allItems = useListingData(resultType);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-    if (resultType === "property" || resultType === "comercial") {
-      getProperties({ verified_only: 1, search: resultType === "comercial" ? "rent" : undefined })
-        .then((r) => setProperties(r.data))
-        .catch(console.error);
-    } else {
-      getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: 1 })
-        .then((r) => setOrganizations(r.data))
-        .catch(console.error);
-    }
   }, [resultType, section]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let allItems: any[] = [];
-  if (resultType === "property" || resultType === "comercial") {
-    allItems = properties.map(propertyToCard);
-  } else if (resultType === "builder") {
-    allItems = organizations.map(organizationToBuilder);
-  } else {
-    allItems = organizations.map(organizationToTrader);
-  }
-
-  // Split logic to match BrowseView
   const mid = Math.ceil(allItems.length / 2);
   const items = section === "popular" ? allItems.slice(0, mid) : allItems.slice(mid);
   

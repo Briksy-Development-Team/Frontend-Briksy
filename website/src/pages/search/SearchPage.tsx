@@ -19,33 +19,7 @@ const HEADERS: Record<string, { title: string; crumb: string }> = {
 
 type BrowseSection = "all" | "popular" | "newly";
 
-function buildBreadcrumbs({
-  crumb,
-  activeTab,
-  browseSection,
-  clearTab,
-  clearSection,
-}: {
-  crumb: string;
-  activeTab: FilterTab | null;
-  browseSection: BrowseSection;
-  clearTab: () => void;
-  clearSection: () => void;
-}): BreadcrumbItem[] {
-  const home: BreadcrumbItem = { label: "Home", href: "/" };
 
-  if (activeTab) {
-    return [home, { label: crumb, onClick: clearTab }, { label: activeTab }];
-  }
-
-  if (browseSection !== "all") {
-    const noun = crumb.split(" ").pop() || "Results";
-    const label = browseSection === "popular" ? `Popular ${noun}` : `Newly Listed ${noun}`;
-    return [home, { label: crumb, onClick: clearSection }, { label }];
-  }
-
-  return [home, { label: crumb }];
-}
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,16 +43,21 @@ const SearchPage = () => {
     setBrowseSection("all");
   }, [resultType]);
 
-  const breadcrumbs = buildBreadcrumbs({
-    crumb,
-    activeTab,
-    browseSection,
-    clearTab: () => {
-      setActiveTab(null);
-      setBrowseSection("all");
-    },
-    clearSection: () => setBrowseSection("all"),
-  });
+  const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
+  if (activeTab) {
+    breadcrumbs.push(
+      { label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } },
+      { label: activeTab }
+    );
+  } else if (browseSection !== "all") {
+    const noun = crumb.split(" ").pop() || "Results";
+    breadcrumbs.push(
+      { label: crumb, onClick: () => setBrowseSection("all") },
+      { label: browseSection === "popular" ? `Popular ${noun}` : `Newly Listed ${noun}` }
+    );
+  } else {
+    breadcrumbs.push({ label: crumb });
+  }
 
   let content;
   if (activeTab || showMap) {
