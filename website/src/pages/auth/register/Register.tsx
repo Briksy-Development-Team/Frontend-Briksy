@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useLayoutEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRef, useState, useLayoutEffect } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import Brandpanel from '../../../assets/login/loginleft.png';
@@ -18,23 +18,12 @@ const SCREENS: Record<RegisterStep, React.ComponentType<{ go: (s: RegisterStep) 
   welcome: WelcomeScreen,
 };
 
-const LINK_CLASS = 'text-white underline underline-offset-2 hover:text-white/90 transition-opacity';
-
-const LEFT_CONFIG = {
-  default: { title: 'Join Briksy', prompt: 'Already a member?', linkLabel: 'Log in', linkTo: '/login' },
-  welcome: { title: "You're in", prompt: 'Run a business?', linkLabel: 'List it on Briksy', linkTo: '/business' },
-};
-
 const Register = () => {
   const [step, setStep] = useState<RegisterStep>('details');
-  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const flipState = useRef<ReturnType<typeof Flip.getState> | null>(null);
   const mounted = useRef(false);
 
-  const { title, prompt, linkLabel, linkTo } = LEFT_CONFIG[step === 'welcome' ? 'welcome' : 'default'];
   const Screen = SCREENS[step];
 
   const go = (s: RegisterStep) => {

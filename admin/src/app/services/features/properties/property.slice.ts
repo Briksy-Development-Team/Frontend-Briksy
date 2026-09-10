@@ -53,8 +53,9 @@ const initialState: PropertyState = {
 
 export const fetchPropertyList = createAsyncThunk(
   "properties/fetch",
-  async (params: PropertyListParams) => {
-    const res = await fetchPropertyListApi(params);
+  async (params: PropertyListParams & { organizationId?: string }) => {
+    const { organizationId, ...listParams } = params;
+    const res = await fetchPropertyListApi(listParams, organizationId);
 
     return {
       data: res.data.map(mapPropertyGroup),

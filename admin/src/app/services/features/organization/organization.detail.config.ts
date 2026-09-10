@@ -150,7 +150,8 @@ export const organizationDetailConfig: DetailConfig<any> = {
           fetchStaff({
             ...params,
             filters: getRelatedFilters(data, params.filters),
-          })
+            organizationId,
+          } as any)
         );
       },
       dataSelector: (state: RootState) => state.staff.data,
@@ -179,7 +180,8 @@ export const organizationDetailConfig: DetailConfig<any> = {
           fetchPropertyList({
             ...params,
             filters: getRelatedFilters(data, params.filters),
-          })
+            organizationId,
+          } as any)
         );
       },
       dataSelector: (state: RootState) => state.propertyList.data,
@@ -224,7 +226,8 @@ export const organizationDetailConfig: DetailConfig<any> = {
           fetchServiceList({
             ...params,
             filters: getRelatedFilters(data, params.filters),
-          })
+            organizationId,
+          } as any)
         );
       },
       dataSelector: (state: RootState) => state.services.data,

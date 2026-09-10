@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, type ComponentType } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Brandpanel from '../../../assets/login/loginleft.png'
 import BriksyLogo from '../../../assets/logo/briskybrown.svg'
@@ -6,14 +6,29 @@ import { useAuth } from '../../../auth/AuthContext'
 import { clearPendingFavoriteAction, readPendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerPropertyFavorite } from '../../../seeker/seeker.api'
 import { LoginScreen } from './LoginScreen'
+import { ForgotScreen } from './ForgotScreen'
+import { LinkSentScreen } from './LinkSentScreen'
+import { NewPasswordScreen } from './NewPasswordScreen'
+import { UpdatedScreen } from './UpdatedScreen'
+import type { Screen } from '../shared'
+
+const LOGIN_SCREENS: Record<Screen, ComponentType<{ go: (screen: Screen) => void }>> = {
+  login: LoginScreen,
+  forgot: ForgotScreen,
+  'link-sent': LinkSentScreen,
+  'new-password': NewPasswordScreen,
+  updated: UpdatedScreen,
+}
 
 const Login = () => {
   const { isAuthenticated, isBootstrapping } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const redirectingRef = useRef(false)
+  const [screen, setScreen] = useState<Screen>('login')
 
   const fromPath = (location.state as { from?: string } | null)?.from ?? '/account/profile'
+  const ScreenComponent = LOGIN_SCREENS[screen]
 
   useEffect(() => {
     if (isBootstrapping || !isAuthenticated || redirectingRef.current) {
@@ -69,7 +84,7 @@ const Login = () => {
         </div>
 
         <main className="flex flex-1 items-center justify-center">
-          <LoginScreen />
+          <ScreenComponent go={setScreen} />
         </main>
       </div>
     </div>

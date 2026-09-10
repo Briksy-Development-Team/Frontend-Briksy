@@ -30,7 +30,7 @@ type ApiResponse<T> = {
   };
 };
 
-export const fetchServiceGroupApi = async (params: GetServiceListParams) => {
+export const fetchServiceGroupApi = async (params: GetServiceListParams, organizationId?: string) => {
   if (useMockListingData) {
     return queryMockList(mockServices, params, {
       searchFields: ["name", "title", "slug", "description", "service_area", "organization_type.name"],
@@ -38,7 +38,10 @@ export const fetchServiceGroupApi = async (params: GetServiceListParams) => {
     });
   }
 
-  const res = await axiosInstance.get<ApiResponse<Service[]>>(getBasePath(), {
+  const path = organizationId
+    ? getBasePath().replace("/services", `/organizations/${organizationId}/services`)
+    : getBasePath();
+  const res = await axiosInstance.get<ApiResponse<Service[]>>(path, {
     params: buildApiParams(params),
   });
 

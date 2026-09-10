@@ -7,7 +7,6 @@ import {
   ScreenWrapper,
   Field,
   Btn,
-  Divider,
   AuthHeader,
 } from '../shared';
 import { Eye, EyeOff } from 'lucide-react';
