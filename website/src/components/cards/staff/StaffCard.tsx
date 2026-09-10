@@ -4,7 +4,8 @@ import Mappin from "../../../assets/icons/location.svg";
 
 export default function StaffCard({ member }: { member: any }) {
   return (
-    <div className="rounded-[1.5rem] w-[19.4375rem] border border-transparent overflow-hidden text-primary-brown bg-white hover:border-primary-light-brown/60 transition-colors
+    <div className="rounded-[1.5rem] w-[19.4375rem] border border-transparent overflow-hidden text-primary-brown bg-white
+     hover:border-primary-light-brown/60 transition-colors
      pb-6 shadow-sm border-gray-50">
       <div className="relative h-32 w-full bg-white-100">
         <img loading="lazy"
@@ -47,7 +48,7 @@ export default function StaffCard({ member }: { member: any }) {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {member.tags.map((tag: string, index: number) => (
+          {member.tags.slice(0,4).map((tag: string, index: number) => (
             <span
               key={index}
               className="rounded-full border border-white-100 bg-white-50 text-primary-brown px-3 py-1.5 text-[0.75rem] font-medium"
