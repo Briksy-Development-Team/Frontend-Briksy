@@ -73,7 +73,7 @@ const PropertyListCard = ({ item }: Props) => {
     </div>
 
     <div className="flex w-[70%] flex-col items-start">
-      <h3 className="line-clamp-2 text-[0.9375rem] text-primary-brown lg:text-[1rem] font-bold ">
+      <h3 className="line-clamp-2 text-[0.9375rem] text-primary-brown lg:text-[1rem] font-medium ">
         {item.title}
       </h3>
 
@@ -82,7 +82,7 @@ const PropertyListCard = ({ item }: Props) => {
         <span className="text-primary-brown">{item.address}</span>
       </div>
 
-      <p className=" text-[1rem] text-primary-brown font-bold">
+      <p className=" text-[1rem] text-primary-brown font-medium">
           {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
       </p>
 
@@ -100,7 +100,7 @@ const PropertyListCard = ({ item }: Props) => {
             className="h-7 w-7 rounded-full object-cover"
           />
           <span className="text-[0.875rem] text-primary-brown">
-            Listed by <span className="font-bold">{item.posterName}</span>
+            Listed by <span className="font-medium">{item.posterName}</span>
           </span>
         </div>
         <ArrowRight size={18} className="text-primary-light-brown/70" />

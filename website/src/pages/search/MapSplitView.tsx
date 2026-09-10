@@ -21,9 +21,8 @@ export default function MapSplitView({
   return (
     <div
       className="flex gap-4"
-      style={{ height: "calc(100vh - 280px)", minHeight: 500 }}
     >
-      <div className="w-[360px] shrink-0 flex flex-col gap-3 overflow-y-auto pr-1">
+      <div className="shrink-0 flex flex-col gap-3 overflow-y-auto pr-1">
         <p className="text-[0.75rem] text-[#8B6F54] shrink-0">
           Over 1,000 professionals near Brisbane
         </p>
