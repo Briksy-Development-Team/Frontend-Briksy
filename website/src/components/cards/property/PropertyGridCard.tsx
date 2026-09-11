@@ -8,10 +8,12 @@ type Props = {
 }
 
 const PropertyGridCard = ({ item }: Props) => {
+  const truncateText = (text: string, maxLength = 30) =>
+    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   return (
     <Link
       to={`/property/${item.id}`}
-      className="flex h-[28rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
+      className="flex h-[25rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
     >
       <div className="relative h-[60%] shrink-0 overflow-hidden">
         <img
@@ -27,7 +29,7 @@ const PropertyGridCard = ({ item }: Props) => {
           </span>
         )}
 
-        <FavoriteButton 
+        <FavoriteButton
           initialIsFavourite={item.isFavourite}
           className="absolute right-4 top-3"
           variant="overlay"
@@ -35,11 +37,11 @@ const PropertyGridCard = ({ item }: Props) => {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col p-4">
-        <h3 className="line-clamp-2 text-[0.9375rem]  leading-[1.3] lg:text-[1.0625rem]">
-          {item.title}
+        <h3 className="line-clamp-2 text-[0.875rem]  leading-[1.3] lg:text-[0.875rem]">
+            {truncateText(item.title, 30)}
         </h3>
 
-        <p className="mt-2 text-[1rem] ">
+        <p className="mt-2 text-[0.875rem] ">
           {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
         </p>
 
@@ -59,7 +61,7 @@ const PropertyGridCard = ({ item }: Props) => {
                 className="h-7 w-7 shrink-0 rounded-full object-cover"
               />
               <span className="min-w-0 truncate text-[0.875rem]">
-                Listed by <span className="font-bold">{item.posterName}</span>
+                Listed by <span className="">{item.posterName}</span>
               </span>
             </div>
             <ArrowRight size={18} className="shrink-0 text-primary-light-brown/70" />

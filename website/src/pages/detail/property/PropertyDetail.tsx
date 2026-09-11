@@ -4,12 +4,16 @@ import { PropertyGallery } from "./components/PropertyGallery";
 import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, PropertyMap } from "./components/PropertyInfo";
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
-import StaffGrid from "../../../components/grids/StaffGrid";
+// import StaffGrid from "../../../components/grids/StaffGrid";
 import { ShieldCheck, Share } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProperty } from "../../../api/property/property.api";
+import TraderGridCard from '../../../components/cards/trader/TraderGridCard';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { Mousewheel } from "swiper/modules"
 
 const mockProperty = {
   title: 'Modern Townhouse Near Transport - 2',
@@ -49,25 +53,27 @@ const mockProperty = {
     {
       id: 1,
       name: 'Sunrise Property Group',
-      role: 'Licensed Mortgage Broker',
+      tagLine: 'Licensed Mortgage Broker',
       location: 'Richmond, VIC 3121',
       tags: ['Mortgage Broker', '12 Year Experience', 'Tag Line 2'],
       rating: 4.5,
       reviews: 123,
       avatar: 'https://i.pravatar.cc/150?img=11',
-      cover: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80',
+      bannerImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80',
+      isFavourite: false,
     },
     {
       id: 2,
       name: 'Sunrise Property Group',
-      role: 'Licensed Mortgage Broker',
+      tagLine: 'Licensed Mortgage Broker',
       location: 'Richmond, VIC 3121',
       tags: ['Mortgage Broker', '12 Year Experience', 'Tag Line 2'],
       rating: 4.5,
       reviews: 123,
       avatar: 'https://i.pravatar.cc/150?img=12',
-      cover: 'https://images.unsplash.com/photo-1600607687931-cebf0046cbb4?w=400&q=80',
-    }
+      bannerImage: 'https://images.unsplash.com/photo-1600607687931-cebf0046cbb4?w=400&q=80',
+      isFavourite: false,
+    },
   ],
   reviews: {
     overall: 4.8,
@@ -191,7 +197,30 @@ const PropertyDetail = () => {
                 <div className="mb-4">
                   <h2 className="text-[1.25rem] font-medium text-primary-brown">Meet The Host</h2>
                 </div>
-                <StaffGrid staff={property.hosts} />
+                <Swiper
+                  modules={[Mousewheel]}
+                  spaceBetween={14}
+                  slidesPerView="auto"
+                  watchOverflow={false}
+                  grabCursor
+                  mousewheel={{
+                    forceToAxis: true,
+                    sensitivity: 1,
+                    releaseOnEdges: true,
+                  }}
+                  slidesOffsetBefore={0}
+                  slidesOffsetAfter={0}
+                  className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
+                >
+                  {property.hosts.slice(0, 3).map((item) => (
+                    <SwiperSlide
+                      key={item.id}
+                      className=" !w-[19.4375rem]"
+                    >
+                      <TraderGridCard item={item} />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
 
               <div className="w-full flex justify-center py-4">

@@ -8,11 +8,15 @@ type Props = {
   item: Trader;
 };
 
-const BuilderGridCard = ({ item }: Props) => {
+const TraderGridCard = ({ item }: Props) => {
+
+  const truncateText = (text: string, maxLength = 30) =>
+    text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+
   return (
     <Link
       to={`/service/${item.id}`}
-      className="flex flex-col relative rounded-[20px] w-[19.4375rem] h-[28rem] pb-[6px] border border-transparent transition-colors duration-200 overflow-hidden
+      className="flex flex-col relative rounded-[20px] w-[19.4375rem] h-[25rem] pb-[6px] border border-transparent transition-colors duration-200 overflow-hidden
        mx-auto text-primary-brown bg-white hover:border-primary"
     >
       <div className="relative h-[35%] shrink-0 bg-[#bed6d7] rounded-t-[20px] overflow-hidden mb-[-36px]">
@@ -48,12 +52,12 @@ const BuilderGridCard = ({ item }: Props) => {
           </div>
         </div>
 
-        <div className="flex items-end justify-center gap-1.5 py-2.5">
-          <Star size={20} className="fill-[#FF8200] text-[#FF8200]" />
-          <span className="text-[1rem] leading-6 font-bold text-primary-brown">
+        <div className="flex items-center  gap-1.5">
+          <Star size={16} className="fill-[#FF8200] -mt-1  text-[#FF8200]" />
+          <span className="text-[0.875rem] leading-6   text-primary-brown">
             {item.rating}
           </span>
-          <span className="text-[1rem] leading-6 text-primary-brown">
+          <span className="text-[0.875rem] leading-6 text-primary-brown">
             ( {item.reviews.toLocaleString()} )
           </span>
         </div>
@@ -61,8 +65,8 @@ const BuilderGridCard = ({ item }: Props) => {
 
       <div className="flex flex-1 min-h-0 flex-col px-4">
         <div className="mt-1.5">
-          <h3 className="text-[1rem] leading-6  text-primary-brown">
-            {item.name}
+          <h3 className="text-[0.875rem] leading-6  text-primary-brown">
+            {truncateText(item.name , 30)}
           </h3>
 
           {item.tagLine && (
@@ -72,17 +76,18 @@ const BuilderGridCard = ({ item }: Props) => {
           )}
 
           <div className="mt-1.5 flex items-center gap-1.5">
-            <MapPin size={20} className="text-primary-brown" />
+            <MapPin size={18} className="text-primary-brown" />
             <p className="text-[0.875rem] leading-5 tracking-[0.03em] text-primary-brown">
-              {item.location}
+              {truncateText(item.location  , 30)}
             </p>
           </div>
 
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {item.tags.slice(0,4).map((tag, index) => (
+            {item.tags.slice(0, 4).map((tag, index) => (
               <span
                 key={index}
-                className="flex h-[26px] items-center rounded-[14px] border border-white/50 bg-[#ede8e4] px-[10.5px] py-[6.5px] text-[0.75rem] leading-[1.5] text-[#222]"
+                className="flex h-[26px] items-center rounded-[14px] border border-white/50 bg-[#ede8e4] px-[10.5px] py-[6.5px]
+                 text-[0.75rem] leading-[1.5] text-[#222]"
               >
                 {tag}
               </span>
@@ -104,4 +109,4 @@ const BuilderGridCard = ({ item }: Props) => {
   );
 };
 
-export default BuilderGridCard;
+export default TraderGridCard;

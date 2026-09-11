@@ -1,9 +1,13 @@
-import PropertyGrid from '../../../../components/grids/PropertyGrid';
 import StaffGrid from '../../../../components/grids/StaffGrid';
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { Mousewheel } from "swiper/modules";
+import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
+import TraderGridCard from '../../../../components/cards/trader/TraderGridCard';
 
 export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
   const formatMoney = (val: number) => `$${val / 1000}k`;
-  
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
@@ -64,14 +68,38 @@ export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
 
 export function BuilderHomes({ homes }: { homes: any[] }) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col items-start justify-start gap-6 overflow-hidden">
       <div className="flex flex-col gap-2">
         <h2 className="text-[1.25rem] font-medium text-primary-brown">Our homes</h2>
         <p className="text-[0.875rem] text-primary-light-brown">
           Harkaway Homes has completed 412 homes of all time. Currently 9 house and land packages, 12 display homes and 18 builds under construction.
         </p>
       </div>
-      <PropertyGrid properties={homes} />
+
+      <Swiper
+        modules={[Mousewheel]}
+        spaceBetween={14}
+        slidesPerView="auto"
+        watchOverflow={false}
+        grabCursor
+        mousewheel={{
+          forceToAxis: true,
+          sensitivity: 1,
+          releaseOnEdges: true,
+        }}
+        slidesOffsetBefore={0}
+        slidesOffsetAfter={0}
+        className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
+      >
+        {homes.slice(0, 3).map((item) => (
+          <SwiperSlide
+            key={item.id}
+            className=" !w-[19.4375rem]"
+          >
+            <PropertyGridCard item={item} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
       <div>
         <button className="bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
           Show all Properties
@@ -105,12 +133,12 @@ export function BuilderPerformance({ performance }: { performance: any }) {
               <div className="text-[0.875rem] font-medium text-primary-brown">{row.label}</div>
               <div className="text-[0.75rem] text-primary-light-brown mt-1">{row.data.built} built</div>
             </div>
-            
+
             <div className="flex-1 min-w-[200px] mb-4 md:mb-0">
               <div className="text-[0.875rem] font-medium text-primary-brown">{formatMoney(row.data.medianPrice)}</div>
               <div className="text-[0.75rem] text-primary-light-brown mt-1">Median price</div>
             </div>
-            
+
             <div className="flex-1 min-w-[200px]">
               <div className="text-[0.875rem] font-medium text-primary-brown">{row.data.medianTime} weeks</div>
               <div className="text-[0.75rem] text-primary-light-brown mt-1">Median build time</div>
@@ -131,7 +159,7 @@ export function BuilderTeam({ team }: { team: any[] }) {
           Showing {team.length} team members at Harkaway Homes.
         </p>
       </div>
-      <StaffGrid staff={team} />
+      <TraderGridCard items={team} />
     </div>
   );
 }
