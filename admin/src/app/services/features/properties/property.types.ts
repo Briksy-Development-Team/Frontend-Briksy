@@ -127,6 +127,7 @@ export type Property = {
 
 export type PropertyFormValues = {
   title: string;
+  organization_id?: string;
   description?: string;
 
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";

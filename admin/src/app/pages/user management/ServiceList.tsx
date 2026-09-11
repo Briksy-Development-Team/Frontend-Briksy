@@ -24,6 +24,7 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { Content } from "../../../_metronic/layout/components/content";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 import ServiceMapPage from "../platform/ServiceMapPage";
+import { useToast } from "../../services/ui/toast/useToast";
 
 const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,7 +33,7 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const resolveServiceId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
       row.display_id ?? row.generated_id ?? row.id;
-  const canManage = !isSuperAdmin;
+  const canManage = true;
   const [isImportOpen, setIsImportOpen] = useState(false);
   const {
         data,
@@ -121,8 +122,9 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
 const ServiceListPageWrapper = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const toast = useToast();
     const { isSuperAdmin } = useRoleAccess();
-    const canManage = !isSuperAdmin;
+    const canManage = true;
     const {
         saving,
         isModalOpen,
@@ -162,7 +164,11 @@ const ServiceListPageWrapper = () => {
                     isSubmitting={saving}
                     onClose={() => dispatch(closeServiceModal())}
                     onSubmit={(values) =>
-                        dispatch(saveService({ id: editingService?.id, values })).unwrap()
+                        dispatch(saveService({ id: editingService?.id, values }))
+                            .unwrap()
+                            .catch((error: any) => {
+                                toast.danger(error?.response?.data?.message ?? error?.message ?? "Unable to save service.");
+                            })
                     }
                 />
             )}

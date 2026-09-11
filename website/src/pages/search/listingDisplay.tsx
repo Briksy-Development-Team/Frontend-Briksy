@@ -9,6 +9,11 @@ export const LISTING_DISPLAY: Record<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { popularTitle: string; newlyTitle: string; Card: React.ComponentType<{ item: any }> }
 > = {
+  all: {
+    popularTitle: "Popular Listings",
+    newlyTitle: "Newly Listed Listings",
+    Card: PropertyGridCard,
+  },
   trader: {
     popularTitle: "Popular Professionals",
     newlyTitle: "Newly Listed Professionals",

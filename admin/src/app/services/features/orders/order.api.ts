@@ -2,7 +2,6 @@ import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
 import type { OrderFormValues, GetOrderParams } from "./order.types";
-import { mockOrders, queryMockList, useMockListingData } from "../../mock/listingMocks";
 
 const getOrderBasePath = () => {
   const auth = getAuth();
@@ -12,13 +11,6 @@ const getOrderBasePath = () => {
 };
 
 export const fetchOrdersApi = async (params: GetOrderParams) => {
-  if (useMockListingData) {
-    return queryMockList(mockOrders, params, {
-      searchFields: ["order_number", "organization.name", "user.name", "plan.name", "payment_status", "order_status"],
-      filterKeys: ["payment_status", "order_status"],
-    });
-  }
-
   const res = await axiosInstance.get(`${getOrderBasePath()}/orders`, {
     params: buildApiParams(params),
   });

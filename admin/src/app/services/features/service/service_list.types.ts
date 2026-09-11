@@ -34,6 +34,8 @@ export type Service = {
   is_active?: boolean;
 
   image?: string | null;
+  images?: ServiceMedia[];
+  videos?: ServiceMedia[];
 
   created_at?: string | null;
 
@@ -66,6 +68,8 @@ export type ServiceList = {
   is_active?: boolean;
 
   image?: string | null;
+  images?: ServiceMedia[];
+  videos?: ServiceMedia[];
 
   organization_type?: {
     id: string;
@@ -102,6 +106,15 @@ export type ServiceFormValues = {
   is_active?: boolean;
 
   image?: File | string | null;
+  images?: (File | string)[];
+  videos?: (File | string)[];
+};
+
+export type ServiceMedia = {
+  id?: string;
+  url: string;
+  is_primary?: boolean;
+  sort_order?: number;
 };
 
 export type GetServiceListParams = {

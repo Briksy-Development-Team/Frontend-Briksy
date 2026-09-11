@@ -33,6 +33,8 @@ type ServiceApi = {
   is_active?: boolean;
 
   image?: string | null;
+  images?: ServiceList["images"];
+  videos?: ServiceList["videos"];
 
   organization_type?: {
     id: string;
@@ -74,6 +76,8 @@ export const mapServiceList = (item: ServiceApi): ServiceList => ({
   is_active: item.is_active,
 
   image: item.image ?? null,
+  images: item.images ?? [],
+  videos: item.videos ?? [],
 
   organization_type: item.organization_type ?? null,
 
@@ -112,6 +116,8 @@ export const mapService = (item: ServiceApi): Service => ({
   is_active: item.is_active,
 
   image: item.image ?? null,
+  images: item.images ?? [],
+  videos: item.videos ?? [],
 
   created_at: item.created_at ?? null,
 

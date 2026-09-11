@@ -62,13 +62,13 @@ export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
   );
 }
 
-export function BuilderHomes({ homes }: { homes: any[] }) {
+export function BuilderHomes({ homes, description }: { homes: any[]; description?: string }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <h2 className="text-[1.25rem] font-medium text-primary-brown">Our homes</h2>
         <p className="text-[0.875rem] text-primary-light-brown">
-          Harkaway Homes has completed 412 homes of all time. Currently 9 house and land packages, 12 display homes and 18 builds under construction.
+          {description || "Properties currently published by this organisation."}
         </p>
       </div>
       <PropertyGrid properties={homes} />

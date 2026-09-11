@@ -5,6 +5,9 @@ import { LocationAutocomplete, type LocationSelection } from "../../maps/Locatio
 import { LocationMapPreview } from "../../maps/LocationMapPreview";
 import { useRoleAccess } from "../../../../modules/auth";
 import { deletePropertyMediaApi } from "../property.api";
+import { fetchOrganizationApi, fetchOrganizationByIdApi } from "../../organization/organization.api";
+import { mapOrganization } from "../../organization/organization.mapper";
+import type { Organization } from "../../organization/organization.types";
 
 type Props = {
     initialValues?: Property | null;
@@ -20,8 +23,13 @@ const PropertyModal = ({
     onSubmit,
 }: Props) => {
     const { isSuperAdmin } = useRoleAccess();
+    const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [organizationSearch, setOrganizationSearch] = useState("");
+    const [organizationsLoading, setOrganizationsLoading] = useState(false);
+    const [organizationsError, setOrganizationsError] = useState<string | null>(null);
     const [form, setForm] = useState<PropertyFormValues>({
         title: initialValues?.title ?? "",
+        organization_id: initialValues?.organization?.id ?? "",
         description: initialValues?.description ?? "",
         status: initialValues?.status ?? "Draft",
         listing_purpose: initialValues?.listing_purpose ?? "SELL",
@@ -56,6 +64,7 @@ const PropertyModal = ({
         if (!initialValues) {
             setForm({
                 title: "",
+                organization_id: "",
                 description: "",
                 status: "Draft",
                 listing_purpose: "SELL",
@@ -85,6 +94,7 @@ const PropertyModal = ({
 
         setForm({
             title: initialValues.title ?? "",
+            organization_id: initialValues.organization?.id ?? "",
             description: initialValues.description ?? "",
             status: initialValues.status ?? "Draft",
             listing_purpose: initialValues.listing_purpose ?? "SELL",
@@ -131,12 +141,53 @@ const PropertyModal = ({
         };
     }, [videos]);
 
+    useEffect(() => {
+        if (!isSuperAdmin) return;
+
+        let active = true;
+        setOrganizationsLoading(true);
+        setOrganizationsError(null);
+        const timer = window.setTimeout(() => {
+            void fetchOrganizationApi({ page: 1, per_page: 25, search: organizationSearch || undefined })
+                .then((result) => {
+                    if (!active) return;
+                    const next: Organization[] = result.data.map(mapOrganization);
+                    setOrganizations((current) => {
+                        const selected = current.find((item) => item.id === form.organization_id);
+                        return selected && !next.some((item) => item.id === selected.id) ? [selected, ...next] : next;
+                    });
+                })
+                .catch(() => { if (active) setOrganizationsError("Unable to load organizations."); })
+                .finally(() => { if (active) setOrganizationsLoading(false); });
+        }, 250);
+
+        return () => {
+            active = false;
+            window.clearTimeout(timer);
+        };
+    }, [isSuperAdmin, organizationSearch, form.organization_id]);
+
+    useEffect(() => {
+        if (!isSuperAdmin || !form.organization_id || organizations.some((item) => item.id === form.organization_id)) return;
+
+        let active = true;
+        void fetchOrganizationByIdApi(form.organization_id)
+            .then((item) => {
+                if (active && item) setOrganizations((current) => [mapOrganization(item), ...current]);
+            })
+            .catch(() => undefined);
+
+        return () => { active = false; };
+    }, [isSuperAdmin, form.organization_id, organizations]);
+
     const handleSubmit = () => {
         onSubmit({
             ...form,
             country: form.country || "Australia",
             status: isSuperAdmin ? form.status : "Pending Review",
-            location_verified: isSuperAdmin ? form.location_verified : undefined,
+            // Location verification is controlled by the dedicated review
+            // endpoint and is intentionally not part of CRUD payloads.
+            location_verified: undefined,
             images,
             videos,
         });
@@ -191,8 +242,37 @@ const PropertyModal = ({
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             submitLabel={initialValues ? "Update Property" : "Create Property"}
-            isValid={!!form.title}
+            isValid={!!form.title && (!isSuperAdmin || !!form.organization_id)}
         >
+            <div className="fv-row mb-7">
+                {isSuperAdmin ? (
+                    <>
+                        <label className="required form-label">Organization</label>
+                        <input
+                            className="form-control form-control-solid"
+                            value={organizationSearch}
+                            onChange={(e) => setOrganizationSearch(e.target.value)}
+                            placeholder="Search organizations by name or code"
+                        />
+                        <select
+                            className="form-select form-select-solid mt-2"
+                            value={form.organization_id ?? ""}
+                            onChange={(e) => setForm((prev) => ({ ...prev, organization_id: e.target.value }))}
+                            disabled={organizationsLoading}
+                            required
+                        >
+                            <option value="">{organizationsLoading ? "Loading organizations..." : "Select organization"}</option>
+                            {organizations.map((organization) => (
+                                <option value={organization.id} key={organization.id}>
+                                    {organization.name}{organization.display_id ? ` — ${organization.display_id}` : ""}
+                                </option>
+                            ))}
+                        </select>
+                        {organizationsError ? <div className="text-danger mt-2">{organizationsError}</div> : null}
+                        {!organizationsLoading && !organizationsError && organizations.length === 0 ? <div className="text-muted mt-2">No organizations found.</div> : null}
+                    </>
+                ) : null}
+            </div>
             <div className="fv-row mb-7">
                 <label className="required form-label">Property Name</label>
 

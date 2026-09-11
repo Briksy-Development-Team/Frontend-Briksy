@@ -2,25 +2,22 @@ import axiosInstance from "../../api/axiosInstance";
 import type { GetOrganizationParams, OrganizationFormValues } from "./organization.types";
 import { buildApiParams } from "../../utils/buildApiParams";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
-import { mockOrganizations, queryMockList, useMockListingData } from "../../mock/listingMocks";
 
 const getOrganizationBasePath = () => {
   const auth = getAuth();
   const roles = auth?.abilities ?? [];
 
-  return roles.includes("super_admin")
+  return roles.includes("super_admin") || roles.includes("super_admin_employee")
     ? "/super-admin/organizations"
     : "/admin/businesses";
 };
 
-export const fetchOrganizationApi = async (params: GetOrganizationParams) => {
-  if (useMockListingData) {
-    return queryMockList(mockOrganizations, params, {
-      searchFields: ["name", "slug", "abn", "acn", "contact_email", "type.name"],
-      filterKeys: ["business_type", "business_verification_status", "created_at"],
-    });
-  }
+export const fetchOrganizationByIdApi = async (id: string) => {
+  const res = await axiosInstance.get(`${getOrganizationBasePath()}/${id}`);
+  return res.data?.data ?? null;
+};
 
+export const fetchOrganizationApi = async (params: GetOrganizationParams) => {
   const res = await axiosInstance.get(getOrganizationBasePath(), {
     params: buildApiParams(params),
   });

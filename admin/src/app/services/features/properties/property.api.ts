@@ -1,7 +1,6 @@
 import axiosInstance from "../../api/axiosInstance";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 import { buildApiParams } from "../../utils/buildApiParams";
-import { mockProperties, queryMockList, useMockListingData } from "../../mock/listingMocks";
 
 import type {
   Property,
@@ -13,6 +12,7 @@ const toFormData = (payload: PropertyFormValues) => {
   const formData = new FormData();
 
   formData.append("title", payload.title);
+  if (payload.organization_id) formData.append("organization_id", payload.organization_id);
   formData.append("status", payload.status);
   if (payload.listing_purpose) formData.append("listing_purpose", payload.listing_purpose);
   if (payload.price !== undefined && payload.price !== null && payload.price !== "") formData.append("price", String(payload.price));
@@ -95,10 +95,13 @@ const toFormData = (payload: PropertyFormValues) => {
 const getBasePath = () => {
   const auth = getAuth();
 
-  return auth?.abilities?.includes("super_admin")
+  return auth?.abilities?.some((ability) =>
+    ["super_admin", "super_admin_employee"].includes(ability),
+  )
     ? "/super-admin/properties"
     : "/admin/properties";
 };
+
 
 type ApiResponse<T> = {
   success: boolean;
@@ -112,13 +115,6 @@ type ApiResponse<T> = {
 };
 
 export const fetchPropertyListApi = async (params: PropertyListParams, organizationId?: string) => {
-  if (useMockListingData) {
-    return queryMockList(mockProperties, params, {
-      searchFields: ["title", "suburb", "state", "postcode", "organization.name"],
-      filterKeys: ["status", "suburb", "state", "postcode", "verified_only"],
-    });
-  }
-
   const path = organizationId
     ? getBasePath().replace("/properties", `/organizations/${organizationId}/properties`)
     : getBasePath();
@@ -133,23 +129,12 @@ export const fetchPropertyListApi = async (params: PropertyListParams, organizat
 };
 
 export const fetchPropertyApi = async (id: string): Promise<Property | null> => {
-  if (useMockListingData) {
-    return mockProperties.find((property) => property.id === id || property.display_id === id || property.generated_id === id) ?? null;
-  }
-
   const res = await axiosInstance.get<ApiResponse<Property>>(`${getBasePath()}/${id}`);
 
   return res.data.data;
 };
 
 export const fetchPropertyMapApi = async (params: PropertyListParams) => {
-  if (useMockListingData) {
-    return queryMockList(mockProperties, params, {
-      searchFields: ["title", "suburb", "state", "postcode", "organization.name"],
-      filterKeys: ["status", "suburb", "state", "postcode", "property_type_id", "verified_only"],
-    }).data as unknown as Property[];
-  }
-
   const res = await axiosInstance.get<ApiResponse<Property[]>>(`${getBasePath()}/map`, {
     params: buildApiParams(params),
   });
@@ -170,6 +155,20 @@ export const updatePropertyApi = async (
   id: string,
   payload: PropertyFormValues,
 ) => {
+  const hasFiles = [...(payload.images ?? []), ...(payload.videos ?? [])].some(
+    (item) => item instanceof File,
+  );
+
+  if (!hasFiles) {
+    const { images: _images, videos: _videos, ...jsonPayload } = payload;
+    const res = await axiosInstance.put<ApiResponse<Property>>(
+      `${getBasePath()}/${id}`,
+      jsonPayload,
+    );
+
+    return res.data.data;
+  }
+
   const formData = toFormData(payload);
   formData.append("_method", "PUT");
 

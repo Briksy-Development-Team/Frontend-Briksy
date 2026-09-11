@@ -55,7 +55,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const location = useLocation();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]) as "/super-admin" | "/admin";
   const resolvePropertyId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
-    row.display_id ?? row.generated_id ?? row.id;
+    row.display_id || row.generated_id || row.id;
   const {
     data,
     total,
@@ -184,13 +184,11 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     ];
   const propertyRowActions = isSuperAdmin ? [...reviewRowActions, ...defaultPropertyRowActions] : defaultPropertyRowActions;
   const headerActions = [
-    !isSuperAdmin
-      ? {
+    !isSuperAdmin ? {
           label: "Import Properties",
           permission: "property.create",
           onClick: () => setIsImportModalOpen(true),
-        }
-      : null,
+    } : null,
     {
       label: "Add Property",
       permission: "property.create",
@@ -395,15 +393,19 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           isSubmitting={saving}
           onClose={() => dispatch(closePropertyModal())}
           onSubmit={async (values) => {
-            await dispatch(
-              saveProperty({
-                id: editingProperty?.id,
-                values,
-              }),
-            ).unwrap();
+            try {
+              await dispatch(
+                saveProperty({
+                  id: editingProperty?.id,
+                  values,
+                }),
+              ).unwrap();
 
-            dispatch(fetchPropertyList(params));
-            toast.success(editingProperty ? "Property updated." : "Property created.");
+              dispatch(fetchPropertyList(params));
+              toast.success(editingProperty ? "Property updated." : "Property created.");
+            } catch (error: any) {
+              toast.danger(error?.response?.data?.message ?? error?.message ?? "Unable to save property.");
+            }
           }}
         />
       )}

@@ -31,8 +31,9 @@ export function useListingData(resultType: ResultType, filter = "") {
       verified_only: 1,
     })
       .then((res) => {
-        const mapper = resultType === "builder" ? organizationToBuilder : organizationToTrader;
-        setItems(res.data.map(mapper));
+        setItems(resultType === "builder"
+          ? res.data.map(organizationToBuilder)
+          : res.data.map(organizationToTrader));
       })
       .catch(console.error);
   }, [resultType, filter]);

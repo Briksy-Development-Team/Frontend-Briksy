@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   SlidersHorizontal,
   Sparkles,
-  ChevronDown,
-  Check,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

@@ -60,6 +60,17 @@ const getPortalBase = () =>
     ? "/super-admin"
     : "/admin";
 
+const navigateInsidePortal = (path: string) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  // Keep the SPA session alive. Using window.location.href here caused a
+  // complete reload and re-ran auth bootstrap when reviewing a property.
+  window.history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+};
+
 export const organizationDetailConfig: DetailConfig<any> = {
   header: {
     titleAccessor: "name",
@@ -200,14 +211,16 @@ export const organizationDetailConfig: DetailConfig<any> = {
               return;
             }
 
-            window.location.href = `${scopeBase}/property-management/${propertyId}`;
+            if (propertyId && propertyId !== "—") {
+              navigateInsidePortal(`${scopeBase}/property-management/${encodeURIComponent(propertyId)}`);
+            }
           },
         },
       ],
       getRowLink: (row) =>
         getPortalBase() === "/super-admin"
-          ? `/super-admin/property-management/${getDisplayId(row)}`
-          : `/admin/property-management/${getDisplayId(row)}`,
+          ? `/super-admin/property-management/${encodeURIComponent(getDisplayId(row))}`
+          : `/admin/property-management/${encodeURIComponent(getDisplayId(row))}`,
     },
     {
       id: "services_table",

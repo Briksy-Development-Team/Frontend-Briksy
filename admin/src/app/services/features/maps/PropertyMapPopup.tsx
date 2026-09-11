@@ -31,7 +31,7 @@ const PropertyMapPopup = ({ property, portalBase, onClose }: Props) => {
 
   const images = property.images ?? (property.image_url ? [{ url: property.image_url, is_primary: true }] : []);
   const videos = property.videos ?? [];
-  const viewUrl = `${portalBase}/property-management/${property.id}`;
+  const viewUrl = `${portalBase}/property-management/${encodeURIComponent(property.id)}`;
   const editUrl = `${portalBase}/property-management?edit=${property.id}`;
 
   return (

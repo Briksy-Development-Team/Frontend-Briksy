@@ -18,7 +18,7 @@ export function BuilderHeader({ builder }: { builder: any }) {
             {builder.name}
           </h1>
           <p className="text-[0.875rem] text-primary-light-brown">
-            {builder.registration}
+            {builder.registration || builder.type || "Verified organisation"}
           </p>
           <p className="text-[1rem]  text-primary-brown">
             {builder.address}
@@ -28,12 +28,12 @@ export function BuilderHeader({ builder }: { builder: any }) {
             <div className="flex items-center gap-1">
               <Star size={16} className="fill-primary-light-brown/50 text-primary-light-brown/50" />
               <span className="font-medium">{builder.rating}</span>
-              <span className="text-gray-100">({builder.reviewsCount} reviews)</span>
+              {builder.reviewsCount > 0 && <span className="text-gray-100">({builder.reviewsCount} reviews)</span>}
             </div>
             <span className="text-gray-100">•</span>
             <div className="flex items-center gap-1">
               <img src={Approves} className="h-5 w-auto" alt="Verified" />
-              <span>{builder.teamSize} people work here</span>
+              <span>{builder.teamSize || "Verified business"}</span>
             </div>
           </div>
         </div>
@@ -81,10 +81,10 @@ export function BuilderTabs() {
 export function BuilderAbout({ about }: { about: any }) {
   return (
     <div className="flex flex-col gap-8">
-      <h2 className="text-[1.5rem] font-medium text-primary-brown">About Harkaway Homes</h2>
+      <h2 className="text-[1.5rem] font-medium text-primary-brown">About {about.name}</h2>
       
       <div className="text-[1rem] text-primary-brown leading-loose whitespace-pre-wrap">
-        {about.description}
+        {about.description || "No description has been provided."}
       </div>
       
       <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-4 border-t border-gray-50 pt-8">
