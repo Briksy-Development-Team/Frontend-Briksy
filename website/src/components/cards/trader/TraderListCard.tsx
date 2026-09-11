@@ -24,7 +24,7 @@ const TraderListCard = ({ item }: Props) => (
     </div>
 
     <div className="min-w-0 flex-1">
-      <h3 className="text-[1rem] font-bold ">{item.name}</h3>
+      <h3 className="text-[1rem] font-medium ">{item.name}</h3>
       <p className="mt-0.5 text-[1rem] ">
         {item.tagLine} {item.role}
       </p>
@@ -39,7 +39,7 @@ const TraderListCard = ({ item }: Props) => (
       </div>
 
       <div className="mt-1.5 flex flex-wrap gap-1">
-        {item.tags.map((tag, i) => (
+        {item.tags.slice(0,3).map((tag, i) => (
           <span
             key={`${tag}-${i}`}
             className="rounded-full border px-2 py-0.5 text-[0.75rem] border-[#E6E6E6] bg-primary-brown  text-[#E7E7E4]"

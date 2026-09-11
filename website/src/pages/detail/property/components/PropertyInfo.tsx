@@ -2,7 +2,7 @@ import { ShieldCheck, List } from 'lucide-react';
 
 export const PropertyTitle = ({ title, subtitle }: { title: string; subtitle: string }) => (
   <div>
-    <h1 className="mt-2 text-[1.75rem] md:text-[1.875rem] font-bold text-primary-brown">{title}</h1>
+    <h1 className="mt-2 text-[1.75rem] md:text-[1.875rem] font-medium text-primary-brown">{title}</h1>
     <div className="text-[1rem] text-primary-brown mt-1">
       {subtitle}
     </div>
@@ -19,7 +19,7 @@ export const PropertyAgentCard = ({ agent }: { agent: any }) => (
         </div>
       </div>
       <div>
-        <p className="font-bold text-[1rem] text-primary-brown">{agent.name}</p>
+        <p className="font-medium text-[1rem] text-primary-brown">{agent.name}</p>
         <p className="text-[0.875rem] text-primary-light-brown mt-0.5">{agent.role}</p>
       </div>
     </div>
@@ -59,7 +59,7 @@ export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => (
 
 export const PropertyMap = ({ mapSrc }: { mapSrc: string }) => (
   <div className="flex flex-col gap-6">
-    <h2 className="text-[1.25rem] font-bold text-primary-brown">Where you'll be</h2>
+    <h2 className="text-[1.25rem] font-medium text-primary-brown">Where you'll be</h2>
     <div className="w-full h-[320px] rounded-2xl overflow-hidden border border-[#EBE5D9]">
       <iframe
         src={mapSrc}

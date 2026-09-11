@@ -98,7 +98,7 @@ const ImageAnimation = () => {
                 [&.swiper-slide-active>div]:shadow-xl [&>div]:bg-[#EBE5E0A3]/64 [&>div]:opacity-70"
             >
               <div className="grid h-[70%] lg:h-[80%] w-full grid-cols-[48px_1fr] items-center gap-4 rounded-lg px-6 transition-all duration-500">
-                <div className="flex h-10 w-10 items-center justify-center rounded bg-[#F4EFEB]">
+                <div className="flex h-12 w-12 items-center justify-center rounded bg-[#F4EFEB]">
                   <img
                     src={card.icon}
                     alt=""

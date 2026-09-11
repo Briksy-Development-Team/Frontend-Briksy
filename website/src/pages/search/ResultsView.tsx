@@ -3,21 +3,20 @@ import { useSearchParams } from "react-router-dom";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 
 import type { ResultType } from "../../types/search";
-import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
-import { getProperties, type PublicProperty } from "../../api/property/property.api";
-import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
-import TraderGridCard from "../../components/cards/trader/TraderGridCard";
-import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
-import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
+import { useListingData } from "./useListingData";
+import { LISTING_DISPLAY } from "./listingDisplay";
 import MapSplitView from "./MapSplitView";
 
+const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
 
-const GRID = "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-
-
-
-export default function ResultsView({ resultType, selectedSub, showMap }: {
-  resultType: ResultType; selectedSub: string; showMap: boolean;
+export default function ResultsView({
+  resultType,
+  selectedSub,
+  showMap,
+}: {
+  resultType: ResultType;
+  selectedSub: string;
+  showMap: boolean;
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);

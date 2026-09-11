@@ -129,10 +129,10 @@ export function BuilderContact() {
 
   return (
     <div className="flex flex-col gap-8 w-full pb-16">
-      <h2 className="text-[1.5rem] font-bold text-primary-brown">Contact Harkaway Homes</h2>
+      <h2 className="text-[1.5rem] font-medium text-primary-brown">Contact Harkaway Homes</h2>
       
       <div className="bg-white p-6 md:p-8 rounded-[1.5rem] shadow-sm border border-gray-50 w-full flex flex-col gap-6">
-        <h3 className="text-[0.875rem] font-semibold text-primary-brown">What's your enquiry about?</h3>
+        <h3 className="text-[0.875rem] font-medium text-primary-brown">What's your enquiry about?</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {options.map((opt) => (

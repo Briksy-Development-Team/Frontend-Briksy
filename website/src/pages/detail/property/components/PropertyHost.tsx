@@ -15,7 +15,7 @@ export const PropertyCompanyDetails = ({ company }: { company: any }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[1.25rem] font-bold text-primary-brown">Company Details</h2>
+      <h2 className="text-[1.25rem] font-medium text-primary-brown">Company Details</h2>
       <div className="max-w-[600px]">
         <BuilderListCard item={builderItem as any} />
       </div>

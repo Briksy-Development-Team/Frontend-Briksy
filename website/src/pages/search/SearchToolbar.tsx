@@ -16,10 +16,11 @@ type CategoryDef = {
   id: string;
   label: string;
   resultType: ResultType;
-  icon: any;
+  icon: React.ReactNode;
   tabs: FilterTab[];
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const SEARCH_CATEGORIES: CategoryDef[] = [
   {
     id: "all",

@@ -25,7 +25,7 @@ const BuilderListCard = ({ item }: Props) => (
     </div>
 
     <div className="min-w-0 flex-1">
-      <h3 className="text-[1rem] font-semibold ">{item.name}</h3>
+      <h3 className="text-[1rem] font-medium ">{item.name}</h3>
       <div className=" flex items-center gap-1 text-[0.875rem] lg:text-[1rem]">
         <img loading="lazy" src={Mappin} alt="" />
         <span className="text-primary-brown">{item.location}</span>

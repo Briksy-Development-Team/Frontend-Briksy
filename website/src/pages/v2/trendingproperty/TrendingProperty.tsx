@@ -5,6 +5,8 @@ import { getProperties, type PublicProperty } from "../../../api/property/proper
 import { propertyToCard } from "../../../api/public.mappers";
 import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
 import "swiper/css";
+import { Mousewheel } from "swiper/modules";
+
 
 const TrendingProperty = () => {
     const navigate = useNavigate();
@@ -12,7 +14,7 @@ const TrendingProperty = () => {
     useEffect(() => { getProperties({ verified_only: 1, sort: "rating" }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
         <section className="py-20 font-helvetica">
-            <div className="lg:w-full px-[5%] lg:px-0  lg:ml-10">
+            <div className="lg:w-full pl-[5%] lg:px-0  lg:ml-10">
                 <div className="relative mb-10 lg:mr-14  flex flex-col text-primary-brown items-stat justify-end lg:justify-center">
                     <h2 className="text-[30px] font-medium  lg:text-[44px]">
                         Featured Properties
@@ -28,30 +30,20 @@ const TrendingProperty = () => {
                     </button>
                 </div>
                 <Swiper
+                    modules={[Mousewheel]}
                     spaceBetween={12}
-                    slidesPerView={1}
-                    breakpoints={{
-                        480: {
-                            slidesPerView: 1.2,
-                        },
-                        640: {
-                            slidesPerView: 1.9,
-                        },
-                        768: {
-                            slidesPerView: 2.6,
-                        },
-                        1024: {
-                            slidesPerView: 4.2,
-                        },
-                        1440: {
-                            slidesPerView: 4.6,
-                        },
+                    slidesPerView="auto"
+                    watchOverflow={false}
+                    grabCursor={true}
+                    mousewheel={{
+                        forceToAxis: true,
+                        sensitivity: 1,
+                        releaseOnEdges: true,
                     }}
                     className="[overscroll-behavior-x:contain] touch-pan-y"
-
                 >
                     {items.map((item) => (
-                        <SwiperSlide key={item.id}>
+                        <SwiperSlide key={item.id} className="!w-[19.4375rem]">
                             <PropertyGridCard item={propertyToCard(item)} />
                         </SwiperSlide>
                     ))}

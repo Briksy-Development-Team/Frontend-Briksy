@@ -48,8 +48,8 @@ const BuilderGridCard = ({ item }: Props) => {
           </div>
         </div>
 
-        <div className="flex items-end gap-1.5 py-2.5">
-          <Star size={20} className="fill-[#e2cbb3] text-[#e2cbb3]" />
+        <div className="flex items-end justify-center gap-1.5 py-2.5">
+          <Star size={20} className="fill-[#FF8200] text-[#FF8200]" />
           <span className="text-[1rem] leading-6 font-bold text-primary-brown">
             {item.rating}
           </span>
@@ -61,7 +61,7 @@ const BuilderGridCard = ({ item }: Props) => {
 
       <div className="flex flex-1 min-h-0 flex-col px-4">
         <div className="mt-1.5">
-          <h3 className="text-[1rem] leading-6 font-bold text-primary-brown">
+          <h3 className="text-[1rem] leading-6  text-primary-brown">
             {item.name}
           </h3>
 

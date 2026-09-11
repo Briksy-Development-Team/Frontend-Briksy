@@ -1,3 +1,5 @@
+import Trick from "../../../assets/icons/ticks.svg"
+
 type Props = {
   features: string[];
 };
@@ -10,9 +12,8 @@ const PlanFeatures = ({ features }: Props) => {
           key={feature}
           className="flex items-start gap-2 text-xs leading-5"
         >
-          <span className="mt-[1px] shrink-0">
-            ✓
-          </span>
+         
+          <img src={Trick} alt="" className="mt-[1px]" />
 
           <span>{feature}</span>
         </div>
