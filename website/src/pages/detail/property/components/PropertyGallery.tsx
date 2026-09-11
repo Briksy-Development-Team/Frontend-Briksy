@@ -7,16 +7,22 @@ interface GalleryImage {
   videoSrc?: string; // playable video url, used when type === 'video'
 }
 
+type GalleryImageInput = GalleryImage | string;
+
 // Distinct placeholder colors for each of the 5 boxes when no image data is present
 const PLACEHOLDER_COLORS = ['#c8cfc4', '#b8c4b4', '#d0cdc0', '#c4cfc9', '#cbc4af'];
 
-export const PropertyGallery = ({ images = [] }: { images?: GalleryImage[] }) => {
+export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
+  const galleryImages: GalleryImage[] = images.map((image) =>
+    typeof image === 'string' ? { src: image } : image,
+  );
+
   // images[0] = hero, images[1..4] = the 2x2 grid tiles
-  const hero = images[0];
-  const tiles = [images[1], images[2], images[3], images[4]];
+  const hero = galleryImages[0];
+  const tiles = [galleryImages[1], galleryImages[2], galleryImages[3], galleryImages[4]];
 
   return (
     <>
@@ -122,12 +128,12 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImage[] }) =>
           <div className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-[#EBE5D9] flex items-center justify-between">
               <h3 className="text-[1.125rem] font-bold text-primary-brown">
-                All photos · {images.length} photos
+                All photos · {galleryImages.length} photos
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {images.map((img, idx) => (
+                {galleryImages.map((img, idx) => (
                   <div
                     key={idx}
                     className="aspect-square rounded-xl overflow-hidden relative"
