@@ -24,6 +24,8 @@ const PropertyModal = ({
         title: initialValues?.title ?? "",
         description: initialValues?.description ?? "",
         status: initialValues?.status ?? "Draft",
+        listing_purpose: initialValues?.listing_purpose ?? "SELL",
+        price: initialValues?.price ?? "",
         address: initialValues?.address ?? "",
         address_line_1: initialValues?.address_line_1 ?? initialValues?.address ?? "",
         address_line_2: initialValues?.address_line_2 ?? "",
@@ -56,6 +58,8 @@ const PropertyModal = ({
                 title: "",
                 description: "",
                 status: "Draft",
+                listing_purpose: "SELL",
+                price: "",
                 address: "",
                 address_line_1: "",
                 address_line_2: "",
@@ -83,6 +87,8 @@ const PropertyModal = ({
             title: initialValues.title ?? "",
             description: initialValues.description ?? "",
             status: initialValues.status ?? "Draft",
+            listing_purpose: initialValues.listing_purpose ?? "SELL",
+            price: initialValues.price ?? "",
             address: initialValues.address ?? "",
             address_line_1: initialValues.address_line_1 ?? initialValues.address ?? "",
             address_line_2: initialValues.address_line_2 ?? "",
@@ -216,6 +222,23 @@ const PropertyModal = ({
                         }))
                     }
                 />
+            </div>
+
+            <div className="row">
+                <div className="col-md-6 fv-row mb-7">
+                    <label className="form-label">Listing Purpose</label>
+                    <select className="form-select form-select-solid" value={form.listing_purpose ?? "SELL"}
+                        onChange={(e) => setForm((prev) => ({ ...prev, listing_purpose: e.target.value as PropertyFormValues["listing_purpose"] }))}>
+                        <option value="SELL">Sell</option>
+                        <option value="RENT">Rent</option>
+                        <option value="BOTH">Both</option>
+                    </select>
+                </div>
+                <div className="col-md-6 fv-row mb-7">
+                    <label className="form-label">Price</label>
+                    <input type="number" min="0" step="0.01" className="form-control form-control-solid" value={form.price ?? ""}
+                        onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))} />
+                </div>
             </div>
 
             {isSuperAdmin ? (

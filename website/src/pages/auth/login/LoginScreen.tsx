@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import apple from "../../../assets/login/apple.svg";
-import google from "../../../assets/login/google.svg";
-import { type Screen, ScreenWrapper, Field, Btn, AuthHeader } from "../shared";
-import { Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../../../auth/AuthContext";
-import LogoM from "../../../assets/logo/logomobile.svg";
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import apple from '../../../assets/login/apple.svg';
+import google from '../../../assets/login/google.svg';
+import LogoM from '../../../assets/logo/logomobile.svg';
+import {
+  type Screen,
+  ScreenWrapper,
+  Field,
+  Btn,
+  AuthHeader,
+} from '../shared';
+import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../../../auth/AuthContext';
 
 export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
   const navigate = useNavigate();

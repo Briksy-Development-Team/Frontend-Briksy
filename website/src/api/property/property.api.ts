@@ -9,17 +9,23 @@ export type PublicProperty = {
   address: string | null;
   full_address: string | null;
   status: string | null;
+  listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  price?: number | null;
+  property_type?: { name: string; slug?: string; category?: string | null } | null;
+  land_area_sqm?: number | null;
+  car_space_option?: string | null;
+  features?: { name: string; slug: string }[];
   rating: number;
   bedroom_option?: string | null;
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;
-  location: { suburb: string | null; postcode: string | null; latitude: number | null; longitude: number | null };
+  location: { suburb: string | null; postcode: string | null; latitude: number | null; longitude: number | null; state?: string | null };
   organization?: { id: string | null; name: string | null; is_verified: boolean } | null;
   media?: { url: string | null; is_primary: boolean }[];
 };
 
-export const getProperties = async (params: Record<string, string | number | boolean | undefined> = {}) =>
-  (await api.get<ApiPage<PublicProperty>>("/seeker/properties", { params: { per_page: 16, ...params } })).data;
+export const getProperties = async (params: Record<string, string | number | boolean | string[] | undefined> = {}) =>
+  (await api.get<ApiPage<PublicProperty>>("/seeker/properties", { params: { per_page: 24, ...params } })).data;
 
 export const getProperty = async (id: string): Promise<{ data: PublicProperty }> =>
   (await api.get<{ data: PublicProperty }>(`/seeker/properties/${id}`)).data;

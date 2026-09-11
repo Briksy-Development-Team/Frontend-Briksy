@@ -6,10 +6,11 @@ export type PublicOrganization = {
   name: string;
   slug: string | null;
   rating: number;
+  abn?: string | null;
   is_verified: boolean;
   contact?: { email: string | null; phone: string | null };
   type?: { name: string; slug: string } | null;
-  services?: { name: string; slug: string }[];
+  services?: { id: string; name: string; slug: string; description?: string | null; starting_price?: number | null }[];
   address?: string | null;
   state?: string | null;
   postcode?: string | null;
