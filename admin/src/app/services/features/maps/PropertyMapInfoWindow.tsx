@@ -16,7 +16,7 @@ const PropertyMapInfoWindow = ({ property, onClose }: Props) => {
     return null;
   }
 
-  const quickViewUrl = `${portalBase}/property-management?highlight=${property.id}`;
+  const quickViewUrl = `${portalBase}/property-management?highlight=${encodeURIComponent(property.id)}`;
   const address = property.formatted_address ?? property.full_address ?? property.address ?? "No address saved";
 
   return (
@@ -42,7 +42,7 @@ const PropertyMapInfoWindow = ({ property, onClose }: Props) => {
         <Link to={quickViewUrl} className="btn btn-sm btn-primary">
           Quick view
         </Link>
-        <Link to={`${portalBase}/property-management?edit=${property.id}`} className="btn btn-sm btn-light">
+        <Link to={`${portalBase}/property-management?edit=${encodeURIComponent(property.id)}`} className="btn btn-sm btn-light">
           Edit
         </Link>
       </div>

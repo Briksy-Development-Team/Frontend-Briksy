@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { ResultType } from "../../types/search";
-import type { Trader } from "../../types/trader";
-import type { Builder } from "../../types/builder";
-import type { Property } from "../../types/property";
 import TraderListCard from "../../components/cards/trader/TraderListCard";
 import BuilderListCard from "../../components/cards/builder/BuilderListCard";
 import PropertyListCard from "../../components/cards/property/PropertyListCard";

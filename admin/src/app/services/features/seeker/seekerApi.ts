@@ -2,7 +2,6 @@ import axiosInstance from "../../api/axiosInstance";
 import type { GetSeekersParams, SeekerFormValues } from "./seeker.types";
 import { buildApiParams } from "../../utils/buildApiParams";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
-import { queryMockList, mockEndUsers, useMockListingData } from "../../mock/listingMocks";
 
 export type { GetSeekersParams };
 
@@ -15,13 +14,6 @@ const getSeekerEndpoint = () => {
 };
 
 export const fetchSeekersApi = async (params: GetSeekersParams) => {
-  if (useMockListingData) {
-    return queryMockList(mockEndUsers, params, {
-      searchFields: ["name", "display_name", "email", "mobile_number", "organization_id"],
-      filterKeys: ["role", "created_at"],
-    });
-  }
-
   const res = await axiosInstance.get(getSeekerEndpoint(), {
     params: buildApiParams(params),
   });

@@ -19,8 +19,9 @@ import { App } from '../App'
  * @see https://facebook.github.io/create-react-app/docs/using-the-public-folder
  */
 const AppRoutes: FC = () => {
-  const {currentUser, isBootstrapping} = useAuth()
-  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? [])
+  const {auth, currentUser, isBootstrapping} = useAuth()
+  const homeRoute = getRoleHomeRoute(currentUser?.roles ?? auth?.abilities ?? [])
+  const hasAuthenticatedSession = Boolean(currentUser || auth?.api_token)
 
   if (isBootstrapping) {
     return (
@@ -36,7 +37,7 @@ const AppRoutes: FC = () => {
         <Route element={<App />}>
           <Route path='error/*' element={<ErrorsPage />} />
           <Route path='logout' element={<Logout />} />
-          {currentUser ? (
+          {hasAuthenticatedSession ? (
             <>
               <Route path='admin/login' element={<Navigate to={homeRoute} replace />} />
               <Route path='auth/login' element={<Navigate to={homeRoute} replace />} />

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 
 import type { ServiceList, ServiceFormValues, ServiceCategory } from "../service_list.types";
+import { deleteServiceMediaApi } from "../service_list.api";
 import { ServiceAreaGeometryEditor } from "./ServiceAreaGeometryEditor";
 import type { ServiceAreaGeometry } from "../serviceAreaGeometry";
 
@@ -18,6 +19,10 @@ const ServiceModal = ({
     onClose,
     onSubmit,
 }: Props) => {
+    const [images, setImages] = useState<File[]>([]);
+    const [videos, setVideos] = useState<File[]>([]);
+    const [existingImages, setExistingImages] = useState(initialValues?.images ?? []);
+    const [existingVideos, setExistingVideos] = useState(initialValues?.videos ?? []);
     const [form, setForm] = useState<ServiceFormValues>({
         name: initialValues?.name ?? "",
         slug: initialValues?.slug ?? initialValues?.category ?? "",
@@ -25,8 +30,8 @@ const ServiceModal = ({
         category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "electrical",
         service_area: initialValues?.service_area ?? "",
         service_area_geometry: initialValues?.service_area_geometry ?? null,
-        rate_from: "",
-        rate_to: "",
+        rate_from: initialValues?.rate_from ?? "",
+        rate_to: initialValues?.rate_to ?? "",
         is_active: initialValues?.is_active ?? true,
     });
 
@@ -42,6 +47,10 @@ const ServiceModal = ({
             rate_to: initialValues?.rate_to ?? "",
             is_active: initialValues?.is_active ?? true,
         });
+        setImages([]);
+        setVideos([]);
+        setExistingImages(initialValues?.images ?? []);
+        setExistingVideos(initialValues?.videos ?? []);
     }, [initialValues]);
 
     return (
@@ -51,6 +60,8 @@ const ServiceModal = ({
             onSubmit={() =>
                 onSubmit({
                     ...form,
+                    images,
+                    videos,
                     slug: form.slug?.trim() || form.category,
                 })
             }
@@ -144,6 +155,36 @@ const ServiceModal = ({
                         }))
                     }
                 />
+            </div>
+
+            <div className="fv-row mt-6">
+                <label className="form-label">Images</label>
+                {existingImages.length > 0 && (
+                    <div className="d-flex flex-wrap gap-2 mb-3">
+                        {existingImages.map((media) => (
+                            <div className="border rounded p-2" key={media.id ?? media.url}>
+                                <img src={media.url} alt="Service" style={{ width: 96, height: 72, objectFit: "cover" }} />
+                                {media.id && <button type="button" className="btn btn-sm btn-link text-danger d-block" onClick={() => deleteServiceMediaApi(media.id!).then(() => setExistingImages((items) => items.filter((item) => item.id !== media.id)))}>Remove</button>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <input type="file" className="form-control" accept="image/*" multiple onChange={(event) => setImages(Array.from(event.target.files ?? []))} />
+            </div>
+
+            <div className="fv-row mt-6">
+                <label className="form-label">Videos</label>
+                {existingVideos.length > 0 && (
+                    <div className="d-flex flex-column gap-1 mb-3">
+                        {existingVideos.map((media) => (
+                            <div key={media.id ?? media.url} className="d-flex align-items-center gap-2">
+                                <a href={media.url} target="_blank" rel="noreferrer">Existing video</a>
+                                {media.id && <button type="button" className="btn btn-sm btn-link text-danger" onClick={() => deleteServiceMediaApi(media.id!).then(() => setExistingVideos((items) => items.filter((item) => item.id !== media.id)))}>Remove</button>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <input type="file" className="form-control" accept="video/mp4,video/quicktime,video/x-msvideo,video/x-matroska" multiple onChange={(event) => setVideos(Array.from(event.target.files ?? []))} />
             </div>
 
             <div className="fv-row mt-6">

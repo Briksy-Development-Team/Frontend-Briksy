@@ -8,6 +8,7 @@ import { getPermissionsByToken, getUserByToken, login as loginRequest, logout as
 import type { AuthModel, AuthResponse, UserModel } from './_models'
 import type { AppDispatch, RootState } from '../../../services/store'
 import { getRoleHomeRoute } from './roleRoutes'
+import axios from 'axios'
 
 type AuthContextProps = {
   auth: AuthModel | undefined
@@ -44,6 +45,7 @@ const useAuthSelector: TypedUseSelectorHook<RootState> = useSelector
 
 const mapAuthResponse = (response: AuthResponse): AuthModel => ({
   api_token: response.token,
+  user: response.user,
   token_type: response.token_type,
   abilities: response.abilities,
 })
@@ -60,26 +62,47 @@ const mapAuthResponse = (response: AuthResponse): AuthModel => ({
   }
 
   try {
-    const [data, permissions] = await Promise.all([
-      getUserByToken(),
-      getPermissionsByToken(),
-    ])
-
+    const data = await getUserByToken()
     dispatch(setAuthState(storedAuth))
     dispatch(setCurrentUser(data.data.user))
-    dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
-    dispatch(setEnabledModules(permissions.data.enabled_modules ?? []))
-    dispatch(
-      setBusinessProfile({
-        businessType: permissions.data.user?.business_type ?? null,
-        businessVerificationStatus:
-          permissions.data.user?.business_verification_status ?? null,
-      }),
-    )
+
+    try {
+      const permissions = await getPermissionsByToken()
+      dispatch(setPermissions(permissions.data.effective_permission_names ?? []))
+      dispatch(setEnabledModules(permissions.data.enabled_modules ?? []))
+      dispatch(
+        setBusinessProfile({
+          businessType: permissions.data.user?.business_type ?? null,
+          businessVerificationStatus:
+            permissions.data.user?.business_verification_status ?? null,
+        }),
+      )
+    } catch (error) {
+      // Permission hydration must not log a valid user out. Route guards will
+      // still enforce access, while the session remains available.
+      console.error('Failed to restore admin permissions.', error)
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        throw error
+      }
+    }
   } catch (error) {
     console.error('Failed to restore admin session.', error)
-    removeAuth()
-    dispatch(clearSession())
+
+    // Only an explicitly unauthenticated response invalidates the token. A
+    // forbidden/missing/validation/server/network response must not send the
+    // user to Login or destroy their session.
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      removeAuth()
+      dispatch(clearSession())
+    } else if (storedAuth.user) {
+      dispatch(setAuthState(storedAuth))
+      dispatch(setCurrentUser(storedAuth.user))
+    } else {
+      // Keep the token in storage for recovery on the next request. Without a
+      // hydrated user there is no safe portal route to render, so show the
+      // existing auth loading state rather than falsely clearing credentials.
+      dispatch(setAuthState(storedAuth))
+    }
   } finally {
     dispatch(setBootstrapping(false))
   }

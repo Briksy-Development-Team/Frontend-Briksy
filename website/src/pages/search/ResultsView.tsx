@@ -3,8 +3,12 @@ import { useSearchParams } from "react-router-dom";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 
 import type { ResultType } from "../../types/search";
-import { useListingData } from "./useListingData";
-import { LISTING_DISPLAY } from "./listingDisplay";
+import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
+import { getProperties, type PublicProperty } from "../../api/property/property.api";
+import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
+import TraderGridCard from "../../components/cards/trader/TraderGridCard";
+import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
+import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import MapSplitView from "./MapSplitView";
 
 const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
@@ -67,7 +71,7 @@ export default function ResultsView({
       {!loading && !error && <p className="text-[0.75rem] text-[#8B6F54] mb-5">{resultType === "property" || resultType === "comercial" ? total : organizations.length} verified results</p>}
       {!loading && !error && (resultType === "property" || resultType === "comercial") && displayProperties.length === 0 && <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p><button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button></div>}
 
-      {!loading && !error && showMap ? <MapSplitView resultType={resultType} selectedSub={selectedSub} traders={displayTraders} builders={displayBuilders} properties={displayProperties} /> : (
+      {!loading && !error && showMap ? <MapSplitView resultType={resultType} items={resultType === "trader" ? displayTraders : resultType === "builder" ? displayBuilders : displayProperties} /> : (
         <>
           {resultType === "trader" && <div className={GRID}>{displayTraders.map(item => <TraderGridCard key={item.id} item={item} />)}</div>}
           {resultType === "builder" && <div className={GRID}>{displayBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}

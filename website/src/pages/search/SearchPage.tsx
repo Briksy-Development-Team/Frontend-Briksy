@@ -73,7 +73,7 @@ const SearchPage = () => {
   } else if (browseSection !== "all") {
     content = <FullListView resultType={resultType} section={browseSection} />;
   } else {
-    content = <BrowseView resultType={resultType} onViewMore={setBrowseSection} />;
+    content = <BrowseView resultType={resultType} />;
   }
 
   return (

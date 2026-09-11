@@ -21,5 +21,6 @@ export const getDisplayId = (value: DisplayIdSource | null | undefined): string 
     ?? value.display_number
     ?? value.order_number
     ?? value.code
-    ?? "—";
+    ?? value.id
+    ?? "";
 };

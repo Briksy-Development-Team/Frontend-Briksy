@@ -84,9 +84,9 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
       id: "property_inquiries",
       type: "table",
       title: "Related Inquiries",
-      fetchFn: () => {}, // Mock for now until API is built
-      dataSelector: () => [], // Mock
-      totalSelector: () => 0, // Mock
+      fetchFn: async () => ({ data: [], meta: { pagination: { total: 0 } } }),
+      dataSelector: () => [],
+      totalSelector: () => 0,
       columns: [], // Mock
     },
     {

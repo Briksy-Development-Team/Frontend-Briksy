@@ -1,7 +1,7 @@
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import Reviews from "../../../components/reviews/Reviews";
 import { PropertyGallery } from "./components/PropertyGallery";
-import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, PropertyMap } from "./components/PropertyInfo";
+import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities } from "./components/PropertyInfo";
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
@@ -101,26 +101,19 @@ const mockProperty = {
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [propertyData, setPropertyData] = useState(mockProperty);
+  const [property, setProperty] = useState<PublicProperty | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
-    getProperty(id).then(({ data }) => {
-      const images = (data.media ?? []).map((media) => media.url).filter((url): url is string => Boolean(url));
-      const address = data.full_address || data.address || [data.location?.suburb, data.location?.postcode].filter(Boolean).join(", ") || mockProperty.address;
-      const organizationName = data.organization?.name || mockProperty.company.name;
-      setPropertyData((current) => ({
-        ...current,
-        title: data.title,
-        subtitle: `${data.bedroom_option || "—"} bedrooms • ${data.bathroom_option || "—"} bathrooms${data.floor_area_sqm ? ` • ${data.floor_area_sqm} sqm` : ""}`,
-        address,
-        images: images.length ? images : current.images,
-        about: data.description || "No description provided for this property.",
-        agent: { ...current.agent, name: organizationName },
-        company: { ...current.company, name: organizationName, location: address },
-        sidebar: { ...current.sidebar, builder: organizationName, builderName: organizationName, location: address },
-      }));
-    }).catch(console.error);
+    let active = true;
+    setLoading(true);
+    getProperty(id)
+      .then(({ data }) => { if (active) setProperty(data); })
+      .catch((reason: any) => { if (active) setError(reason?.response?.status === 404 ? "This property was not found." : "Unable to load this property."); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, [id]);
 
   const property = propertyData;

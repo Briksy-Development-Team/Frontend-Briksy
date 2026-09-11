@@ -1,5 +1,6 @@
 export interface AuthModel {
   api_token: string;
+  user?: UserModel;
   refreshToken?: string;
   token_type?: string;
   abilities?: string[];
