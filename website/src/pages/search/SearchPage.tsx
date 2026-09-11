@@ -26,7 +26,6 @@ const SearchPage = () => {
   const [sort, setSort] = useState<SortType>("featured");
   const [showMap, setShowMap] = useState(false);
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
-  const [activeTab, setActiveTab] = useState<FilterTab | null>(null);
 
   const typeParam = searchParams.get("type");
   const queryParam = searchParams.get("q") || "";
