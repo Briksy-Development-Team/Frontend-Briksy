@@ -65,7 +65,6 @@ const CARDS: CardData[] = [
   },
 ];
 
-/* ─── Desktop animated canvas section ─── */
 const DesktopCommunity = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -103,23 +102,31 @@ const DesktopCommunity = () => {
       images[i] = img;
     }
 
-    const [cardA, cardB, cardC, cardD] = cardRefs.current;
-    if (!cardA || !cardB || !cardC || !cardD) return;
+    const cards = cardRefs.current;
+    if (cards.some((c) => !c)) return;
 
-    gsap.set([cardA, cardB, cardC, cardD], { y: "110vh" });
+    gsap.set(cards, { y: "110vh" });
+    const CARD_DURATION = 0.4;
+    const stagger = (1 - CARD_DURATION) / (cards.length - 1);
+
+    const RANGES: [number, number][] = cards.map((_, i) => {
+      const start = i * stagger;
+      return [start, start + CARD_DURATION];
+    });
 
     const updateCards = (progress: number) => {
-      const first = gsap.utils.clamp(0, 1, progress / 0.5);
-      gsap.set([cardA, cardB], { y: `${gsap.utils.interpolate(110, -110, first)}vh` });
-
-      const second = gsap.utils.clamp(0, 1, (progress - 0.5) / 0.5);
-      gsap.set([cardC, cardD], { y: `${gsap.utils.interpolate(110, -110, second)}vh` });
+      cards.forEach((el, i) => {
+        const [start, end] = RANGES[i];
+        const t = gsap.utils.clamp(0, 1, (progress - start) / (end - start));
+        gsap.set(el, { y: `${gsap.utils.interpolate(110, -110, t)}vh` });
+      });
     };
 
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-      end: "+=2000",
+
+      end: "+=2400",
       pin: true,
       scrub: 0.6,
       onUpdate: (self) => {
@@ -146,7 +153,8 @@ const DesktopCommunity = () => {
       ref={sectionRef}
       className="relative flex h-screen w-full items-center justify-center overflow-hidden"
     >
-      <div className="relative h-full w-full">
+
+      <div className="relative mx-auto h-full w-full max-w-[100rem]">
         {/* Canvas */}
         <div className="absolute inset-0 mt-10 flex items-center justify-center mix-blend-darken">
           <canvas ref={canvasRef} className="h-[32.5625rem] w-[54.75rem]" />
@@ -233,7 +241,7 @@ const MobileCommunity = () => {
               </p>
             </div>
 
-          
+
           </div>
         ))}
       </div>

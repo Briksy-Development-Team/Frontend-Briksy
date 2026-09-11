@@ -42,7 +42,7 @@ const TrendingProperty = () => {
                     }}
                     className="[overscroll-behavior-x:contain] touch-pan-y"
                 >
-                    {items.map((item) => (
+                    {items.slice(0, 5).map((item) => (
                         <SwiperSlide key={item.id} className="!w-[19.4375rem]">
                             <PropertyGridCard item={propertyToCard(item)} />
                         </SwiperSlide>
