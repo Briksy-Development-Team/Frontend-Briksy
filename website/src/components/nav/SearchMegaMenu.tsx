@@ -5,7 +5,7 @@ import type { ResultType } from "../../types/search";
 import Category from "../../assets/hero/category.svg"
 type CategoryData = { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[];
 
-const MOCK_CATEGORIES: Record<Exclude<ResultType, "comercial">, CategoryData> = {
+const MOCK_CATEGORIES: Record<Exclude<ResultType, "comercial" | "all">, CategoryData> = {
   builder: [
     {
       id: "building-and-construction",
@@ -153,7 +153,7 @@ export default function SearchMegaMenu({
   };
   const closeMenu = () => { closeTimer.current = setTimeout(() => setIsOpen(false), 150); };
 
-  const cats = MOCK_CATEGORIES[resultType === "comercial" ? "property" : resultType];
+  const cats = MOCK_CATEGORIES[resultType === "comercial" || resultType === "all" ? "property" : resultType];
   if (!cats || cats.length === 0) return null;
 
   return (

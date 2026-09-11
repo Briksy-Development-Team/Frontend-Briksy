@@ -2,6 +2,7 @@ import type { Column } from "../../../modules/apps/shared_table/entity-list/Enti
 import type { PropertyList } from "./property.types";
 import { formatDateTime } from "../../utils/dateFormat";
 import { getDisplayId } from "../../utils/displayId";
+import React from "react";
 
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
@@ -26,6 +27,11 @@ export const propertyListConfig = {
       accessor: "status",
       sortable: true,
       Cell: ({ value }: { value: any }) => value || "—",
+    },
+    {
+      Header: "Purpose",
+      accessor: "listing_purpose",
+      Cell: ({ value }: { value: any }) => value ? React.createElement("span", { className: "badge badge-light-primary" }, ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[value] ?? value) : "—",
     },
     {
       Header: "Organization",
@@ -62,6 +68,12 @@ export const propertyListConfig = {
       label: "Status",
       type: "select" as const,
       options: ["Draft", "Pending Review", "Approved", "Rejected", "Published", "Archived"],
+    },
+    {
+      key: "listing_purpose",
+      label: "Listing Purpose",
+      type: "select" as const,
+      options: ["SELL", "RENT", "BOTH"],
     },
     {
       key: "suburb",

@@ -21,11 +21,11 @@ const PropertyGridCard = ({ item }: Props) => {
           className="h-full w-full object-cover"
         />
 
-        {item.badge && (
-          <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium">
-            {item.badge}
-          </span>
-        )}
+          {(item.purpose || item.badge) && (
+            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium">
+            {( { SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string> )[item.purpose || ""] || item.badge}
+            </span>
+          )}
 
         <FavoriteButton 
           initialIsFavourite={item.isFavourite}
@@ -38,6 +38,8 @@ const PropertyGridCard = ({ item }: Props) => {
         <h3 className="line-clamp-2 text-[0.9375rem]  leading-[1.3] lg:text-[1.0625rem]">
           {item.title}
         </h3>
+
+        {item.propertyType && <p className="mt-1 text-xs text-primary-light-brown">{item.propertyType}</p>}
 
         <p className="mt-2 text-[1rem] ">
           {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
