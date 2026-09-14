@@ -161,7 +161,6 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
       {/* Search Overlay */}
       <SearchOverlay
         open={isSearchOpen}
-        mode={mode === "ai" ? "ai" : "search"}
         onClose={() => setMode("collapsed")}
       />
 

@@ -18,6 +18,7 @@ type OrganizationPageProps = {
     subtitle?: string;
     typeSlugs?: string[];
     businessTypes?: Array<"organisation" | "company" | "solo_trader">;
+    addonFeature?: string;
 };
 
 const OrganizationPage = ({
@@ -26,6 +27,7 @@ const OrganizationPage = ({
     subtitle,
     typeSlugs,
     businessTypes,
+    addonFeature,
 }: OrganizationPageProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -42,6 +44,7 @@ const OrganizationPage = ({
     const baseFilters: Record<string, unknown> = {
         business_type: resolvedBusinessTypes,
         ...(resolvedTypeSlugs.length ? { type_slug: resolvedTypeSlugs } : {}),
+        ...(addonFeature ? { addon_feature: addonFeature } : {}),
     };
 
     const { params, handleParamsChange } = useEntityTable(

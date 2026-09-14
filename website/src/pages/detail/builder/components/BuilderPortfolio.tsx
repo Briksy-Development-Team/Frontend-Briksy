@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules";
 import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
-import TraderGridCard from '../../../../components/cards/trader/TraderGridCard';
 
 export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
   const formatMoney = (val: number) => `$${val / 1000}k`;
@@ -159,7 +158,7 @@ export function BuilderTeam({ team }: { team: any[] }) {
           Showing {team.length} team members at Harkaway Homes.
         </p>
       </div>
-      <TraderGridCard items={team} />
+      <StaffGrid item={team} />
     </div>
   );
 }

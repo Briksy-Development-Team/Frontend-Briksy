@@ -1,7 +1,7 @@
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import Reviews from "../../../components/reviews/Reviews";
 import { PropertyGallery } from "./components/PropertyGallery";
-import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities } from "./components/PropertyInfo";
+import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, PropertyMap } from "./components/PropertyInfo";
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
@@ -9,99 +9,15 @@ import { ShieldCheck, Share } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getProperty } from "../../../api/property/property.api";
+import { getProperty, type PublicProperty } from "../../../api/property/property.api";
 import TraderGridCard from '../../../components/cards/trader/TraderGridCard';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules"
 
-const mockProperty = {
-  title: 'Modern Townhouse Near Transport - 2',
-  subtitle: '5 guests • 2 bedrooms • 3 beds • 2 bathrooms',
-  address: '12 Maple Street, Toorak VIC 3142',
-  images: [
-    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
-    'https://images.unsplash.com/photo-1600607687931-cebf0046cbb4?w=600&q=80',
-    'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&q=80',
-    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80',
-    'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=600&q=80',
-  ],
-  agent: {
-    name: 'Sunrise Property Group',
-    role: 'Property Management • Since 2016',
-    verified: 'Verified [ Builder / Org. ]',
-    avatar: 'https://i.pravatar.cc/150?img=11',
-  },
-  about: 'Low-maintenance living with open-plan design and secure parking. This modern townhouse offers the perfect blend of style and convenience, located just minutes from Richmond Station and the vibrant Church Street precinct. Enjoy easy access to Melbourne CBD, local cafes, boutiques, and parks — all within walking distance.',
-  amenities: [
-    { name: 'name 1' }, { name: 'name 1' }, { name: 'name 1' },
-    { name: 'name 2' }, { name: 'name 2' }, { name: 'name 2' },
-    { name: 'name 3' }, { name: 'name 3' }, { name: 'name 3' },
-    { name: 'name 4' }, { name: 'name 4' }, { name: 'name 4' },
-  ],
-  mapSrc: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50554.60553700944!2d144.8674488!3d-37.8001059!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d4f9b0f6e63%3A0x502cb20e4bfa6350!2sFootscray%20VIC%203011!5e0!3m2!1sen!2sau!4v1000000000000',
-  company: {
-    name: 'Sunrise Property Group',
-    location: 'Richmond, VIC 3121',
-    tags: ['Tag Line 2', 'Tag Line 2', 'Tag Line 2'],
-    rating: 4.5,
-    reviews: 123,
-    since: 2016,
-    logo: 'https://ui-avatars.com/api/?name=troi&background=0D47A1&color=fff'
-  },
-  hosts: [
-    {
-      id: 1,
-      name: 'Sunrise Property Group',
-      tagLine: 'Licensed Mortgage Broker',
-      location: 'Richmond, VIC 3121',
-      tags: ['Mortgage Broker', '12 Year Experience', 'Tag Line 2'],
-      rating: 4.5,
-      reviews: 123,
-      avatar: 'https://i.pravatar.cc/150?img=11',
-      bannerImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80',
-      isFavourite: false,
-    },
-    {
-      id: 2,
-      name: 'Sunrise Property Group',
-      tagLine: 'Licensed Mortgage Broker',
-      location: 'Richmond, VIC 3121',
-      tags: ['Mortgage Broker', '12 Year Experience', 'Tag Line 2'],
-      rating: 4.5,
-      reviews: 123,
-      avatar: 'https://i.pravatar.cc/150?img=12',
-      bannerImage: 'https://images.unsplash.com/photo-1600607687931-cebf0046cbb4?w=400&q=80',
-      isFavourite: false,
-    },
-  ],
-  reviews: {
-    overall: 4.8,
-    count: 123,
-    distribution: { 5: 86, 4: 11, 3: 2, 2: 1, 1: 0 },
-    list: [
-      {
-        id: 1,
-        author: "Priya & Marcus",
-        context: "Sold in Cremorne - May 2026",
-        rating: 5,
-        avatar: "https://i.pravatar.cc/150?img=11",
-        text: "He told us to hold off six weeks and repaint rather than list immediately. Cost us $4k and added a lot more than that at auction. The advice was against his own short-term interest and that told us everything.",
-      },
-    ],
-  },
-  sidebar: {
-    builder: 'Sunrise Property Group',
-    builderName: 'Sunrise Property Group',
-    availability: 'Mon - Sat · 9 AM - 6 PM',
-    location: 'Richmond, VIC 3121',
-    price: 850000,
-  }
-};
-
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [property, setProperty] = useState<PublicProperty | null>(null);
+  const [propertyData, setPropertyData] = useState<PublicProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,13 +26,30 @@ const PropertyDetail = () => {
     let active = true;
     setLoading(true);
     getProperty(id)
-      .then(({ data }) => { if (active) setProperty(data); })
+      .then(({ data }) => { if (active) setPropertyData(data); })
       .catch((reason: any) => { if (active) setError(reason?.response?.status === 404 ? "This property was not found." : "Unable to load this property."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [id]);
 
-  const property = propertyData;
+  if (loading) return <p className="py-20 text-center">Loading property...</p>;
+  if (error) return <p className="py-20 text-center text-red-700">{error}</p>;
+  if (!propertyData) return <p className="py-20 text-center">This property is unavailable.</p>;
+
+  const property = {
+    ...propertyData,
+    address: propertyData.full_address || propertyData.address || "",
+    subtitle: [propertyData.bedroom_option, propertyData.bathroom_option, propertyData.car_space_option].filter(Boolean).join(" • "),
+    images: [...(propertyData.images || []), ...(propertyData.media || [])].map((image) => image.url).filter((url): url is string => Boolean(url)),
+    agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: "" },
+    about: propertyData.description || "No description provided.",
+    amenities: (propertyData.features || []).map((feature) => ({ name: feature.name })),
+    mapSrc: "",
+    company: { name: propertyData.organization?.name || "Property organisation", location: propertyData.address || "", tags: [], rating: propertyData.rating || 0, reviews: 0, since: undefined, logo: "" },
+    hosts: [] as any[],
+    reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
+    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price || 0 },
+  };
   const addressParts = property.address.split(', ');
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
   const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";

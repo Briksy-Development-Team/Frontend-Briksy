@@ -228,14 +228,6 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("buyer_management") && (
-            <SidebarMenuItem to={`${portalBase}/buyer-briefs`} title="Buyer Briefs" fontIcon="bi-people" icon="element-plus" />
-          )}
-
-          {hasModule("builder_management") && (
-            <SidebarMenuItem to={`${portalBase}/builder-projects`} title="Builder Projects" fontIcon="bi-building" icon="element-plus" />
-          )}
-
           {hasPermission("permission.view") && (
             <SidebarMenuItem
               to={`${portalBase}/permissions`}
@@ -280,6 +272,24 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/services`}
               title="Services Management"
               fontIcon="bi-archive"
+              icon="element-plus"
+            />
+          )}
+
+          {hasModule("buyer_management") && (
+            <SidebarMenuItem
+              to={`${portalBase}/buyer-briefs`}
+              title="Buyer Briefs"
+              fontIcon="bi-people"
+              icon="element-plus"
+            />
+          )}
+
+          {hasModule("builder_management") && (
+            <SidebarMenuItem
+              to={`${portalBase}/builder-projects`}
+              title="Builder Projects"
+              fontIcon="bi-building"
               icon="element-plus"
             />
           )}

@@ -48,6 +48,7 @@ const BillingCancelPage = lazy(() => import("../pages/billing/BillingCancelPage"
 const NotificationsPage = lazy(() => import("../pages/notifications/NotificationsPage"));
 const ActivityLogsPage = lazy(() => import("../pages/platform/ActivityLogsPage"));
 const ReferralsPage = lazy(() => import("../pages/platform/ReferralsPage"));
+const BriksyExclusiveOrganizationsPage = lazy(() => import("../pages/platform/BriksyExclusiveOrganizationsPage"));
 
 const PrivateRoutes = () => {
   const { currentUser } = useAuth();
@@ -104,6 +105,19 @@ const PrivateRoutes = () => {
               <SuspensedView>
                 <UserPage />
               </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/super-admin/briksy-exclusive/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <PermissionGuard anyOf={["company.view"]}>
+                <SuspensedView>
+                  <BriksyExclusiveOrganizationsPage />
+                </SuspensedView>
+              </PermissionGuard>
             </RoleGuard>
           }
         />

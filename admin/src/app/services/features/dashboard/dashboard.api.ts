@@ -11,6 +11,7 @@ export type DashboardFilters = {
 
 export type SuperAdminDashboardSummary = {
   total_companies: number;
+  briksy_exclusive_count: number;
   active_plans: number;
   total_orders: number;
   plan_requests: number;

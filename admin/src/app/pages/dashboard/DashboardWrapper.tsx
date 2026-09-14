@@ -250,16 +250,16 @@ const DashboardPage: FC = () => {
                         </div>
                         <div className="d-flex align-items-center gap-6">
                           <div className="text-center px-4" style={{ borderRight: "1px solid rgba(191, 159, 125, 0.3)" }}>
-                            <div className="fw-bolder fs-1" style={{ color: "#F8F4EE" }}>{(superAdminSummary as any)?.briksy_exclusive_count ?? 3}</div>
+                          <div className="fw-bolder fs-1" style={{ color: "#F8F4EE" }}>{superAdminSummary.briksy_exclusive_count}</div>
                             <div className="fw-bold  fs-8 text-uppercase " style={{ letterSpacing: "0.05em", color: "#F8F4EE" }}>Active</div>
                           </div>
-                          <a href="/super-admin/companies?filter[briksy_exclusive]=true" className="btn btn-sm text-white fw-bold px-6 py-3" style={{
+                          <Link to="/super-admin/briksy-exclusive" className="btn btn-sm text-white fw-bold px-6 py-3" style={{
                             border: "2px solid #F8F4EE",
                             borderRadius: "8px",
                           }}
                           >
                             View All
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     </div>
