@@ -7,7 +7,7 @@ import { useRoleAccess } from "../../modules/auth";
 import { getAuth } from "../../modules/auth/core/AuthHelpers";
 import { useToast } from "../../services/ui/toast/useToast";
 import type { Organization, OrganizationFormValues } from "../../services/features/organization/organization.types";
-import { updateOrganizationApi } from "../../services/features/organization/organization.api";
+import { updateOrganizationApi, uploadOrganizationMediaApi } from "../../services/features/organization/organization.api";
 
 const CompanyPage = () => {
   const { isSuperAdmin } = useRoleAccess();
@@ -32,7 +32,11 @@ const CompanyPage = () => {
     if (!editingOrganization) return;
     setSaving(true);
     try {
-      await updateOrganizationApi(editingOrganization.id, values);
+      const { profile_image, banner_image, ...organizationValues } = values;
+      await updateOrganizationApi(editingOrganization.id, organizationValues);
+      if (profile_image || banner_image) {
+        await uploadOrganizationMediaApi(editingOrganization.id, { profile_image, banner_image });
+      }
       setEditingOrganization(null);
       toast.success("Organization updated.");
     } finally {
@@ -51,6 +55,7 @@ const CompanyPage = () => {
         <OrganizationModal
           initialValues={editingOrganization}
           isSubmitting={saving}
+          enableMediaUpload
           onClose={() => setEditingOrganization(null)}
           onSubmit={handleUpdate}
         />

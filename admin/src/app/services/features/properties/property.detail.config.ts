@@ -2,6 +2,9 @@ import React from "react";
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import { getDisplayId } from "../../utils/displayId";
 import PropertyOffersSection from "./PropertyOffersSection";
+import { fetchInquiries } from "../inquiries/inquiry.slice";
+import { inquiryConfig } from "../inquiries/inquiry.config";
+import { store, type RootState } from "../../store";
 
 export const propertyDetailConfig: DetailConfig<any> = {
   header: {
@@ -136,10 +139,22 @@ export const propertyDetailConfig: DetailConfig<any> = {
       type: "table",
       title: "Related Inquiries",
       gridColumnSpan: 12,
-      fetchFn: () => {},
-      dataSelector: () => [],
-      totalSelector: () => 0,
-      columns: [],
+      fetchFn: (params, data) => {
+        if (!data?.id) {
+          return;
+        }
+
+        void store.dispatch(fetchInquiries({
+          ...params,
+          filters: {
+            ...(params.filters ?? {}),
+            property_listing_id: data.id,
+          },
+        }));
+      },
+      dataSelector: (state: RootState) => state.inquiries.data,
+      totalSelector: (state: RootState) => state.inquiries.total,
+      columns: inquiryConfig.columns,
     },
     {
       id: "activity_timeline",

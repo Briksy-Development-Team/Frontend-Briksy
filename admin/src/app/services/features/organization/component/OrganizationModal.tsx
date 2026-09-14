@@ -6,11 +6,12 @@ import { LocationAutocomplete, type LocationSelection } from "../../maps/Locatio
 type Props = {
   initialValues?: Organization | null;
   isSubmitting?: boolean;
+  enableMediaUpload?: boolean;
   onClose: () => void;
   onSubmit: (values: OrganizationFormValues) => void;
 };
 
-const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: Props) => {
+const OrganizationModal = ({ initialValues, isSubmitting, enableMediaUpload = false, onClose, onSubmit }: Props) => {
   const [form, setForm] = useState<OrganizationFormValues>({
     name: initialValues?.name ?? "",
     contact_email: initialValues?.contact_email ?? "",
@@ -21,6 +22,8 @@ const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: P
     abn: initialValues?.abn ?? "",
     acn: initialValues?.acn ?? "",
     is_verified: initialValues?.is_verified ?? false,
+    profile_image: undefined,
+    banner_image: undefined,
   });
 
   const handleLocationSelect = (selection: LocationSelection) => {
@@ -41,6 +44,8 @@ const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: P
       abn: initialValues?.abn ?? "",
       acn: initialValues?.acn ?? "",
       is_verified: initialValues?.is_verified ?? false,
+      profile_image: undefined,
+      banner_image: undefined,
     });
   }, [initialValues]);
 
@@ -100,6 +105,30 @@ const OrganizationModal = ({ initialValues, isSubmitting, onClose, onSubmit }: P
           <input className="form-control form-control-solid" value={form.acn ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, acn: e.target.value }))} />
         </div>
       </div>
+      {enableMediaUpload && (
+        <div className="row">
+          <div className="col-md-6 fv-row mb-4">
+            <label className="form-label">Profile picture</label>
+            <input
+              className="form-control form-control-solid"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(event) => setForm((prev) => ({ ...prev, profile_image: event.target.files?.[0] }))}
+            />
+            <div className="form-text">JPG, PNG, or WebP up to 5 MB.</div>
+          </div>
+          <div className="col-md-6 fv-row mb-4">
+            <label className="form-label">Banner picture</label>
+            <input
+              className="form-control form-control-solid"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(event) => setForm((prev) => ({ ...prev, banner_image: event.target.files?.[0] }))}
+            />
+            <div className="form-text">JPG, PNG, or WebP up to 5 MB.</div>
+          </div>
+        </div>
+      )}
       <div className="fv-row mb-2">
         <label className="form-check form-switch form-check-custom form-check-solid">
           <input className="form-check-input" type="checkbox" checked={Boolean(form.is_verified)} onChange={(e) => setForm((prev) => ({ ...prev, is_verified: e.target.checked }))} />

@@ -4,6 +4,7 @@ import type { ResultType } from "../../types/search";
 import TraderListCard from "../../components/cards/trader/TraderListCard";
 import BuilderListCard from "../../components/cards/builder/BuilderListCard";
 import PropertyListCard from "../../components/cards/property/PropertyListCard";
+import { buildGoogleMapsEmbedUrl } from "../../utils/googleMaps";
 
 export default function MapSplitView({
   resultType,
@@ -14,6 +15,12 @@ export default function MapSplitView({
 }) {
   const [page, setPage] = useState(1);
   const total = 15;
+  const firstLocatedItem = items.find((item) => item?.lat || item?.lng || item?.address || item?.location);
+  const mapSrc = buildGoogleMapsEmbedUrl({
+    lat: firstLocatedItem?.lat,
+    lng: firstLocatedItem?.lng,
+    address: firstLocatedItem?.address || firstLocatedItem?.location,
+  });
 
   return (
     <div
@@ -70,7 +77,7 @@ export default function MapSplitView({
           loading="lazy"
           allowFullScreen
           referrerPolicy="no-referrer-when-downgrade"
-          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d211800!2d151.2093!3d-33.8688!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sau!4v1700000000000!5m2!1sen!2sau"
+          src={mapSrc}
           className="w-full h-full border-0"
         />
       </div>

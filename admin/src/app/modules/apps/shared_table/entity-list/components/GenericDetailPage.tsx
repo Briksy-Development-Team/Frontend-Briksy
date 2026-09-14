@@ -12,6 +12,7 @@ import { organizationDetailConfig } from '../../../../../services/features/organ
 import { serviceDetailConfig } from '../../../../../services/features/service/service_list.detail.config'
 import { staffDetailConfig } from '../../../../../services/features/staff/staff.detail.config'
 import { planRequestDetailConfig } from '../../../../../services/features/plan_requests/plan-request.detail.config'
+import { inquiryDetailConfig } from '../../../../../services/features/inquiries/inquiry.detail.config'
 import type { DetailConfig } from '../../../shared_detail/core/DetailTypes'
 
 type DetailRegistryEntry = {
@@ -20,7 +21,7 @@ type DetailRegistryEntry = {
 }
 
 const routeAliases: Record<string, string> = {
-  inquiry: 'plan-requests',
+  inquiry: 'inquiries',
   solo: 'organization',
   'solo-traders': 'organization',
   users: 'staff',
@@ -61,6 +62,10 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
   'plan-requests': {
     config: planRequestDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/plan-requests/${id}`,
+  },
+  inquiries: {
+    config: inquiryDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
   },
 }
 

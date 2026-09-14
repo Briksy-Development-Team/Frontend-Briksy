@@ -1,4 +1,5 @@
 import type { BuyFilters } from "../../components/filter/filterTypes";
+import type { SortType } from "../../types/search";
 
 export type PropertySearchParams = {
   purpose?: "sell" | "rent";
@@ -15,6 +16,8 @@ export type PropertySearchParams = {
   max_land_size?: number;
   features?: string[];
   page?: number;
+  sort?: string;
+  direction?: "asc" | "desc";
 };
 
 const positive = (value: number | undefined) => value && value > 0 ? value : undefined;
@@ -22,6 +25,22 @@ const queryNumber = (query: URLSearchParams, key: string) => {
   if (!query.has(key)) return undefined;
   const value = Number(query.get(key));
   return Number.isFinite(value) ? value : undefined;
+};
+
+export const sortToApiParams = (sort: SortType): Pick<PropertySearchParams, "sort" | "direction"> => {
+  switch (sort) {
+    case "newest":
+      return { sort: "created_at", direction: "desc" };
+    case "oldest":
+      return { sort: "created_at", direction: "asc" };
+    case "price-low":
+      return { sort: "price", direction: "asc" };
+    case "price-high":
+      return { sort: "price", direction: "desc" };
+    case "featured":
+    default:
+      return { sort: "rating", direction: "desc" };
+  }
 };
 
 export const filtersToPropertyParams = (filters: BuyFilters): PropertySearchParams => ({
@@ -53,7 +72,7 @@ export const propertyParamsToQuery = (params: PropertySearchParams) => {
 };
 
 export const propertyQueryToParams = (query: URLSearchParams): PropertySearchParams => ({
-  purpose: query.get("purpose") === "rent" ? "rent" : query.get("purpose") === "sell" ? "sell" : undefined,
+  purpose: query.get("purpose") === "rent" || query.get("intent") === "rent" ? "rent" : query.get("purpose") === "sell" || query.get("intent") === "buy" || query.get("intent") === "sell" ? "sell" : undefined,
   category: query.get("category") === "commercial" ? "commercial" : query.get("category") === "residential" ? "residential" : undefined,
   search: query.get("q") || query.get("search") || undefined,
   suburb: query.get("suburb") || undefined,
@@ -67,4 +86,5 @@ export const propertyQueryToParams = (query: URLSearchParams): PropertySearchPar
   max_land_size: queryNumber(query, "max_land_size"),
   features: query.getAll("features[]").length ? query.getAll("features[]") : query.getAll("features"),
   page: query.has("page") ? Math.max(1, Number(query.get("page")) || 1) : 1,
+  ...sortToApiParams((query.get("sort_by") || query.get("sort") || "featured") as SortType),
 });

@@ -10,6 +10,15 @@ import { useSearchParams } from "react-router-dom";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
 
+const organizationTypeForResult = (resultType: ResultType, tab?: string | null) => {
+  if (resultType === "builder" && tab === "agents") return "real-estate";
+  if (resultType === "builder") return "builders";
+  return "trades-professionals";
+};
+
+const organizationSort = (sort?: string) =>
+  sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
+
 function SectionHead({ title, count }: { title: string; count: number }) {
   return (
     <div className="flex items-center justify-between py-2">
@@ -40,9 +49,11 @@ export default function BrowseView({ resultType }: { resultType: ResultType }) {
     setLoading(true);
     setError(null);
     const query = propertyQueryToParams(searchParams);
+    const tab = searchParams.get("tab");
+    const serviceSlug = searchParams.get("service_slug") || undefined;
     const request = resultType === "property" || resultType === "comercial"
       ? getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
-      : getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", verified_only: 1 });
+      : getOrganizations({ type: organizationTypeForResult(resultType, tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "comercial") { setProperties(r.data); setTotal(r.meta?.pagination?.total ?? r.data.length); }

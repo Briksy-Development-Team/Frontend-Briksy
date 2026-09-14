@@ -1,36 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 
-import {
-    fetchPlanRequests,
-    // savePlanRequest,
-    // deletePlanRequest,
-    // approvePlanRequest,
-    // rejectPlanRequest,
-    openPlanRequestModal,
-    // closePlanRequestModal,
-    openReviewModal,
-    // closeReviewModal,
-    openDeletePlanRequestModal,
-    // closeDeletePlanRequestModal,
-} from "../../services/features/plan_requests/plan-request.slice";
-
-import { planRequestConfig } from "../../services/features/plan_requests/plan-request.config";
-
-// import { PlanRequestModal } from "../../services/features/plan_requests/component/PlanRequestModal";
-// import { PlanRequestReviewModal } from "../../services/features/plan_requests/component/PlanRequestReviewModal";
-
 import type { RootState, AppDispatch } from "../../services/store";
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
-// import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 import { getDisplayId } from "../../services/utils/displayId";
+import { fetchInquiries } from "../../services/features/inquiries/inquiry.slice";
+import { inquiryConfig } from "../../services/features/inquiries/inquiry.config";
 
-const InquiryList = ({ rowActions }: { rowActions: any[] }) => {
+const InquiryList = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { isSuperAdmin } = useRoleAccess();
@@ -42,76 +24,35 @@ const InquiryList = ({ rowActions }: { rowActions: any[] }) => {
     const {
         data,
         total,
-    } = useSelector((s: RootState) => s.planRequests);
+    } = useSelector((s: RootState) => s.inquiries);
 
     const { params, handleParamsChange } = useEntityTable((p) =>
-        dispatch(fetchPlanRequests(p)),
+        dispatch(fetchInquiries(p)),
     );
 
     return (
         <Content>
-            <PageHeader title="Inquiry Requests" subtitle="Manage Inquiry requests" />
+            <PageHeader title="Property Inquiries" subtitle="Manage enquiries submitted from the website" />
 
             <EntityList
                 data={data}
                 total={total}
                 params={params}
                 onParamsChange={handleParamsChange}
-                columns={planRequestConfig.columns}
-                filtersConfig={planRequestConfig.filters}
+                columns={inquiryConfig.columns}
+                filtersConfig={inquiryConfig.filters}
                 getRowLink={(row) => `${portalBase}/inquiry/${getDisplayId(row)}`}
                 enableRowClick
-                headerActions={[
-                    {
-                        label: "New Request",
-                        permission: "plan_request.create",
-                        onClick: () => dispatch(openPlanRequestModal(null)),
-                    },
-                ]}
-                rowActions={rowActions}
             />
         </Content>
     );
 };
 
 export default function InquiryPage() {
-    const dispatch = useDispatch<AppDispatch>();
-    
-    const rowActions = [
-        {
-            label: "Approve",
-            permission: "plan_request.approve",
-            onClick: (row: any) =>
-                dispatch(
-                    openReviewModal({
-                        request: row,
-                        actionType: "approve",
-                    }),
-                ),
-        },
-        {
-            label: "Reject",
-            permission: "plan_request.reject",
-            onClick: (row: any) =>
-                dispatch(
-                    openReviewModal({
-                        request: row,
-                        actionType: "reject",
-                    }),
-                ),
-        },
-        {
-            label: "Delete",
-            className: "text-danger",
-            permission: "plan_request.delete",
-            onClick: (row: any) => dispatch(openDeletePlanRequestModal(row)),
-        },
-    ];
-
     return (
         <Routes>
-            <Route index element={<InquiryList rowActions={rowActions} />} />
-            <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
+            <Route index element={<InquiryList />} />
+            <Route path=":id" element={<GenericDetailPage />} />
         </Routes>
     );
 }

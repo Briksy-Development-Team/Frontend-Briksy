@@ -12,14 +12,14 @@ const locationOf = (o: PublicOrganization) => [o.address, o.state, o.postcode].f
 const tagsOf = (o: PublicOrganization) => (o.services ?? []).slice(0, 5).map((s) => s.name);
 
 export const organizationToBuilder = (o: PublicOrganization): Builder => ({
-  id: o.id, name: o.name, location: locationOf(o), avatar: BusinessPlaceholder, bannerImage: BuilderBackground,
+  id: o.slug || o.generated_id || o.id, name: o.name, location: locationOf(o), avatar: o.logo_url || BusinessPlaceholder, bannerImage: o.banner_url || BuilderBackground,
   rating: o.rating || 0, reviews: 0, tags: tagsOf(o), establishedYear: 0, isFavourite: false,
 });
 
 export const organizationToTrader = (o: PublicOrganization): Trader => ({
-  id: o.id, name: o.name, tagLine: o.services?.[0]?.name || "Trusted property professional",
+  id: o.slug || o.generated_id || o.id, name: o.name, tagLine: o.services?.[0]?.name || "Trusted property professional",
   role: o.type?.name || "Professional", category: o.services?.[0]?.name, location: locationOf(o),
-  avatar: ServicePlaceholder, bannerImage: BuilderBackground, rating: o.rating || 0, reviews: 0,
+  avatar: o.logo_url || ServicePlaceholder, bannerImage: o.banner_url || BuilderBackground, rating: o.rating || 0, reviews: 0,
   tags: tagsOf(o), isFavourite: false,
 });
 

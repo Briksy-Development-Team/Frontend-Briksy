@@ -18,6 +18,7 @@ export type Organization = {
   is_verified?: boolean;
   licensed_staff_seats?: number;
   logo_url?: string;
+  banner_url?: string;
   plan_id?: string | null;
   ranking_priority?: number;
   pending_properties_count?: number;
@@ -41,6 +42,8 @@ export type OrganizationFormValues = {
   abn?: string;
   acn?: string;
   is_verified?: boolean;
+  profile_image?: File;
+  banner_image?: File;
 };
 
 export type GetOrganizationParams = {

@@ -4,6 +4,7 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { KTCard } from "../../../_metronic/helpers";
 import { useRoleAccess } from "../../modules/auth";
 import type { SettingItem } from "../../services/features/settings/settings.types";
+import type { Organization } from "../../services/features/organization/organization.types";
 import { NotificationPreferences } from "../../services/features/notifications/NotificationPreferences";
 import {
   fetchCompanySettingsApi,
@@ -11,6 +12,7 @@ import {
   updateCompanySettingsApi,
   updatePlatformSettingsApi,
 } from "../../services/features/settings/settings.api";
+import { fetchCurrentOrganizationApi, uploadOrganizationMediaApi } from "../../services/features/organization/organization.api";
 
 const SettingsPage = () => {
   const { isSuperAdmin } = useRoleAccess();
@@ -18,6 +20,12 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [bannerImage, setBannerImage] = useState<File | null>(null);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [mediaMessage, setMediaMessage] = useState<string | null>(null);
+  const [mediaInputKey, setMediaInputKey] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -27,6 +35,26 @@ const SettingsPage = () => {
       .then((data) => active && setItems(data))
       .catch((err: unknown) => active && setError(err instanceof Error ? err.message : "Failed to load settings"))
       .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [isSuperAdmin]);
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      setOrganization(null);
+      return;
+    }
+
+    let active = true;
+    void fetchCurrentOrganizationApi()
+      .then((data) => {
+        if (active) setOrganization(data);
+      })
+      .catch(() => {
+        if (active) setOrganization(null);
+      });
+
     return () => {
       active = false;
     };
@@ -54,6 +82,90 @@ const SettingsPage = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const uploadMedia = async () => {
+    if (!organization || (!profileImage && !bannerImage)) return;
+
+    setMediaLoading(true);
+    setMediaMessage(null);
+    try {
+      const updated = await uploadOrganizationMediaApi(organization.id, {
+        profile_image: profileImage ?? undefined,
+        banner_image: bannerImage ?? undefined,
+      });
+      setOrganization(updated);
+      setProfileImage(null);
+      setBannerImage(null);
+      setMediaInputKey((key) => key + 1);
+      setMediaMessage("Images uploaded successfully.");
+    } catch (err: unknown) {
+      setMediaMessage(err instanceof Error ? err.message : "Failed to upload images.");
+    } finally {
+      setMediaLoading(false);
+    }
+  };
+
+  const renderProfileMediaUpload = (group: string) => {
+    if (isSuperAdmin || group.toLowerCase() !== "profile") return null;
+
+    return (
+      <div className="border-top pt-5 mt-1">
+        <div className="row g-5">
+          <div className="col-12 col-lg-5">
+            <label className="form-label fw-semibold">Profile picture</label>
+            <div className="d-flex align-items-center gap-4">
+              <div className="symbol symbol-80px symbol-circle bg-light">
+                {organization?.logo_url ? (
+                  <img src={organization.logo_url} alt="Company profile" className="object-fit-cover" />
+                ) : (
+                  <span className="text-muted fw-semibold">Logo</span>
+                )}
+              </div>
+              <input
+                key={`profile-${mediaInputKey}`}
+                className="form-control form-control-solid"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => setProfileImage(e.target.files?.[0] ?? null)}
+              />
+            </div>
+          </div>
+
+          <div className="col-12 col-lg-7">
+            <label className="form-label fw-semibold">Banner picture</label>
+            <div className="d-flex flex-column gap-3">
+              <div className="rounded border bg-light overflow-hidden" style={{ height: 96 }}>
+                {organization?.banner_url ? (
+                  <img src={organization.banner_url} alt="Company banner" className="w-100 h-100 object-fit-cover" />
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center h-100 text-muted fw-semibold">Banner preview</div>
+                )}
+              </div>
+              <input
+                key={`banner-${mediaInputKey}`}
+                className="form-control form-control-solid"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => setBannerImage(e.target.files?.[0] ?? null)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="d-flex align-items-center justify-content-between gap-3 mt-5">
+          {mediaMessage ? <div className="text-muted fs-7">{mediaMessage}</div> : <div />}
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={uploadMedia}
+            disabled={mediaLoading || !organization || (!profileImage && !bannerImage)}
+          >
+            {mediaLoading ? "Uploading..." : "Upload Images"}
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -86,6 +198,7 @@ const SettingsPage = () => {
                               )}
                             </div>
                           ))}
+                          {renderProfileMediaUpload(group)}
                         </div>
                       </div>
                     </div>

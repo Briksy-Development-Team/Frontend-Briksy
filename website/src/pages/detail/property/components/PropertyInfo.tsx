@@ -62,6 +62,7 @@ export const PropertyMap = ({ mapSrc }: { mapSrc: string }) => (
     <h2 className="text-[1.25rem] font-medium text-primary-brown">Where you'll be</h2>
     <div className="w-full h-[320px] rounded-2xl overflow-hidden border border-[#EBE5D9]">
       <iframe
+        title="Property location map"
         src={mapSrc}
         width="100%"
         height="100%"

@@ -17,6 +17,9 @@ import {
 } from "./filterTypes";
 import { filtersToPropertyParams, propertyQueryToParams } from "../../api/property/propertySearch";
 
+const slugify = (value: string) =>
+  value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+
 type FilterProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -132,7 +135,7 @@ const Filter = ({
     }
 
     const params = new URLSearchParams(location.search);
-    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab"].forEach((key) => params.delete(key));
+    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab", "purpose", "intent", "service_slug"].forEach((key) => params.delete(key));
     if (category.toLowerCase() !== "commercial") params.delete("category");
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
   };
@@ -140,21 +143,24 @@ const Filter = ({
   const handleApply = () => {
     const typeMap: Record<FilterTab, string> = {
       Buy: "property", Rent: "property", Sold: "property",
-      Builders: "builder", Agents: "trader", Traders: "trader",
+      Builders: "builder", Agents: "builder", Traders: "trader",
     };
     const params = new URLSearchParams(location.search);
     params.set("type", typeMap[activeTab]);
     params.set("tab", activeTab.toLowerCase());
     params.set("page", "1");
     if (activeTab === "Agents" && agentCategory) params.set("category", agentCategory);
+    params.delete("service_slug");
+    params.delete("q");
+    params.delete("search");
+    params.delete("min_price");
+    params.delete("max_price");
+    params.delete("purpose");
+    params.delete("intent");
+    ["bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features"].forEach((key) => params.delete(key));
     if (activeTab === "Buy" || activeTab === "Rent") {
       const filters = activeTab === "Buy" ? buy : rent;
       const propertyParams = filtersToPropertyParams(filters);
-      params.delete("q");
-      params.delete("search");
-      params.delete("min_price");
-      params.delete("max_price");
-      ["bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features"].forEach((key) => params.delete(key));
       params.delete("category");
       if (propertyParams.search) params.set("q", propertyParams.search);
       if (propertyParams.min_price !== undefined) params.set("min_price", String(propertyParams.min_price));
@@ -166,7 +172,42 @@ const Filter = ({
       if (propertyParams.max_land_size !== undefined) params.set("max_land_size", String(propertyParams.max_land_size));
       propertyParams.features?.forEach((feature) => params.append("features[]", feature));
       if (propertyParams.category) params.set("category", propertyParams.category);
+      if (category.toLowerCase() === "commercial") params.set("category", "commercial");
       params.set("purpose", activeTab === "Buy" ? "sell" : "rent");
+    }
+    if (activeTab === "Sold") {
+      const soldParams = filtersToPropertyParams({
+        ...DEFAULT_BUY_FILTERS,
+        propertyTypes: sold.propertyTypes,
+        priceMin: sold.soldPriceMin,
+        priceMax: sold.soldPriceMax,
+        bedrooms: sold.bedrooms,
+        bathrooms: sold.bathrooms,
+        carSpaces: sold.carSpaces,
+        landSizeMin: sold.landSizeMin,
+        landSizeMax: sold.landSizeMax,
+      });
+      params.delete("category");
+      if (soldParams.min_price !== undefined) params.set("min_price", String(soldParams.min_price));
+      if (soldParams.max_price !== undefined) params.set("max_price", String(soldParams.max_price));
+      if (soldParams.bedrooms !== undefined) params.set("bedrooms", String(soldParams.bedrooms));
+      if (soldParams.bathrooms !== undefined) params.set("bathrooms", String(soldParams.bathrooms));
+      if (soldParams.car_spaces !== undefined) params.set("car_spaces", String(soldParams.car_spaces));
+      if (soldParams.min_land_size !== undefined) params.set("min_land_size", String(soldParams.min_land_size));
+      if (soldParams.max_land_size !== undefined) params.set("max_land_size", String(soldParams.max_land_size));
+      if (soldParams.category) params.set("category", soldParams.category);
+      if (category.toLowerCase() === "commercial") params.set("category", "commercial");
+      params.set("purpose", "sell");
+    }
+    if (activeTab === "Builders" && builderProfile.serviceArea.trim()) {
+      params.set("q", builderProfile.serviceArea.trim());
+    }
+    if (activeTab === "Agents" && (agents.location.trim() || agents.agency.trim())) {
+      params.set("q", agents.agency.trim() || agents.location.trim());
+    }
+    if (activeTab === "Traders") {
+      if (trades.serviceArea.trim()) params.set("q", trades.serviceArea.trim());
+      if (trades.categories[0]) params.set("service_slug", slugify(trades.categories[0]));
     }
     navigate(`/result?${params.toString()}`);
     onClose();

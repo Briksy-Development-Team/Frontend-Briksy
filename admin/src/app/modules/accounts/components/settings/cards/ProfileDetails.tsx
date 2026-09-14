@@ -1,8 +1,11 @@
-import {useState, FC} from 'react'
+import {useEffect, useState, FC} from 'react'
 import {toAbsoluteUrl} from '../../../../../../_metronic/helpers'
 import {IProfileDetails, profileDetailsInitValues as initialValues} from '../SettingsModel'
 import * as Yup from 'yup'
 import {useFormik} from 'formik'
+import {fetchCurrentOrganizationApi, uploadOrganizationMediaApi} from '../../../../../services/features/organization/organization.api'
+import type {Organization} from '../../../../../services/features/organization/organization.types'
+import {useRoleAccess} from '../../../../auth'
 
 const profileDetailsSchema = Yup.object().shape({
   fName: Yup.string().required('First name is required'),
@@ -17,7 +20,42 @@ const profileDetailsSchema = Yup.object().shape({
 })
 
 const ProfileDetails: FC = () => {
+  const {isAdmin} = useRoleAccess()
   const [data, setData] = useState<IProfileDetails>(initialValues)
+  const [organization, setOrganization] = useState<Organization | null>(null)
+  const [profileImage, setProfileImage] = useState<File | undefined>()
+  const [bannerImage, setBannerImage] = useState<File | undefined>()
+  const [mediaLoading, setMediaLoading] = useState(false)
+  const [mediaMessage, setMediaMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isAdmin) return
+
+    void fetchCurrentOrganizationApi()
+      .then((data) => setOrganization(data))
+      .catch(() => setMediaMessage('Unable to load organisation images.'))
+  }, [isAdmin])
+
+  const handleMediaUpload = async () => {
+    if (!organization || (!profileImage && !bannerImage)) return
+
+    setMediaLoading(true)
+    setMediaMessage(null)
+    try {
+      const updatedOrganization = await uploadOrganizationMediaApi(organization.id, {
+        profile_image: profileImage,
+        banner_image: bannerImage,
+      })
+      setOrganization(updatedOrganization)
+      setProfileImage(undefined)
+      setBannerImage(undefined)
+      setMediaMessage('Profile images updated successfully.')
+    } catch {
+      setMediaMessage('The images could not be uploaded. Please try again.')
+    } finally {
+      setMediaLoading(false)
+    }
+  }
   const updateData = (fieldsToUpdate: Partial<IProfileDetails>): void => {
     const updatedData = Object.assign(data, fieldsToUpdate)
     setData(updatedData)
@@ -58,21 +96,59 @@ const ProfileDetails: FC = () => {
       <div id='kt_account_profile_details' className='collapse show'>
         <form onSubmit={formik.handleSubmit} noValidate className='form'>
           <div className='card-body border-top p-9'>
-            <div className='row mb-6'>
-              <label className='col-lg-4 col-form-label fw-bold fs-6'>Avatar</label>
+            {isAdmin && <div className='row mb-6'>
+              <label className='col-lg-4 col-form-label fw-bold fs-6'>Profile picture</label>
               <div className='col-lg-8'>
-                <div
-                  className='image-input image-input-outline'
-                  data-kt-image-input='true'
-                  style={{backgroundImage: `url(${toAbsoluteUrl('media/avatars/blank.png')})`}}
-                >
-                  <div
-                    className='image-input-wrapper w-125px h-125px'
-                    style={{backgroundImage: `url(${toAbsoluteUrl(data.avatar)})`}}
-                  ></div>
+                <div className='d-flex align-items-center gap-5 mb-4'>
+                  <div className='symbol symbol-100px symbol-circle'>
+                    <img src={organization?.logo_url || toAbsoluteUrl('media/avatars/blank.png')} alt='Organisation profile' />
+                  </div>
+                  <div className='flex-grow-1'>
+                    <input
+                      className='form-control form-control-solid'
+                      type='file'
+                      accept='image/jpeg,image/png,image/webp'
+                      onChange={(event) => setProfileImage(event.target.files?.[0])}
+                    />
+                    <div className='form-text'>JPG, PNG, or WebP up to 5 MB.</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </div>}
+
+            {isAdmin && <div className='row mb-6'>
+              <label className='col-lg-4 col-form-label fw-bold fs-6'>Banner picture</label>
+              <div className='col-lg-8'>
+                <div className='mb-4 rounded overflow-hidden bg-light'>
+                  <img
+                    src={organization?.banner_url || toAbsoluteUrl('media/auth/bg1.jpg')}
+                    alt='Organisation banner'
+                    className='w-100 h-100px object-fit-cover'
+                  />
+                </div>
+                <input
+                  className='form-control form-control-solid'
+                  type='file'
+                  accept='image/jpeg,image/png,image/webp'
+                  onChange={(event) => setBannerImage(event.target.files?.[0])}
+                />
+                <div className='form-text'>JPG, PNG, or WebP up to 5 MB.</div>
+              </div>
+            </div>}
+
+            {isAdmin && <div className='row mb-6'>
+              <div className='col-lg-8 offset-lg-4'>
+                <button
+                  type='button'
+                  className='btn btn-primary'
+                  disabled={!organization || (!profileImage && !bannerImage) || mediaLoading}
+                  onClick={() => void handleMediaUpload()}
+                >
+                  {mediaLoading ? 'Uploading...' : 'Upload profile images'}
+                </button>
+                {mediaMessage && <div className='text-muted mt-3'>{mediaMessage}</div>}
+              </div>
+            </div>}
 
             <div className='row mb-6'>
               <label className='col-lg-4 col-form-label required fw-bold fs-6'>Full Name</label>

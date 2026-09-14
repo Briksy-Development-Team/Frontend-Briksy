@@ -13,7 +13,7 @@ export function DetailSidebar({
   price,
   priceLabel,
   description,
-  buttonText = "Send a enquiry",
+  buttonText = "Send an Enquiry",
   footerText,
   onEnquiry,
 }: Props) {

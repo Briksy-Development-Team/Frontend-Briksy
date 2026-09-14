@@ -298,6 +298,17 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/super-admin/inquiry/*"
+          element={
+            <RoleGuard allow={["super_admin"]}>
+              <SuspensedView>
+                <InquiryPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/super-admin/email-templates/*"
           element={
             <RoleGuard allow={["super_admin"]}>

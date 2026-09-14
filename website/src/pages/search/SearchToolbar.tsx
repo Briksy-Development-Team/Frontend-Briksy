@@ -76,6 +76,11 @@ const TAB_LABELS: Record<FilterTab, string> = {
   Traders: "Sole Traders",
 };
 
+const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>((acc, option) => {
+  acc[option.value] = option.label;
+  return acc;
+}, {});
+
 export default function SearchToolbar({
   activeCategoryId,
   activeTab,
@@ -158,7 +163,7 @@ export default function SearchToolbar({
           )}
 
           <DropdownPill
-            label="Sort by"
+            label={SORT_LABELS[sort] || "Sort by"}
             value={sort}
             options={SORT_OPTIONS}
             onSelect={(v: string) => onSortChange(v as SortType)}
@@ -184,7 +189,7 @@ export default function SearchToolbar({
             isOpen={isFilterOpen}
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
-            initialTab={activeTab || "Buy"}
+            initialTab={activeTab || (activeCategory.id === "commercial" ? "Rent" : "Buy")}
           />,
           document.body
         )}

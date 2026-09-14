@@ -3,8 +3,11 @@ import type { ApiPage } from "../clients.api";
 
 export type PublicOrganization = {
   id: string;
+  generated_id?: string | null;
   name: string;
   slug: string | null;
+  logo_url?: string | null;
+  banner_url?: string | null;
   rating: number;
   abn?: string | null;
   is_verified: boolean;

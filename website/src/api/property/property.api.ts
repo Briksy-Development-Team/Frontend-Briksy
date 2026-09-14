@@ -20,7 +20,7 @@ export type PublicProperty = {
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;
   location: { suburb: string | null; postcode: string | null; latitude: number | null; longitude: number | null; state?: string | null };
-  organization?: { id: string | null; name: string | null; is_verified: boolean } | null;
+  organization?: { id: string | null; name: string | null; slug?: string | null; logo_url?: string | null; banner_url?: string | null; is_verified: boolean } | null;
   media?: { url: string | null; type: "image" | "video"; is_primary: boolean }[];
   images?: { url: string | null; is_primary: boolean }[];
   videos?: { url: string | null; is_primary: boolean }[];

@@ -23,18 +23,21 @@ type BrowseSection = "all" | "popular" | "newly";
 
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [sort, setSort] = useState<SortType>("featured");
-  const [showMap, setShowMap] = useState(false);
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
 
   const typeParam = searchParams.get("type");
   const queryParam = searchParams.get("q") || "";
+  const sortParam = searchParams.get("sort_by") as SortType | null;
+  const sort: SortType = ["featured", "newest", "oldest", "price-low", "price-high"].includes(sortParam || "")
+    ? (sortParam as SortType)
+    : "featured";
+  const showMap = searchParams.get("map") === "1";
 
   const activeCategoryId =
     SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
 
   const rawTabParam = searchParams.get("tab");
-  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "sold" ? "Sold" : null;
+  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "sold" ? "Sold" : rawTabParam === "builders" ? "Builders" : rawTabParam === "agents" ? "Agents" : rawTabParam === "traders" ? "Traders" : null;
   const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
 
   useEffect(() => {
@@ -50,6 +53,59 @@ const SearchPage = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setBrowseSection("all");
   }, [resultType]);
+
+  const updateSearchParams = (mutate: (next: URLSearchParams) => void) => {
+    const next = new URLSearchParams(searchParams);
+    mutate(next);
+    setSearchParams(next);
+  };
+
+  const handleTabChange = (tab: FilterTab | null) => {
+    setActiveTab(tab);
+    updateSearchParams((next) => {
+      next.delete("page");
+      next.delete("intent");
+      next.delete("purpose");
+      if (!tab) {
+        next.delete("tab");
+        next.set("type", activeCategoryId);
+        return;
+      }
+
+      next.set("tab", tab.toLowerCase());
+      if (tab === "Buy" || tab === "Rent" || tab === "Sold") {
+        next.set("type", "property");
+        if (tab === "Buy") next.set("purpose", "sell");
+        if (tab === "Rent") next.set("purpose", "rent");
+        return;
+      }
+
+      next.set("type", tab === "Traders" ? "trader" : "builder");
+    });
+  };
+
+  const handleSortChange = (nextSort: SortType) => {
+    updateSearchParams((next) => {
+      next.set("sort_by", nextSort);
+      next.delete("page");
+    });
+  };
+
+  const handleToggleMap = () => {
+    updateSearchParams((next) => {
+      if (next.get("map") === "1") next.delete("map");
+      else next.set("map", "1");
+    });
+  };
+
+  const handleQueryChange = (q: string) => {
+    updateSearchParams((next) => {
+      next.set("type", activeCategoryId);
+      next.delete("page");
+      if (q) next.set("q", q);
+      else next.delete("q");
+    });
+  };
 
   const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
   if (activeTab) {
@@ -84,18 +140,13 @@ const SearchPage = () => {
         <SearchToolbar
           activeCategoryId={activeCategoryId}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           sort={sort}
-          onSortChange={setSort}
+          onSortChange={handleSortChange}
           showMap={showMap}
-          onToggleMap={() => setShowMap((v) => !v)}
+          onToggleMap={handleToggleMap}
           query={queryParam}
-          onQueryChange={(q) => {
-            const next = new URLSearchParams(searchParams);
-            next.set("type", activeCategoryId);
-            if (q) next.set("q", q); else next.delete("q");
-            setSearchParams(next);
-          }}
+          onQueryChange={handleQueryChange}
         />
 
         <div className="mt-8 flex flex-col gap-6">{content}</div>

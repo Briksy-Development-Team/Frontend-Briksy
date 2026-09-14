@@ -10,6 +10,9 @@ import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getProperty, type PublicProperty } from "../../../api/property/property.api";
+import { createInquiry } from "../../../api/seeker/inquiry.api";
+import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
+import { EnquiryModal } from "../shared/EnquiryModal";
 import TraderGridCard from '../../../components/cards/trader/TraderGridCard';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -20,6 +23,10 @@ const PropertyDetail = () => {
   const [propertyData, setPropertyData] = useState<PublicProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const [enquirySubmitting, setEnquirySubmitting] = useState(false);
+  const [enquiryError, setEnquiryError] = useState<string | null>(null);
+  const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -41,14 +48,62 @@ const PropertyDetail = () => {
     address: propertyData.full_address || propertyData.address || "",
     subtitle: [propertyData.bedroom_option, propertyData.bathroom_option, propertyData.car_space_option].filter(Boolean).join(" • "),
     images: [...(propertyData.images || []), ...(propertyData.media || [])].map((image) => image.url).filter((url): url is string => Boolean(url)),
-    agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: "" },
+    agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: propertyData.organization?.logo_url || "" },
     about: propertyData.description || "No description provided.",
     amenities: (propertyData.features || []).map((feature) => ({ name: feature.name })),
-    mapSrc: "",
-    company: { name: propertyData.organization?.name || "Property organisation", location: propertyData.address || "", tags: [], rating: propertyData.rating || 0, reviews: 0, since: undefined, logo: "" },
+    mapSrc: buildGoogleMapsEmbedUrl({
+      lat: propertyData.location?.latitude,
+      lng: propertyData.location?.longitude,
+      address: propertyData.full_address || propertyData.address,
+    }),
+    company: {
+      id: propertyData.organization?.slug || propertyData.organization?.id || "",
+      name: propertyData.organization?.name || "Property organisation",
+      location: propertyData.address || "",
+      tags: [],
+      rating: propertyData.rating || 0,
+      reviews: 0,
+      since: undefined,
+      logo: propertyData.organization?.logo_url || "",
+    },
     hosts: [] as any[],
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
     sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price || 0 },
+  };
+
+  const submitEnquiry = async (values: {
+    seeker_name: string;
+    seeker_email: string;
+    seeker_phone: string;
+    subject: string;
+    message: string;
+  }) => {
+    if (!propertyData.organization?.id) {
+      setEnquiryError("This property does not have a company attached yet.");
+      return;
+    }
+
+    setEnquirySubmitting(true);
+    setEnquiryError(null);
+    setEnquirySuccess(null);
+
+    try {
+      await createInquiry({
+        organization_id: propertyData.organization.id,
+        property_listing_id: propertyData.id,
+        lead_source: "property_listing",
+        subject: values.subject,
+        message: values.message,
+        seeker_name: values.seeker_name,
+        seeker_email: values.seeker_email,
+        seeker_phone: values.seeker_phone || null,
+      });
+      setEnquirySuccess("Your enquiry has been sent successfully.");
+    } catch (reason: any) {
+      setEnquiryError(reason?.response?.data?.message || "Unable to send enquiry. Please try again.");
+    } finally {
+      setEnquirySubmitting(false);
+    }
   };
   const addressParts = property.address.split(', ');
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
@@ -163,10 +218,20 @@ const PropertyDetail = () => {
           </div>
 
           <aside className="w-full lg:w-[30%] shrink-0 lg:sticky lg:top-32">
-            <PropertySidebar sidebar={property.sidebar} />
+            <PropertySidebar sidebar={property.sidebar} onEnquiry={() => setIsEnquiryOpen(true)} />
           </aside>
         </div>
       </main>
+      <EnquiryModal
+        open={isEnquiryOpen}
+        companyName={propertyData.organization?.name || undefined}
+        initialSubject={`Enquiry about ${propertyData.title}`}
+        submitting={enquirySubmitting}
+        error={enquiryError}
+        success={enquirySuccess}
+        onClose={() => setIsEnquiryOpen(false)}
+        onSubmit={submitEnquiry}
+      />
     </div>
   );
 };

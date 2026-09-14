@@ -315,7 +315,7 @@ const SidebarMenuMain = () => {
           {hasModule("inquiry_management") && (
             <SidebarMenuItem
               to={`${portalBase}/inquiry`}
-              title="Inquirys Management"
+              title="Property Inquiries"
               fontIcon="bi-archive"
               icon="element-plus"
             />

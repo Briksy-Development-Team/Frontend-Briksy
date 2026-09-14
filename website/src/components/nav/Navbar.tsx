@@ -29,7 +29,7 @@ const navItems = [
   { label: "Buy", to: "/result?type=property&intent=buy" },
   { label: "Sell", to: "/result?type=property&intent=sell" },
   { label: "Rent", to: "/result?type=property&intent=rent" },
-  { label: "Agents", to: "/result?type=trader" },
+  { label: "Agents", to: "/result?type=builder&tab=agents" },
   { label: "Builders", to: "/result?type=builder" },
   { label: "Blogs", to: "/blogs" },
   { label: "Commercials", to: "/result?type=comercial" },

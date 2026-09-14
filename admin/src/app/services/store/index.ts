@@ -11,6 +11,7 @@ import propertyListReducer from "../features/properties/property.slice";
 import orderReducer from "../features/orders/order.slice";
 import planRequestReducer from "../features/plan_requests/plan-request.slice";
 import couponReducer from "../features/coupons/coupon.slice";
+import inquiryReducer from "../features/inquiries/inquiry.slice";
 // import propertiesReducer from "../features/properties/property.slice";
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     propertyList: propertyListReducer,
     orders: orderReducer,
     planRequests: planRequestReducer,
+    inquiries: inquiryReducer,
     coupons: couponReducer,
     // coupons: couponReducer,
 

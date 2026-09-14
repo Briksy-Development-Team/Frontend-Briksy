@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
-import { getOrganization, type PublicOrganization } from "../../../api/seeker/organization.api";
+import { getOrganization, getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { getProperties } from "../../../api/property/property.api";
 import { propertyToCard } from "../../../api/public.mappers";
 import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
+
+type HttpLikeError = Error & { response?: { status?: number } };
 
 const BuilderDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,14 +24,26 @@ const BuilderDetail = () => {
   useEffect(() => {
     if (!id) return;
     let active = true;
-    getOrganization(id)
+    const loadBuilder = /^\d+$/.test(id)
+      ? getOrganizations({ type: "builders", verified_only: 1, page: Math.max(1, Number(id)), per_page: 1 }).then((response) => {
+        const organization = response.data[0];
+        if (!organization) {
+          const error = new Error("Builder not found") as HttpLikeError;
+          error.response = { status: 404 };
+          throw error;
+        }
+        return { data: organization };
+      })
+      : getOrganization(id);
+
+    loadBuilder
       .then((organizationResponse) => getProperties({ organization_slug: organizationResponse.data.slug || undefined, per_page: 12 }).then((propertyResponse) => ({ organizationResponse, propertyResponse })))
       .then(({ organizationResponse, propertyResponse }) => {
         if (!active) return;
         setBuilder(organizationResponse.data);
         setHomes(propertyResponse.data.map(propertyToCard));
       })
-      .catch((reason: any) => { if (active) setError(reason?.response?.status === 404 ? "This organisation was not found." : "Unable to load this organisation."); })
+      .catch((reason: HttpLikeError) => { if (active) setError(reason?.response?.status === 404 ? "This organisation was not found." : "Unable to load this organisation."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [id]);
@@ -47,8 +61,8 @@ const BuilderDetail = () => {
     rating: builder.rating || 0,
     reviewsCount: 0,
     teamSize: "Verified business",
-    bannerImage: BuilderBackground,
-    logo: BusinessPlaceholder,
+    bannerImage: builder.banner_url || BuilderBackground,
+    logo: builder.logo_url || BusinessPlaceholder,
     snapshot: {},
     about: { name: builder.name, description: tags.length ? `Services offered: ${tags.join(", ")}.` : "No description has been provided." },
   };

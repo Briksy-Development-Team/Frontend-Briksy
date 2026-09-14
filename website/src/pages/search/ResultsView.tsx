@@ -13,6 +13,15 @@ import MapSplitView from "./MapSplitView";
 
 const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
 
+const organizationTypeForSelection = (resultType: ResultType, selectedSub: string) => {
+  if (resultType === "builder" && selectedSub === "Agents") return "real-estate";
+  if (resultType === "builder") return "builders";
+  return "trades-professionals";
+};
+
+const organizationSort = (sort?: string) =>
+  sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
+
 export default function ResultsView({
   resultType,
   selectedSub,
@@ -41,10 +50,11 @@ export default function ResultsView({
     setLoading(true);
     setError(null);
     const query = propertyQueryToParams(searchParams);
+    const serviceSlug = searchParams.get("service_slug") || undefined;
     const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" ? "rent" : undefined);
     const request = resultType === "property" || resultType === "comercial"
       ? getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
-      : getOrganizations({ type: resultType === "builder" ? "builders" : "trades-professionals", service_slug: resultType === "trader" ? selectedSub.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "") : undefined, verified_only: 1 });
+      : getOrganizations({ type: organizationTypeForSelection(resultType, selectedSub), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "comercial") {

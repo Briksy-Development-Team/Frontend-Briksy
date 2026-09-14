@@ -43,7 +43,8 @@ const ServiceDetail = () => {
     <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Find a professional", isBack: true }, { label: organization.name }]} />
     <div className="mt-8 grid gap-12 lg:grid-cols-[30%_1fr]">
       <aside className="h-fit rounded-3xl bg-white p-6 lg:sticky lg:top-28">
-        <img src={ServicePlaceholder} alt="" className="h-28 w-28 rounded-2xl object-cover" />
+        {organization.banner_url && <img src={organization.banner_url} alt="" className="mb-5 h-28 w-full rounded-2xl object-cover" />}
+        <img src={organization.logo_url || ServicePlaceholder} alt={organization.name} className="h-28 w-28 rounded-2xl object-cover" />
         <h1 className="mt-5 text-3xl font-medium text-primary-brown">{organization.name}</h1>
         <p className="mt-2 text-primary-light-brown">{organization.type?.name || "Property professional"}</p>
         <div className="mt-5 flex items-center gap-2 text-primary-brown"><Star size={17} className="fill-orange-500 text-orange-500" /> {organization.rating || 0}</div>
