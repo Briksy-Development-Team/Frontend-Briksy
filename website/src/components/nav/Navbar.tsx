@@ -86,6 +86,13 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
 
     // Check query parameters
     const targetParams = new URLSearchParams(url.search);
+    const currentParams = new URLSearchParams(location.search);
+
+    // Agents and Builders share the same result type. Builders must not also
+    // appear active when the Agents tab is selected.
+    if (to === "/result?type=builder" && currentParams.get("tab") === "agents") {
+      return false;
+    }
 
     for (const [key, value] of targetParams.entries()) {
       if (location.search.includes(`${key}=${value}`) === false) {
