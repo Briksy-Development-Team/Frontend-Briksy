@@ -8,7 +8,9 @@ import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { useSearchParams } from "react-router-dom";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
-const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
+import "swiper/css";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null) => {
   if (resultType === "builder" && tab === "agents") return "real-estate";
@@ -19,37 +21,93 @@ const organizationTypeForResult = (resultType: ResultType, tab?: string | null) 
 const organizationSort = (sort?: string) =>
   sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
 
-function SectionHead({ title, count }: { title: string; count: number }) {
+function SectionSwiper({ children }: { children: React.ReactNode[] }) {
   return (
-    <div className="flex items-center justify-between py-2">
-      <h2 className="text-[1.5rem] font-medium tracking-tight text-[#342511]">{title}</h2>
-      <span className="text-[0.75rem] text-[#8B6F54]">{count}</span>
-    </div>
+    <Swiper
+      modules={[Mousewheel]}
+      spaceBetween={16}
+      slidesPerView="auto"
+      watchOverflow={false}
+      grabCursor
+      mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
+      className="[overscroll-behavior-x:contain] touch-pan-y"
+    >
+      {children.map((child, index) => (
+        <SwiperSlide key={index} className="!w-[20.5rem]">
+          {child}
+        </SwiperSlide>
+      ))}
+    </Swiper>
   );
 }
 
-export default function BrowseView({ resultType }: { resultType: ResultType }) {
+function Section<T extends { id: string | number }>({
+  title,
+  count,
+  items,
+  Card,
+  onViewMore,
+}: {
+  title: string;
+  count: number;
+  items: T[];
+  Card: React.ComponentType<{ item: T }>;
+  onViewMore: () => void;
+}) {
+  return (
+    <section>
+      <div className="flex items-center justify-between py-2">
+        <h2 className="text-[1.5rem] font-medium tracking-tight text-[#342511]">{title}</h2>
+        {items.length > 4 && (
+          <button
+            type="button"
+            onClick={onViewMore}
+            className="text-[0.75rem] text-[#8B6F54] transition-colors hover:text-[#342511]"
+          >
+            View more ({count})
+          </button>
+        )}
+      </div>
+      <SectionSwiper>
+        {items.slice(0, 10).map((item) => (
+          <div key={item.id}>
+            <Card item={item} />
+          </div>
+        ))}
+      </SectionSwiper>
+    </section>
+  );
+}
+
+export default function BrowseView({
+  resultType,
+  onViewMore,
+}: {
+  resultType: ResultType;
+  onViewMore: (section: "popular" | "newly") => void;
+}) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
-  const page = Math.max(1, Number(searchParams.get("page") || 1));
-  const totalPages = Math.max(1, Math.ceil(total / 24));
+
+  const tab = searchParams.get("tab");
+  const isAgents = resultType === "builder" && tab === "agents";
+
   const resetFilters = () => {
     const next = new URLSearchParams(searchParams);
     ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab"].forEach((key) => next.delete(key));
     if (resultType !== "comercial") next.delete("category");
     setSearchParams(next);
   };
-  const pageControls = (resultType === "property" || resultType === "comercial") && totalPages > 1 ? <div className="mt-8 flex items-center justify-center gap-4 text-sm"><button type="button" disabled={page <= 1} onClick={() => { const next = new URLSearchParams(searchParams); next.set("page", String(page - 1)); setSearchParams(next); }} className="rounded-full border px-4 py-2 disabled:opacity-40">Previous</button><span>Page {page} of {totalPages}</span><button type="button" disabled={page >= totalPages} onClick={() => { const next = new URLSearchParams(searchParams); next.set("page", String(page + 1)); setSearchParams(next); }} className="rounded-full border px-4 py-2 disabled:opacity-40">Next</button></div> : null;
+
   useEffect(() => {
     let active = true;
     setLoading(true);
     setError(null);
     const query = propertyQueryToParams(searchParams);
-    const tab = searchParams.get("tab");
     const serviceSlug = searchParams.get("service_slug") || undefined;
     const request = resultType === "property" || resultType === "comercial"
       ? getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
@@ -62,68 +120,56 @@ export default function BrowseView({ resultType }: { resultType: ResultType }) {
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [resultType, searchParams.toString()]);
+
   const builders = organizations.map(organizationToBuilder);
   const traders = organizations.map(organizationToTrader);
   const propertyCards = properties.map(propertyToCard);
+
   if (loading) return <p className="py-10 text-center text-sm text-[#8B6F54]">Loading results...</p>;
   if (error) return <p className="rounded-2xl bg-white p-8 text-center text-red-700">{error}</p>;
-  if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) return <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p><button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button></div>;
+  if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) return (
+    <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown">
+      <p>No properties found for the selected filters.</p>
+      <button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button>
+    </div>
+  );
+
   return (
     <>
       {resultType === "trader" && (
         <>
-          <SectionHead title="Popular Professionals" count={20} />
-          <div className={GRID}>
-            {traders.slice(0, 4).map((item) => (
-              <TraderGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          <SectionHead title="Newly Traders" count={20} />
-          <div className={GRID}>
-            {traders.slice(4, 8).map((item) => (
-              <TraderGridCard key={item.id} item={item} />
-            ))}
-          </div>
+          <Section title="Popular Professionals" count={traders.length} items={traders.slice(0, 4)} Card={TraderGridCard} onViewMore={() => onViewMore("popular")} />
+          <Section title="Newly Traders" count={traders.length} items={traders.slice(4)} Card={TraderGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
       {resultType === "builder" && (
         <>
-          <SectionHead title="Popular Builders" count={20} />
-          <div className={GRID}>
-            {builders.slice(0, 4).map((item) => (
-              <BuilderGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          <SectionHead title="Newly Listed Builders" count={20} />
-          <div className={GRID}>
-            {builders.slice(4).map((item) => (
-              <BuilderGridCard key={item.id} item={item} />
-            ))}
-          </div>
+          <Section
+            title={isAgents ? "Popular Organizations" : "Popular Builders"}
+            count={builders.length}
+            items={builders.slice(0, 4)}
+            Card={BuilderGridCard}
+            onViewMore={() => onViewMore("popular")}
+          />
+          <Section
+            title={isAgents ? "Newly Listed Organizations" : "Newly Listed Builders"}
+            count={builders.length}
+            items={builders.slice(4)}
+            Card={BuilderGridCard}
+            onViewMore={() => onViewMore("newly")}
+          />
         </>
       )}
       {resultType === "property" && (
         <>
-          <SectionHead title="Popular Properties" count={total} />
-          <div className={GRID}>
-            {propertyCards.slice(0, 4).map((item) => (
-              <PropertyGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          <SectionHead title="Newly Listed Properties" count={total} />
-          <div className={GRID}>
-            {propertyCards.slice(4).map((item) => (
-              <PropertyGridCard key={item.id} item={item} />
-            ))}
-          </div>
-          {pageControls}
+          <Section title="Popular Properties" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
+          <Section title="Newly Listed Properties" count={total} items={propertyCards.slice(4)} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
       {resultType === "comercial" && (
         <>
-          <SectionHead title="Commercial Properties" count={propertyCards.length} />
-          <div className={GRID}>{propertyCards.map((item) => <PropertyGridCard key={item.id} item={item} />)}</div>
-          {pageControls}
+          <Section title="Popular Commercial" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
+          <Section title="Newly Listed Commercial" count={total} items={propertyCards.slice(4)} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
     </>

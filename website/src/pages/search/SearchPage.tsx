@@ -19,8 +19,6 @@ const HEADERS: Record<string, { title: string; crumb: string }> = {
 
 type BrowseSection = "all" | "popular" | "newly";
 
-
-
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
@@ -71,7 +69,6 @@ const SearchPage = () => {
         next.set("type", activeCategoryId);
         return;
       }
-
       next.set("tab", tab.toLowerCase());
       if (tab === "Buy" || tab === "Rent" || tab === "Sold") {
         next.set("type", "property");
@@ -79,7 +76,6 @@ const SearchPage = () => {
         if (tab === "Rent") next.set("purpose", "rent");
         return;
       }
-
       next.set("type", tab === "Traders" ? "trader" : "builder");
     });
   };
@@ -109,10 +105,15 @@ const SearchPage = () => {
 
   const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
   if (activeTab) {
-    breadcrumbs.push(
-      { label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } },
-      { label: activeTab }
-    );
+    breadcrumbs.push({ label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } });
+    if (browseSection !== "all") {
+      breadcrumbs.push(
+        { label: activeTab, onClick: () => setBrowseSection("all") },
+        { label: browseSection === "popular" ? "Popular" : "Newly Listed" }
+      );
+    } else {
+      breadcrumbs.push({ label: activeTab });
+    }
   } else if (browseSection !== "all") {
     const noun = crumb.split(" ").pop() || "Results";
     breadcrumbs.push(
@@ -124,19 +125,18 @@ const SearchPage = () => {
   }
 
   let content;
-  if (activeTab || showMap) {
-    content = <ResultsView resultType={resultType} selectedSub={activeTab || ""} showMap={showMap} />;
-  } else if (browseSection !== "all") {
-    content = <FullListView resultType={resultType} section={browseSection} />;
+  if (browseSection !== "all") {
+    content = <FullListView resultType={resultType} section={browseSection} tab={activeTab} />;
+  } else if (activeTab || showMap) {
+    content = <ResultsView resultType={resultType} selectedSub={activeTab || ""} showMap={showMap} onViewMore={setBrowseSection} />;
   } else {
-    content = <BrowseView resultType={resultType} />;
+    content = <BrowseView resultType={resultType} onViewMore={setBrowseSection} />;
   }
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pt-24 pb-16 font-helvetica">
       <div className="mx-auto px-[5%]">
         <Breadcrumb items={breadcrumbs} />
-
         <SearchToolbar
           activeCategoryId={activeCategoryId}
           activeTab={activeTab}
@@ -148,7 +148,6 @@ const SearchPage = () => {
           query={queryParam}
           onQueryChange={handleQueryChange}
         />
-
         <div className="mt-8 flex flex-col gap-6">{content}</div>
       </div>
     </div>

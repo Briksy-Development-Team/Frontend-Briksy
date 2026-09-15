@@ -1,23 +1,51 @@
 import { useEffect, useState } from "react";
 import type { ResultType } from "../../types/search";
+import type { FilterTab } from "../../components/filter/filterTypes";
 import { getOrganizations } from "../../api/seeker/organization.api";
 import { getProperties } from "../../api/property/property.api";
-import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
+import {
+  organizationToBuilder,
+  organizationToTrader,
+  propertyToCard,
+} from "../../api/public.mappers";
 
 const isPropertyType = (resultType: ResultType) =>
   resultType === "property" || resultType === "comercial";
 
 const slugify = (value: string) =>
-  value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+$/, "");
 
+const organizationTypeFor = (
+  resultType: ResultType,
+  tab?: FilterTab | null,
+) => {
+  if (resultType === "builder" && tab === "Agents") return "real-estate";
+  if (resultType === "builder") return "builders";
+  return "trades-professionals";
+};
 
-export function useListingData(resultType: ResultType, filter = "") {
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const purposeFor = (tab?: FilterTab | null) => {
+  if (tab === "Buy") return "sell";
+  if (tab === "Rent") return "rent";
+  return undefined;
+};
+
+export function useListingData(
+  resultType: ResultType,
+  filter = "",
+  tab: FilterTab | null = null,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [items, setItems] = useState<any[]>([]);
 
-  useEffect(() => {    if (isPropertyType(resultType)) {
+  useEffect(() => {
+    if (isPropertyType(resultType)) {
       getProperties({
         verified_only: 1,
+        purpose: purposeFor(tab),
         search: filter || (resultType === "comercial" ? "rent" : undefined),
       })
         .then((res) => setItems(res.data.map(propertyToCard)))
@@ -26,17 +54,20 @@ export function useListingData(resultType: ResultType, filter = "") {
     }
 
     getOrganizations({
-      type: resultType === "builder" ? "builders" : "trades-professionals",
-      service_slug: resultType === "trader" && filter ? slugify(filter) : undefined,
+      type: organizationTypeFor(resultType, tab),
+      service_slug:
+        resultType === "trader" && filter ? slugify(filter) : undefined,
       verified_only: 1,
     })
       .then((res) => {
-        setItems(resultType === "builder"
-          ? res.data.map(organizationToBuilder)
-          : res.data.map(organizationToTrader));
+        const mapper =
+          resultType === "builder"
+            ? organizationToBuilder
+            : organizationToTrader;
+        setItems(res.data.map(mapper));
       })
       .catch(console.error);
-  }, [resultType, filter]);
+  }, [resultType, filter, tab]);
 
   return items;
 }

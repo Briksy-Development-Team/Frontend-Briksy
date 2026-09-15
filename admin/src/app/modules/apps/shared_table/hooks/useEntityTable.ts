@@ -6,7 +6,7 @@ type FetchFn = (params: QueryParams) => void;
 
 export const useEntityTable = (fetchFn: FetchFn, initialParams?: Partial<QueryParams>) => {
   const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 400);
+  const [debouncedSearch] = useDebounce(search, 200);
 
   const [params, setParams] = useState<QueryParams>({
     page: 1,

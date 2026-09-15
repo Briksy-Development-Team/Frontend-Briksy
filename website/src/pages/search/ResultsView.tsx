@@ -1,20 +1,20 @@
+import type { ResultType } from "../../types/search";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { propertyQueryToParams } from "../../api/property/propertySearch";
-
-import type { ResultType } from "../../types/search";
 import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
 import { getProperties, type PublicProperty } from "../../api/property/property.api";
 import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
+import { propertyQueryToParams } from "../../api/property/propertySearch";
 import MapSplitView from "./MapSplitView";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Mousewheel } from "swiper/modules";
+import "swiper/css";
 
-const GRID = "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
-
-const organizationTypeForSelection = (resultType: ResultType, selectedSub: string) => {
-  if (resultType === "builder" && selectedSub === "Agents") return "real-estate";
+const organizationTypeForResult = (resultType: ResultType, tab?: string | null) => {
+  if (resultType === "builder" && tab === "agents") return "real-estate";
   if (resultType === "builder") return "builders";
   return "trades-professionals";
 };
@@ -22,29 +22,50 @@ const organizationTypeForSelection = (resultType: ResultType, selectedSub: strin
 const organizationSort = (sort?: string) =>
   sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
 
+function SectionSwiper({ children }: { children: React.ReactNode[] }) {
+  return (
+    <Swiper modules={[Mousewheel]} spaceBetween={16} slidesPerView="auto" watchOverflow={false} grabCursor mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }} className="[overscroll-behavior-x:contain] touch-pan-y">
+      {children.map((child, index) => (
+        <SwiperSlide key={index} className="!w-[20.5rem]">{child}</SwiperSlide>
+      ))}
+    </Swiper>
+  );
+}
+
+function Section<T extends { id: string | number }>({ title, count, items, Card, onViewMore }: {
+  title: string; count: number; items: T[]; Card: React.ComponentType<{ item: T }>; onViewMore: () => void;
+}) {
+  return (
+    <section>
+      <div className="flex items-center justify-between py-2">
+        <h2 className="text-[1.5rem] font-medium tracking-tight text-[#342511]">{title}</h2>
+        {items.length > 4 && (
+          <button type="button" onClick={onViewMore} className="text-[0.75rem] text-[#8B6F54] transition-colors hover:text-[#342511]">
+            View more ({count})
+          </button>
+        )}
+      </div>
+      <SectionSwiper>
+        {items.slice(0, 10).map((item) => <div key={item.id}><Card item={item} /></div>)}
+      </SectionSwiper>
+    </section>
+  );
+}
+
 export default function ResultsView({
-  resultType,
-  selectedSub,
-  showMap,
+  resultType, selectedSub, showMap, onViewMore,
 }: {
-  resultType: ResultType;
-  selectedSub: string;
-  showMap: boolean;
+  resultType: ResultType; selectedSub: string; showMap: boolean; onViewMore: (section: "popular" | "newly") => void;
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
-  const page = Math.max(1, Number(searchParams.get("page") || 1));
-  const totalPages = Math.max(1, Math.ceil(total / 24));
-  const resetFilters = () => {
-    const next = new URLSearchParams(searchParams);
-    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab"].forEach((key) => next.delete(key));
-    if (resultType !== "comercial") next.delete("category");
-    setSearchParams(next);
-  };
+
+  const isAgents = resultType === "builder" && selectedSub.toLowerCase() === "agents";
+
   useEffect(() => {
     let active = true;
     setLoading(true);
@@ -54,42 +75,60 @@ export default function ResultsView({
     const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" ? "rent" : undefined);
     const request = resultType === "property" || resultType === "comercial"
       ? getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
-      : getOrganizations({ type: organizationTypeForSelection(resultType, selectedSub), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+      : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase()), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "comercial") {
         setProperties(r.data);
         setTotal(r.meta?.pagination?.total ?? r.data.length);
-      } else setOrganizations(r.data);
+      } else {
+        setOrganizations(r.data);
+        setTotal(r.data.length);
+      }
     }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [resultType, selectedSub, searchParams.toString()]);
 
+  const traders = organizations.map(organizationToTrader);
+  const builders = organizations.map(organizationToBuilder);
+  const propertyCards = properties.map(propertyToCard);
+  const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
 
-
-  const displayTraders = organizations.map(organizationToTrader);
-  const displayBuilders = organizations.map(organizationToBuilder);
-  const displayProperties = properties.map(propertyToCard);
+  if (loading) return <p className="text-sm text-[#8B6F54]">Loading results...</p>;
+  if (error) return <p className="text-sm text-red-700">{error}</p>;
+  if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) {
+    return <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p></div>;
+  }
 
   return (
     <>
+      <p className="text-[0.75rem] text-[#8B6F54] mb-5">{total} verified results</p>
 
-
-      {loading && <p className="text-sm text-[#8B6F54]">Loading results...</p>}
-      {error && <p className="text-sm text-red-700">{error}</p>}
-      {!loading && !error && <p className="text-[0.75rem] text-[#8B6F54] mb-5">{resultType === "property" || resultType === "comercial" ? total : organizations.length} verified results</p>}
-      {!loading && !error && (resultType === "property" || resultType === "comercial") && displayProperties.length === 0 && <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p><button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button></div>}
-
-      {!loading && !error && showMap ? <MapSplitView resultType={resultType} items={resultType === "trader" ? displayTraders : resultType === "builder" ? displayBuilders : displayProperties} /> : (
+      {showMap ? (
+        <MapSplitView resultType={resultType} items={displayItems} />
+      ) : (
         <>
-          {resultType === "trader" && <div className={GRID}>{displayTraders.map(item => <TraderGridCard key={item.id} item={item} />)}</div>}
-          {resultType === "builder" && <div className={GRID}>{displayBuilders.map(item => <BuilderGridCard key={item.id} item={item} />)}</div>}
-          {(resultType === "property" || resultType === "comercial") && <div className={GRID}>{displayProperties.map(item => <PropertyGridCard key={item.id} item={item} />)}</div>}
+          {resultType === "trader" && (
+            <>
+              <Section title="Popular Professionals" count={traders.length} items={traders.slice(0, 4)} Card={TraderGridCard} onViewMore={() => onViewMore("popular")} />
+              <Section title="Newly Traders" count={traders.length} items={traders.slice(4)} Card={TraderGridCard} onViewMore={() => onViewMore("newly")} />
+            </>
+          )}
+          {resultType === "builder" && (
+            <>
+              <Section title={isAgents ? "Popular Organizations" : "Popular Builders"} count={builders.length} items={builders.slice(0, 4)} Card={BuilderGridCard} onViewMore={() => onViewMore("popular")} />
+              <Section title={isAgents ? "Newly Listed Organizations" : "Newly Listed Builders"} count={builders.length} items={builders.slice(4)} Card={BuilderGridCard} onViewMore={() => onViewMore("newly")} />
+            </>
+          )}
+          {(resultType === "property" || resultType === "comercial") && (
+            <>
+              <Section title="Popular Properties" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
+              <Section title="Newly Listed Properties" count={total} items={propertyCards.slice(4)} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
+            </>
+          )}
         </>
       )}
-      {!loading && !error && (resultType === "property" || resultType === "comercial") && totalPages > 1 && <div className="mt-8 flex items-center justify-center gap-4 text-sm"><button type="button" disabled={page <= 1} onClick={() => { const next = new URLSearchParams(searchParams); next.set("page", String(page - 1)); setSearchParams(next); }} className="rounded-full border px-4 py-2 disabled:opacity-40">Previous</button><span>Page {page} of {totalPages}</span><button type="button" disabled={page >= totalPages} onClick={() => { const next = new URLSearchParams(searchParams); next.set("page", String(page + 1)); setSearchParams(next); }} className="rounded-full border px-4 py-2 disabled:opacity-40">Next</button></div>}
-
     </>
   );
 }

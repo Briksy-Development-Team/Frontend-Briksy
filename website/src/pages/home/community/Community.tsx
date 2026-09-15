@@ -81,7 +81,9 @@ const DesktopCommunity = () => {
 
     const draw = (frame: number) => {
       const img = images[frame];
+
       if (!img?.complete || !img.naturalWidth) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
@@ -92,54 +94,79 @@ const DesktopCommunity = () => {
       draw(currentFrameRef.current);
     };
 
+    // Load frames
     for (let i = 0; i < FRAME_COUNT; i++) {
       const img = new Image();
+
       img.onload = () => {
         if (i === 0) resize();
-        if (i === FRAME_COUNT - 1) ScrollTrigger.refresh();
+        if (i === FRAME_COUNT - 1) {
+          ScrollTrigger.refresh();
+        }
       };
+
       img.src = getFrame(i + 1);
       images[i] = img;
     }
 
     const cards = cardRefs.current;
-    if (cards.some((c) => !c)) return;
 
-    gsap.set(cards, { y: "110vh" });
-    const CARD_DURATION = 0.4;
-    const stagger = (1 - CARD_DURATION) / (cards.length - 1);
+    if (cards.some((card) => !card)) return;
+
+    // Initial position
+    gsap.set(cards, {
+      y: "110vh",
+    });
+
+    // Each card gets exactly the same amount of scroll time
+    const CARD_DURATION = 1 / cards.length;
 
     const RANGES: [number, number][] = cards.map((_, i) => {
-      const start = i * stagger;
+      const start = i * CARD_DURATION;
       return [start, start + CARD_DURATION];
     });
 
     const updateCards = (progress: number) => {
-      cards.forEach((el, i) => {
+      cards.forEach((card, i) => {
+        if (!card) return;
+
         const [start, end] = RANGES[i];
-        const t = gsap.utils.clamp(0, 1, (progress - start) / (end - start));
-        gsap.set(el, { y: `${gsap.utils.interpolate(110, -110, t)}vh` });
+
+        const t = gsap.utils.clamp(
+          0,
+          1,
+          (progress - start) / (end - start)
+        );
+
+        gsap.set(card, {
+          y: `${gsap.utils.interpolate(110, -110, t)}vh`,
+        });
       });
     };
 
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-
-      end: "+=2400",
+      end: "+=1500",
       pin: true,
       scrub: 0.6,
+
       onUpdate: (self) => {
-        const frame = Math.round(self.progress * (FRAME_COUNT - 1));
+        const frame = Math.round(
+          self.progress * (FRAME_COUNT - 1)
+        );
+
         if (frame !== currentFrameRef.current) {
           currentFrameRef.current = frame;
           draw(frame);
         }
+
         updateCards(self.progress);
       },
     });
 
     updateCards(0);
+
     window.addEventListener("resize", resize);
 
     return () => {
