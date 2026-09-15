@@ -203,7 +203,7 @@ const ServiceModal = ({
 
             <div className="row mt-6">
                 <div className="col-md-6 fv-row">
-                    <label className="form-label">Rate From</label>
+                    <label className="form-label">Price From</label>
                     <input
                         type="number"
                         className="form-control form-control-solid"
@@ -217,7 +217,7 @@ const ServiceModal = ({
                     />
                 </div>
                 <div className="col-md-6 fv-row">
-                    <label className="form-label">Rate To</label>
+                    <label className="form-label">Price To</label>
                     <input
                         type="number"
                         className="form-control form-control-solid"

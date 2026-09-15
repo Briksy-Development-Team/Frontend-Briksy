@@ -35,7 +35,8 @@ const toFormData = (payload: ServiceFormValues) => {
   const formData = new FormData();
   Object.entries(payload).forEach(([key, value]) => {
     if (key === "images" || key === "videos" || key === "image" || value === undefined || value === null) return;
-    if (typeof value === "object") formData.append(key, JSON.stringify(value));
+    if (typeof value === "boolean") formData.append(key, value ? "1" : "0");
+    else if (typeof value === "object") formData.append(key, JSON.stringify(value));
     else formData.append(key, String(value));
   });
   payload.images?.forEach((file) => { if (file instanceof File) formData.append("images[]", file); });

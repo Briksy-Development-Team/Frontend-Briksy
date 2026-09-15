@@ -31,8 +31,6 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const navigate = useNavigate();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
-  const resolveServiceId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
-      row.display_id ?? row.generated_id ?? row.id;
   const canManage = true;
   const [isImportOpen, setIsImportOpen] = useState(false);
   const {
@@ -89,7 +87,7 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 columns={serviceListConfig.columns}
                 filtersConfig={serviceListConfig.filters}
         enableRowClick={true}
-        getRowLink={(row) => `${portalBase}/services/detail/${resolveServiceId(row)}`}
+        getRowLink={(row) => `${portalBase}/services/detail/${row.id}`}
         headerActions={canManage ? [
             {
                 label: "Add Service",

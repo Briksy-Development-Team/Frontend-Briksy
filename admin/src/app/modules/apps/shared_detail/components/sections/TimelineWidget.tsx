@@ -25,7 +25,31 @@ const toTimelineEvents = (data: any) => {
     }));
   }
 
-  return [];
+  const fallbackEvents = [];
+
+  if (data?.created_at) {
+    fallbackEvents.push({
+      id: "created",
+      action: "created",
+      title: "Service created",
+      description: `${data.name ?? "Service"} was added.`,
+      date: data.created_at,
+      color: "success",
+    });
+  }
+
+  if (data?.updated_at && data.updated_at !== data.created_at) {
+    fallbackEvents.push({
+      id: "updated",
+      action: "updated",
+      title: "Service updated",
+      description: `${data.name ?? "Service"} details were updated.`,
+      date: data.updated_at,
+      color: "primary",
+    });
+  }
+
+  return fallbackEvents;
 };
 
 export default function TimelineWidget({ config, data }: Props) {
@@ -59,7 +83,7 @@ export default function TimelineWidget({ config, data }: Props) {
             ))}
           </div>
         ) : (
-          <div className="alert alert-light mb-0">No approval history has been recorded for this property yet.</div>
+          <div className="alert alert-light mb-0">No activity has been recorded for this service yet.</div>
         )}
       </div>
     </div>

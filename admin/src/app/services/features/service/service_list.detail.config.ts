@@ -21,15 +21,22 @@ export const serviceDetailConfig: DetailConfig<any> = {
     metrics: [
       {
         label: "Price",
-        valueAccessor: (data) => `$${data.price?.toLocaleString() || "N/A"}`,
+        valueAccessor: (data) => {
+          const from = data.rate_from;
+          const to = data.rate_to;
+
+          if (from == null && to == null) return "N/A";
+          if (from != null && to != null) return `$${from.toLocaleString()} – $${to.toLocaleString()}`;
+          return `$${(from ?? to).toLocaleString()}`;
+        },
       },
     ],
   },
   tabs: [
-    {
-      id: "overview",
-      label: "Overview",
-      sections: ["service_info", "service_area_map", "organization_info", "activity_timeline"],
+      {
+        id: "overview",
+        label: "Overview",
+        sections: ["service_info", "service_area_map", "activity_timeline"],
     },
     {
       id: "gallery",
@@ -79,21 +86,13 @@ export const serviceDetailConfig: DetailConfig<any> = {
       gridColumnSpan: 4,
     },
     {
-      id: "organization_info",
-      type: "info",
-      title: "Organization",
-      gridColumnSpan: 12,
-      fields: [
-        { label: "Organization Name", accessor: "organization_name", colSpan: 6 },
-        { label: "Contact", accessor: "organization_contact", colSpan: 6 },
-      ],
-    },
-    {
       id: "service_gallery",
       type: "gallery",
       title: "Gallery",
       gridColumnSpan: 12,
-      imagesAccessor: "images",
+      imagesAccessor: (data) => (data?.images ?? [])
+        .map((image: any) => typeof image === "string" ? image : image?.url)
+        .filter(Boolean),
     },
     {
       id: "service_inquiries",

@@ -248,7 +248,7 @@ export const organizationDetailConfig: DetailConfig<any> = {
       columns: serviceListConfig.columns,
       enableRowClick: true,
       getRowLink: (row) =>
-        getPortalBase() === "/super-admin" ? `/super-admin/services/${getDisplayId(row)}` : `/admin/services/${getDisplayId(row)}`,
+        getPortalBase() === "/super-admin" ? `/super-admin/services/${row.id}` : `/admin/services/${row.id}`,
     },
   ],
 };
