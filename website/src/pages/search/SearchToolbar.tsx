@@ -173,8 +173,8 @@ export default function SearchToolbar({
           <button
             onClick={onToggleMap}
             className={`h-12 px-5 rounded-full border flex items-center gap-2 transition-colors shrink-0 ${showMap
-                ? "bg-[#342511] text-white border-[#342511]"
-                : "bg-white text-[#342511] border-[#EDE8E4] "
+              ? "bg-[#342511] text-white border-[#342511]"
+              : "bg-white text-[#342511] border-[#EDE8E4] "
               }`}
           >
             <MapIcon className={`w-5 h-5 ${showMap ? "invert brightness-0" : ""}`} />

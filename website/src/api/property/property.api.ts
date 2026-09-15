@@ -11,7 +11,11 @@ export type PublicProperty = {
   status: string | null;
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   price?: number | null;
-  property_type?: { name: string; slug?: string; category?: string | null } | null;
+  property_type?: {
+    name: string;
+    slug?: string;
+    category?: string | null;
+  } | null;
   land_area_sqm?: number | null;
   car_space_option?: string | null;
   features?: { name: string; slug: string }[];
@@ -19,15 +23,40 @@ export type PublicProperty = {
   bedroom_option?: string | null;
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;
-  location: { suburb: string | null; postcode: string | null; latitude: number | null; longitude: number | null; state?: string | null };
-  organization?: { id: string | null; name: string | null; slug?: string | null; logo_url?: string | null; banner_url?: string | null; is_verified: boolean } | null;
-  media?: { url: string | null; type: "image" | "video"; is_primary: boolean }[];
+  location: {
+    suburb: string | null;
+    postcode: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    state?: string | null;
+  };
+  organization?: {
+    id: string | null;
+    name: string | null;
+    slug?: string | null;
+    logo_url?: string | null;
+    banner_url?: string | null;
+    is_verified: boolean;
+  } | null;
+  media?: {
+    url: string | null;
+    type: "image" | "video";
+    is_primary: boolean;
+  }[];
   images?: { url: string | null; is_primary: boolean }[];
   videos?: { url: string | null; is_primary: boolean }[];
 };
 
-export const getProperties = async (params: Record<string, string | number | boolean | string[] | undefined> = {}) =>
-  (await api.get<ApiPage<PublicProperty>>("/seeker/properties", { params: { per_page: 24, ...params } })).data;
+export const getProperties = async (
+  params: Record<string, string | number | boolean | string[] | undefined> = {},
+) =>
+  (
+    await api.get<ApiPage<PublicProperty>>("/seeker/properties", {
+      params: { per_page: 24, ...params },
+    })
+  ).data;
 
-export const getProperty = async (id: string): Promise<{ data: PublicProperty }> =>
+export const getProperty = async (
+  id: string,
+): Promise<{ data: PublicProperty }> =>
   (await api.get<{ data: PublicProperty }>(`/seeker/properties/${id}`)).data;

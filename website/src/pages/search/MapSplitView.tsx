@@ -32,8 +32,8 @@ export default function MapSplitView({
         </p>
         {items.map((item) => (
           resultType === "trader" ? <TraderListCard key={item.id} item={item} /> :
-          resultType === "builder" ? <BuilderListCard key={item.id} item={item} /> :
-          <PropertyListCard key={item.id} item={item} />
+            resultType === "builder" ? <BuilderListCard key={item.id} item={item} /> :
+              <PropertyListCard key={item.id} item={item} />
         ))}
         <div className="flex items-center justify-center gap-1.5 py-4 shrink-0">
           <button
