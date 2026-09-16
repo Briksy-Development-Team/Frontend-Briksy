@@ -90,7 +90,6 @@ export const getProperty = async (
     `/seeker/properties/${id}`,
   );
 
-  console.log("Single Property API response:", response.data);
 
   return response.data;
 };

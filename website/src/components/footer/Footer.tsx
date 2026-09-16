@@ -11,7 +11,6 @@ const footerLinks = [
     title: "Find",
     links: [
       { label: "Search professionals & properties", href: "/search" },
-      { label: "Browse by category", href: "/categories" },
       { label: "Commercial properties", href: "/commercial-properties" },
       { label: "How verification works", href: "/how-we-verify" },
     ],
@@ -40,7 +39,6 @@ const footerLinks = [
       { label: "Terms & Conditions", href: "/terms" },
       { label: "Privacy Policy", href: "/privacy-policy" },
       { label: "Cookie Policy", href: "/cookie-policy" },
-      { label: "Company details", href: "/company-details" },
     ],
   },
 ];

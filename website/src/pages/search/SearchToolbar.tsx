@@ -140,10 +140,10 @@ export default function SearchToolbar({
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => setIsFilterOpen(true)}
-            className="h-12 px-5 bg-white rounded-full border border-[#EDE8E4] flex items-center gap-2 transition-colors shrink-0"
+            className="h-12 px-5 bg-white rounded-full border border-[#EDE8E4] flex items-center justify-center gap-2 transition-colors shrink-0"
           >
-            <SlidersHorizontal className="w-4 h-4 text-primary-brown" />
-            <span className="text-[0.875rem] text-[#342511] font-medium">Filters</span>
+            <SlidersHorizontal className="w-4 h-4  text-primary-brown" />
+            <span className="text-[0.875rem] mt-1 text-[#342511] ">Filters</span>
           </button>
 
           {activeCategory.tabs.length > 0 && (
@@ -167,7 +167,7 @@ export default function SearchToolbar({
             value={sort}
             options={SORT_OPTIONS}
             onSelect={(v: string) => onSortChange(v as SortType)}
-            className="h-12 !px-5"
+            className="h-12  !px-5"
           />
 
           <button
@@ -178,7 +178,7 @@ export default function SearchToolbar({
               }`}
           >
             <MapIcon className={`w-5 h-5 ${showMap ? "invert brightness-0" : ""}`} />
-            <span className="text-[0.875rem] font-medium">Show map</span>
+            <span className="text-[0.875rem] mt-1 ">Show map</span>
           </button>
         </div>
       </div>

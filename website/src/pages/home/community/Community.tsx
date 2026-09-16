@@ -147,7 +147,7 @@ const DesktopCommunity = () => {
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-      end: "+=1500",
+      end: "+=2000",
       pin: true,
       scrub: 0.6,
 
