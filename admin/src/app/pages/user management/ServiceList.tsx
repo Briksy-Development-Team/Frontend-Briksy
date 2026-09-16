@@ -9,7 +9,7 @@ import {
     openDeleteServiceModal,
     closeDeleteServiceModal,
 } from "../../services/features/service/service_service_list.slice";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 
 import ServiceModal from "../../services/features/service/component/ServiceModal";
@@ -28,7 +28,6 @@ import { useToast } from "../../services/ui/toast/useToast";
 
 const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const canManage = true;
@@ -94,16 +93,11 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 permission: "service.create",
                 onClick: () => dispatch(openServiceModal(null)),
             },
-            {
+            ...(!isSuperAdmin ? [{
                 label: "Import Services",
                 permission: "service.create",
                 onClick: () => setIsImportOpen(true),
-            },
-            {
-                label: "Coverage Map",
-                permission: "service.view",
-                onClick: () => navigate(`${portalBase}/services/map`),
-            },
+            }] : []),
         ] : []}
                 rowActions={rowActions}
             />
@@ -111,7 +105,10 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
             {isImportOpen && (
                 <ServiceImportModal
                     onClose={() => setIsImportOpen(false)}
-                    onCompleted={() => dispatch(fetchServiceList(params))}
+                    onCompleted={() => {
+                        setIsImportOpen(false);
+                        void dispatch(fetchServiceList(params));
+                    }}
                 />
             )}
         </Content>

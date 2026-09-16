@@ -41,19 +41,14 @@ export const PropertyAbout = ({ about }: { about: string }) => (
 export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => (
   <div className="flex flex-col gap-6">
     <h2 className="text-[1.25rem] font-medium text-primary-brown">What this place offers</h2>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8">
+    {amenities.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8">
       {amenities.map((item, idx) => (
         <div key={idx} className="flex items-center gap-3 text-primary-brown text-[1rem]">
           <List size={20} className="text-primary-light-brown" />
           <span>{item.name}</span>
         </div>
       ))}
-    </div>
-    <div>
-      <button className="mt-4 px-4 py-3 rounded-[0.5rem] text-[0.875rem] font-medium text-primary-brown bg-white transition-colors">
-        Show All 
-      </button>
-    </div>
+    </div> : <p className="text-[0.875rem] text-primary-light-brown">No property features have been provided.</p>}
   </div>
 );
 

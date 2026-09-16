@@ -12,6 +12,20 @@ export type PropertyVideo = {
   sort_order?: number;
 };
 
+export type PropertyFeature = {
+  id: string;
+  name: string;
+  slug: string;
+  group_id?: string;
+};
+
+export type PropertyFeatureGroup = {
+  id: string;
+  name: string;
+  slug: string;
+  features: PropertyFeature[];
+};
+
 export type PropertyOffer = {
   id: string;
   organization_id?: string | null;
@@ -96,6 +110,7 @@ export type Property = {
 
   images?: PropertyImage[];
   videos?: PropertyVideo[];
+  features?: PropertyFeature[];
 
   organization?: {
     id: string;
@@ -158,6 +173,7 @@ export type PropertyFormValues = {
 
   images?: (File | string)[];
   videos?: (File | string)[];
+  features?: string[];
 };
 
 export type PropertyList = {
@@ -217,6 +233,7 @@ export type PropertyList = {
 
   images?: PropertyImage[];
   videos?: PropertyVideo[];
+  features?: PropertyFeature[];
 
   organization?: {
     id: string;

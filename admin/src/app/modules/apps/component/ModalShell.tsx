@@ -1,6 +1,5 @@
 // shared/components/modal/ModalShell.tsx
 
-import { KTIcon } from '../../../../_metronic/helpers'
 
 type Props = {
   title: string
@@ -49,10 +48,13 @@ const ModalShell = ({
           <div className="modal-header">
             <h2 className="fw-bolder">{title}</h2>
             <button
-              className="btn btn-icon btn-sm btn-active-icon-primary"
+              type="button"
+              className="btn btn-sm p-0 border-0 bg-transparent"
+              style={{ width: 32, height: 32, color: "#172033", fontSize: 28, lineHeight: 1 }}
+              aria-label={`Close ${title}`}
               onClick={onClose}
             >
-              <KTIcon iconName="cross" className="fs-1" />
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 

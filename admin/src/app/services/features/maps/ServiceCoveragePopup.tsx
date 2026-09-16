@@ -25,8 +25,8 @@ const ServiceCoveragePopup = ({ service, onClose }: Props) => {
           <div className="text-muted fs-8 text-uppercase fw-semibold">Service coverage</div>
           <h4 className="mb-0 fw-bold fs-5">{service.title ?? service.name}</h4>
         </div>
-        <button type="button" className="btn btn-sm btn-light btn-icon" onClick={onClose} aria-label="Close service info">
-          <i className="bi bi-x-lg" />
+        <button type="button" className="btn btn-sm p-0 border-0 bg-transparent" style={{ width: 32, height: 32, color: "#172033", fontSize: 26, lineHeight: 1 }} onClick={onClose} aria-label="Close service info">
+          <span aria-hidden="true">×</span>
         </button>
       </div>
 

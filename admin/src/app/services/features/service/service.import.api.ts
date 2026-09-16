@@ -11,7 +11,7 @@ import type {
 const getBasePath = () => {
   const auth = getAuth();
 
-  return auth?.abilities?.includes("super_admin")
+  return auth?.abilities?.some((ability) => ["super_admin", "super_admin_employee"].includes(ability))
     ? "/super-admin/services"
     : "/admin/services";
 };

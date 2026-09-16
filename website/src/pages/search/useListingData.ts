@@ -60,11 +60,12 @@ export function useListingData(
       verified_only: 1,
     })
       .then((res) => {
-        const mapper =
-          resultType === "builder"
-            ? organizationToBuilder
-            : organizationToTrader;
-        setItems(res.data.map(mapper));
+        if (resultType === "builder") {
+          setItems(res.data.map(organizationToBuilder));
+          return;
+        }
+
+        setItems(res.data.map(organizationToTrader));
       })
       .catch(console.error);
   }, [resultType, filter, tab]);

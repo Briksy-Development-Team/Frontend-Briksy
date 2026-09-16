@@ -47,7 +47,15 @@ const PropertyDetail = () => {
     ...propertyData,
     address: propertyData.full_address || propertyData.address || "",
     subtitle: [propertyData.bedroom_option, propertyData.bathroom_option, propertyData.car_space_option].filter(Boolean).join(" • "),
-    images: [...(propertyData.images || []), ...(propertyData.media || [])].map((image) => image.url).filter((url): url is string => Boolean(url)),
+    images: (() => {
+      const media = (propertyData.media?.length ? propertyData.media : [
+        ...(propertyData.images || []).map((item) => ({ ...item, id: item.id, type: 'image' as const })),
+        ...(propertyData.videos || []).map((item) => ({ ...item, id: item.id, type: 'video' as const })),
+      ]);
+      return media
+        .filter((item, index, all) => item.url && all.findIndex((candidate) => candidate.id ? candidate.id === item.id : candidate.url === item.url) === index)
+        .map((item) => ({ id: item.id, src: item.url ?? undefined, type: item.type, videoSrc: item.type === 'video' ? item.url ?? undefined : undefined }));
+    })(),
     agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: propertyData.organization?.logo_url || "" },
     about: propertyData.description || "No description provided.",
     amenities: (propertyData.features || []).map((feature) => ({ name: feature.name })),

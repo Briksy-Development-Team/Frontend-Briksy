@@ -49,6 +49,7 @@ export type PublicProperty = {
   } | null;
 
   media?: {
+    id?: string;
     url: string | null;
     type: "image" | "video";
     is_primary: boolean;

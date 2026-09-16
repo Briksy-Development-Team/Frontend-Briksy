@@ -8,6 +8,7 @@ export type Seeker = {
 
   email: string;
   mobile_number?: string;
+  admin_notes?: string | null;
 
   organization_id?: string;
 
@@ -26,6 +27,7 @@ export type SeekerFormValues = {
   mobile_number?: string;
   password?: string;
   password_confirmation?: string;
+  admin_notes?: string | null;
 };
 
 export type GetSeekersParams = {

@@ -65,7 +65,7 @@ const PrivateRoutes = () => {
         <Route
           path="/super-admin/dashboard"
           element={
-            <RoleGuard allow={["super_admin"]}>
+            <RoleGuard allow={["super_admin", "super_admin_employee"]}>
               <SuspensedView>
                 <DashboardWrapper />
               </SuspensedView>
@@ -335,7 +335,7 @@ const PrivateRoutes = () => {
         <Route
           path="/super-admin/property-management/*"
           element={
-            <RoleGuard allow={["super_admin"]}>
+            <RoleGuard allow={["super_admin", "super_admin_employee"]}>
               <SuspensedView>
                 <PropertyListPage />
               </SuspensedView>
@@ -381,7 +381,7 @@ const PrivateRoutes = () => {
         <Route
           path="/super-admin/services/*"
           element={
-            <RoleGuard allow={["super_admin"]}>
+            <RoleGuard allow={["super_admin", "super_admin_employee"]}>
               <SuspensedView>
                 <ServiceListPage />
               </SuspensedView>

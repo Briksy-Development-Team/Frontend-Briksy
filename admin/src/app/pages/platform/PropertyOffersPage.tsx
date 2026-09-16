@@ -126,11 +126,11 @@ export default function PropertyOffersPage() {
                     <td>{offer.sort_order}</td>
                     <td>{offer.is_active ? "Active" : "Inactive"}</td>
                     <td className="text-end">
-                      <div className="dropdown">
-                        <button type="button" className="btn btn-sm btn-light btn-active-light-primary" data-bs-toggle="dropdown">
+                      <div className="dropdown dropup position-static">
+                        <button type="button" className="btn btn-sm btn-light btn-active-light-primary" data-bs-toggle="dropdown" data-bs-display="static">
                           Actions
                         </button>
-                        <ul className="dropdown-menu">
+                        <ul className="dropdown-menu dropdown-menu-end shadow">
                           <li>
                             <button type="button" className="dropdown-item" onClick={() => setEditing({
                               ...offer,

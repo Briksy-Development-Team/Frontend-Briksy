@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
-import type { Property, PropertyFormValues, PropertyImage } from "../property.types";
+import type { Property, PropertyFormValues, PropertyImage, PropertyVideo } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 import { LocationMapPreview } from "../../maps/LocationMapPreview";
 import { useRoleAccess } from "../../../../modules/auth";
-import { deletePropertyMediaApi } from "../property.api";
+import { deletePropertyMediaApi, fetchPropertyFeaturesApi } from "../property.api";
 import { fetchOrganizationApi, fetchOrganizationByIdApi } from "../../organization/organization.api";
 import { mapOrganization } from "../../organization/organization.mapper";
 import type { Organization } from "../../organization/organization.types";
+import type { PropertyFeatureGroup } from "../property.types";
 
 type Props = {
     initialValues?: Property | null;
@@ -27,6 +28,8 @@ const PropertyModal = ({
     const [organizationSearch, setOrganizationSearch] = useState("");
     const [organizationsLoading, setOrganizationsLoading] = useState(false);
     const [organizationsError, setOrganizationsError] = useState<string | null>(null);
+    const [featureGroups, setFeatureGroups] = useState<PropertyFeatureGroup[]>([]);
+    const [featuresLoading, setFeaturesLoading] = useState(true);
     const [form, setForm] = useState<PropertyFormValues>({
         title: initialValues?.title ?? "",
         organization_id: initialValues?.organization?.id ?? "",
@@ -48,6 +51,7 @@ const PropertyModal = ({
         country: initialValues?.country ?? "Australia",
         property_type_id: initialValues?.property_type_id ?? "",
         location_verified: initialValues?.location_verified ?? false,
+        features: initialValues?.features?.map((feature) => feature.id) ?? [],
         images: [],
         videos: [],
     });
@@ -55,10 +59,21 @@ const PropertyModal = ({
     const [images, setImages] = useState<File[]>([]);
     const [videos, setVideos] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState<PropertyImage[]>(initialValues?.images ?? []);
+    const [existingVideos, setExistingVideos] = useState<PropertyVideo[]>(initialValues?.videos ?? []);
     const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
 
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
+
+    useEffect(() => {
+        let active = true;
+        setFeaturesLoading(true);
+        void fetchPropertyFeaturesApi()
+            .then((groups) => { if (active) setFeatureGroups(groups); })
+            .catch(() => { if (active) setFeatureGroups([]); })
+            .finally(() => { if (active) setFeaturesLoading(false); });
+        return () => { active = false; };
+    }, []);
 
     useEffect(() => {
         if (!initialValues) {
@@ -83,12 +98,14 @@ const PropertyModal = ({
                 country: "Australia",
                 property_type_id: "",
                 location_verified: false,
+                features: [],
                 images: [],
                 videos: [],
             });
             setImages([]);
             setVideos([]);
             setExistingImages([]);
+            setExistingVideos([]);
             return;
         }
 
@@ -113,12 +130,14 @@ const PropertyModal = ({
             country: initialValues.country ?? "Australia",
             property_type_id: initialValues.property_type_id ?? "",
             location_verified: initialValues.location_verified ?? false,
+            features: initialValues.features?.map((feature) => feature.id) ?? [],
             images: [],
             videos: [],
         });
         setImages([]);
         setVideos([]);
         setExistingImages(initialValues.images ?? []);
+        setExistingVideos(initialValues.videos ?? []);
     }, [initialValues]);
 
     useEffect(() => {
@@ -235,6 +254,28 @@ const PropertyModal = ({
         }
     };
 
+    const handleDeleteExistingVideo = async (video: PropertyVideo) => {
+        if (!video.id || !window.confirm("Delete this video?")) return;
+        setDeletingImageIds((prev) => [...prev, video.id as string]);
+        try {
+            await deletePropertyMediaApi(video.id);
+            setExistingVideos((prev) => prev.filter((item) => item.id !== video.id));
+        } catch {
+            window.alert("Failed to delete the video. Please try again.");
+        } finally {
+            setDeletingImageIds((prev) => prev.filter((id) => id !== video.id));
+        }
+    };
+
+    const toggleFeature = (featureId: string) => {
+        setForm((prev) => ({
+            ...prev,
+            features: prev.features?.includes(featureId)
+                ? prev.features.filter((id) => id !== featureId)
+                : [...(prev.features ?? []), featureId],
+        }));
+    };
+
     return (
         <ModalShell
             title={initialValues ? "Edit Property" : "Add Property"}
@@ -321,6 +362,34 @@ const PropertyModal = ({
                 </div>
             </div>
 
+            <div className="fv-row mb-7">
+                <label className="form-label">Property Features</label>
+                {featuresLoading ? <div className="text-muted fs-7">Loading property features...</div> : null}
+                {!featuresLoading && featureGroups.length === 0 ? <div className="text-muted fs-7">No property features are configured.</div> : null}
+                <div className="d-flex flex-column gap-4">
+                    {featureGroups.map((group) => (
+                        <div key={group.id}>
+                            <div className="fw-semibold mb-2">{group.name}</div>
+                            <div className="row g-2">
+                                {group.features.map((feature) => (
+                                    <div className="col-md-6" key={feature.id}>
+                                        <label className="form-check form-check-custom form-check-solid">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                checked={form.features?.includes(feature.id) ?? false}
+                                                onChange={() => toggleFeature(feature.id)}
+                                            />
+                                            <span className="form-check-label">{feature.name}</span>
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {isSuperAdmin ? (
                 <div className="fv-row mb-7">
                     <label className="form-label">Status</label>
@@ -393,6 +462,14 @@ const PropertyModal = ({
                                 }))
                             }
                         />
+                    </div>
+                </div>
+
+                <div className="col-md-6">
+                    <div className="fv-row mb-7">
+                        <label className="form-label">Property Rating</label>
+                        <input className="form-control form-control-solid" value={initialValues?.rating ?? 0} readOnly disabled />
+                        <div className="form-text">Calculated from property reviews.</div>
                     </div>
                 </div>
             </div>
@@ -613,7 +690,7 @@ const PropertyModal = ({
                                             {deletingImageIds.includes(img.id) ? (
                                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
                                             ) : (
-                                                <i className="bi bi-trash3" />
+                                                <span className="fw-bold fs-3" aria-hidden="true">×</span>
                                             )}
                                         </button>
                                     ) : null}
@@ -665,18 +742,19 @@ const PropertyModal = ({
             )}
 
             {/* Existing Videos */}
-            {initialValues?.videos?.length ? (
+            {existingVideos.length ? (
                 <>
                     <label className="form-label">Existing Videos</label>
 
                     <div className="row g-3 mb-7">
-                        {initialValues.videos.map((video) => (
-                            <div key={video.url} className="col-md-6">
+                        {existingVideos.map((video) => (
+                            <div key={video.id ?? video.url} className="col-md-6 position-relative">
                                 <video
                                     src={video.url}
                                     controls
                                     className="w-100 rounded border"
                                 />
+                                {video.id ? <button type="button" className="btn btn-sm btn-light-danger btn-icon position-absolute top-0 end-0 m-2 shadow-sm" onClick={() => void handleDeleteExistingVideo(video)} disabled={deletingImageIds.includes(video.id)} aria-label="Delete video"><span className="fw-bold fs-3" aria-hidden="true">×</span></button> : null}
                             </div>
                         ))}
                     </div>

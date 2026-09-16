@@ -271,8 +271,8 @@ const BulkImportModal = ({
               <h2 className="fw-bolder mb-1">{title}</h2>
               <div className="text-muted fs-7">{description}</div>
             </div>
-            <button type="button" className="btn btn-icon btn-sm btn-active-light-primary" onClick={resetAndClose}>
-              <i className="bi bi-x-lg fs-3" />
+            <button type="button" className="btn btn-sm p-0 border-0 bg-transparent" style={{ width: 32, height: 32, color: "#172033", fontSize: 28, lineHeight: 1 }} aria-label={`Close ${title}`} onClick={resetAndClose}>
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 

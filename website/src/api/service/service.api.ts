@@ -22,6 +22,8 @@ export type PublicService = {
     address?: string | null;
     state?: string | null;
     postcode?: string | null;
+    logo_url?: string | null;
+    banner_url?: string | null;
   } | null;
   images: { id: string; url: string; is_primary: boolean; sort_order: number }[];
   videos: { id: string; url: string; is_primary: boolean; sort_order: number }[];

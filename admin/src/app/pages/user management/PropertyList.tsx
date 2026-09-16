@@ -113,8 +113,9 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     };
   }, [dispatch, searchParams, setSearchParams]);
 
-  const { params, handleParamsChange } = useEntityTable((p) =>
-    dispatch(fetchPropertyList(p)),
+  const { params, handleParamsChange } = useEntityTable(
+    (p) => dispatch(fetchPropertyList(p)),
+    { sort: "created_at", direction: "desc" },
   );
 
   useEffect(() => {
@@ -173,7 +174,11 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
       {
         label: "Edit",
         permission: "property.update",
-        onClick: (row: PropertyList) => dispatch(openPropertyModal(row)),
+        onClick: (row: PropertyList) => {
+          void fetchPropertyApi(row.id)
+            .then((property) => dispatch(openPropertyModal(property)))
+            .catch(() => undefined);
+        },
       },
       {
         label: "Delete",

@@ -52,6 +52,7 @@ export interface EmailsSectionConfig extends BaseSectionConfig {
 export interface GallerySectionConfig<T> extends BaseSectionConfig {
   type: "gallery";
   imagesAccessor: Extract<keyof T, string> | ((data: T) => string[]);
+  mediaType?: "image" | "video";
 }
 
 // Config for "map" sections

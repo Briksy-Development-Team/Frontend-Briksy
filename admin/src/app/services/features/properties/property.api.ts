@@ -6,6 +6,7 @@ import type {
   Property,
   PropertyFormValues,
   PropertyListParams,
+  PropertyFeatureGroup,
 } from "./property.types";
 
 const toFormData = (payload: PropertyFormValues) => {
@@ -73,6 +74,8 @@ const toFormData = (payload: PropertyFormValues) => {
     formData.append("property_type_id", payload.property_type_id);
   }
 
+  payload.features?.forEach((featureId) => formData.append("features[]", featureId));
+
   if (payload.location_verified !== undefined && payload.location_verified !== null) {
     formData.append("location_verified", payload.location_verified ? "1" : "0");
   }
@@ -90,6 +93,11 @@ const toFormData = (payload: PropertyFormValues) => {
   });
 
   return formData;
+};
+
+export const fetchPropertyFeaturesApi = async (): Promise<PropertyFeatureGroup[]> => {
+  const res = await axiosInstance.get<ApiResponse<PropertyFeatureGroup[]>>(`${getBasePath().replace("/properties", "/property-features")}`);
+  return res.data.data ?? [];
 };
 
 const getBasePath = () => {

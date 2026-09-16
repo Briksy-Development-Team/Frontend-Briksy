@@ -26,7 +26,7 @@ export const fetchSeekersApi = async (params: GetSeekersParams) => {
   };
 };
 
-export const updateSeekerApi = async (id: string, payload: SeekerFormValues) => {
+export const updateSeekerApi = async (id: string, payload: Partial<SeekerFormValues>) => {
   const response = await axiosInstance.put(`${getSeekerEndpoint()}/${id}`, payload);
   return response.data;
 };

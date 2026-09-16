@@ -29,7 +29,7 @@ export const propertyToCard = (p: PublicProperty): Property => ({
   image: p.media?.find((m) => m.is_primary)?.url || p.media?.[0]?.url || PropertyPlaceholder,
   price: p.price || 0, beds: p.bedroom_option === "studio" ? 0 : Number(p.bedroom_option?.replace("_plus", "+") || 0),
   baths: p.bathroom_option === "3_plus" ? 3 : Number(p.bathroom_option || 0), sqm: p.floor_area_sqm || 0, posterName: p.organization?.name || "Briksy member",
-  posterAvatar: BusinessPlaceholder, badge: p.status || "Verified listing", lat: p.location.latitude || 0,
+  posterAvatar: p.organization?.logo_url || BusinessPlaceholder, badge: p.status || "Verified listing", lat: p.location.latitude || 0,
   lng: p.location.longitude || 0, isFavourite: false,
   purpose: p.listing_purpose,
   propertyType: p.property_type?.name,
