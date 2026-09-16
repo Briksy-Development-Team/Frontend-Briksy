@@ -2,34 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
-import PropertyFilters from "./panels/PropertyFilters";
-import BuilderFilters from "./panels/BuilderFilters";
-import AgentFilters from "./panels/AgentFilters";
-import TradeFilters from "./panels/TradeFilters";
-import type {
-  FilterTab, BuilderMode, AgentType,
-  BuyFilters, RentFilters, SoldFilters,
-  BuilderProfileFilters, AgentFiltersType, TradeFiltersType,
-} from "./filterTypes";
-import {
-  DEFAULT_BUY_FILTERS, DEFAULT_RENT_FILTERS, DEFAULT_SOLD_FILTERS,
-  DEFAULT_BUILDER_PROFILE_FILTERS, DEFAULT_AGENT_FILTERS, DEFAULT_TRADE_FILTERS,
-} from "./filterTypes";
-import { filtersToPropertyParams, propertyQueryToParams } from "../../api/property/propertySearch";
-
-const slugify = (value: string) =>
-  value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+import FilterPanel from "./panels/FilterPanel";
+import type { FilterMode } from "./filterConfig";
 
 type FilterProps = {
   isOpen: boolean;
   onClose: () => void;
-  initialTab?: FilterTab;
-  builderMode?: BuilderMode;
-  agentCategory?: string;
+  initialTab?: FilterMode;
   category?: string;
 };
 
-const ALL_TABS: { label: string; value: FilterTab }[] = [
+const ALL_TABS: { label: string; value: FilterMode }[] = [
   { label: "Buy", value: "Buy" },
   { label: "Rent", value: "Rent" },
   { label: "Sold", value: "Sold" },
@@ -38,7 +21,7 @@ const ALL_TABS: { label: string; value: FilterTab }[] = [
   { label: "Sole Traders", value: "Traders" },
 ];
 
-const TABS_BY_CATEGORY: Record<string, FilterTab[]> = {
+const TABS_BY_CATEGORY: Record<string, FilterMode[]> = {
   all: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
   properties: ["Buy", "Rent", "Sold"],
   builders: ["Builders", "Agents"],
@@ -48,30 +31,26 @@ const TABS_BY_CATEGORY: Record<string, FilterTab[]> = {
 
 const getVisibleTabs = (category = "all") => {
   const allowed = TABS_BY_CATEGORY[category.toLowerCase()] ?? TABS_BY_CATEGORY.all;
-  const seen = new Set<FilterTab>();
+  const seen = new Set<FilterMode>();
   return ALL_TABS.filter(
     (t) => allowed.includes(t.value) && !seen.has(t.value) && seen.add(t.value)
   );
 };
 
 const Filter = ({
-  isOpen, onClose, initialTab = "Buy",
-  builderMode = "profiles", agentCategory, category = "all",
+  isOpen,
+  onClose,
+  initialTab = "Buy",
+  category = "all",
 }: FilterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const visibleTabs = getVisibleTabs(category);
-  const [activeTab, setActiveTab] = useState<FilterTab>(initialTab);
+  const [activeTab, setActiveTab] = useState<FilterMode>(initialTab);
   const tabsScrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  const [buy, setBuy] = useState<BuyFilters>(DEFAULT_BUY_FILTERS);
-  const [rent, setRent] = useState<RentFilters>(DEFAULT_RENT_FILTERS);
-  const [sold, setSold] = useState<SoldFilters>(DEFAULT_SOLD_FILTERS);
-  const [builderProfile, setBuilderProfile] = useState<BuilderProfileFilters>(DEFAULT_BUILDER_PROFILE_FILTERS);
-  const [builderListings, setBuilderListings] = useState<BuyFilters>(DEFAULT_BUY_FILTERS);
-  const [agents, setAgents] = useState<AgentFiltersType>(DEFAULT_AGENT_FILTERS);
-  const [trades, setTrades] = useState<TradeFiltersType>(DEFAULT_TRADE_FILTERS);
+  const [currentValues, setCurrentValues] = useState<Record<string, any>>({});
 
   useEffect(() => {
     const btn = tabRefs.current[activeTab];
@@ -94,23 +73,24 @@ const Filter = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    const query = propertyQueryToParams(new URLSearchParams(location.search));
-    const shared = {
-      ...(query.search ? { keyword: query.search } : {}),
-      ...(query.min_price !== undefined ? { priceMin: query.min_price } : {}),
-      ...(query.max_price !== undefined ? { priceMax: query.max_price } : {}),
-      ...(query.bedrooms !== undefined ? { bedrooms: query.bedrooms } : {}),
-      ...(query.bathrooms !== undefined ? { bathrooms: query.bathrooms } : {}),
-      ...(query.car_spaces !== undefined ? { carSpaces: query.car_spaces } : {}),
-      ...(query.min_land_size !== undefined ? { landSizeMin: query.min_land_size } : {}),
-      ...(query.max_land_size !== undefined ? { landSizeMax: query.max_land_size } : {}),
-      ...(query.features?.length ? { features: query.features.map((feature) => ({ swimming_pool: "Pool", air_conditioning: "Air conditioning", solar_panels: "Solar panels", study: "Study", pet_friendly: "Pet-friendly" } as Record<string, string>)[feature]).filter(Boolean) } : {}),
-      ...(query.category === "commercial" ? { propertyTypes: ["Commercial"] } : {}),
-    };
-    setBuy((current) => ({ ...current, ...shared }));
-    setRent((current) => ({ ...current, ...shared }));
+    const params = new URLSearchParams(location.search);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const initial: Record<string, any> = {};
+    params.forEach((val, key) => {
+      const cleanKey = key.replace(/\[\]$/, "");
+      const allVals = params.getAll(key);
+      if (allVals.length > 1 || key.endsWith("[]")) {
+        initial[cleanKey] = allVals;
+      } else {
+        initial[cleanKey] = val;
+      }
+    });
+
+    setCurrentValues(initial);
   }, [isOpen, location.search]);
 
+  // Handle locking body scroll when modal is open
   useEffect(() => {
     if (!isOpen) return;
     const scrollY = window.scrollY;
@@ -122,93 +102,46 @@ const Filter = ({
     };
   }, [isOpen]);
 
-  const agentType: AgentType = agentCategory?.toLowerCase().includes("buyer") ? "buyers" : "real-estate";
-
   const handleClear = () => {
-    switch (activeTab) {
-      case "Buy": setBuy(DEFAULT_BUY_FILTERS); break;
-      case "Rent": setRent(DEFAULT_RENT_FILTERS); break;
-      case "Sold": setSold(DEFAULT_SOLD_FILTERS); break;
-      case "Builders": setBuilderProfile(DEFAULT_BUILDER_PROFILE_FILTERS); setBuilderListings(DEFAULT_BUY_FILTERS); break;
-      case "Agents": setAgents(DEFAULT_AGENT_FILTERS); break;
-      case "Traders": setTrades(DEFAULT_TRADE_FILTERS); break;
-    }
-
-    const params = new URLSearchParams(location.search);
-    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab", "purpose", "intent", "service_slug"].forEach((key) => params.delete(key));
-    if (category.toLowerCase() !== "commercial") params.delete("category");
-    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    setCurrentValues({});
+    navigate(`${location.pathname}`, { replace: true });
   };
 
   const handleApply = () => {
-    const typeMap: Record<FilterTab, string> = {
+    const params = new URLSearchParams();
+
+    params.set("tab", activeTab.toLowerCase());
+    params.set("page", "1");
+
+    const typeMap: Record<FilterMode, string> = {
       Buy: "property", Rent: "property", Sold: "property",
       Builders: "builder", Agents: "builder", Traders: "trader",
     };
-    const params = new URLSearchParams(location.search);
     params.set("type", typeMap[activeTab]);
-    params.set("tab", activeTab.toLowerCase());
-    params.set("page", "1");
-    if (activeTab === "Agents" && agentCategory) params.set("category", agentCategory);
-    params.delete("service_slug");
-    params.delete("q");
-    params.delete("search");
-    params.delete("min_price");
-    params.delete("max_price");
-    params.delete("purpose");
-    params.delete("intent");
-    ["bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features"].forEach((key) => params.delete(key));
-    if (activeTab === "Buy" || activeTab === "Rent") {
-      const filters = activeTab === "Buy" ? buy : rent;
-      const propertyParams = filtersToPropertyParams(filters);
-      params.delete("category");
-      if (propertyParams.search) params.set("q", propertyParams.search);
-      if (propertyParams.min_price !== undefined) params.set("min_price", String(propertyParams.min_price));
-      if (propertyParams.max_price !== undefined) params.set("max_price", String(propertyParams.max_price));
-      if (propertyParams.bedrooms !== undefined) params.set("bedrooms", String(propertyParams.bedrooms));
-      if (propertyParams.bathrooms !== undefined) params.set("bathrooms", String(propertyParams.bathrooms));
-      if (propertyParams.car_spaces !== undefined) params.set("car_spaces", String(propertyParams.car_spaces));
-      if (propertyParams.min_land_size !== undefined) params.set("min_land_size", String(propertyParams.min_land_size));
-      if (propertyParams.max_land_size !== undefined) params.set("max_land_size", String(propertyParams.max_land_size));
-      propertyParams.features?.forEach((feature) => params.append("features[]", feature));
-      if (propertyParams.category) params.set("category", propertyParams.category);
-      if (category.toLowerCase() === "commercial") params.set("category", "commercial");
-      params.set("purpose", activeTab === "Buy" ? "sell" : "rent");
+
+    if (category.toLowerCase() === "commercial") {
+      params.set("category", "commercial");
     }
-    if (activeTab === "Sold") {
-      const soldParams = filtersToPropertyParams({
-        ...DEFAULT_BUY_FILTERS,
-        propertyTypes: sold.propertyTypes,
-        priceMin: sold.soldPriceMin,
-        priceMax: sold.soldPriceMax,
-        bedrooms: sold.bedrooms,
-        bathrooms: sold.bathrooms,
-        carSpaces: sold.carSpaces,
-        landSizeMin: sold.landSizeMin,
-        landSizeMax: sold.landSizeMax,
-      });
-      params.delete("category");
-      if (soldParams.min_price !== undefined) params.set("min_price", String(soldParams.min_price));
-      if (soldParams.max_price !== undefined) params.set("max_price", String(soldParams.max_price));
-      if (soldParams.bedrooms !== undefined) params.set("bedrooms", String(soldParams.bedrooms));
-      if (soldParams.bathrooms !== undefined) params.set("bathrooms", String(soldParams.bathrooms));
-      if (soldParams.car_spaces !== undefined) params.set("car_spaces", String(soldParams.car_spaces));
-      if (soldParams.min_land_size !== undefined) params.set("min_land_size", String(soldParams.min_land_size));
-      if (soldParams.max_land_size !== undefined) params.set("max_land_size", String(soldParams.max_land_size));
-      if (soldParams.category) params.set("category", soldParams.category);
-      if (category.toLowerCase() === "commercial") params.set("category", "commercial");
-      params.set("purpose", "sell");
-    }
-    if (activeTab === "Builders" && builderProfile.serviceArea.trim()) {
-      params.set("q", builderProfile.serviceArea.trim());
-    }
-    if (activeTab === "Agents" && (agents.location.trim() || agents.agency.trim())) {
-      params.set("q", agents.agency.trim() || agents.location.trim());
-    }
-    if (activeTab === "Traders") {
-      if (trades.serviceArea.trim()) params.set("q", trades.serviceArea.trim());
-      if (trades.categories[0]) params.set("service_slug", slugify(trades.categories[0]));
-    }
+
+    if (activeTab === "Buy") params.set("purpose", "sell");
+    if (activeTab === "Rent") params.set("purpose", "rent");
+
+    Object.entries(currentValues).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
+      if (Array.isArray(value)) {
+        if (value.length > 0) {
+          value.forEach(v => params.append(`${key}[]`, String(v)));
+        }
+      } else {
+        // Special mapping for keyword searching
+        if (key === "keyword" && String(value).trim()) {
+          params.set("q", String(value).trim());
+        } else {
+          params.set(key, String(value));
+        }
+      }
+    });
+
     navigate(`/result?${params.toString()}`);
     onClose();
   };
@@ -266,20 +199,7 @@ const Filter = ({
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
         >
-          {activeTab === "Buy" && <PropertyFilters mode="Buy" values={buy} onChange={setBuy} />}
-          {activeTab === "Rent" && <PropertyFilters mode="Rent" values={rent} onChange={setRent} />}
-          {activeTab === "Sold" && <PropertyFilters mode="Sold" values={sold} onChange={setSold} />}
-          {activeTab === "Builders" && (
-            <BuilderFilters
-              mode={builderMode}
-              profileValues={builderProfile}
-              onProfileChange={setBuilderProfile}
-              listingsValues={builderListings}
-              onListingsChange={setBuilderListings}
-            />
-          )}
-          {activeTab === "Agents" && <AgentFilters agentType={agentType} values={agents} onChange={setAgents} />}
-          {activeTab === "Traders" && <TradeFilters values={trades} onChange={setTrades} />}
+          <FilterPanel key={activeTab} mode={activeTab} values={currentValues} onChange={setCurrentValues} />
         </div>
 
         <div className="flex shrink-0 items-center justify-between border-t border-gray-100 px-6 py-4">

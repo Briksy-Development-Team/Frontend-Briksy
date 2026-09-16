@@ -1,0 +1,49 @@
+.price-range-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+  background: transparent;
+}
+
+.price-range-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: transparent;
+}
+
+.price-range-slider::-moz-range-track {
+  height: 2px;
+  background: transparent;
+}
+
+.price-range-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 32px;
+  height: 32px;
+  margin-top: -15px;
+  border-radius: 50%;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.price-range-slider::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #d8d8d8;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.price-range-slider:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+.price-range-slider:active::-moz-range-thumb {
+  cursor: grabbing;
+}
