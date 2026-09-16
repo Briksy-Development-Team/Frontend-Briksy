@@ -8,6 +8,8 @@ import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
 import { getRolePortalBaseRoute } from "../../../../../app/modules/auth/core/roleRoutes";
 
+
+
 const SidebarMenuMain = () => {
   const intl = useIntl();
   const { isSuperAdmin, isAdmin } = useRoleAccess();
@@ -22,7 +24,7 @@ const SidebarMenuMain = () => {
       {hasPermission("dashboard.view") && (
         <SidebarMenuItem
           to={`${portalBase}/dashboard`}
-          icon="element-11"
+          icon="/media/icons/duotune/general/gen025.svg"
           title={intl.formatMessage({ id: "MENU.DASHBOARD" })}
           fontIcon="bi-app-indicator"
         />
@@ -34,12 +36,12 @@ const SidebarMenuMain = () => {
             to={`${portalBase}/users`}
             title="User Management"
             fontIcon="bi-archive"
-            icon="element-plus"
+            icon="/media/icons/duotune/iconsnew/user.svg"
             activePaths={[`${portalBase}/endusers`]}
           >
             <SidebarMenuItem
               to={`${portalBase}/endusers`}
-              icon="abstract-28"
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
               title="End Users"
               fontIcon="bi-layers"
             />
@@ -49,12 +51,12 @@ const SidebarMenuMain = () => {
             to={`${portalBase}/superadmin-staff-menu`}
             title="Superadmin Staff"
             fontIcon="bi-shield-check"
-            icon="element-plus"
+            icon="/media/icons/duotune/iconsnew/superstaff.svg"
             activePaths={[`${portalBase}/staff`]}
           >
             <SidebarMenuItem
               to={`${portalBase}/staff`}
-              icon="abstract-28"
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
               title="Platform Staff"
               fontIcon="bi-layers"
             />
@@ -67,7 +69,7 @@ const SidebarMenuMain = () => {
           to={`${portalBase}/companies`}
           title="Organisations"
           fontIcon="bi-archive"
-          icon="element-plus"
+          icon="/media/icons/duotune/iconsnew/org.svg"
           activePaths={[
             `${portalBase}/companies/organization/real-estate`,
             `${portalBase}/companies/organization/buyers-agent`,
@@ -77,25 +79,26 @@ const SidebarMenuMain = () => {
         >
           <SidebarMenuItem
             to={`${portalBase}/companies/organization/real-estate`}
-            icon="abstract-28"
+            icon="/media/icons/duotune/iconsnew/arrowside.svg"
             title="Real Estate"
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
             to={`${portalBase}/companies/organization/buyers-agent`}
-            icon="abstract-28"
+            icon="/media/icons/duotune/iconsnew/arrowside.svg"
             title="Buyers Agent"
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
             to={`${portalBase}/companies/organization/builders`}
-            icon="abstract-28"
+            icon="/media/icons/duotune/iconsnew/arrowside.svg"
             title="Builders"
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
             to={`${portalBase}/companies/organization/trades-professionals`}
-            icon="abstract-28"
+            icon="/media/icons/duotune/iconsnew/arrowside.svg"
+
             title="Trades & Professionals"
             fontIcon="bi-layers"
           />
@@ -107,60 +110,60 @@ const SidebarMenuMain = () => {
           {(hasPermission("addon.view") ||
             hasPermission("plan.view") ||
             hasPermission("subscription.view")) && (
-            <SidebarMenuItemWithSub
-              to={`${portalBase}/addons`}
-              title="Billing & IDs"
-              fontIcon="bi-archive"
-              icon="element-plus"
-              activePaths={[
-                `${portalBase}/addons`,
-                `${portalBase}/plans`,
-                `${portalBase}/invoices`,
-                `${portalBase}/subscriptions`,
-              ]}
-            >
-              {hasPermission("addon.view") && (
+              <SidebarMenuItemWithSub
+                to={`${portalBase}/addons`}
+                title="Billing & IDs"
+                fontIcon="bi-archive"
+                icon="/media/icons/duotune/iconsnew/bill.svg"
+                activePaths={[
+                  `${portalBase}/addons`,
+                  `${portalBase}/plans`,
+                  `${portalBase}/invoices`,
+                  `${portalBase}/subscriptions`,
+                ]}
+              >
+                {hasPermission("addon.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/addons`}
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    title="Add-ons"
+                    fontIcon="bi-layers"
+                  />
+                )}
+
+                {hasPermission("plan.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/plans`}
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    title="Plans"
+                    fontIcon="bi-layers"
+                  />
+                )}
+
+                {hasPermission("subscription.view") && (
+                  <SidebarMenuItem
+                    to={`${portalBase}/subscriptions`}
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    title="Subscriptions"
+                    fontIcon="bi-layers"
+                  />
+                )}
+
                 <SidebarMenuItem
-                  to={`${portalBase}/addons`}
-                  icon="abstract-28"
-                  title="Add-ons"
+                  to={`${portalBase}/invoices`}
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  title="Invoices"
                   fontIcon="bi-layers"
                 />
-              )}
-
-              {hasPermission("plan.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/plans`}
-                  icon="abstract-28"
-                  title="Plans"
-                  fontIcon="bi-layers"
-                />
-              )}
-
-              {hasPermission("subscription.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/subscriptions`}
-                  icon="abstract-28"
-                  title="Subscriptions"
-                  fontIcon="bi-layers"
-                />
-              )}
-
-              <SidebarMenuItem
-                to={`${portalBase}/invoices`}
-                icon="abstract-28"
-                title="Invoices"
-                fontIcon="bi-layers"
-              />
-            </SidebarMenuItemWithSub>
-          )}
+              </SidebarMenuItemWithSub>
+            )}
 
           {isSuperAdmin && (
             <SidebarMenuItem
               to={`${portalBase}/property-map`}
               title="Property Map"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/maps/map002.svg"
             />
           )}
 
@@ -169,13 +172,14 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/email-templates`}
               title="Communications"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/com.svg"
               activePaths={[`${portalBase}/activity-logs`]}
             >
               {hasPermission("email_template.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/email-templates`}
-                  icon="abstract-28"
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+
                   title="Email Templates"
                   fontIcon="bi-layers"
                 />
@@ -184,7 +188,7 @@ const SidebarMenuMain = () => {
               {hasPermission("activity_logs.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/activity-logs`}
-                  icon="clock"
+              icon="/media/icons/duotune/iconsnew/arrowside.svg"
                   title="Activity Logs"
                   fontIcon="bi-layers"
                 />
@@ -197,7 +201,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/plan-requests`}
               title="Plan Requests"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/plan.svg"
             />
           )}
 
@@ -206,7 +210,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/referral-programs`}
               title="Referral Programs"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/ref.svg"
             />
           )}
 
@@ -215,7 +219,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/coupons`}
               title="Coupons"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/coupon.svg"
             />
           )}
 
@@ -224,7 +228,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/services`}
               title="Services Management"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/service.svg"
             />
           )}
 
@@ -233,7 +237,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/permissions`}
               title="Permissions"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/permission.svg"
             />
           )}
         </>
@@ -246,7 +250,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/businesses`}
               title="Business Details"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 
@@ -256,13 +260,13 @@ const SidebarMenuMain = () => {
                 to={`${portalBase}/property-management`}
                 title="Property Management"
                 fontIcon="bi-archive"
-                icon="element-plus"
+                icon="/media/icons/duotune/iconsnew/"
               />
               <SidebarMenuItem
                 to={`${portalBase}/property-offers`}
                 title="Property Offers"
                 fontIcon="bi-archive"
-                icon="element-plus"
+                icon="/media/icons/duotune/iconsnew/"
               />
             </>
           )}
@@ -272,7 +276,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/services`}
               title="Services Management"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 
@@ -281,7 +285,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/buyer-briefs`}
               title="Buyer Briefs"
               fontIcon="bi-people"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 
@@ -290,7 +294,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/builder-projects`}
               title="Builder Projects"
               fontIcon="bi-building"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 
@@ -299,7 +303,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/users`}
               title="User Management"
               fontIcon="bi-archive"
-              icon="element-plus"
+            icon="/media/icons/duotune/iconsnew/user.svg"
             />
           )}
 
@@ -308,7 +312,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/referrals`}
               title="Referrals"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/ref.svg"
             />
           )}
 
@@ -317,7 +321,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/inquiry`}
               title="Property Inquiries"
               fontIcon="bi-archive"
-              icon="element-plus"
+              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 
@@ -326,7 +330,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/activity-logs`}
               title="Activity Logs"
               fontIcon="bi-archive"
-              icon="clock"
+              icon="/media/icons/duotune/iconsnew/"
             />
           )}
         </>
@@ -338,13 +342,13 @@ const SidebarMenuMain = () => {
             to={`${portalBase}/notifications`}
             title="Notifications"
             fontIcon="bi-bell"
-            icon="notification-bing"
+            icon="/media/icons/duotune/iconsnew/notification.svg"
           />
           <SidebarMenuItem
             to={`${portalBase}/settings`}
             title="Settings"
             fontIcon="bi-archive"
-            icon="element-plus"
+            icon="/media/icons/duotune/iconsnew/setting.svg"
           />
         </>
       )}

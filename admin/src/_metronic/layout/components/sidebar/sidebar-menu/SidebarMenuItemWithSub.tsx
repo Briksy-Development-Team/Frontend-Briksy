@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import {useLocation} from 'react-router'
-import {checkIsActive, KTIcon, WithChildren} from '../../../../helpers'
+import {checkIsActive, KTIcon, KTSVG, WithChildren} from '../../../../helpers'
 import {useLayout} from '../../../core'
 
 type Props = {
@@ -40,7 +40,11 @@ const SidebarMenuItemWithSub: React.FC<Props & WithChildren> = ({
         )}
         {icon && app?.sidebar?.default?.menu?.iconType === 'svg' && (
           <span className='menu-icon'>
-            <KTIcon iconName={icon} className='fs-2' />
+            {icon.startsWith('/') || icon.endsWith('.svg') ? (
+              <KTSVG path={icon} className='svg-icon-2' svgClassName='w-20px h-20px' />
+            ) : (
+              <KTIcon iconName={icon} className='fs-2' />
+            )}
           </span>
         )}
         {fontIcon && app?.sidebar?.default?.menu?.iconType === 'font' && (
