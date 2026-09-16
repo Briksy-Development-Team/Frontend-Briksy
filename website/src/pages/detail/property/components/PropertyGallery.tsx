@@ -2,6 +2,7 @@ import { List, Play, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface GalleryImage {
+  id?: string;
   src?: string;
   type?: 'image' | 'video';
   videoSrc?: string; // playable video url, used when type === 'video'
@@ -18,7 +19,12 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] 
 
   const galleryImages: GalleryImage[] = images.map((image) =>
     typeof image === 'string' ? { src: image } : image,
-  );
+  ).filter((image, index, all) => image.src && all.findIndex((candidate) => candidate.id ? candidate.id === image.id : candidate.src === image.src) === index);
+  const photoCount = galleryImages.filter((image) => image.type !== 'video').length;
+
+  if (galleryImages.length === 0) {
+    return <div className="rounded-2xl border border-[#EBE5D9] bg-[#faf9f5] px-6 py-16 text-center text-primary-brown">No images or videos uploaded.</div>;
+  }
 
   // images[0] = hero, images[1..4] = the 2x2 grid tiles
   const hero = galleryImages[0];
@@ -33,7 +39,9 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] 
           style={!hero?.src ? { backgroundColor: PLACEHOLDER_COLORS[0] } : undefined}
           onClick={() => setModalOpen(true)}
         >
-          {hero?.src && (
+          {hero?.src && hero.type === 'video' ? (
+            <video src={hero.videoSrc ?? hero.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+          ) : hero?.src && (
             <img src={hero.src} className="w-full h-full object-cover" alt="" />
           )}
         </div>
@@ -58,7 +66,9 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] 
                   }
                 }}
               >
-                {hasSrc && (
+                {hasSrc && isVideo ? (
+                  <video src={tile?.videoSrc ?? tile?.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                ) : hasSrc && (
                   <img src={tile!.src} className="w-full h-full object-cover" alt="" />
                 )}
 
@@ -128,7 +138,7 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] 
           <div className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-[#EBE5D9] flex items-center justify-between">
               <h3 className="text-[1.125rem] font-bold text-primary-brown">
-                All photos · {galleryImages.length} photos
+                All photos · {photoCount} photos
               </h3>
             </div>
             <div className="flex-1 overflow-y-auto p-6">
@@ -139,7 +149,9 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] 
                     className="aspect-square rounded-xl overflow-hidden relative"
                     style={{ backgroundColor: PLACEHOLDER_COLORS[idx % PLACEHOLDER_COLORS.length] }}
                   >
-                    {img.src && (
+                    {img.src && img.type === 'video' ? (
+                      <video src={img.videoSrc ?? img.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                    ) : img.src && (
                       <img src={img.src} className="w-full h-full object-cover" alt="" />
                     )}
                     {img.type === 'video' && (

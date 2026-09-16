@@ -49,7 +49,10 @@ const ModalShell = ({
           <div className="modal-header">
             <h2 className="fw-bolder">{title}</h2>
             <button
+              type="button"
               className="btn btn-icon btn-sm btn-active-icon-primary"
+              style={{ width: 40, height: 40, color: "#172033", backgroundColor: "#f1f3f6", border: "1px solid #cbd5e1" }}
+              aria-label={`Close ${title}`}
               onClick={onClose}
             >
               <KTIcon iconName="cross" className="fs-1" />

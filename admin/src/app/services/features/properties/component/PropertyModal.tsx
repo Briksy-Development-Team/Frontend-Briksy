@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
-import type { Property, PropertyFormValues, PropertyImage } from "../property.types";
+import type { Property, PropertyFormValues, PropertyImage, PropertyVideo } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 import { LocationMapPreview } from "../../maps/LocationMapPreview";
 import { useRoleAccess } from "../../../../modules/auth";
@@ -55,6 +55,7 @@ const PropertyModal = ({
     const [images, setImages] = useState<File[]>([]);
     const [videos, setVideos] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState<PropertyImage[]>(initialValues?.images ?? []);
+    const [existingVideos, setExistingVideos] = useState<PropertyVideo[]>(initialValues?.videos ?? []);
     const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
 
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -89,6 +90,7 @@ const PropertyModal = ({
             setImages([]);
             setVideos([]);
             setExistingImages([]);
+            setExistingVideos([]);
             return;
         }
 
@@ -119,6 +121,7 @@ const PropertyModal = ({
         setImages([]);
         setVideos([]);
         setExistingImages(initialValues.images ?? []);
+        setExistingVideos(initialValues.videos ?? []);
     }, [initialValues]);
 
     useEffect(() => {
@@ -232,6 +235,19 @@ const PropertyModal = ({
             window.alert("Failed to delete the image. Please try again.");
         } finally {
             setDeletingImageIds((prev) => prev.filter((id) => id !== image.id));
+        }
+    };
+
+    const handleDeleteExistingVideo = async (video: PropertyVideo) => {
+        if (!video.id || !window.confirm("Delete this video?")) return;
+        setDeletingImageIds((prev) => [...prev, video.id as string]);
+        try {
+            await deletePropertyMediaApi(video.id);
+            setExistingVideos((prev) => prev.filter((item) => item.id !== video.id));
+        } catch {
+            window.alert("Failed to delete the video. Please try again.");
+        } finally {
+            setDeletingImageIds((prev) => prev.filter((id) => id !== video.id));
         }
     };
 
@@ -665,18 +681,19 @@ const PropertyModal = ({
             )}
 
             {/* Existing Videos */}
-            {initialValues?.videos?.length ? (
+            {existingVideos.length ? (
                 <>
                     <label className="form-label">Existing Videos</label>
 
                     <div className="row g-3 mb-7">
-                        {initialValues.videos.map((video) => (
-                            <div key={video.url} className="col-md-6">
+                        {existingVideos.map((video) => (
+                            <div key={video.id ?? video.url} className="col-md-6 position-relative">
                                 <video
                                     src={video.url}
                                     controls
                                     className="w-100 rounded border"
                                 />
+                                {video.id ? <button type="button" className="btn btn-sm btn-light-danger btn-icon position-absolute top-0 end-0 m-2 shadow-sm" onClick={() => void handleDeleteExistingVideo(video)} disabled={deletingImageIds.includes(video.id)} aria-label="Delete video"><i className="bi bi-trash3" /></button> : null}
                             </div>
                         ))}
                     </div>

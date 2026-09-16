@@ -257,7 +257,7 @@ const PropertyImportModal = ({ onClose, onCompleted }: Props) => {
                 Upload a spreadsheet, map its columns, preview validation, then start the queued import.
               </div>
             </div>
-            <button type="button" className="btn btn-icon btn-sm btn-active-light-primary" onClick={resetAndClose}>
+            <button type="button" className="btn btn-icon btn-sm btn-active-light-primary" style={{ width: 40, height: 40, color: "#172033", backgroundColor: "#f1f3f6", border: "1px solid #cbd5e1" }} aria-label="Close property import" onClick={resetAndClose}>
               <i className="bi bi-x-lg fs-3" />
             </button>
           </div>

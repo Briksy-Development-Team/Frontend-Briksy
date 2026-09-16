@@ -125,6 +125,8 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   property_type: item.property_type ?? null,
   has_briksy_exclusive_offer: item.has_briksy_exclusive_offer ?? false,
   briksy_exclusive_offers: item.briksy_exclusive_offers ?? [],
+  images: item.images ?? [],
+  videos: item.videos ?? [],
   organization: item.organization ?? null,
   creator: item.creator ?? null,
   timeline_events: item.timeline_events ?? [],

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { PropertyList } from "../property.types";
 import PropertyMap from "../../maps/PropertyMap";
 import PropertyMapPopup from "../../maps/PropertyMapPopup";
@@ -11,6 +11,14 @@ type Props = {
 
 const PropertyMapView = ({ properties, portalBase }: Props) => {
   const [selectedProperty, setSelectedProperty] = useState<PropertyMapItem | null>(null);
+  useEffect(() => {
+    if (!selectedProperty) return undefined;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedProperty(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedProperty]);
   const mappedProperties = properties.filter(
     (property) =>
       typeof property.latitude === "number" &&
@@ -59,11 +67,20 @@ const PropertyMapView = ({ properties, portalBase }: Props) => {
       </div>
 
       {selectedProperty ? (
-        <PropertyMapPopup
-          property={selectedProperty}
-          portalBase={portalBase}
-          onClose={() => setSelectedProperty(null)}
-        />
+        <div
+          className="position-absolute top-0 start-0 w-100 h-100"
+          style={{ zIndex: 2, background: "rgba(15, 23, 42, 0.18)" }}
+          onClick={() => setSelectedProperty(null)}
+          role="presentation"
+        >
+          <div onClick={(event) => event.stopPropagation()}>
+            <PropertyMapPopup
+              property={selectedProperty}
+              portalBase={portalBase}
+              onClose={() => setSelectedProperty(null)}
+            />
+          </div>
+        </div>
       ) : null}
     </div>
   );

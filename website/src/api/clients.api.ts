@@ -9,7 +9,36 @@ export type ApiPage<T> = {
   };
 };
 
-const API_URL = import.meta.env.VITE_APP_API_URL || "http://127.0.0.1:8000/api";
+const LOOPBACK_HOST_PATTERN = /(^|:\/\/)(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?/i;
+
+const getLocalApiBaseUrl = (origin: string) => {
+  const url = new URL(origin);
+  const hostname = url.hostname === "0.0.0.0" ? "localhost" : url.hostname;
+
+  return `${url.protocol}//${hostname}:8000/api`;
+};
+
+const resolveApiBaseUrl = () => {
+  const configured = import.meta.env.VITE_APP_API_URL?.trim();
+
+  if (configured && !LOOPBACK_HOST_PATTERN.test(configured)) {
+    return configured.replace(/\/$/, "");
+  }
+
+  if (typeof window !== "undefined") {
+    const origin = window.location.origin.replace(/\/$/, "");
+
+    if (LOOPBACK_HOST_PATTERN.test(origin)) {
+      return getLocalApiBaseUrl(origin);
+    }
+
+    return "/api";
+  }
+
+  return "/api";
+};
+
+const API_URL = resolveApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_URL,

@@ -39,12 +39,13 @@ export type PublicProperty = {
     is_verified: boolean;
   } | null;
   media?: {
+    id?: string;
     url: string | null;
     type: "image" | "video";
     is_primary: boolean;
   }[];
-  images?: { url: string | null; is_primary: boolean }[];
-  videos?: { url: string | null; is_primary: boolean }[];
+  images?: { id?: string; url: string | null; is_primary: boolean }[];
+  videos?: { id?: string; url: string | null; is_primary: boolean }[];
 };
 
 export const getProperties = async (

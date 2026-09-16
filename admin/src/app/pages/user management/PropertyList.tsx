@@ -173,7 +173,11 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
       {
         label: "Edit",
         permission: "property.update",
-        onClick: (row: PropertyList) => dispatch(openPropertyModal(row)),
+        onClick: (row: PropertyList) => {
+          void fetchPropertyApi(row.id)
+            .then((property) => dispatch(openPropertyModal(property)))
+            .catch(() => undefined);
+        },
       },
       {
         label: "Delete",
