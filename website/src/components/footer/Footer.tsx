@@ -10,8 +10,8 @@ const footerLinks = [
   {
     title: "Find",
     links: [
-      { label: "Search professionals & properties", href: "/search" },
-      { label: "Commercial properties", href: "/commercial-properties" },
+      { label: "Search professionals & properties", href: "/result?type=all" },
+      { label: "Commercial properties", href: "//result?type=comercial" },
       { label: "How verification works", href: "/how-we-verify" },
     ],
   },
@@ -19,15 +19,15 @@ const footerLinks = [
     title: "For your business",
     links: [
       { label: "List your business", href: "/list-your-business" },
-      { label: "Builder profiles", href: "/builders" },
-      { label: "Agency profiles", href: "/agencies" },
+      { label: "Builder profiles", href: "/result?type=builder" },
+      { label: "Agency profiles", href: "/result?type=builder&tab=agents" },
       { label: "Pricing", href: "/subs" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About Briksy", href: "/about" },
+      { label: "About Briksy", href: "/company-details" },
       { label: "Blog", href: "/blog" },
       { label: "Help Centre", href: "/help" },
       //   { label: "Careers [ optional ]", href: "/careers" },
@@ -68,7 +68,7 @@ const Footer = () => {
                     <li key={item.label}>
                       <Link
                         to={item.href}
-                        className="text-[0.875rem] text-primary-brown lg:text-[1rem] hover:text-[#A6632F] transition-colors"
+                        className="text-[0.875rem] text-nowrap text-primary-brown lg:text-[1rem] hover:text-[#A6632F] transition-colors"
                       >
                         {item.label}
                       </Link>
