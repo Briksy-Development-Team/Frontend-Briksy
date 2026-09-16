@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal, X, TrendingUp, Sparkles } from "lucide-react
 import Filter from "../filter/Filter";
 import { useNavigate } from "react-router-dom";
 
-const TRENDING = ["Electricians*", "Plumbers*", "Builders", "Landscapers", "Painters", "Conveyancers", "Properties"];
+const TRENDING = ["Electricians*", "Plumbers*", "Builders", "Landscapers", "Painters", "Conveyancers"];
 
 export const NavSearchButton = ({ onClick }: { onClick: () => void }) => (
   <button onClick={onClick} className="flex items-center justify-center rounded-[0.9375rem]" aria-label="Open search">
@@ -41,12 +41,12 @@ export const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () =>
   const addFilter = (lbl: string) => (setQuery(lbl), !filters.includes(lbl) && setFilters([...filters, lbl]), inputRef.current?.focus());
 
   return (
-    <div className={`fixed inset-0 z-40 flex items-start justify-center pt-28 px-4 transition-colors duration-300 ${open ? "bg-black/40 pointer-events-auto" : "bg-transparent pointer-events-none"}`}>
-      <div className="w-full max-w-[780px] origin-top transition-all duration-300" style={{ transform: open ? "scale(1)" : "scale(0.88)", opacity: open ? 1 : 0 }}>
+    <div className={`fixed inset-0 z-40  flex items-start justify-center pt-28 px-4 transition-colors duration-300 ${open ? "bg-black/40 pointer-events-auto" : "bg-transparent pointer-events-none"}`}>
+      <div className="w-full max-w-[980px]  rounded-xl origin-top transition-all bg-[#F8F4EE] duration-300" style={{ transform: open ? "scale(1)" : "scale(0.88)", opacity: open ? 1 : 0 }}>
         <div ref={panelRef} className="w-full rounded-2xl origin-top overflow-hidden">
 
           <div className="flex items-start gap-3 p-4 pb-0">
-            <div className="flex flex-1 h-[54px] items-center rounded-xl border border-gray-100 bg-white overflow-hidden">
+            <div className="flex flex-1 h-[54px] items-center rounded-xl border border-[#EDE8E4] bg-white overflow-hidden">
               <div className="flex w-full h-full items-center pl-4 pr-1.5">
                 <input
                   ref={inputRef}
@@ -59,8 +59,8 @@ export const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () =>
                 <button onClick={() => setFilterOpen(true)} className="px-3 text-primary-brown rotate-90 hover:opacity-70">
                   <SlidersHorizontal size={20} />
                 </button>
-                <button onClick={onSearch} className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-primary-brown text-white hover:opacity-90">
-                  <Search size={18} />
+                <button onClick={onSearch} className="flex h-[42px] px-[1.875rem] py-[0.9375rem] rounded-[62.4375rem] shrink-0 items-center justify-center  bg-primary-brown text-white hover:opacity-90">
+                  <Search size={18} /> Search
                 </button>
               </div>
             </div>
@@ -88,7 +88,7 @@ export const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () =>
                 const isTrend = lbl.endsWith("*");
                 const text = isTrend ? lbl.slice(0, -1) : lbl;
                 return (
-                  <button key={text} onClick={() => addFilter(text)} className="flex items-center gap-1.5 rounded-full border border-gray-100 bg-white px-4 py-2 text-[13px] text-primary-brown hover:bg-white-50">
+                  <button key={text} onClick={() => addFilter(text)} className="flex items-center gap-1.5 rounded-full border border-[#EDE8E4] bg-white px-4 py-2 text-[13px] text-primary-brown hover:bg-white-50">
                     {isTrend && <TrendingUp size={13} className="text-primary-light-brown" />}{text}
                   </button>
                 );

@@ -54,10 +54,19 @@ function Section<T extends { id: string | number }>({
   Card: React.ComponentType<{ item: T }>;
   onViewMore: () => void;
 }) {
+  if (items.length === 0) {
+    return (
+      <div>
+        <h2 className="text-[1.5rem] ml-2 font-medium tracking-tight text-[#342511]">{title}</h2>
+        <p className="mt-2 ml-2 text-sm text-[#8B6F54]">No {title.toLowerCase()} available</p>
+      </div>
+    );
+  }
+
   return (
     <section>
       <div className="flex items-center justify-between py-2">
-        <h2 className="text-[1.5rem] font-medium tracking-tight text-[#342511]">{title}</h2>
+        <h2 className="text-[1.5rem] ml-2 font-medium tracking-tight text-[#342511]">{title}</h2>
         {items.length > 4 && (
           <button
             type="button"
@@ -88,6 +97,7 @@ export default function BrowseView({
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
+  const [commercialProperties, setCommercialProperties] = useState<PublicProperty[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,21 +119,47 @@ export default function BrowseView({
     setError(null);
     const query = propertyQueryToParams(searchParams);
     const serviceSlug = searchParams.get("service_slug") || undefined;
-    const request = resultType === "property" || resultType === "comercial"
-      ? getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
-      : getOrganizations({ type: organizationTypeForResult(resultType, tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
-    request.then((r: any) => {
-      if (!active) return;
-      if (resultType === "property" || resultType === "comercial") { setProperties(r.data); setTotal(r.meta?.pagination?.total ?? r.data.length); }
-      else setOrganizations(r.data);
-    }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
-      .finally(() => { if (active) setLoading(false); });
+
+    if (resultType === "all") {
+      Promise.all([
+        getProperties({ ...query, purpose: query.purpose, verified_only: 1 }),
+        getProperties({ ...query, purpose: query.purpose, category: "commercial", verified_only: 1 }),
+        getOrganizations({ search: query.search, verified_only: 1 })
+      ])
+        .then(([propRes, comRes, orgsRes]: any) => {
+          if (!active) return;
+          setProperties(propRes.data);
+          setCommercialProperties(comRes.data);
+          setOrganizations(orgsRes.data);
+          setTotal(propRes.meta?.pagination?.total ?? propRes.data.length);
+        })
+        .catch((reason: any) => {
+          if (active) setError(reason?.message || "Unable to load results.");
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    } else {
+      const request = resultType === "property" || resultType === "comercial"
+        ? getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
+        : getOrganizations({ type: organizationTypeForResult(resultType, tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+      request.then((r: any) => {
+        if (!active) return;
+        if (resultType === "property" || resultType === "comercial") { setProperties(r.data); setTotal(r.meta?.pagination?.total ?? r.data.length); }
+        else setOrganizations(r.data);
+      }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
+        .finally(() => { if (active) setLoading(false); });
+    }
     return () => { active = false; };
   }, [resultType, searchParams.toString()]);
 
   const builders = organizations.map(organizationToBuilder);
   const traders = organizations.map(organizationToTrader);
   const propertyCards = properties.map(propertyToCard);
+
+  const allTraders = organizations.filter(o => o.type?.slug === "trades-professionals" || (!o.type?.slug && !o.type?.name)).map(organizationToTrader);
+  const allAgenciesAndBuilders = organizations.filter(o => o.type?.slug === "real-estate" || o.type?.slug === "builders").map(organizationToBuilder);
+  const allCommercialCards = commercialProperties.map(propertyToCard);
 
   if (loading) return <p className="py-10 text-center text-sm text-[#8B6F54]">Loading results...</p>;
   if (error) return <p className="rounded-2xl bg-white p-8 text-center text-red-700">{error}</p>;
@@ -136,6 +172,16 @@ export default function BrowseView({
 
   return (
     <>
+      {resultType === "all" && (
+        <>
+          <div className="space-y-12">
+            <Section title="Popular properties" count={propertyCards.length} items={propertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
+            <Section title="Trades and professionals" count={allTraders.length} items={allTraders} Card={TraderGridCard} onViewMore={() => onViewMore("popular")} />
+            <Section title="Agencies and builders" count={allAgenciesAndBuilders.length} items={allAgenciesAndBuilders} Card={BuilderGridCard} onViewMore={() => onViewMore("popular")} />
+            <Section title="Commercial properties" count={allCommercialCards.length} items={allCommercialCards} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
+          </div>
+        </>
+      )}
       {resultType === "trader" && (
         <>
           <Section title="Popular Professionals" count={traders.length} items={traders.slice(0, 4)} Card={TraderGridCard} onViewMore={() => onViewMore("popular")} />
