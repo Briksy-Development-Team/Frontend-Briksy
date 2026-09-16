@@ -11,18 +11,26 @@ export type PublicProperty = {
   status: string | null;
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   price?: number | null;
+
   property_type?: {
     name: string;
     slug?: string;
     category?: string | null;
   } | null;
+
   land_area_sqm?: number | null;
   car_space_option?: string | null;
-  features?: { name: string; slug: string }[];
+
+  features?: {
+    name: string;
+    slug: string;
+  }[];
+
   rating: number;
   bedroom_option?: string | null;
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;
+
   location: {
     suburb: string | null;
     postcode: string | null;
@@ -30,6 +38,7 @@ export type PublicProperty = {
     longitude: number | null;
     state?: string | null;
   };
+
   organization?: {
     id: string | null;
     name: string | null;
@@ -38,25 +47,50 @@ export type PublicProperty = {
     banner_url?: string | null;
     is_verified: boolean;
   } | null;
+
   media?: {
     url: string | null;
     type: "image" | "video";
     is_primary: boolean;
   }[];
-  images?: { url: string | null; is_primary: boolean }[];
-  videos?: { url: string | null; is_primary: boolean }[];
+
+  images?: {
+    url: string | null;
+    is_primary: boolean;
+  }[];
+
+  videos?: {
+    url: string | null;
+    is_primary: boolean;
+  }[];
 };
 
 export const getProperties = async (
   params: Record<string, string | number | boolean | string[] | undefined> = {},
-) =>
-  (
-    await api.get<ApiPage<PublicProperty>>("/seeker/properties", {
-      params: { per_page: 24, ...params },
-    })
-  ).data;
+) => {
+  const response = await api.get<ApiPage<PublicProperty>>(
+    "/seeker/properties",
+    {
+      params: {
+        per_page: 24,
+        ...params,
+      },
+    },
+  );
+
+  console.log("Properties API response:", response.data);
+
+  return response.data;
+};
 
 export const getProperty = async (
   id: string,
-): Promise<{ data: PublicProperty }> =>
-  (await api.get<{ data: PublicProperty }>(`/seeker/properties/${id}`)).data;
+): Promise<{ data: PublicProperty }> => {
+  const response = await api.get<{ data: PublicProperty }>(
+    `/seeker/properties/${id}`,
+  );
+
+  console.log("Single Property API response:", response.data);
+
+  return response.data;
+};
