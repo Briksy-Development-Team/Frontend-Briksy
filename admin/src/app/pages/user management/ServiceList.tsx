@@ -26,7 +26,7 @@ import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 import ServiceMapPage from "../platform/ServiceMapPage";
 import { useToast } from "../../services/ui/toast/useToast";
 
-const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
+const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onBulkDelete?: (ids: string[]) => void }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
@@ -100,6 +100,11 @@ const ServiceListPage = ({ rowActions }: { rowActions?: any[] }) => {
             }] : []),
         ] : []}
                 rowActions={rowActions}
+                bulkActions={(ids) => onBulkDelete ? [{
+                    label: "Delete",
+                    permission: "service.delete",
+                    onClick: () => onBulkDelete(ids.map(String)),
+                }] : []}
             />
 
             {isImportOpen && (
@@ -127,6 +132,7 @@ const ServiceListPageWrapper = () => {
         deleteModalOpen,
         deletingService,
     } = useSelector((s: RootState) => s.services);
+    const [bulkDeleteIds, setBulkDeleteIds] = useState<string[]>([]);
 
     const rowActions = canManage
         ? [
@@ -147,7 +153,7 @@ const ServiceListPageWrapper = () => {
     return (
         <>
             <Routes>
-                <Route index element={<ServiceListPage rowActions={rowActions} />} />
+                <Route index element={<ServiceListPage rowActions={rowActions} onBulkDelete={setBulkDeleteIds} />} />
                 <Route path="map" element={<ServiceMapPage />} />
                 <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} />} />
                 <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
@@ -174,6 +180,19 @@ const ServiceListPageWrapper = () => {
                     message={`Are you sure you want to delete "${deletingService.name}"?`}
                     onClose={() => dispatch(closeDeleteServiceModal())}
                     onConfirm={() => dispatch(deleteService(deletingService.id))}
+                    isSubmitting={saving}
+                />
+            )}
+
+            {canManage && bulkDeleteIds.length > 0 && (
+                <DeleteConfirmModal
+                    title="Delete Services"
+                    message={`Are you sure you want to delete ${bulkDeleteIds.length} selected service${bulkDeleteIds.length === 1 ? "" : "s"}?`}
+                    onClose={() => setBulkDeleteIds([])}
+                    onConfirm={async () => {
+                        await Promise.all(bulkDeleteIds.map((id) => dispatch(deleteService(id)).unwrap()));
+                        setBulkDeleteIds([]);
+                    }}
                     isSubmitting={saving}
                 />
             )}

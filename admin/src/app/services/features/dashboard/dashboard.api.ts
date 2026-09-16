@@ -85,6 +85,7 @@ export type AdminDashboardSummary = {
     recent_title: string;
   };
   capabilities?: Record<string, boolean>;
+  service_area_limit?: number | null;
   organization: {
     id: string;
     name: string;

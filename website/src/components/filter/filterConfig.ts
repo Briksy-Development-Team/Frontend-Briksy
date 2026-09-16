@@ -1,4 +1,4 @@
-import type { PriceRangeTab } from "../primitives/PriceRange";
+import type { PriceRangeTab } from "./primitives/PriceRange";
 
 /* ─── field type definitions ─── */
 

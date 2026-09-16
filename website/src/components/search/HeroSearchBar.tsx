@@ -259,7 +259,6 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
               ? "Traders"
               : "Buy"
         }
-        agentCategory=""
       />
     </div>
   );

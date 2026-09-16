@@ -6,10 +6,10 @@ import Paginations from "./components/Pagination";
 import { exportToExcel } from "../utils/exportToExcel";
 import type { ReactNode } from "react";
 import type { RowAction } from "./table/EntityTable";
-import type { AddAction } from "./components/header/EntityHeader";
+import type { AddAction, BulkAction } from "./components/header/EntityHeader";
 import ExportModal from "../utils/ExportModal";
 
-export type { RowAction, AddAction };
+export type { RowAction, AddAction, BulkAction };
 
 export type Column<T> = {
   Header: string;
@@ -39,6 +39,7 @@ type Props<T extends { id: number | string }> = {
   getRowLink?: (row: T) => string;
   storageKey?: string;
   headerActions?: AddAction[];
+  bulkActions?: (selectedIds: T["id"][]) => BulkAction[];
   rowActions?: RowAction<T>[];
   onExportAll?: () => Promise<T[]>;
 };
@@ -54,6 +55,7 @@ const EntityList = <T extends { id: number | string }>({
   getRowLink,
   storageKey = "visibleColumns",
   headerActions,
+  bulkActions,
   rowActions,
   onExportAll,
 }: Props<T>) => {
@@ -118,6 +120,7 @@ const EntityList = <T extends { id: number | string }>({
       columns
     );
   };
+  const selectedBulkActions = bulkActions ? bulkActions(Array.from(selectedRows)) : undefined;
   return (
     <div className="d-flex gap-5">
       <div className="flex-grow-1" style={{ minWidth: 0 }}>
@@ -142,6 +145,7 @@ const EntityList = <T extends { id: number | string }>({
               })
             }
             headerActions={headerActions}
+            bulkActions={selectedBulkActions}
             filtersConfig={filtersConfig}
             onFilterChange={(filters) =>
               onParamsChange({ ...params, filters, page: 1 })
@@ -185,4 +189,3 @@ const EntityList = <T extends { id: number | string }>({
 };
 
 export { EntityList };
-

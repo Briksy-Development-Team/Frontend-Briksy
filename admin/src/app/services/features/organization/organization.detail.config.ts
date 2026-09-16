@@ -15,8 +15,10 @@ const getRelatedFilters = (data: any, filters?: Record<string, unknown>) => ({
   organization_id: getOrganizationId(data),
 });
 
-const isSoloTrader = (data: any) =>
-  data?.business_type === "solo_trader" || data?.type?.slug === "solo-traders";
+const isServiceOrganization = (data: any) =>
+  data?.type?.slug === "trades-professionals" ||
+  data?.business_type === "solo_trader" ||
+  data?.type?.slug === "solo-traders";
 
 const getOrganizationSubtitle = (data: any) =>
   data?.type?.name ?? data?.business_type ?? data?.slug ?? "Organization";
@@ -92,8 +94,8 @@ export const organizationDetailConfig: DetailConfig<any> = {
         valueAccessor: getStaffMetric,
       },
       {
-        label: (data) => (isSoloTrader(data) ? "Total Services" : "Total Properties"),
-        valueAccessor: (data) => (isSoloTrader(data) ? getServiceMetric(data) : getPropertyMetric(data)),
+        label: (data) => (isServiceOrganization(data) ? "Total Services" : "Total Properties"),
+        valueAccessor: (data) => (isServiceOrganization(data) ? getServiceMetric(data) : getPropertyMetric(data)),
       },
     ],
   },
@@ -112,13 +114,13 @@ export const organizationDetailConfig: DetailConfig<any> = {
       id: "properties",
       label: "Properties",
       sections: ["properties_table"],
-      showIf: (data) => !isSoloTrader(data),
+      showIf: (data) => !isServiceOrganization(data),
     },
     {
       id: "services",
       label: "Services",
       sections: ["services_table"],
-      showIf: (data) => isSoloTrader(data),
+      showIf: (data) => isServiceOrganization(data),
     },
   ],
   sections: [
@@ -179,7 +181,7 @@ export const organizationDetailConfig: DetailConfig<any> = {
       type: "table",
       title: "Properties",
       gridColumnSpan: 12,
-      showIf: (data) => !isSoloTrader(data),
+      showIf: (data) => !isServiceOrganization(data),
       fetchFn: (params, data) => {
         const organizationId = getOrganizationId(data);
 
@@ -227,7 +229,7 @@ export const organizationDetailConfig: DetailConfig<any> = {
       type: "table",
       title: "Services",
       gridColumnSpan: 12,
-      showIf: (data) => isSoloTrader(data),
+      showIf: (data) => isServiceOrganization(data),
       fetchFn: (params, data) => {
         const organizationId = getOrganizationId(data);
 

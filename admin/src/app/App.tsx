@@ -5,6 +5,7 @@ import { LayoutProvider, LayoutSplashScreen } from '../_metronic/layout/core'
 import { MasterInit } from '../_metronic/layout/MasterInit'
 import { ThemeModeProvider } from '../_metronic/partials'
 import { ToastProvider } from './services/ui/toast/ToastProvider'
+import { SubscriptionGate } from './modules/subscription/SubscriptionGate'
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
           <ThemeModeProvider>
             <ToastProvider>
               <Outlet />
+              <SubscriptionGate />
               <MasterInit />
             </ToastProvider>
           </ThemeModeProvider>

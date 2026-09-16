@@ -5,6 +5,20 @@ import type { ServiceList, ServiceFormValues, ServiceCategory } from "../service
 import { deleteServiceMediaApi } from "../service_list.api";
 import { ServiceAreaGeometryEditor } from "./ServiceAreaGeometryEditor";
 import type { ServiceAreaGeometry } from "../serviceAreaGeometry";
+import { fetchAdminDashboardSummary } from "../../dashboard/dashboard.api";
+import { useRoleAccess } from "../../../../modules/auth";
+
+const SERVICE_AREA_OPTIONS = [
+    "Australia-wide",
+    "Australian Capital Territory",
+    "New South Wales",
+    "Northern Territory",
+    "Queensland",
+    "South Australia",
+    "Tasmania",
+    "Victoria",
+    "Western Australia",
+];
 
 type Props = {
     initialValues?: ServiceList | null;
@@ -19,10 +33,14 @@ const ServiceModal = ({
     onClose,
     onSubmit,
 }: Props) => {
+    const { isSuperAdmin } = useRoleAccess();
     const [images, setImages] = useState<File[]>([]);
     const [videos, setVideos] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState(initialValues?.images ?? []);
     const [existingVideos, setExistingVideos] = useState(initialValues?.videos ?? []);
+    const [serviceAreaEnabled, setServiceAreaEnabled] = useState(isSuperAdmin);
+    const [serviceAreaLimit, setServiceAreaLimit] = useState<number | null>(null);
+    const [serviceAreasUsed, setServiceAreasUsed] = useState<number | null>(null);
     const [form, setForm] = useState<ServiceFormValues>({
         name: initialValues?.name ?? "",
         slug: initialValues?.slug ?? initialValues?.category ?? "",
@@ -52,6 +70,29 @@ const ServiceModal = ({
         setExistingImages(initialValues?.images ?? []);
         setExistingVideos(initialValues?.videos ?? []);
     }, [initialValues]);
+
+    useEffect(() => {
+        if (isSuperAdmin) {
+            setServiceAreaEnabled(true);
+            return;
+        }
+
+        let active = true;
+        void fetchAdminDashboardSummary()
+            .then((summary) => {
+                if (!active) return;
+                setServiceAreaEnabled(Boolean(summary.capabilities?.service_areas));
+                setServiceAreaLimit(summary.service_area_limit ?? null);
+                setServiceAreasUsed(summary.metrics.service_regions ?? 0);
+            })
+            .catch(() => {
+                if (active) setServiceAreaEnabled(false);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [isSuperAdmin]);
 
     return (
         <ModalShell
@@ -146,8 +187,10 @@ const ServiceModal = ({
                 <label className="form-label">Service Area</label>
 
                 <input
+                    list="briksy-service-area-options"
                     className="form-control form-control-solid"
                     value={form.service_area ?? ""}
+                    disabled={!serviceAreaEnabled}
                     onChange={(e) =>
                         setForm((prev) => ({
                             ...prev,
@@ -155,6 +198,17 @@ const ServiceModal = ({
                         }))
                     }
                 />
+                <datalist id="briksy-service-area-options">
+                    {SERVICE_AREA_OPTIONS.map((option) => <option value={option} key={option} />)}
+                </datalist>
+                {!serviceAreaEnabled ? (
+                    <div className="form-text text-warning">Service area coverage is not included in your current plan.</div>
+                ) : (
+                    <div className="form-text">
+                        Choose a suggested region or enter a custom area.
+                        {serviceAreaLimit !== null ? ` ${serviceAreasUsed ?? 0} of ${serviceAreaLimit} areas used.` : ""}
+                    </div>
+                )}
             </div>
 
             <div className="fv-row mt-6">
@@ -189,16 +243,20 @@ const ServiceModal = ({
 
             <div className="fv-row mt-6">
                 <label className="form-label">Service Area Coverage</label>
-                <ServiceAreaGeometryEditor
-                    value={form.service_area_geometry ?? null}
-                    addressHint={form.service_area ?? null}
-                    onChange={(geometry: ServiceAreaGeometry | null) =>
-                        setForm((prev) => ({
-                            ...prev,
-                            service_area_geometry: geometry,
-                        }))
-                    }
-                />
+                {serviceAreaEnabled ? (
+                    <ServiceAreaGeometryEditor
+                        value={form.service_area_geometry ?? null}
+                        addressHint={form.service_area ?? null}
+                        onChange={(geometry: ServiceAreaGeometry | null) =>
+                            setForm((prev) => ({
+                                ...prev,
+                                service_area_geometry: geometry,
+                            }))
+                        }
+                    />
+                ) : (
+                    <div className="alert alert-light-warning mb-0">Upgrade your plan to add or change service coverage.</div>
+                )}
             </div>
 
             <div className="row mt-6">

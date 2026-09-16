@@ -52,4 +52,15 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const response = error?.response;
+    if (response?.status === 403 && response.data?.code === "subscription_required") {
+      window.dispatchEvent(new CustomEvent("briksy:subscription-required", { detail: { message: response.data?.message } }));
+    }
+    return Promise.reject(error);
+  },
+);
+
 export default axiosInstance;

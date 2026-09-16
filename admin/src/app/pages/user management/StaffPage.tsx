@@ -54,7 +54,7 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
   if (error) return (
     <Content>
       <PageHeader
-        title={isSuperAdmin ? "Platform Staff" : "User Management"}
+        title={isSuperAdmin ? "Platform Staff" : "Staff Management"}
         subtitle={isSuperAdmin ? "Manage platform staff access and permissions" : "Manage company users"}
       />
       <div className="alert alert-danger">{error}</div>
@@ -64,7 +64,7 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
   return (
     <Content>
       <PageHeader
-        title={isSuperAdmin ? "Platform Staff" : "User Management"}
+        title={isSuperAdmin ? "Platform Staff" : "Staff Management"}
         subtitle={isSuperAdmin ? "Manage platform staff access and permissions" : "Manage company users"}
       />
 

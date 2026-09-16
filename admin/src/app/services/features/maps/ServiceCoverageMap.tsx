@@ -27,7 +27,10 @@ const ServiceCoverageMap = ({ services, onRegionClick, height = 640 }: Props) =>
   const shapeRefs = useRef<Map<string, any>>(new Map());
   const geocoderRef = useRef<any>(null);
 
-  const validServices = useMemo(() => services.filter((service) => !!service.name), [services]);
+  const validServices = useMemo(() => services.filter((service) => {
+    if (!service.name) return false;
+    return geometryToPath(service.service_area_geometry).length >= 3 || Boolean(service.service_area?.trim());
+  }), [services]);
 
   useEffect(() => {
     let active = true;

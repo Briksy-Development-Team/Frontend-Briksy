@@ -49,8 +49,8 @@ const PropertyDetail = () => {
     subtitle: [propertyData.bedroom_option, propertyData.bathroom_option, propertyData.car_space_option].filter(Boolean).join(" • "),
     images: (() => {
       const media = (propertyData.media?.length ? propertyData.media : [
-        ...(propertyData.images || []).map((item) => ({ ...item, id: item.id, type: 'image' as const })),
-        ...(propertyData.videos || []).map((item) => ({ ...item, id: item.id, type: 'video' as const })),
+        ...(propertyData.images || []).map((item, index) => ({ ...item, id: `image-${index}`, type: 'image' as const })),
+        ...(propertyData.videos || []).map((item, index) => ({ ...item, id: `video-${index}`, type: 'video' as const })),
       ]);
       return media
         .filter((item, index, all) => item.url && all.findIndex((candidate) => candidate.id ? candidate.id === item.id : candidate.url === item.url) === index)

@@ -66,6 +66,8 @@ function RangeSection({ field, set }: { field: RangeField; set: (k: string, v: u
 }
 
 function MinMaxSection({ field, values, set }: { field: MinMaxField; values: Values; set: (k: string, v: unknown) => void }) {
+  const maxKey = field.maxKey;
+
   return (
     <div className="flex gap-4">
       <div className="flex-1">
@@ -78,14 +80,14 @@ function MinMaxSection({ field, values, set }: { field: MinMaxField; values: Val
           className="w-full rounded-lg border border-[#ddd] px-4 py-2.5 text-[14px] outline-none transition-colors focus:border-[#3D2C1D]"
         />
       </div>
-      {field.maxKey && (
+      {maxKey && (
         <div className="flex-1">
           <label className="mb-1.5 block text-[13px] text-gray-500">Max</label>
           <input
             type="text"
             placeholder="Any"
-            value={values[field.maxKey] ?? ""}
-            onChange={(e) => set(field.maxKey, e.target.value)}
+            value={values[maxKey] ?? ""}
+            onChange={(e) => set(maxKey, e.target.value)}
             className="w-full rounded-lg border border-[#ddd] px-4 py-2.5 text-[14px] outline-none transition-colors focus:border-[#3D2C1D]"
           />
         </div>

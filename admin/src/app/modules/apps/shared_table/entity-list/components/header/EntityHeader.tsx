@@ -12,6 +12,13 @@ export type AddAction = {
   permission?: string;
 };
 
+export type BulkAction = {
+  label: string;
+  onClick: () => void;
+  permission?: string;
+  className?: string;
+};
+
 type Col = {
   accessor: ColumnKey;
   Header: string;
@@ -30,6 +37,7 @@ type Props = {
   selectedCount?: number;
   onSortChange: (config: { key: ColumnKey; direction: "asc" | "desc" }) => void;
   headerActions?: AddAction[];
+  bulkActions?: BulkAction[];
   filtersConfig?: any;
   onFilterChange?: (filters: Record<string, any>) => void;
 };
@@ -45,12 +53,15 @@ const EntityHeader = ({
   selectedCount = 0,
   onSortChange,
   headerActions,
+  bulkActions,
   filtersConfig,
   onFilterChange
 }: Props) => {
   const { hasPermission } = usePermissionAccess();
   const visibleHeaderActions =
     headerActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
+  const visibleBulkActions =
+    bulkActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
 
   return (
   <div className="card-header border-0 pt-6 d-flex justify-content-between">
@@ -106,6 +117,22 @@ const EntityHeader = ({
         >
           <KTIcon iconName='plus' className='fs-2' />
           {action.label}
+        </button>
+      ))}
+
+      {selectedCount > 0 && visibleBulkActions.map((action) => (
+        <button
+          key={action.label}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            action.onClick();
+          }}
+          className={`btn ${action.className ?? "btn-light-danger"} d-flex align-items-center gap-2`}
+        >
+          <KTIcon iconName="trash" className="fs-2" />
+          {action.label}
+          <span className="ms-1">{selectedCount}</span>
         </button>
       ))}
     </div>
