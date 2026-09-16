@@ -131,6 +131,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
       id: "video_gallery",
       type: "gallery",
       title: "Video Gallery",
+      mediaType: "video",
       gridColumnSpan: 12,
       imagesAccessor: (data) => (Array.isArray(data?.videos) ? data.videos.map((video: any) => video.url).filter(Boolean) : []),
     },

@@ -18,6 +18,7 @@ const BuilderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [builder, setBuilder] = useState<PublicOrganization | null>(null);
   const [homes, setHomes] = useState<any[]>([]);
+  const [propertyCount, setPropertyCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +43,7 @@ const BuilderDetail = () => {
         if (!active) return;
         setBuilder(organizationResponse.data);
         setHomes(propertyResponse.data.map(propertyToCard));
+        setPropertyCount(propertyResponse.meta?.pagination?.total ?? propertyResponse.data.length);
       })
       .catch((reason: HttpLikeError) => { if (active) setError(reason?.response?.status === 404 ? "This organisation was not found." : "Unable to load this organisation."); })
       .finally(() => { if (active) setLoading(false); });
@@ -69,7 +71,7 @@ const BuilderDetail = () => {
 
   return <div className="min-h-screen mt-20 font-helvetica flex flex-col"><main className="flex-1 w-full px-[5%] py-6">
     <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4"><Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Find a builder", isBack: true }, { label: builder.name }]} /><div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0"><button className="flex items-center gap-2 hover:opacity-70 transition"><Share size={18} /> Share</button><FavoriteButton variant="inline" showText iconSize={18} className="hover:opacity-70 transition text-primary-brown" /></div></div>
-    <div className="flex flex-col lg:flex-row gap-10 items-start relative"><div className="flex-1 min-w-0 flex flex-col gap-10 w-full"><BuilderHeader builder={viewModel} /><div className="flex flex-col gap-16"><div id="homes"><BuilderHomes homes={homes} description={`${homes.length} published properties for ${builder.name}.`} /></div><div id="about"><BuilderAbout about={viewModel.about} /></div></div></div><aside className="w-full lg:w-[25%] shrink-0 lg:sticky lg:top-32"><BuilderSidebar name={builder.name} /></aside></div>
+    <div className="flex flex-col lg:flex-row gap-10 items-start relative"><div className="flex-1 min-w-0 flex flex-col gap-10 w-full"><BuilderHeader builder={viewModel} /><div className="flex flex-col gap-16"><div id="homes"><BuilderHomes homes={homes} propertiesHref={`/search?tab=properties&organization_slug=${encodeURIComponent(builder.slug || '')}`} description={`${propertyCount} published propert${propertyCount === 1 ? 'y' : 'ies'} for ${builder.name}.`} /></div><div id="about"><BuilderAbout about={viewModel.about} /></div></div></div><aside className="w-full lg:w-[25%] shrink-0 lg:sticky lg:top-32"><BuilderSidebar name={builder.name} /></aside></div>
   </main></div>;
 };
 

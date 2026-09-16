@@ -64,6 +64,12 @@ type PropertyApi = {
     id?: string;
     url: string;
   }[];
+  features?: {
+    id: string;
+    name: string;
+    slug: string;
+    group_id?: string;
+  }[];
   organization?: {
     id: string;
     name: string;
@@ -127,6 +133,7 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   briksy_exclusive_offers: item.briksy_exclusive_offers ?? [],
   images: item.images ?? [],
   videos: item.videos ?? [],
+  features: item.features ?? [],
   organization: item.organization ?? null,
   creator: item.creator ?? null,
   timeline_events: item.timeline_events ?? [],
@@ -172,6 +179,7 @@ export const mapProperty = (item: PropertyApi): Property => ({
   rating: item.rating,
   images: item.images ?? [],
   videos: item.videos ?? [],
+  features: item.features ?? [],
   organization: item.organization ?? null,
   creator: item.creator ?? null,
   timeline_events: item.timeline_events ?? [],

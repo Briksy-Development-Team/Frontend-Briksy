@@ -62,8 +62,8 @@ const PropertyMapPopup = ({ property, portalBase, onClose }: Props) => {
             <div className="text-muted fs-7 text-truncate">{property.property_number}</div>
           </div>
 
-          <button type="button" className="btn btn-sm btn-light btn-icon" onClick={onClose} aria-label="Close property popup">
-            <i className="bi bi-x-lg" />
+          <button type="button" className="btn btn-sm p-0 border-0 bg-transparent" style={{ width: 32, height: 32, color: "#172033", fontSize: 26, lineHeight: 1 }} onClick={onClose} aria-label="Close property popup">
+            <span aria-hidden="true">×</span>
           </button>
         </div>
 

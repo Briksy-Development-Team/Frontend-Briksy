@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules";
 import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
+import { Link } from 'react-router-dom';
 
 export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
   const formatMoney = (val: number) => `$${val / 1000}k`;
@@ -65,7 +66,7 @@ export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
   );
 }
 
-export function BuilderHomes({ homes, description }: { homes: any[]; description?: string }) {
+export function BuilderHomes({ homes, description, propertiesHref }: { homes: any[]; description?: string; propertiesHref?: string }) {
   return (
     <div className="flex flex-col items-start justify-start gap-6 overflow-hidden">
       <div className="flex flex-col gap-2">
@@ -100,9 +101,9 @@ export function BuilderHomes({ homes, description }: { homes: any[]; description
         ))}
       </Swiper>
       <div>
-        <button className="bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
+        <Link to={propertiesHref || '/search?tab=properties'} className="inline-block bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
           Show all Properties
-        </button>
+        </Link>
       </div>
     </div>
   );

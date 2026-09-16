@@ -113,8 +113,9 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     };
   }, [dispatch, searchParams, setSearchParams]);
 
-  const { params, handleParamsChange } = useEntityTable((p) =>
-    dispatch(fetchPropertyList(p)),
+  const { params, handleParamsChange } = useEntityTable(
+    (p) => dispatch(fetchPropertyList(p)),
+    { sort: "created_at", direction: "desc" },
   );
 
   useEffect(() => {

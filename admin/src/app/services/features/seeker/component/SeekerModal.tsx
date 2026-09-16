@@ -17,6 +17,7 @@ const SeekerModal = ({ initialValues, isSubmitting, onClose, onSubmit }: Props) 
     mobile_number: initialValues?.mobile_number ?? "",
     password: "",
     password_confirmation: "",
+    admin_notes: initialValues?.admin_notes ?? "",
   });
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const SeekerModal = ({ initialValues, isSubmitting, onClose, onSubmit }: Props) 
       mobile_number: initialValues?.mobile_number ?? "",
       password: "",
       password_confirmation: "",
+      admin_notes: initialValues?.admin_notes ?? "",
     });
   }, [initialValues]);
 
@@ -39,6 +41,10 @@ const SeekerModal = ({ initialValues, isSubmitting, onClose, onSubmit }: Props) 
       submitLabel={initialValues ? "Update Seeker" : "Create Seeker"}
       isValid={!!form.name && !!form.email}
     >
+      <div className="fv-row mb-4">
+        <label className="form-label">Internal Notes</label>
+        <textarea className="form-control form-control-solid" rows={4} value={form.admin_notes ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, admin_notes: e.target.value }))} placeholder="Add internal notes" />
+      </div>
       <div className="fv-row mb-4">
         <label className="form-label required">Name</label>
         <input className="form-control form-control-solid" value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} />

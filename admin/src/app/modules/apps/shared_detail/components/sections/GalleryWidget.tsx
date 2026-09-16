@@ -20,7 +20,7 @@ export default function GalleryWidget<T>({ config, data }: Props<T>) {
           </h3>
         </div>
         <div className="card-body pt-5 text-center text-muted">
-          No images available.
+          No {config.mediaType === "video" ? "videos" : "images"} available.
         </div>
       </div>
     );
@@ -35,17 +35,18 @@ export default function GalleryWidget<T>({ config, data }: Props<T>) {
       </div>
       <div className="card-body pt-5">
         <div className="row g-5">
-          {images.map((imgUrl: string, idx: number) => (
+          {images.map((mediaUrl: string, idx: number) => (
             <div key={idx} className="col-4 col-md-3 col-xl-2">
-              <a className="d-block overlay" data-fslightbox="lightbox-basic" href={imgUrl}>
-                <div
-                  className="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-100px"
-                  style={{ backgroundImage: `url(${imgUrl})` }}
-                ></div>
-                <div className="overlay-layer card-rounded bg-dark bg-opacity-25 shadow">
-                  <i className="bi bi-eye-fill text-white fs-3x"></i>
-                </div>
-              </a>
+              {config.mediaType === "video" ? (
+                <video src={mediaUrl} controls preload="metadata" className="w-100 rounded border bg-dark" style={{ height: 110, objectFit: "cover" }} />
+              ) : (
+                <a className="d-block overlay" data-fslightbox="lightbox-basic" href={mediaUrl}>
+                  <div className="overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded min-h-100px" style={{ backgroundImage: `url(${mediaUrl})` }} />
+                  <div className="overlay-layer card-rounded bg-dark bg-opacity-25 shadow">
+                    <i className="bi bi-eye-fill text-white fs-3x" />
+                  </div>
+                </a>
+              )}
             </div>
           ))}
         </div>

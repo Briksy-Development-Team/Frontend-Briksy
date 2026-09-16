@@ -162,9 +162,9 @@ const ServiceModal = ({
                 {existingImages.length > 0 && (
                     <div className="d-flex flex-wrap gap-2 mb-3">
                         {existingImages.map((media) => (
-                            <div className="border rounded p-2" key={media.id ?? media.url}>
+                            <div className="border rounded p-2 position-relative" key={media.id ?? media.url}>
                                 <img src={media.url} alt="Service" style={{ width: 96, height: 72, objectFit: "cover" }} />
-                                {media.id && <button type="button" className="btn btn-sm btn-link text-danger d-block" onClick={() => deleteServiceMediaApi(media.id!).then(() => setExistingImages((items) => items.filter((item) => item.id !== media.id)))}>Remove</button>}
+                                {media.id && <button type="button" className="btn btn-sm btn-light-danger btn-icon position-absolute top-0 end-0 m-2" aria-label="Remove image" onClick={() => deleteServiceMediaApi(media.id!).then(() => setExistingImages((items) => items.filter((item) => item.id !== media.id)))}><span className="fw-bold fs-3" aria-hidden="true">×</span></button>}
                             </div>
                         ))}
                     </div>
@@ -179,7 +179,7 @@ const ServiceModal = ({
                         {existingVideos.map((media) => (
                             <div key={media.id ?? media.url} className="d-flex align-items-center gap-2">
                                 <a href={media.url} target="_blank" rel="noreferrer">Existing video</a>
-                                {media.id && <button type="button" className="btn btn-sm btn-link text-danger" onClick={() => deleteServiceMediaApi(media.id!).then(() => setExistingVideos((items) => items.filter((item) => item.id !== media.id)))}>Remove</button>}
+                                {media.id && <button type="button" className="btn btn-sm btn-light-danger btn-icon" aria-label="Remove video" onClick={() => deleteServiceMediaApi(media.id!).then(() => setExistingVideos((items) => items.filter((item) => item.id !== media.id)))}><span className="fw-bold fs-3" aria-hidden="true">×</span></button>}
                             </div>
                         ))}
                     </div>

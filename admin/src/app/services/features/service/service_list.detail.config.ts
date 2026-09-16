@@ -41,7 +41,7 @@ export const serviceDetailConfig: DetailConfig<any> = {
     {
       id: "gallery",
       label: "Gallery",
-      sections: ["service_gallery"],
+      sections: ["service_gallery", "service_video_gallery"],
     },
     {
       id: "inquiries",
@@ -88,10 +88,20 @@ export const serviceDetailConfig: DetailConfig<any> = {
     {
       id: "service_gallery",
       type: "gallery",
-      title: "Gallery",
+      title: "Image Gallery",
       gridColumnSpan: 12,
       imagesAccessor: (data) => (data?.images ?? [])
         .map((image: any) => typeof image === "string" ? image : image?.url)
+        .filter(Boolean),
+    },
+    {
+      id: "service_video_gallery",
+      type: "gallery",
+      title: "Video Gallery",
+      mediaType: "video",
+      gridColumnSpan: 12,
+      imagesAccessor: (data) => (data?.videos ?? [])
+        .map((video: any) => typeof video === "string" ? video : video?.url)
         .filter(Boolean),
     },
     {
