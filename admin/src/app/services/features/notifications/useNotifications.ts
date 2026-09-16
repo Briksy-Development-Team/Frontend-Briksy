@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useRoleAccess } from "../../../modules/auth";
+import { useAuth, useRoleAccess } from "../../../modules/auth";
 import {
   deleteNotificationApi,
   fetchNotificationPreferencesApi,
@@ -16,8 +16,11 @@ type NotificationFilter = "all" | "unread" | "high";
 
 export const useNotifications = () => {
   const { isSuperAdmin } = useRoleAccess();
+  const { auth, currentUser } = useAuth();
   const toast = useToast();
   const scope = isSuperAdmin ? "super-admin" : "admin";
+  const subscriptionStatus = currentUser?.subscription?.status ?? auth?.user?.subscription?.status;
+  const subscriptionBlocked = !isSuperAdmin && Boolean(subscriptionStatus && !["active", "trialing"].includes(subscriptionStatus));
 
   const [items, setItems] = useState<PlatformNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -31,6 +34,14 @@ export const useNotifications = () => {
   const [lastPage, setLastPage] = useState(1);
 
   const load = async (nextFilter = filter, nextSearch = search, nextPage = page) => {
+    if (subscriptionBlocked) {
+      setItems([]);
+      setUnreadCount(0);
+      setPreferences(null);
+      setError(null);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -60,10 +71,14 @@ export const useNotifications = () => {
   };
 
   useEffect(() => {
+    if (subscriptionBlocked) {
+      void load();
+      return;
+    }
     void load();
     const interval = window.setInterval(() => void fetchUnreadCountApi(scope).then(setUnreadCount).catch(() => undefined), 60000);
     return () => window.clearInterval(interval);
-  }, [scope]);
+  }, [scope, subscriptionBlocked]);
 
   const refresh = () => void load(filter, search, page);
 

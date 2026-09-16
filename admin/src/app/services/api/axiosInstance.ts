@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     const response = error?.response;
-    if (response?.status === 403 && response.data?.code === "subscription_required") {
+    if ((response?.status === 402 || response?.status === 403) && response.data?.code === "subscription_required") {
       window.dispatchEvent(new CustomEvent("briksy:subscription-required", { detail: { message: response.data?.message } }));
     }
     return Promise.reject(error);

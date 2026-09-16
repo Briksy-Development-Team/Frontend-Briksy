@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { PageTitle } from "../../../_metronic/layout/core";
 import { ToolbarWrapper } from "../../../_metronic/layout/components/toolbar";
 import { Content } from "../../../_metronic/layout/components/content";
-import { useRoleAccess } from "../../modules/auth";
+import { useAuth, useRoleAccess } from "../../modules/auth";
 import {
   fetchAdminDashboardSummary,
   fetchSuperAdminDashboardSummary,
@@ -63,6 +63,9 @@ const downloadCsv = (filename: string, headers: string[], rows: Array<Array<unkn
 
 const DashboardPage: FC = () => {
   const { roles, isSuperAdmin } = useRoleAccess();
+  const { auth, currentUser } = useAuth();
+  const subscriptionStatus = currentUser?.subscription?.status ?? auth?.user?.subscription?.status;
+  const subscriptionBlocked = !isSuperAdmin && Boolean(subscriptionStatus && !["active", "trialing"].includes(subscriptionStatus));
   const isAgent = roles.includes("admin_staff") && !roles.includes("admin");
   const [summary, setSummary] = useState<SuperAdminDashboardSummary | AdminDashboardSummary | null>(null);
   const [loading, setLoading] = useState(false);
@@ -76,6 +79,12 @@ const DashboardPage: FC = () => {
   });
 
   useEffect(() => {
+    if (subscriptionBlocked) {
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     let active = true;
     setLoading(true);
     setError(null);
@@ -102,7 +111,7 @@ const DashboardPage: FC = () => {
     return () => {
       active = false;
     };
-  }, [isSuperAdmin, filters]);
+  }, [isSuperAdmin, filters, subscriptionBlocked]);
 
   const superAdminSummary = isSuperAdmin ? (summary as SuperAdminDashboardSummary | null) : null;
   const adminSummary = (!isSuperAdmin ? (summary as AdminDashboardSummary | null) : null) as AdminDashboardSummary;

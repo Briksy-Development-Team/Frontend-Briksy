@@ -42,7 +42,7 @@ const SortSelector = ({ columns, onSortChange }: Props) => (
                   onSortChange({ key: col.accessor, direction: dir })
                 }
               >
-                <span>{dir === "asc" ? "Low → High" : "High → Low"}</span>
+                <span>{dir === "asc" ? "Ascending" : "Descending"}</span>
                 <KTIcon
                   iconName={dir === "asc" ? "arrow-up" : "arrow-down"}
                   className="fs-4 text-gray-600"

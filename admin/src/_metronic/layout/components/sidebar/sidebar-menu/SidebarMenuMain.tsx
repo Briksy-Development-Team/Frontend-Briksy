@@ -297,7 +297,7 @@ const SidebarMenuMain = () => {
           {hasPermission("user.view") && (
             <SidebarMenuItem
               to={`${portalBase}/users`}
-              title="User Management"
+              title="Staff Management"
               fontIcon="bi-archive"
               icon="element-plus"
             />

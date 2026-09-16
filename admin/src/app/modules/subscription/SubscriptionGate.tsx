@@ -3,7 +3,7 @@ import { useAuth } from "../auth";
 import { fetchBillingPlansApi, createBillingCheckoutApi } from "../../services/features/billing/billing.api";
 
 const SubscriptionGate = () => {
-  const { currentUser } = useAuth();
+  const { auth, currentUser } = useAuth();
   const [required, setRequired] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -11,7 +11,7 @@ const SubscriptionGate = () => {
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const roles = currentUser?.roles ?? [];
   const isSuperAdmin = roles.includes("super_admin") || roles.includes("super_admin_employee");
-  const subscription = currentUser?.subscription;
+  const subscription = currentUser?.subscription ?? auth?.user?.subscription;
   const expired = subscription?.status === "expired" || subscription?.status === "inactive";
   const shouldShow = !isSuperAdmin && (required || expired) && !window.location.pathname.startsWith("/admin/billing/");
 
