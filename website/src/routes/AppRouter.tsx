@@ -19,6 +19,7 @@ import ProtectedRoute from './ProtectedRoute.tsx'
 import Profile from '../pages/profile/Profile.tsx'
 import BlogsPage from "../pages/blogs/BlogsPage";
 import BlogDetail from "../pages/blogs/BlogDetail";
+import PublicInfoPage from "../pages/static/PublicInfoPage";
 
 const CommercialsRedirect = () => {
   const location = useLocation();
@@ -51,6 +52,12 @@ const AppRouter = () => {
 
         <Route path="/notification" element={<Notification />} />
         <Route path="/help-support" element={<Help />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/company-details" element={<PublicInfoPage kind="about" />} />
+        <Route path="/how-we-verify" element={<PublicInfoPage kind="verification" />} />
+        <Route path="/privacy-policy" element={<PublicInfoPage kind="privacy" />} />
+        <Route path="/cookie-policy" element={<PublicInfoPage kind="cookies" />} />
+        <Route path="/list-your-business" element={<Navigate to="/register" replace />} />
 
         <Route path="/" element={<Home />} />
 

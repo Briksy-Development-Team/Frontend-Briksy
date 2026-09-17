@@ -65,6 +65,11 @@ const PropertyModal = ({
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
 
+    const handleMediaChange = (files: File[]) => {
+        setImages(files.filter((file) => file.type.startsWith("image/")));
+        setVideos(files.filter((file) => file.type.startsWith("video/")));
+    };
+
     useEffect(() => {
         let active = true;
         setFeaturesLoading(true);
@@ -703,18 +708,18 @@ const PropertyModal = ({
 
             {/* Upload Images */}
             <div className="fv-row mb-7">
-                <label className="form-label">Property Photos</label>
+                <label className="form-label">Property Media</label>
 
                 <div className="border border-dashed border-gray-300 rounded p-5">
                     <input
                         type="file"
                         multiple
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp,video/*"
                         className="form-control"
-                        onChange={(e) => setImages(Array.from(e.target.files ?? []))}
+                        onChange={(e) => handleMediaChange(Array.from(e.target.files ?? []))}
                     />
 
-                    <div className="text-muted fs-7 mt-2">Upload one or more photos</div>
+                    <div className="text-muted fs-7 mt-2">Upload images and videos together</div>
                 </div>
 
                 {images.length > 0 && (
@@ -760,29 +765,6 @@ const PropertyModal = ({
                     </div>
                 </>
             ) : null}
-
-            {/* Upload Videos */}
-            <div className="fv-row mb-7">
-                <label className="form-label">Property Videos</label>
-
-                <div className="border border-dashed border-gray-300 rounded p-5">
-                    <input
-                        type="file"
-                        multiple
-                        accept="video/*"
-                        className="form-control"
-                        onChange={(e) => setVideos(Array.from(e.target.files ?? []))}
-                    />
-
-                    <div className="text-muted fs-7 mt-2">Upload property videos</div>
-                </div>
-
-                {videos.length > 0 && (
-                    <div className="text-muted fs-7 mt-2">
-                        {videos.length} video(s) selected
-                    </div>
-                )}
-            </div>
 
             {videoPreviews.length > 0 && (
                 <div className="row g-3">

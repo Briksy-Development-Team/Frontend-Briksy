@@ -276,7 +276,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/services`}
               title="Services Management"
               fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/service.svg"
             />
           )}
 

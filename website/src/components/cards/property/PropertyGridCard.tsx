@@ -31,6 +31,8 @@ const PropertyGridCard = ({ item }: Props) => {
 
         <FavoriteButton
           initialIsFavourite={item.isFavourite}
+          targetId={item.id}
+          targetType="property"
           className="absolute right-4 top-3"
           variant="overlay"
         />

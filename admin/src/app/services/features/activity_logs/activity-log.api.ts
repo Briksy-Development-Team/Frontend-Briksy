@@ -26,6 +26,7 @@ export const fetchActivityLogsApi = async (
   return {
     data: Array.isArray(data) ? (data as ActivityLog[]) : [],
     total: meta?.pagination?.total ?? 0,
+    actions: Array.isArray(meta?.actions) ? meta.actions : [],
   };
 };
 

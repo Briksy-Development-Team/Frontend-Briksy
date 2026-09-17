@@ -33,7 +33,7 @@ const Contact = () => {
           </p>
 
           <div className="flex flex-col md:flex-row items-center gap-4 mt-10">
-            <button onClick={() => navigate("/coming-soon")} className="sm:px-6 sm:py-3 px-3 py-5 w-full md:w-auto text-center   bg-primary-brown text-white rounded-xl text-[1rem] font-medium">
+            <button onClick={() => navigate("/register")} className="sm:px-6 sm:py-3 px-3 py-5 w-full md:w-auto text-center   bg-primary-brown text-white rounded-xl text-[1rem] font-medium">
               List Your Business
             </button>
 

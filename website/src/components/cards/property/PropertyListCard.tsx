@@ -5,8 +5,7 @@ import type { Property } from '../../../types/property'
 import Mappin from '../../../assets/icons/location.svg'
 import { useAuth } from '../../../auth/AuthContext'
 import { storePendingFavoriteAction } from '../../../auth/auth.intent'
-import { isLocalFavorite } from '../../../favorites/localFavorites'
-import { toggleSeekerPropertyFavorite } from '../../../seeker/seeker.api'
+import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
 
 type Props = {
   item: Property
@@ -15,7 +14,7 @@ type Props = {
 const PropertyListCard = ({ item }: Props) => {
   const { isAuthenticated, isSeeker } = useAuth();
   const navigate = useNavigate();
-  const [isFavourite, setIsFavourite] = useState(() => isLocalFavorite(item.id) || item.isFavourite);
+  const [isFavourite, setIsFavourite] = useState(item.isFavourite);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFavouriteClick = async () => {
@@ -31,8 +30,8 @@ const PropertyListCard = ({ item }: Props) => {
 
     try {
       setIsProcessing(true)
-      const result = await toggleSeekerPropertyFavorite(String(item.id))
-      setIsFavourite(result.isFavourite)
+      const result = await toggleSeekerFavorite(String(item.id), 'property')
+      setIsFavourite(result.data.action === 'added')
     } catch (error) {
       console.error('Failed to toggle favourite.', error)
     } finally {

@@ -1,6 +1,4 @@
-import { AxiosError } from 'axios'
 import api from '../clients.api'
-import { toggleLocalFavorite } from '../../favorites/localFavorites'
 import type { ApiEnvelope } from '../../auth/auth.types'
 
 export type FavoriteType = 'property' | 'organization'
@@ -156,14 +154,6 @@ export interface FavoriteToggleResult {
   favorite: FavoriteItem | null
 }
 
-const isMissingFavoriteTargetError = (error: unknown): boolean => {
-  if (!(error instanceof AxiosError)) {
-    return false
-  }
-
-  return error.response?.status === 404 || error.response?.status === 422
-}
-
 export const getSeekerFavorites = async (type?: FavoriteType): Promise<ApiEnvelope<FavoriteItem[]>> => {
   const response = await api.get<ApiEnvelope<FavoriteItem[]>>('/seeker/favorites', {
     params: {
@@ -185,13 +175,14 @@ export const addSeekerFavorite = async (propertyId: string): Promise<void> => {
 }
 
 export const toggleSeekerFavorite = async (
-  propertyId: string
+  targetId: string,
+  type: FavoriteType = 'property'
 ): Promise<ApiEnvelope<{ favorite: FavoriteItem | null; action: 'added' | 'removed' }>> => {
   const response = await api.post<ApiEnvelope<{ favorite: FavoriteItem | null; action: 'added' | 'removed' }>>(
     '/seeker/favorites/toggle',
     {
-      type: 'property',
-      target_id: propertyId,
+      type,
+      target_id: targetId,
     }
   )
 
@@ -199,25 +190,8 @@ export const toggleSeekerFavorite = async (
 }
 
 export const toggleSeekerPropertyFavorite = async (propertyId: string): Promise<FavoriteToggleResult> => {
-  try {
-    const response = await toggleSeekerFavorite(propertyId)
-
-    return {
-      isFavourite: response.data.action === 'added',
-      source: 'backend',
-      favorite: response.data.favorite,
-    }
-  } catch (error) {
-    if (isMissingFavoriteTargetError(error)) {
-      return {
-        isFavourite: toggleLocalFavorite(propertyId),
-        source: 'local',
-        favorite: null,
-      }
-    }
-
-    throw error
-  }
+  const response = await toggleSeekerFavorite(propertyId)
+  return { isFavourite: response.data.action === 'added', source: 'backend', favorite: response.data.favorite }
 }
 
 export const removeSeekerFavorite = async (favoriteId: string): Promise<void> => {

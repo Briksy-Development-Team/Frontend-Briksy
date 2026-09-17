@@ -153,7 +153,7 @@ const ServiceModal = ({
                         }))
                     }
                 >
-                    <option value="landscapers">Landscapers</option>
+                    <option value="landscapers">Landscappers</option>
 
                     <option value="concreter">Concreter</option>
 

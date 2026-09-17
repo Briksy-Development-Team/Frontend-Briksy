@@ -18,7 +18,7 @@ import type { Organization, OrganizationFormValues } from "../../../services/fea
 import { updateOrganizationApi, deleteOrganizationApi } from "../../../services/features/organization/organization.api";
 
 const SOLO_TRADER_SERVICES = [
-  { label: "Landscapers", value: "landscapers" },
+  { label: "Landscappers", value: "landscapers" },
   { label: "Concreter", value: "concreter" },
   { label: "Fencing", value: "fencing" },
   { label: "Mortgage Brokers", value: "mortgage-brokers" },

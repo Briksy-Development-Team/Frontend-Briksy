@@ -1,6 +1,7 @@
 export const buildApiParams = (params: {
   page?: number;
   per_page?: number;
+  all?: boolean;
   search?: string;
   sort?: string;
   direction?: string;
@@ -8,6 +9,7 @@ export const buildApiParams = (params: {
 }) => ({
   page: params.page ?? 1,
   per_page: params.per_page ?? 10,
+  all: params.all || undefined,
   search: params.search?.trim() || undefined,
   sort: params.sort || undefined,
   direction: params.direction || undefined,

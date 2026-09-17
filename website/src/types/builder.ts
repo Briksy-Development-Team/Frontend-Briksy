@@ -9,4 +9,5 @@ export interface Builder {
   tags: string[];
   establishedYear: number;
   isFavourite: boolean;
+  favoriteId?: string;
 }

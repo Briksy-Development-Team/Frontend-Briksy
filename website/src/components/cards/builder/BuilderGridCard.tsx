@@ -28,6 +28,8 @@ const BuilderGridCard = ({ item }: Props) => {
 
         <FavoriteButton
           initialIsFavourite={item.isFavourite}
+          targetId={item.favoriteId}
+          targetType="organization"
           className="absolute right-3 top-4"
           variant="overlay"
         />

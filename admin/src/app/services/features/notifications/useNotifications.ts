@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth, useRoleAccess } from "../../../modules/auth";
 import {
   deleteNotificationApi,
@@ -32,6 +32,7 @@ export const useNotifications = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [lastPage, setLastPage] = useState(1);
+  const requestVersion = useRef(0);
 
   const load = async (nextFilter = filter, nextSearch = search, nextPage = page) => {
     if (subscriptionBlocked) {
@@ -44,6 +45,7 @@ export const useNotifications = () => {
 
     setLoading(true);
     setError(null);
+    const version = ++requestVersion.current;
 
     try {
       const [notificationsRes, unreadRes, preferencesRes] = await Promise.all([
@@ -58,6 +60,7 @@ export const useNotifications = () => {
         fetchNotificationPreferencesApi(scope),
       ]);
 
+      if (version !== requestVersion.current) return;
       setItems(notificationsRes.items);
       setUnreadCount(unreadRes);
       setPreferences(preferencesRes);

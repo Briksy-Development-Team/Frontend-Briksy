@@ -11,14 +11,14 @@ const footerLinks = [
     title: "Find",
     links: [
       { label: "Search professionals & properties", href: "/result?type=all" },
-      { label: "Commercial properties", href: "//result?type=comercial" },
+      { label: "Commercial properties", href: "/result?type=comercial" },
       { label: "How verification works", href: "/how-we-verify" },
     ],
   },
   {
     title: "For your business",
     links: [
-      { label: "List your business", href: "/list-your-business" },
+      { label: "List your business", href: "/register" },
       { label: "Builder profiles", href: "/result?type=builder" },
       { label: "Agency profiles", href: "/result?type=builder&tab=agents" },
       { label: "Pricing", href: "/subs" },
@@ -28,8 +28,8 @@ const footerLinks = [
     title: "Company",
     links: [
       { label: "About Briksy", href: "/company-details" },
-      { label: "Blog", href: "/blogs  " },
-      { label: "Help Centre", href: "/help" },
+      { label: "Blog", href: "/blogs" },
+      { label: "Help Centre", href: "/help-support" },
       //   { label: "Careers [ optional ]", href: "/careers" },
     ],
   },

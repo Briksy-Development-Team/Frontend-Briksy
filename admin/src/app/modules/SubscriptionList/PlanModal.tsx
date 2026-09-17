@@ -386,7 +386,7 @@ const PlanModal = ({
       </div>
 
       <div className="row g-5 mb-7">
-        <div className="col-md-6">
+        <div className="col-12">
           <label className="fw-bold fs-6 mb-2">Description</label>
           <textarea
             className="form-control form-control-solid"

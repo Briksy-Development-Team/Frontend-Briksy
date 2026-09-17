@@ -3,8 +3,9 @@ import type { PendingFavoriteAction } from "./auth.types";
 const PENDING_AUTH_ACTION_KEY = "briksy-website-pending-auth-action";
 
 export const storePendingFavoriteAction = (
-  propertyId: string,
+  targetId: string,
   fromPath?: string,
+  favoriteType: PendingFavoriteAction["favoriteType"] = "property",
 ): void => {
   if (typeof window === "undefined") {
     return;
@@ -12,7 +13,8 @@ export const storePendingFavoriteAction = (
 
   const payload: PendingFavoriteAction = {
     type: "favorite",
-    propertyId,
+    targetId,
+    favoriteType,
     fromPath,
   };
 

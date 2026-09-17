@@ -29,6 +29,8 @@ const TraderGridCard = ({ item }: Props) => {
 
         <FavoriteButton
           initialIsFavourite={item.isFavourite}
+          targetId={item.favoriteId}
+          targetType="organization"
           className="absolute right-4 top-3"
           variant="overlay"
         />

@@ -5,9 +5,11 @@ import { DetailSidebar } from "../../shared/DetailSidebar";
 export function ServiceSidebar({
   contact,
   service,
+  onEnquiry,
 }: {
   contact: { price: number; rateType?: string };
   service: {
+    id?: string;
     bannerImage?: string;
     avatar: string;
     name: string;
@@ -15,6 +17,7 @@ export function ServiceSidebar({
     rating: number;
     reviewsCount: number;
   };
+  onEnquiry?: () => void;
 }) {
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -62,7 +65,7 @@ export function ServiceSidebar({
             <Share size={18} />
           </button>
           <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center hover:bg-gray-50 transition-colors">
-            <FavoriteButton variant="inline" showText={false} iconSize={18} className="text-primary-light-brown hover:text-primary-brown transition-colors" />
+            <FavoriteButton variant="inline" showText={false} iconSize={18} targetId={service.id} targetType="organization" className="text-primary-light-brown hover:text-primary-brown transition-colors" />
           </div>
         </div>
       </div>
@@ -72,6 +75,7 @@ export function ServiceSidebar({
         price={`$${contact.price}`}
         priceLabel="/hour"
         buttonText={`Contact ${service.name.split(" ")[0]}`}
+        onEnquiry={onEnquiry}
       />
     </div>
   );

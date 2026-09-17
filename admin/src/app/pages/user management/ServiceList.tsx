@@ -65,18 +65,11 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
         );
     }
 
-    if (loading) {
-        return (
-            <Content>
-                <PageHeader title={title} subtitle={subtitle} />
-                <div className="alert alert-light">Loading services...</div>
-            </Content>
-        );
-    }
-
     return (
         <Content>
             <PageHeader title={title} subtitle={subtitle} />
+
+            {loading && <div className="alert alert-light py-2">Loading services...</div>}
 
         <EntityList
             data={data}

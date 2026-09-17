@@ -56,6 +56,7 @@ export type AuthRole =
 
 export interface PendingFavoriteAction {
   type: "favorite";
-  propertyId: string;
+  targetId: string;
+  favoriteType: "property" | "organization";
   fromPath?: string;
 }

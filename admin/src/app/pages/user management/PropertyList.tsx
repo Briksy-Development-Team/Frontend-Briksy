@@ -224,25 +224,6 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
       </Content>
     );
 
-  if (loading)
-    return (
-      <Content>
-        <PageHeader
-          title={
-            isSuperAdmin
-              ? "Property Management - At a Glance"
-              : "Property Management"
-          }
-          subtitle={
-            isSuperAdmin
-              ? "All properties across companies"
-              : "Manage properties for your company"
-          }
-        />
-        <div className="alert alert-light">Loading properties...</div>
-      </Content>
-    );
-
   return (
     <>
       <Routes>
@@ -262,6 +243,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
                     : "Manage properties for your company"
                 }
               />
+              {loading && <div className="alert alert-light py-2">Loading properties...</div>}
 
               <div className="d-flex justify-content-end mb-5">
                 <div className="btn-group">

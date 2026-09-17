@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
-import { getOrganization, getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
+import { getOrganization, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { getProperties } from "../../../api/property/property.api";
 import { propertyToCard } from "../../../api/public.mappers";
 import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
+import { createInquiry } from "../../../api/seeker/inquiry.api";
+import { EnquiryModal } from "../shared/EnquiryModal";
 
 type HttpLikeError = Error & { response?: { status?: number } };
 
@@ -21,21 +23,15 @@ const BuilderDetail = () => {
   const [propertyCount, setPropertyCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const [enquirySubmitting, setEnquirySubmitting] = useState(false);
+  const [enquiryError, setEnquiryError] = useState<string | null>(null);
+  const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     let active = true;
-    const loadBuilder = /^\d+$/.test(id)
-      ? getOrganizations({ type: "builders", verified_only: 1, page: Math.max(1, Number(id)), per_page: 1 }).then((response) => {
-        const organization = response.data[0];
-        if (!organization) {
-          const error = new Error("Builder not found") as HttpLikeError;
-          error.response = { status: 404 };
-          throw error;
-        }
-        return { data: organization };
-      })
-      : getOrganization(id);
+    const loadBuilder = getOrganization(id);
 
     loadBuilder
       .then((organizationResponse) => getProperties({ organization_slug: organizationResponse.data.slug || undefined, per_page: 12 }).then((propertyResponse) => ({ organizationResponse, propertyResponse })))
@@ -70,9 +66,9 @@ const BuilderDetail = () => {
   };
 
   return <div className="min-h-screen mt-20 font-helvetica flex flex-col"><main className="flex-1 w-full px-[5%] py-6">
-    <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4"><Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Find a builder", isBack: true }, { label: builder.name }]} /><div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0"><button className="flex items-center gap-2 hover:opacity-70 transition"><Share size={18} /> Share</button><FavoriteButton variant="inline" showText iconSize={18} className="hover:opacity-70 transition text-primary-brown" /></div></div>
-    <div className="flex flex-col lg:flex-row gap-10 items-start relative"><div className="flex-1 min-w-0 flex flex-col gap-10 w-full"><BuilderHeader builder={viewModel} /><div className="flex flex-col gap-16"><div id="homes"><BuilderHomes homes={homes} propertiesHref={`/search?tab=properties&organization_slug=${encodeURIComponent(builder.slug || '')}`} description={`${propertyCount} published propert${propertyCount === 1 ? 'y' : 'ies'} for ${builder.name}.`} /></div><div id="about"><BuilderAbout about={viewModel.about} /></div></div></div><aside className="w-full lg:w-[25%] shrink-0 lg:sticky lg:top-32"><BuilderSidebar name={builder.name} /></aside></div>
-  </main></div>;
+    <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4"><Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Find a builder", isBack: true }, { label: builder.name }]} /><div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0"><button className="flex items-center gap-2 hover:opacity-70 transition"><Share size={18} /> Share</button><FavoriteButton variant="inline" showText iconSize={18} targetId={builder.id} targetType="organization" className="hover:opacity-70 transition text-primary-brown" /></div></div>
+    <div className="flex flex-col lg:flex-row gap-10 items-start relative"><div className="flex-1 min-w-0 flex flex-col gap-10 w-full"><BuilderHeader builder={viewModel} /><div className="flex flex-col gap-16"><div id="homes"><BuilderHomes homes={homes} propertiesHref={`/result?type=property&organization_slug=${encodeURIComponent(builder.slug || '')}`} description={`${propertyCount} published propert${propertyCount === 1 ? 'y' : 'ies'} for ${builder.name}.`} /></div><div id="about"><BuilderAbout about={viewModel.about} /></div></div></div><aside className="w-full lg:w-[25%] shrink-0 lg:sticky lg:top-32"><BuilderSidebar name={builder.name} onEnquiry={() => { setEnquiryError(null); setEnquirySuccess(null); setIsEnquiryOpen(true); }} /></aside></div>
+  </main><EnquiryModal open={isEnquiryOpen} companyName={builder.name} initialSubject={`${builder.name} enquiry`} submitting={enquirySubmitting} error={enquiryError} success={enquirySuccess} onClose={() => setIsEnquiryOpen(false)} onSubmit={async (values) => { setEnquirySubmitting(true); setEnquiryError(null); try { await createInquiry({ organization_id: builder.id, lead_source: "builder_profile", subject: values.subject, message: values.message, seeker_name: values.seeker_name, seeker_email: values.seeker_email, seeker_phone: values.seeker_phone || null }); setEnquirySuccess("Your enquiry has been sent successfully."); } catch (reason: any) { setEnquiryError(reason?.response?.data?.message || "Unable to send enquiry. Please try again."); } finally { setEnquirySubmitting(false); } }} /></div>;
 };
 
 export default BuilderDetail;

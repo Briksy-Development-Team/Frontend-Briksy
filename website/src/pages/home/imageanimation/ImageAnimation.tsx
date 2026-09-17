@@ -11,6 +11,7 @@ import tool from "../../../assets/about/tool.svg";
 import one from "../../../assets/about/one.svg";
 import Imges from "../../../assets/dummy/Image.svg"
 import "swiper/css";
+import { useNavigate } from "react-router-dom";
 
 // import Transition from "./Transition";
 
@@ -59,6 +60,7 @@ const cards: Card[] = [
 ];
 
 const ImageAnimation = () => {
+  const navigate = useNavigate();
   return (
     <div className="relative flex flex-col lg:flex-row h-auto min-h-screen lg:h-screen w-full font-helvetica overflow-hidden">
       <div className="relative my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 lg:px-12 pt-8 lg:pt-0">
@@ -135,7 +137,7 @@ const ImageAnimation = () => {
             and managing it connect with the right people
             and services in one place.
           </p>
-          <button className="bg-primary-brown text-nowrap text-[0.875rem] text-white w-fit px-6 py-3 rounded-4xl hover:bg-[#463116] transition-colors">
+          <button onClick={() => navigate("/register")} className="bg-primary-brown text-nowrap text-[0.875rem] text-white w-fit px-6 py-3 rounded-4xl hover:bg-[#463116] transition-colors">
             Get Started Now
           </button>
         </div>

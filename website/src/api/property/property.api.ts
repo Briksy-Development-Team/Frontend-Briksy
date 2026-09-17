@@ -9,6 +9,7 @@ export type PublicProperty = {
   address: string | null;
   full_address: string | null;
   status: string | null;
+  is_favourite?: boolean;
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   price?: number | null;
 

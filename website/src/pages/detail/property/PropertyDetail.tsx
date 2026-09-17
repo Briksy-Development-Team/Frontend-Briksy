@@ -143,6 +143,8 @@ const PropertyDetail = () => {
               showText={true}
               iconSize={18}
               className="hover:opacity-70 transition text-primary-brown"
+              targetId={property.id}
+              targetType="property"
             />
           </div>
         </div>

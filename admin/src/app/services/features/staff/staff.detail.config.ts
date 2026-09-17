@@ -11,8 +11,8 @@ export const staffDetailConfig: DetailConfig<any> = {
         color: "primary",
       },
       {
-        label: (data) => (data.email_verified_at ? "Verified" : "Unverified"),
-        color: (data) => (data.email_verified_at ? "success" : "warning"),
+        label: (data) => data.status === "inactive" ? "Inactive" : data.email_verified_at ? "Active" : "Email Verification Pending",
+        color: (data) => data.status === "inactive" ? "danger" : data.email_verified_at ? "success" : "warning",
       },
     ],
     metrics: [

@@ -10,7 +10,7 @@ import { useRoleAccess } from "../../modules/auth";
 import { ActivityLogDetailModal } from "../../services/features/activity_logs/components/ActivityLogDetailModal";
 import { fetchActivityLogsApi } from "../../services/features/activity_logs/activity-log.api";
 import {
-  activityLogActions,
+  formatActivityLogAction,
   activityLogModules,
   getActivityLogColumns,
 } from "../../services/features/activity_logs/activity-log.config";
@@ -40,6 +40,7 @@ const ActivityLogsPage = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null);
   const [params, setParams] = useState<ActivityLogQueryParams>(defaultParams);
+  const [actionOptions, setActionOptions] = useState<string[]>([]);
   const [filtersDraft, setFiltersDraft] = useState<Record<string, string>>({
     date_from: "",
     date_to: "",
@@ -69,6 +70,7 @@ const ActivityLogsPage = () => {
 
         setLogs(response.data);
         setTotal(response.total);
+        setActionOptions(response.actions);
       })
       .catch((requestError: unknown) => {
         if (!active) {
@@ -237,9 +239,9 @@ const ActivityLogsPage = () => {
                 onChange={(event) => updateFilter("action", event.target.value)}
               >
                 <option value="">All</option>
-                {activityLogActions.map((action) => (
+                {actionOptions.map((action) => (
                   <option key={action} value={action}>
-                    {action}
+                    {formatActivityLogAction(action)}
                   </option>
                 ))}
               </select>
@@ -321,9 +323,7 @@ const ActivityLogsPage = () => {
                 per_page={params.per_page ?? 10}
                 total={total}
                 onChange={(page) => setParams((current) => ({ ...current, page }))}
-                onPageSizeChange={(size) =>
-                  setParams((current) => ({ ...current, per_page: size, page: 1 }))
-                }
+                onPageSizeChange={(size) => setParams((current) => ({ ...current, per_page: size, all: size === total, page: 1 }))}
               />
             </>
           )}

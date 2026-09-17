@@ -10,5 +10,6 @@ export interface Trader {
   reviews: number;
   tags: string[];
   isFavourite?: boolean;
-  category?: string; // matches subcategory items in MegaMenu e.g. "Electricians"
+  favoriteId?: string;
+  category?: string;
 }

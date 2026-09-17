@@ -11,6 +11,7 @@ export type PublicOrganization = {
   rating: number;
   abn?: string | null;
   is_verified: boolean;
+  is_favourite?: boolean;
   contact?: { email: string | null; phone: string | null };
   type?: { name: string; slug: string } | null;
   services?: { id: string; name: string; slug: string; description?: string | null; starting_price?: number | null }[];

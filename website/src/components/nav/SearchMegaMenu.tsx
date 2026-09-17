@@ -1,8 +1,10 @@
 import { ArrowRight } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { ResultType } from "../../types/search";
 
 import Category from "../../assets/hero/category.svg"
+import { getServices } from "../../api/service/service.api";
+import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
 type CategoryData = { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[];
 
 const MOCK_CATEGORIES: Record<Exclude<ResultType, "comercial" | "all">, CategoryData> = {
@@ -52,8 +54,7 @@ const MOCK_CATEGORIES: Record<Exclude<ResultType, "comercial" | "all">, Category
       id: "trades-and-repairs",
       label: "Trades and repairs",
       groups: [
-        { title: "ELECTRICAL", items: ["Electricians", "Solar Installers", "Data Cabling", "Security Systems", "EV Charger Installers"] },
-        { title: "PLUMBING", items: ["Plumbers", "Gasfitters", "Drainers", "Hot Water Systems", "Stormwater drainage"] },
+        { title: "SERVICES", items: [] },
         { title: "PAINTING", items: ["Painters", "Decorators", "Spray painters", "Epoxy coating"] },
         { title: "OTHER TRADES", items: ["Locksmiths", "Glaziers", "Pest Control", "Roof plumbers", "Tilers"] },
       ],
@@ -143,6 +144,7 @@ export default function SearchMegaMenu({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [serviceGroups, setServiceGroups] = useState<{ title: string; items: string[] }[]>([]);
   // ponytail: simple timer ref for hover-close delay | upgrade: @floating-ui if positioning complexity grows
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openMenu = (tabId?: string) => {
@@ -153,7 +155,24 @@ export default function SearchMegaMenu({
   };
   const closeMenu = () => { closeTimer.current = setTimeout(() => setIsOpen(false), 150); };
 
-  const cats = MOCK_CATEGORIES[resultType === "comercial" || resultType === "all" ? "property" : resultType];
+  useEffect(() => {
+    if (resultType !== "trader") return;
+    void getServices({ per_page: 100 }).then((response) => {
+      const grouped = response.data.reduce<Record<string, string[]>>((groups, service) => {
+        const category = SERVICE_CATEGORIES.find((item) => item.label.toLowerCase() === (service.category || "").toLowerCase());
+        if (!category) return groups;
+        (groups[category.label] ??= []).push(service.name);
+        return groups;
+      }, {});
+      setServiceGroups(SERVICE_CATEGORIES.map(({ label }) => ({ title: label, items: [...new Set(grouped[label] ?? [])] })));
+    }).catch(() => setServiceGroups([]));
+  }, [resultType]);
+
+  const baseCategories = MOCK_CATEGORIES[resultType === "comercial" || resultType === "all" ? "property" : resultType];
+  const cats = (resultType === "trader" ? baseCategories.filter((category) => category.id === "trades-and-repairs") : baseCategories)
+    .map((category) => resultType === "trader" && category.id === "trades-and-repairs"
+      ? { ...category, groups: serviceGroups }
+      : category);
   if (!cats || cats.length === 0) return null;
 
   return (

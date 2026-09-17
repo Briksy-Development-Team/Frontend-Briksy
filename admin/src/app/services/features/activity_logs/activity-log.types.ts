@@ -29,11 +29,13 @@ export type ActivityLog = {
 export type ActivityLogListResponse = {
   data: ActivityLog[];
   total: number;
+  actions: string[];
 };
 
 export type ActivityLogQueryParams = {
   page?: number;
   per_page?: number;
+  all?: boolean;
   search?: string;
   sort?: string;
   direction?: "asc" | "desc";

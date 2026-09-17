@@ -74,14 +74,7 @@ export const getActivityLogColumns = (isSuperAdmin: boolean) => {
   return columns;
 };
 
-export const activityLogActions = [
-  "login",
-  "logout",
-  "failed_login",
-  "created",
-  "updated",
-  "deleted",
-];
+export const formatActivityLogAction = (action: string) => action.split(/[._-]/).filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 
 export const activityLogModules = [
   "auth",

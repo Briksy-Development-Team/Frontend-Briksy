@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
+import { SERVICE_CATEGORIES } from "../../../constants/serviceCategories";
 import { Mousewheel } from "swiper/modules";
 
 import { organizationToTrader } from "../../../api/public.mappers";
@@ -8,20 +9,16 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
 
-const TABS = [
-  "Electrical",
-  "Plumbing",
-  "Fencing",
-  "Landscapers",
-  "Conveyancers",
-];
-
 const ServiceList = () => {
   const [activeIdx, setActiveIdx] = useState(0);
   const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
+  const categories = SERVICE_CATEGORIES;
+
   useEffect(() => {
-    getOrganizations({ type: "trades-professionals", service_slug: TABS[activeIdx].toLowerCase(), verified_only: 1 })
+    const category = categories[activeIdx];
+
+    getOrganizations({ type: "trades-professionals", service_slug: category.slug, verified_only: 1 })
       .then((response) => setItems(response.data)).catch(console.error);
   }, [activeIdx]);
 
@@ -44,14 +41,14 @@ const ServiceList = () => {
         </div>
 
         <div className="flex flex-wrap justify-center  hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start">
-          {TABS.map((tab, i) => (
+          {categories.map((tab, i) => (
             <button
-              key={tab}
+              key={tab.slug}
               onClick={() => setActiveIdx(i)}
               className={`min-w-[140px] rounded-xl border  hover:border hover:border-primary border-[#DBDAD3] py-2 transition ${activeIdx === i ? "bg-[#242424] text-white" : "bg-white"
                 }`}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>

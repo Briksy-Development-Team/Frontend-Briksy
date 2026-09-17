@@ -21,7 +21,7 @@ const MOCK_NOTIFICATIONS: INotificationGroup[] = [
     items: [
       {
         id: 1,
-        title: "Doyle Electrical sent you a quote",
+        title: "A professional sent you a quote",
         desc: "$400 for the switchboard upgrade, valid for 14 days.",
         time: "2 hours ago",
         unread: true,
@@ -59,7 +59,7 @@ const MOCK_NOTIFICATIONS: INotificationGroup[] = [
       {
         id: 5,
         title: "How did the job go?",
-        desc: "Leave a review for Southbank Plumbing.",
+        desc: "Leave a review for a professional you worked with.",
         time: "Monday",
         unread: false,
         image: "https://i.pravatar.cc/150?img=11",
