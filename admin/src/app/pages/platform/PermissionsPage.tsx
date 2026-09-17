@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import Select from 'react-select'
 import { PermissionGuard, usePermissionAccess } from '../../modules/auth'
 import {
   fetchPermissionsApi,
@@ -11,6 +12,12 @@ import {
 } from '../../services/features/permissions/permission.api'
 import type { Permission, PermissionGroup, RoleSummary, UserPermissionSnapshot } from '../../services/features/permissions/permission.types'
 import { getDisplayId } from '../../services/utils/displayId'
+
+const overrideOptions = [
+  { value: '', label: 'Inherit' },
+  { value: 'allow', label: 'Allow' },
+  { value: 'deny', label: 'Deny' },
+]
 
 const flattenPermissionIds = (groups: PermissionGroup[]) =>
   groups.flatMap((group) => group.permissions.map((permission) => permission.id))
@@ -136,6 +143,26 @@ const PermissionsPageContent = () => {
     [selectedUserId, users],
   )
 
+  const roleOptions = useMemo(
+    () =>
+      roles.map((role) => ({
+        value: role.id,
+        label: `${role.name} ${role.is_system ? '(system)' : ''}`,
+      })),
+    [roles],
+  )
+
+  const userOptions = useMemo(
+    () => [
+      { value: '', label: 'Select a user' },
+      ...users.map((user) => ({
+        value: getDisplayId(user),
+        label: `${user.name} (${user.email}) - ${getDisplayId(user)}`,
+      })),
+    ],
+    [users],
+  )
+
   const toggleRolePermission = (permissionId: string) => {
     setRolePermissionIds((current) =>
       current.includes(permissionId)
@@ -218,17 +245,17 @@ const PermissionsPageContent = () => {
             <div className="card-body">
               <div className="mb-5">
                 <label className="form-label fw-semibold">Role</label>
-                <select
-                  className="form-select form-select-solid"
-                  value={selectedRoleId}
-                  onChange={(event) => setSelectedRoleId(event.target.value)}
-                >
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.name} {role.is_system ? '(system)' : ''}
-                    </option>
-                  ))}
-                </select>
+                <div className="react-select-styled react-select-solid react-select-sm">
+                  <Select
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    options={roleOptions}
+                    value={roleOptions.find((opt) => opt.value === selectedRoleId) ?? null}
+                    onChange={(option) => setSelectedRoleId(option?.value ?? '')}
+                    placeholder="Select a role..."
+                    isSearchable
+                  />
+                </div>
               </div>
 
               {selectedRole ? (
@@ -296,18 +323,17 @@ const PermissionsPageContent = () => {
 
               <div className="mb-5">
                 <label className="form-label fw-semibold">Select user</label>
-                <select
-                  className="form-select form-select-solid"
-                  value={selectedUserId}
-                  onChange={(event) => setSelectedUserId(event.target.value)}
-                >
-                  <option value="">Select a user</option>
-                  {users.map((user) => (
-                    <option key={getDisplayId(user)} value={getDisplayId(user)}>
-                      {user.name} ({user.email}) - {getDisplayId(user)}
-                    </option>
-                  ))}
-                </select>
+                <div className="react-select-styled react-select-solid react-select-sm">
+                  <Select
+                    className="react-select"
+                    classNamePrefix="react-select"
+                    options={userOptions}
+                    value={userOptions.find((opt) => opt.value === selectedUserId) ?? userOptions[0]}
+                    onChange={(option) => setSelectedUserId(option?.value ?? '')}
+                    placeholder="Select a user..."
+                    isSearchable
+                  />
+                </div>
               </div>
 
               {selectedUser ? (
@@ -319,24 +345,25 @@ const PermissionsPageContent = () => {
               <div className="d-flex flex-column gap-4" style={{ maxHeight: 520, overflow: 'auto' }}>
                 {permissions.map((permission) => (
                   <div key={permission.id} className="border rounded p-4">
-                    <div className="d-flex flex-column flex-md-row justify-content-between gap-3">
+                    <div className="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
                       <div>
                         <div className="fw-semibold">{permission.display_name ?? permission.name}</div>
                         <div className="text-muted fs-7">
                           {permission.module}.{permission.action}
                         </div>
                       </div>
-                      <select
-                        className="form-select form-select-solid w-auto"
-                        value={userOverrides[permission.id] ?? ''}
-                        onChange={(event) =>
-                          handleUserOverrideChange(permission.id, event.target.value as 'allow' | 'deny' | '')
-                        }
-                      >
-                        <option value="">Inherit</option>
-                        <option value="allow">Allow</option>
-                        <option value="deny">Deny</option>
-                      </select>
+                      <div className="react-select-styled react-select-solid react-select-sm min-w-125px">
+                        <Select
+                          className="react-select react-select-sm"
+                          classNamePrefix="react-select"
+                          options={overrideOptions}
+                          value={overrideOptions.find((opt) => opt.value === (userOverrides[permission.id] ?? '')) ?? overrideOptions[0]}
+                          onChange={(option) =>
+                            handleUserOverrideChange(permission.id, (option?.value ?? '') as 'allow' | 'deny' | '')
+                          }
+                          isSearchable={false}
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
