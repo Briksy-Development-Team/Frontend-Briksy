@@ -7,7 +7,7 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
-import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import { getRolePortalBaseRoute, useModuleAccess, useRoleAccess } from "../../modules/auth";
 import { getDisplayId } from "../../services/utils/displayId";
 import { fetchInquiries } from "../../services/features/inquiries/inquiry.slice";
 import { inquiryConfig } from "../../services/features/inquiries/inquiry.config";
@@ -16,6 +16,10 @@ const InquiryList = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { isSuperAdmin } = useRoleAccess();
+    const { hasModule } = useModuleAccess();
+    const inquiryTitle = !isSuperAdmin && hasModule("service_management")
+        ? "Service Inquiries"
+        : "Property Inquiries";
 
     const portalBase = getRolePortalBaseRoute(
         isSuperAdmin ? ["super_admin"] : ["admin"],
@@ -32,7 +36,10 @@ const InquiryList = () => {
 
     return (
         <Content>
-            <PageHeader title="Property Inquiries" subtitle="Manage enquiries submitted from the website" />
+            <PageHeader
+                title={inquiryTitle}
+                subtitle="Manage enquiries submitted from the website"
+            />
 
             <EntityList
                 data={data}

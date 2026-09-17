@@ -4,6 +4,8 @@ import type { ResultType } from "../../types/search";
 import TraderListCard from "../../components/cards/trader/TraderListCard";
 import BuilderListCard from "../../components/cards/builder/BuilderListCard";
 import PropertyListCard from "../../components/cards/property/PropertyListCard";
+import PropertyResultsMap from "../../components/search/PropertyResultsMap";
+import type { Property } from "../../types/property";
 import { buildGoogleMapsEmbedUrl } from "../../utils/googleMaps";
 
 export default function MapSplitView({
@@ -66,20 +68,12 @@ export default function MapSplitView({
           </button>
         </div>
       </div>
-      <div
-        className="flex-1 rounded-2xl overflow-hidden sticky top-24 self-start"
-        style={{ height: "calc(100vh - 300px)" }}
-      >
-        <iframe
-          title="Map"
-          width="100%"
-          height="100%"
-          loading="lazy"
-          allowFullScreen
-          referrerPolicy="no-referrer-when-downgrade"
-          src={mapSrc}
-          className="w-full h-full border-0"
-        />
+      <div className="flex-1 rounded-2xl overflow-hidden sticky top-24 self-start" style={{ height: "calc(100vh - 300px)" }}>
+        {resultType === "property" || resultType === "comercial" ? (
+          <PropertyResultsMap properties={items as Property[]} />
+        ) : (
+          <iframe title="Map" width="100%" height="100%" loading="lazy" allowFullScreen referrerPolicy="no-referrer-when-downgrade" src={mapSrc} className="w-full h-full border-0" />
+        )}
       </div>
     </div>
   );
