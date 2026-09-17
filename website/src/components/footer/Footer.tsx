@@ -28,7 +28,7 @@ const footerLinks = [
     title: "Company",
     links: [
       { label: "About Briksy", href: "/company-details" },
-      { label: "Blog", href: "/blog" },
+      { label: "Blog", href: "/blogs  " },
       { label: "Help Centre", href: "/help" },
       //   { label: "Careers [ optional ]", href: "/careers" },
     ],

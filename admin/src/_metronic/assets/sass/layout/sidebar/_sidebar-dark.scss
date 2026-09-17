@@ -73,16 +73,16 @@
                 
                 @include menu-link-active-state( 
                     $title-color: #ffffff,
-                    $icon-color: #f5551a, 
-                    $bullet-color: #f5551a,
+                    $icon-color: #DDDDDD, 
+                    $bullet-color: #DDDDDD,
                     $arrow-color: #ffffff,
-                    $bg-color: rgba(245, 85, 26, 0.12),
+                    $bg-color: #493c2a,
                     $all-links: true
                 );
 
-                // Orange left accent — applies in both light and dark mode
+                // Left accent — applies in both light and dark mode
                 .menu-link.active {
-                    border-left: 3px solid #f5551a;
+                    border-left: 3px solid #DDDDDD;
                     padding-left: calc(1rem - 3px);
                     border-radius: 0 8px 8px 0;
                 }
@@ -139,34 +139,34 @@
 
                     @include menu-link-here-state(
                         $title-color: #ffffff,
-                        $icon-color: #f5551a,
-                        $bullet-color: #f5551a,
+                        $icon-color: #DDDDDD,
+                        $bullet-color: #DDDDDD,
                         $arrow-color: #ffffff,
-                        $bg-color: rgba(245,85,26,0.10),
+                        $bg-color: #493c2a,
                         $all-links: true
                     );
 
                     @include menu-link-show-state(
                         $title-color: #ffffff,
-                        $icon-color: #f5551a,
-                        $bullet-color: #f5551a,
+                        $icon-color: #DDDDDD,
+                        $bullet-color: #DDDDDD,
                         $arrow-color: #ffffff,
-                        $bg-color: rgba(245,85,26,0.10),
+                        $bg-color: #493c2a,
                         $all-links: true
                     );
 
                     @include menu-link-active-state(
                         $title-color: #ffffff,
-                        $icon-color: #f5551a,
-                        $bullet-color: #f5551a,
+                        $icon-color: #DDDDDD,
+                        $bullet-color: #DDDDDD,
                         $arrow-color: #ffffff,
-                        $bg-color: rgba(245,85,26,0.12),
+                        $bg-color: #493c2a,
                         $all-links: true
                     );
 
-                    // Orange left accent on active item
+                    // Left accent on active item
                     .menu-link.active {
-                        border-left: 3px solid #f5551a;
+                        border-left: 3px solid #DDDDDD;
                         padding-left: calc(1rem - 3px);
                         border-radius: 0 8px 8px 0;
                     }
