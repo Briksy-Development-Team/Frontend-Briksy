@@ -18,12 +18,12 @@ import type { Organization, OrganizationFormValues } from "../../../services/fea
 import { updateOrganizationApi, deleteOrganizationApi } from "../../../services/features/organization/organization.api";
 
 const SOLO_TRADER_SERVICES = [
-  { label: "Electrical", value: "electrical" },
-  { label: "Plumbing", value: "plumbing" },
-  { label: "Fencing", value: "fencing" },
   { label: "Landscapers", value: "landscapers" },
+  { label: "Concreter", value: "concreter" },
+  { label: "Fencing", value: "fencing" },
+  { label: "Mortgage Brokers", value: "mortgage-brokers" },
   { label: "Conveyancers", value: "conveyancers" },
-  { label: "Brokers", value: "brokers" },
+  { label: "Building and Pest", value: "building-and-pest" },
 ];
 
 const SoloPage = () => {

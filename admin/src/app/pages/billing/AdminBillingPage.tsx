@@ -14,6 +14,8 @@ import type {
   CompanySubscription,
   SubscriptionPlanBilling,
 } from "../../services/features/billing/billing.types";
+import { SubscriptionList } from "../../modules/SubscriptionList/SubscriptionList";
+import type { Plan } from "../../services/features/subscriptions/plan.types";
 
 export default function AdminBillingPage() {
   const [current, setCurrent] = useState<CompanySubscription | null>(null);
@@ -42,6 +44,16 @@ export default function AdminBillingPage() {
   }, []);
 
   const selectedPlan = plans.find((plan) => plan.id === selectedPlanId) ?? null;
+  const catalogPlans = useMemo<Plan[]>(
+    () => plans.map((plan) => ({
+      ...plan,
+      price: plan.price ?? plan.monthly_price ?? 0,
+      popular: Boolean(plan.popular),
+      features: plan.features ?? [],
+      is_current: current?.status === "active" && current.plan?.id === plan.id,
+    })),
+    [current, plans],
+  );
   const selectedAddons = addons.filter((addon) => selectedAddonIds.includes(addon.id));
   const basePrice = billingCycle === "yearly"
     ? (selectedPlan?.yearly_price ?? 0)
@@ -116,28 +128,12 @@ export default function AdminBillingPage() {
               <button className={`btn ${billingCycle === "yearly" ? "btn-primary" : "btn-light"}`} onClick={() => setBillingCycle("yearly")}>Annual</button>
             </div>
           </div>
-          <div className="row g-4">
-            {plans.map((plan) => (
-              <div className="col-md-6" key={plan.id}>
-                <div className={`card h-100 ${selectedPlanId === plan.id ? "border-primary" : ""}`}>
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div>
-                        <h3 className="fw-bold mb-1">{plan.name}</h3>
-                        <div className="text-muted">{plan.currency} {billingCycle === "yearly" ? plan.yearly_price ?? 0 : plan.monthly_price ?? 0}</div>
-                      </div>
-                      <input type="radio" checked={selectedPlanId === plan.id} onChange={() => setSelectedPlanId(plan.id)} />
-                    </div>
-                    <div className="text-muted fs-7">Trial: {plan.trial_days ?? 0} days</div>
-                    <div className="d-flex flex-wrap gap-2 mt-3">
-                      {(plan.addons ?? []).map((addon) => <span key={addon.id} className="badge badge-light">{addon.name}</span>)}
-                    </div>
-                    {plan.description ? <p className="text-muted mt-3 mb-0">{plan.description}</p> : null}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <SubscriptionList
+            plans={catalogPlans}
+            canManage={false}
+            billingCycle={billingCycle}
+            onSelectPlan={(plan) => setSelectedPlanId(plan.id)}
+          />
         </div>
         <div className="col-12 col-xl-4">
           <div className="card">

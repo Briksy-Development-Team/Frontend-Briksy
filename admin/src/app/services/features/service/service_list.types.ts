@@ -1,12 +1,12 @@
 import type { ServiceAreaGeometry } from "./serviceAreaGeometry";
 
 export type ServiceCategory =
-  | "electrical"
-  | "plumbing"
-  | "fencing"
   | "landscapers"
+  | "concreter"
+  | "fencing"
+  | "mortgage-brokers"
   | "conveyancers"
-  | "brokers";
+  | "building-and-pest";
 
 export type Service = {
   id: string;

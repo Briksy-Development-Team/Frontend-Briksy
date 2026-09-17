@@ -250,15 +250,15 @@ const PropertyImportModal = ({ onClose, onCompleted }: Props) => {
     <div className="modal fade show d-block" style={{ background: "rgba(15,23,42,0.72)" }} onClick={resetAndClose}>
       <div className="modal-dialog modal-dialog-centered modal-xl" onClick={(event) => event.stopPropagation()}>
         <div className="modal-content shadow-lg" style={{ minHeight: 640 }}>
-          <div className="modal-header border-0 pb-0">
+          <div className="modal-header border-0 pb-0 position-relative pe-15">
             <div>
               <h2 className="fw-bolder mb-1">Import Properties</h2>
               <div className="text-muted fs-7">
                 Upload a spreadsheet, map its columns, preview validation, then start the queued import.
               </div>
             </div>
-            <button type="button" className="btn btn-icon btn-sm btn-active-light-primary" style={{ width: 40, height: 40, color: "#172033", backgroundColor: "#f1f3f6", border: "1px solid #cbd5e1" }} aria-label="Close property import" onClick={resetAndClose}>
-              <i className="bi bi-x-lg fs-3" />
+            <button type="button" className="btn btn-sm p-0 border-0 bg-transparent position-absolute top-0 end-0 mt-4 me-4" style={{ width: 40, height: 40, color: "#172033", fontSize: 30, lineHeight: 1, zIndex: 2 }} aria-label="Close" onClick={resetAndClose}>
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 

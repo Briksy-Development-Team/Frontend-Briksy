@@ -2,6 +2,7 @@ export type PropertyMapItem = {
   id: string;
   property_number: string;
   title: string;
+  description?: string | null;
   latitude: number | null;
   longitude: number | null;
   status: string;

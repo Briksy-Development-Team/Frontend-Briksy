@@ -82,6 +82,20 @@ const PropertyMapPopup = ({ property, portalBase, onClose }: Props) => {
           <div className="text-muted mt-2">Created {formatDate(property.created_at)}</div>
         </div>
 
+        <section className="mb-4 rounded-3 border p-3" style={{ backgroundColor: "#fff8ee", borderColor: "#f2dfc4" }} aria-labelledby="property-notes-heading">
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <i className="bi bi-sticky text-warning" aria-hidden="true" />
+            <h3 id="property-notes-heading" className="text-uppercase text-gray-700 fs-8 fw-bold mb-0">Notes</h3>
+          </div>
+          {property.description ? (
+            <p className="text-gray-800 fs-7 mb-0" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+              {property.description}
+            </p>
+          ) : (
+            <p className="text-muted fs-7 mb-0">No notes added for this property.</p>
+          )}
+        </section>
+
         <div className="mb-3">
           <div className="text-uppercase text-muted fs-8 fw-semibold mb-2">Media</div>
 

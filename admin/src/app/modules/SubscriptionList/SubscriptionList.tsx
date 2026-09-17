@@ -1,5 +1,6 @@
 import { KTIcon } from '../../../_metronic/helpers'
 import type { Plan } from '../../services/features/subscriptions/plan.types'
+import type { BillingCycle } from '../../services/features/billing/billing.types'
 
 type Props = {
   plans: Plan[]
@@ -8,9 +9,10 @@ type Props = {
   onEdit?: (plan: Plan) => void
   onDelete?: (plan: Plan) => void
   onSelectPlan?: (plan: Plan) => void
+  billingCycle?: BillingCycle
 }
 
-export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, onSelectPlan }: Props) => {
+export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, onSelectPlan, billingCycle = 'monthly' }: Props) => {
   const currentPlan = plans.find((p) => p.is_current)
   const familyLabel = (family?: string) => {
     if (family === 'trades_professional') {
@@ -87,6 +89,10 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
         {plans.map((plan, index) => {
           const isCurrent = !!plan.is_current
           const isPopular = !!plan.popular
+          const annualPrice = plan.yearly_price ?? plan.monthly_price ?? plan.price
+          const displayedPrice = billingCycle === 'yearly'
+            ? annualPrice / 12
+            : (plan.monthly_price ?? plan.price)
 
           const accentColor = '#f5551a'
           const popularGradient = 'linear-gradient(145deg, #342511 0%, #5c3d1a 100%)'
@@ -236,13 +242,34 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                           lineHeight: 1,
                         }}
                       >
-                        {((plan.monthly_price ?? plan.price) || 0).toLocaleString('en-IN')}
+                        {(displayedPrice || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
                     <p style={{ fontSize: 12, color: isPopular ? 'rgba(255,255,255,0.5)' : '#8b6f54', margin: '6px 0 0' }}>
-                      {plan.monthly_price ? `Monthly $${plan.monthly_price.toLocaleString('en-IN')}` : 'Monthly pricing unavailable'}
-                      {plan.yearly_price ? ` · Annual $${plan.yearly_price.toLocaleString('en-IN')}` : ''}
+                      {billingCycle === 'yearly'
+                        ? 'Monthly equivalent · billed annually'
+                        : plan.monthly_price
+                        ? `Monthly $${plan.monthly_price.toLocaleString('en-IN')}`
+                        : 'Monthly pricing unavailable'}
                     </p>
+                    {plan.yearly_price ? (
+                      <div className='d-flex align-items-center gap-2 mt-2 flex-wrap'>
+                        <span style={{ fontSize: 12, color: isPopular ? '#fff' : '#342511', fontWeight: 700 }}>
+                          Annual ${plan.yearly_price.toLocaleString('en-IN')}
+                        </span>
+                        <span
+                          className='badge'
+                          style={{
+                            background: isPopular ? 'rgba(255,255,255,0.2)' : 'rgba(245,85,26,0.12)',
+                            color: isPopular ? '#fff' : '#f5551a',
+                            fontSize: 10,
+                            fontWeight: 700,
+                          }}
+                        >
+                          Save 20% annually
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
 
                   {plan.addons?.length ? (

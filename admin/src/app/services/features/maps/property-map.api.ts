@@ -21,6 +21,7 @@ type RawPropertyMapItem = {
   display_id?: string | null;
   property_number?: string | null;
   title: string;
+  description?: string | null;
   latitude?: number | string | null;
   longitude?: number | string | null;
   status: string;
@@ -62,6 +63,7 @@ const normalizePropertyMapItem = (item: RawPropertyMapItem): PropertyMapItem => 
     item.generated_id ??
     item.id,
   title: item.title,
+  description: item.description ?? null,
   latitude:
     typeof item.latitude === "string" ? Number(item.latitude) : item.latitude ?? null,
   longitude:

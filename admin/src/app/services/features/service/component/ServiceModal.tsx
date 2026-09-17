@@ -45,7 +45,7 @@ const ServiceModal = ({
         name: initialValues?.name ?? "",
         slug: initialValues?.slug ?? initialValues?.category ?? "",
         description: initialValues?.description ?? "",
-        category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "electrical",
+        category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "landscapers",
         service_area: initialValues?.service_area ?? "",
         service_area_geometry: initialValues?.service_area_geometry ?? null,
         rate_from: initialValues?.rate_from ?? "",
@@ -58,7 +58,7 @@ const ServiceModal = ({
             name: initialValues?.name ?? "",
             slug: initialValues?.slug ?? initialValues?.category ?? "",
             description: initialValues?.description ?? "",
-            category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "electrical",
+            category: initialValues?.category ?? (initialValues?.slug as ServiceCategory) ?? "landscapers",
             service_area: initialValues?.service_area ?? "",
             service_area_geometry: initialValues?.service_area_geometry ?? null,
             rate_from: initialValues?.rate_from ?? "",
@@ -153,17 +153,17 @@ const ServiceModal = ({
                         }))
                     }
                 >
-                    <option value="electrical">Electrical</option>
+                    <option value="landscapers">Landscapers</option>
 
-                    <option value="plumbing">Plumbing</option>
+                    <option value="concreter">Concreter</option>
 
                     <option value="fencing">Fencing</option>
 
-                    <option value="landscapers">Landscapers</option>
+                    <option value="mortgage-brokers">Mortgage Brokers</option>
 
                     <option value="conveyancers">Conveyancers</option>
 
-                    <option value="brokers">Brokers</option>
+                    <option value="building-and-pest">Building and Pest</option>
                 </select>
             </div>
 

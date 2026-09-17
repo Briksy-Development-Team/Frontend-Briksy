@@ -49,7 +49,9 @@ export type SubscriptionAddon = {
 export type SubscriptionPlanBilling = {
   id: string;
   name: string;
+  plan_family?: "property_owner" | "trades_professional" | "buyers_agent" | "builders";
   description?: string | null;
+  price?: number;
   monthly_price?: number | null;
   yearly_price?: number | null;
   currency: string;
@@ -57,6 +59,8 @@ export type SubscriptionPlanBilling = {
   trial_days?: number | null;
   is_active?: boolean;
   popular?: boolean;
+  features?: Array<{ name: string; enabled: boolean; value?: number | null }>;
+  propertyLimit?: number;
   addons?: Addon[];
 };
 
