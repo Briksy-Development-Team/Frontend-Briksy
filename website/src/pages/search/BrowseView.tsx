@@ -6,7 +6,7 @@ import { organizationToBuilder, organizationToTrader, propertyToCard } from "../
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
-import { useSearchParams } from "react-router-dom";
+import { useResultSearchParams } from "./useResultSearchParams";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
@@ -98,7 +98,7 @@ export default function BrowseView({
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
   const [commercialProperties, setCommercialProperties] = useState<PublicProperty[]>([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useResultSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);

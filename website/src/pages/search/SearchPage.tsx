@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import type { BreadcrumbItem } from "../../components/nav/Breadcrumb";
@@ -8,6 +7,7 @@ import SearchToolbar, { SEARCH_CATEGORIES } from "./SearchToolbar";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 import FullListView from "./FullListView";
+import { useResultSearchParams } from "./useResultSearchParams";
 
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
@@ -20,7 +20,7 @@ const HEADERS: Record<string, { title: string; crumb: string }> = {
 type BrowseSection = "all" | "popular" | "newly";
 
 const SearchPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useResultSearchParams();
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
 
   const typeParam = searchParams.get("type");

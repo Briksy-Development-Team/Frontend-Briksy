@@ -25,6 +25,8 @@ export default function FavoriteButton({
   return (
     <button
       type="button"
+      aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+      title={isFavourite ? "Remove from favourites" : "Add to favourites"}
       disabled={saving}
       onClick={async (e) => {
         e.preventDefault();

@@ -57,7 +57,9 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
         name: initialValues.name,
         email: initialValues.email,
         password: "",
-        permissions: initialValues.permissions,
+        permissions: initialValues.permissions.filter((permission) =>
+          (availablePermissions as readonly string[]).includes(permission),
+        ),
       })
       return
     }

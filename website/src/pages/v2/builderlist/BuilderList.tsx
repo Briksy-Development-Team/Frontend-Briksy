@@ -21,7 +21,7 @@ const BuilderList = () => {
                     <p className="text-[0.875rem] lg:text-[1rem]">Trusted agencies and builders</p>
 
                     <button
-                        onClick={() => navigate("/result?type=builder")}
+                        onClick={() => navigate("/builders")}
                         className="absolute right-0  items-center gap-3 text-lg hidden md:flex font-medium text-[#562F00] transition-all hover:gap-3"
                     >
                         View All

@@ -26,13 +26,13 @@ type Lang = {
 };
 
 const navItems = [
-  { label: "Buy", to: "/result?type=property&intent=buy" },
-  { label: "Sell", to: "/result?type=property&intent=sell" },
-  { label: "Rent", to: "/result?type=property&intent=rent" },
-  { label: "Agents", to: "/result?type=builder&tab=agents" },
-  { label: "Builders", to: "/result?type=builder" },
+  { label: "Buy", to: "/buy" },
+  { label: "Sell", to: "/sell" },
+  { label: "Rent", to: "/rent" },
+  { label: "Agents", to: "/agents" },
+  { label: "Builders", to: "/builders" },
   { label: "Blogs", to: "/blogs" },
-  { label: "Commercials", to: "/result?type=comercial" },
+  { label: "Commercials", to: "/commercials" },
 ];
 
 const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
@@ -90,7 +90,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
 
     // Agents and Builders share the same result type. Builders must not also
     // appear active when the Agents tab is selected.
-    if (to === "/result?type=builder" && currentParams.get("tab") === "agents") {
+    if (to === "/builders" && currentParams.get("tab") === "agents") {
       return false;
     }
 

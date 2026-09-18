@@ -145,6 +145,7 @@ const PropertyDetail = () => {
               className="hover:opacity-70 transition text-primary-brown"
               targetId={property.id}
               targetType="property"
+              initialIsFavourite={Boolean(propertyData.is_favourite)}
             />
           </div>
         </div>

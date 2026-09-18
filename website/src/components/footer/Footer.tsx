@@ -11,7 +11,7 @@ const footerLinks = [
     title: "Find",
     links: [
       { label: "Search professionals & properties", href: "/result?type=all" },
-      { label: "Commercial properties", href: "/result?type=comercial" },
+      { label: "Commercial properties", href: "/commercials" },
       { label: "How verification works", href: "/how-we-verify" },
     ],
   },
@@ -19,8 +19,8 @@ const footerLinks = [
     title: "For your business",
     links: [
       { label: "List your business", href: "/register" },
-      { label: "Builder profiles", href: "/result?type=builder" },
-      { label: "Agency profiles", href: "/result?type=builder&tab=agents" },
+      { label: "Builder profiles", href: "/builders" },
+      { label: "Agency profiles", href: "/agents" },
       { label: "Pricing", href: "/subs" },
     ],
   },

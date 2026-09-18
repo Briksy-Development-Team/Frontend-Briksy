@@ -32,7 +32,7 @@ const ServiceList = () => {
           <p className="text-[0.875rem] lg:text-[1rem]">Verified solo traders and specialists</p>
 
           <button
-            onClick={() => navigate("/result?type=trader")}
+            onClick={() => navigate("/professionals")}
             className="absolute right-0 hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
           >
             View All

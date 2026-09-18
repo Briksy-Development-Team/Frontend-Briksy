@@ -1,6 +1,6 @@
 import type { ResultType } from "../../types/search";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useResultSearchParams } from "./useResultSearchParams";
 import { getOrganizations, type PublicOrganization } from "../../api/seeker/organization.api";
 import { getProperties, type PublicProperty } from "../../api/property/property.api";
 import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
@@ -59,7 +59,7 @@ export default function ResultsView({
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useResultSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
