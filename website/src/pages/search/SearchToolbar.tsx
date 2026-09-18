@@ -76,10 +76,13 @@ const TAB_LABELS: Record<FilterTab, string> = {
   Traders: "Sole Traders",
 };
 
-const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>((acc, option) => {
-  acc[option.value] = option.label;
-  return acc;
-}, {});
+const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
+  (acc, option) => {
+    acc[option.value] = option.label;
+    return acc;
+  },
+  {},
+);
 
 export default function SearchToolbar({
   activeCategoryId,
@@ -107,45 +110,47 @@ export default function SearchToolbar({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const activeCategory =
-    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
+    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) ||
+    SEARCH_CATEGORIES[0];
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center  justify-between flex-wrap py-1">
-        <div className="flex-1 max-w-[35rem]   h-12 bg-white rounded-xl border border-[#EDE8E4] pl-8 pr-2  flex items-center justify-between text-left transition-colors shrink-0">
-          <div className="flex items-center w-full  h-full  gap-x-[6px] overflow-hidden ">
-            <Search className="w-5 h-5 text-black shrink-0" />
+    <div className="flex  flex-col gap-4">
+      <div className="flex items-center  gap-y-2   justify-between flex-wrap py-1">
+        <div className="flex-1 max-w-[35rem] pr-[3%]  gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-8 md:pr-2  flex items-center justify-between text-left transition-colors shrink-0">
+          <div className="flex items-center w-full  bg-white h-full rounded-[6.25rem] px-2  gap-x-[6px] overflow-hidden ">
+            <Search className="md:w-5 md:h-5 h-4 w-4 text-gray-100 shrink-0" />
             <input
               type="text"
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search for properties, builders, professionals..."
-              className="text-[0.875rem] h-full  text-black tracking-[0.03em] truncate  outline-none w-full placeholder:text-black/60"
+              className="md:text-[0.875rem] text-[0.750rem]  h-full  text-black tracking-[0.03em] truncate  outline-none w-full placeholder:text-black/60"
             />
           </div>
 
-          <div className="flex items-center  gap-3 shrink-0">
-            <div className="w-[1px] h-8 bg-[#EDE8E4]" />
+          <div className="flex items-center bg-primary-brown text-white md:text-primary-brown md:bg-white rounded-[5.4348rem] p-[0.7065rem] gap-3 shrink-0">
+            <div className="w-[1px] h-8 hidden md:flex " />
             <button
               type="button"
               onClick={onAskAi}
-              className="flex items-center justify-center gap-2 px-2 h-full   text-primary-brown text-[0.875rem]"
+              className="flex items-center justify-center gap-2 px-0 md:px-2 h-full    text-[0.875rem]"
             >
               <Sparkles className="w-4 h-4" />
-              Ask Ai
+              <p className="hidden md:flex"> Ask Ai</p>
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-3 min-w-0 max-w-full overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setIsFilterOpen(true)}
-            className="h-12 px-5 bg-white rounded-full border border-[#EDE8E4] flex items-center justify-center gap-2 transition-colors shrink-0"
+            className="py-2 px-3 bg-white rounded-full border border-[#EDE8E4] flex items-center justify-center gap-2 transition-colors shrink-0"
           >
             <SlidersHorizontal className="w-4 h-4  text-primary-brown" />
-            <span className="text-[0.875rem] mt-1 text-[#342511] ">Filters</span>
+            <span className="text-[0.875rem] mt-1 text-[#342511] ">
+              Filters
+            </span>
           </button>
-
           {activeCategory.tabs.length > 0 && (
             <DropdownPill
               label={activeTab ? TAB_LABELS[activeTab] : activeCategory.label}
@@ -157,28 +162,28 @@ export default function SearchToolbar({
                   value: tab,
                 })),
               ]}
-              onSelect={(v: string) => onTabChange(v === "all" ? null : (v as FilterTab))}
-              className="h-12 !px-5"
+              onSelect={(v: string) =>
+                onTabChange(v === "all" ? null : (v as FilterTab))
+              }
+              className="py-2 !px-5"
             />
           )}
-
           <DropdownPill
             label={SORT_LABELS[sort] || "Sort by"}
             value={sort}
             options={SORT_OPTIONS}
             onSelect={(v: string) => onSortChange(v as SortType)}
-            className="h-12  !px-5"
+            className="py-2 !px-5"
           />
-
           <button
             onClick={onToggleMap}
-            className={`h-12 px-5 rounded-full border flex items-center gap-2 transition-colors shrink-0 ${showMap
+            className={`py-2 px-3 rounded-full border flex items-center gap-2 transition-colors shrink-0 ${showMap
               ? "bg-[#342511] text-white border-[#342511]"
-              : "bg-white text-[#342511] border-[#EDE8E4] "
+              : "bg-white text-[#342511] border-[#EDE8E4]"
               }`}
           >
             <MapIcon className={`w-5 h-5 ${showMap ? "invert brightness-0" : ""}`} />
-            <span className="text-[0.875rem] mt-1 ">Show map</span>
+            <span className="text-[0.875rem] mt-1">Show map</span>
           </button>
         </div>
       </div>
@@ -189,9 +194,11 @@ export default function SearchToolbar({
             isOpen={isFilterOpen}
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
-            initialTab={activeTab || (activeCategory.id === "commercial" ? "Rent" : "Buy")}
+            initialTab={
+              activeTab || (activeCategory.id === "commercial" ? "Rent" : "Buy")
+            }
           />,
-          document.body
+          document.body,
         )}
     </div>
   );

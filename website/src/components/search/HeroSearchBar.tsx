@@ -135,7 +135,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     <button
       type="button"
       onClick={() => setFilterOpen(true)}
-      className="text-gray-500 hover:text-gray-800 transition"
+      className="text-gray-500 hover:text-gray-800  transition"
     >
       <SlidersHorizontal size={20} />
     </button>
@@ -145,7 +145,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     <button
       type="button"
       onClick={() => setMode("ai")}
-      className="flex shrink-0 items-center justify-center gap-2 h-12 px-4 py-2 rounded-[0.375rem] bg-gradient-to-br from-[#79241D] to-[#DF4235] text-white font-medium shadow-md shadow-red-900/20 hover:from-[#d13a3a] hover:to-[#9e1c1c] transition border border-red-800/30"
+      className="flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1   md:h-12 md:px-4 md:py-2 rounded-[0.375rem] bg-gradient-to-br from-[#79241D] to-[#DF4235] text-white font-medium shadow-md shadow-red-900/20 hover:from-[#d13a3a] hover:to-[#9e1c1c] transition border border-red-800/30"
     >
       <Sparkles size={18} fill="white" />
       Ask Ai
@@ -157,7 +157,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       <button
         type="button"
         onClick={() => setDropdownOpen((v) => !v)}
-        className="flex items-center gap-2 text-gray-500 text-[15px] hover:text-gray-700 transition w-[160px]"
+        className="flex items-center gap-2 text-gray-500 text-[15px] hover:text-gray-700 transition w-[130px]  md:w-[160px]"
       >
         <span className="truncate">{selected.label}</span>
         {/* <ChevronDown
@@ -214,14 +214,14 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     <div ref={rootRef} className="mx-auto w-full max-w-4xl relative">
 
       {/* Mobile */}
-      <div className="md:hidden bg-white border border-[#ede8e4] rounded-[12px] shadow-lg overflow-visible">
+      <div className="md:hidden bg-white border border-[#ede8e4]  rounded-[12px] shadow-lg overflow-visible">
         <div className="flex items-center gap-2 px-4 py-[18px]">
           {searchInput}
           {filterButton}
         </div>
 
-        <div className="border-t border-[#ede8e4] flex h-[49px]">
-          <div className="flex-1 flex items-center px-4">
+        <div className=" border-t border-[#ede8e4] w-full px-2 flex justify-between h-[49px]">
+          <div className=" flex items-center pl-2 ">
             {dropdown}
           </div>
 

@@ -66,7 +66,7 @@ const SearchPage = () => {
       next.delete("purpose");
       if (!tab) {
         next.delete("tab");
-        next.set("type", activeCategoryId);
+        next.delete("type");
         return;
       }
       next.set("tab", tab.toLowerCase());
@@ -135,7 +135,7 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pt-24 pb-16 font-helvetica">
-      <div className="mx-auto px-[5%]">
+      <div className="mx-auto pl-[3%] md:px-[3%] ">
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar
           activeCategoryId={activeCategoryId}

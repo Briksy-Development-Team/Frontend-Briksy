@@ -71,11 +71,11 @@ const Heroone = () => {
                                     key={i}
                                     src={src}
                                     alt=""
-                                    className="h-10 w-10 rounded-xl border-2 border-white object-cover"
+                                    className="  h-6 w-6 md:h-10 md:w-10 rounded-lg md:rounded-xl border-2 border-white object-cover"
                                 />
                             ))}
                         </div>
-                        <span className="lg:text-[0.875rem] text-[0.75rem]  ">
+                        <span className="lg:text-[0.875rem] text-[0.75rem]   ">
                             Trusted by 108+ clients across industries
                         </span>
                     </div>
@@ -97,7 +97,7 @@ const Heroone = () => {
 
                     <div
                         className="
-            absolute
+            absolute hidden md:flex
             left-[-10%]
             right-[-10%]
             bottom-[-50px]

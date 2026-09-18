@@ -68,7 +68,7 @@ const Footer = () => {
                     <li key={item.label}>
                       <Link
                         to={item.href}
-                        className="text-[0.875rem] text-nowrap text-primary-brown lg:text-[1rem] hover:text-[#A6632F] transition-colors"
+                        className="text-[0.875rem] text-wrap md:text-nowrap  text-primary-brown lg:text-[1rem] hover:text-[#A6632F] transition-colors"
                       >
                         {item.label}
                       </Link>
@@ -79,7 +79,7 @@ const Footer = () => {
             ))}
 
             <div>
-              <h4 className="font-medium text-primary-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
+              <h4 className="font-medium text-primary-light-brown lg:text-[1.125rem] text-[0.875rem] mb-2">
                 Connect
               </h4>
 
@@ -106,7 +106,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className=" mt-10 lg:mt-20 flex px-[5%] md:px-0  justify-between items-end">
+        <div className=" mt-10 lg:mt-20 flex px-[3%] md:px-0  justify-between items-end">
           <div className="flex flex-col-reverse sm:flex-row  sm:items-end gap-4 lg:gap-8 ">
             <img
               loading="lazy"
@@ -125,7 +125,7 @@ const Footer = () => {
           </span>
         </div>
       </div>
-      <div className=" items-center flex sm:hidden px-[5%] md:px-0  bg-[#EAEAEA] gap-8 py-3 text-[0.75rem] ">
+      <div className=" items-center flex sm:hidden px-[3%] md:px-0  bg-[#EAEAEA] gap-8 py-3 text-[0.60rem] text-nowrap sm:text-[0.75rem] ">
         <span>© 2026 Briksy. All Rights Reserved.</span>
 
         <Link to="/terms">Terms of Use</Link>

@@ -33,7 +33,7 @@ function SectionSwiper({ children }: { children: React.ReactNode[] }) {
       className="[overscroll-behavior-x:contain] touch-pan-y"
     >
       {children.map((child, index) => (
-        <SwiperSlide key={index} className="!w-[20.5rem]">
+        <SwiperSlide key={index} className="!w-[20.5rem] ">
           {child}
         </SwiperSlide>
       ))}
@@ -57,7 +57,7 @@ function Section<T extends { id: string | number }>({
   if (items.length === 0) {
     return (
       <div>
-        <h2 className="text-[1.5rem] ml-2 font-medium tracking-tight text-[#342511]">{title}</h2>
+        <h2 className="text-[1.5rem] ml-2 font-medium tracking-tight text-primary-brown">{title}</h2>
         <p className="mt-2 ml-2 text-sm text-[#8B6F54]">No {title.toLowerCase()} available</p>
       </div>
     );
@@ -66,12 +66,12 @@ function Section<T extends { id: string | number }>({
   return (
     <section>
       <div className="flex items-center justify-between py-2">
-        <h2 className="text-[1.5rem] ml-2 font-medium tracking-tight text-[#342511]">{title}</h2>
+        <h2 className=" text-[1.2rem] md:text-[1.5rem] ml-2  font-medium tracking-tight text-primary-brown">{title}</h2>
         {items.length > 4 && (
           <button
             type="button"
             onClick={onViewMore}
-            className="text-[0.75rem] text-[#8B6F54] transition-colors hover:text-[#342511]"
+            className="text-[0.75rem] pr-[3%] text-[#8B6F54] transition-colors hover:text-primary-brown"
           >
             View more ({count})
           </button>

@@ -18,6 +18,7 @@ type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
   setMode: (mode: "collapsed" | "search" | "ai") => void;
   hasHero?: boolean;
+  hideOnMobile?: boolean;
 };
 
 type Lang = {
@@ -35,7 +36,7 @@ const navItems = [
   { label: "Commercials", to: "/commercials" },
 ];
 
-const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
+const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
 
   const [selectedLang, setSelectedLang] = useState<Lang>({
@@ -63,19 +64,19 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
         setMode("collapsed");
       }
 
-      pastHeroRef.current = isPast;
-      setPastHero(isPast);
+      if (pastHeroRef.current !== isPast) {
+        pastHeroRef.current = isPast;
+        setPastHero(isPast);
+      }
     };
 
-    onScroll();
-
-    window.addEventListener("scroll", onScroll, {
-      passive: true,
-    });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll(); // initial check
 
     return () => window.removeEventListener("scroll", onScroll);
   }, [hasHero, setMode]);
 
+  // Check if current route matches nav item route
   const isNavItemActive = (to: string) => {
     const url = new URL(to, window.location.origin);
 
@@ -105,7 +106,7 @@ const Navbar = ({ mode, setMode, hasHero = true }: NavbarProps) => {
 
   return (
     <>
-      <nav className="fixed left-0 right-0 top-0  z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white">
+      <nav className={`fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white ${hideOnMobile ? 'hidden md:block' : ''}`}>
         <div className="flex h-20 items-center justify-between px-2  sm:px-4 lg:px-6">
 
           {/* Logo */}

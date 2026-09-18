@@ -63,7 +63,7 @@ const ImageAnimation = () => {
   const navigate = useNavigate();
   return (
     <div className="relative flex flex-col lg:flex-row h-auto min-h-screen lg:h-screen w-full font-helvetica overflow-hidden">
-      <div className="relative my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 lg:px-12 pt-8 lg:pt-0">
+      <div className="relative mt-10 md:my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 lg:px-12 pt-8 lg:pt-0">
         <img
           src={WholeBg}
           alt=""
@@ -125,11 +125,11 @@ const ImageAnimation = () => {
       <div className="my-auto h-auto lg:h-[80vh] w-full lg:w-1/2 flex flex-col justify-center lg:justify-evenly gap-12 lg:gap-0 py-12 lg:py-0">
         <div className="flex flex-col justify-center space-y-4 lg:space-y-[1.5rem] w-[90%] lg:w-[70%] mx-auto text-center lg:text-left items-center lg:items-start">
           <p className="text-[0.875rem] text-primary-brown uppercase tracking-wide">HOW BRIKSY WORKS</p>
-          <span className="text-[1.875rem] text-primary-brown lg:text-[3rem] leading-tight lg:leading-12 font-medium">
-            <p>
-              Everything property.
+          <span className="text-[1.875rem] text-primary-brown  flex flex-col   lg:text-[3rem] leading-tight lg:leading-12 font-medium">
+            <p className="" >
+              <p className="text-nowrap ">Everything property.</p>
               <br className="hidden lg:block" />
-              Everyone you need.
+              <p className="text-nowrap "> Everyone you need.</p>
             </p>
           </span>
           <p className="text-primary-light-brown text-[1rem] text-gray-700">
