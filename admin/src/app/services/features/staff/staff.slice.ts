@@ -61,11 +61,14 @@ export const fetchStaff = createAsyncThunk(
 export const saveStaff = createAsyncThunk(
   "staff/save",
   async (payload: { id?: string; values: StaffFormValues }) => {
+    let response;
     if (payload.id) {
-      await updateStaffApi(payload.id, payload.values);
+      response = await updateStaffApi(payload.id, payload.values);
     } else {
-      await createStaffApi(payload.values);
+      response = await createStaffApi(payload.values);
     }
+
+    return { id: payload.id ?? null, staff: response?.data ?? null };
   },
 );
 
@@ -126,10 +129,25 @@ const staffSlice = createSlice({
         state.saving = true;
       })
 
-      .addCase(saveStaff.fulfilled, (state) => {
+      .addCase(saveStaff.fulfilled, (state, action) => {
         state.saving = false;
         state.isModalOpen = false;
         state.editingStaff = null;
+
+        const saved = action.payload.staff;
+        if (saved) {
+          const mapped = mapStaff(saved);
+          const existingIndex = state.data.findIndex((staff) => staff.id === mapped.id);
+
+          if (existingIndex >= 0) {
+            state.data[existingIndex] = mapped;
+          } else if (!action.payload.id) {
+            // Keep the newly-created staff visible immediately. The normal
+            // list refetch still reconciles pagination and server ordering.
+            state.data = [mapped, ...state.data];
+            state.total += 1;
+          }
+        }
       })
 
       .addCase(saveStaff.rejected, (state) => {
