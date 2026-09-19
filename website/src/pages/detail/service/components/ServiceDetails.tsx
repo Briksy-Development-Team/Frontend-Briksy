@@ -1,6 +1,14 @@
 import { X, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Approves from "../../../../assets/logo/apprrove.svg";
+import { loadGoogleMapsScript } from "../../../../utils/googleMapsLoader";
+
+type ServiceAreaGeometry = { type: "Polygon"; coordinates: number[][][] };
+
+const geometryToPath = (geometry?: ServiceAreaGeometry | null) =>
+  (geometry?.coordinates?.[0] ?? [])
+    .map(([lng, lat]) => Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null)
+    .filter((point): point is { lat: number; lng: number } => point !== null);
 
 
 export function ServiceList({ servicesData }: { servicesData: any }) {
@@ -236,6 +244,68 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
   );
 }
 
+function ServiceAreaMap({ location }: { location: any }) {
+  const mapElementRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<any>(null);
+  const polygonRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+  const polygonPath = useMemo(() => geometryToPath(location.geometry), [location.geometry]);
+
+  useEffect(() => {
+    let active = true;
+
+    loadGoogleMapsScript()
+      .then(() => {
+        if (!active || !mapElementRef.current || !(window as any).google?.maps) return;
+        const googleMaps = (window as any).google.maps;
+        const fallbackCenter = { lat: -25.2744, lng: 133.7751 };
+        mapRef.current = new googleMaps.Map(mapElementRef.current, {
+          center: polygonPath[0] || fallbackCenter,
+          zoom: polygonPath.length >= 3 ? 10 : 11,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+        });
+
+        if (polygonPath.length >= 3) {
+          polygonRef.current = new googleMaps.Polygon({
+            paths: polygonPath,
+            map: mapRef.current,
+            fillColor: "#f05537",
+            fillOpacity: 0.22,
+            strokeColor: "#f05537",
+            strokeOpacity: 0.9,
+            strokeWeight: 2,
+          });
+          const bounds = new googleMaps.LatLngBounds();
+          polygonPath.forEach((point: { lat: number; lng: number }) => bounds.extend(point));
+          mapRef.current.fitBounds(bounds);
+          return;
+        }
+
+        if (location.serviceArea) {
+          const geocoder = new googleMaps.Geocoder();
+          geocoder.geocode({ address: location.serviceArea }, (results: any[], status: string) => {
+            if (!active || status !== "OK" || !results?.[0]?.geometry?.location) return;
+            const position = results[0].geometry.location;
+            mapRef.current.setCenter(position);
+            markerRef.current = new googleMaps.Marker({ map: mapRef.current, position });
+          });
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+      polygonRef.current?.setMap(null);
+      markerRef.current?.setMap(null);
+      mapRef.current = null;
+    };
+  }, [location.serviceArea, polygonPath]);
+
+  return <div ref={mapElementRef} className="h-full w-full" />;
+}
+
 export function ServiceLocation({ location }: { location: any }) {
   return (
     <div className="flex flex-col gap-[1.5rem]">
@@ -249,7 +319,9 @@ export function ServiceLocation({ location }: { location: any }) {
       </div>
 
       <div className="w-full h-[25.875rem] rounded-[1.5rem] overflow-hidden">
-        {location.mapSrc ? (
+        {location.geometry || location.serviceArea ? (
+          <ServiceAreaMap location={location} />
+        ) : location.mapSrc ? (
           <iframe
             src={location.mapSrc}
             width="100%"

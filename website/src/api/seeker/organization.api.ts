@@ -23,6 +23,7 @@ export type PublicOrganization = {
     rate_from?: number | null;
     rate_to?: number | null;
     service_area?: string | null;
+    service_area_geometry?: { type: "Polygon"; coordinates: number[][][] } | null;
     images?: { id: string; url: string }[];
     videos?: { id: string; url: string }[];
   }[];

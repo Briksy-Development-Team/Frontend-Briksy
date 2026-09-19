@@ -83,6 +83,7 @@ const ServiceDetail = () => {
     rate_from: service.rate_from,
     rate_to: service.rate_to,
     service_area: service.service_area,
+    service_area_geometry: service.service_area_geometry,
     images: service.images,
     videos: service.videos,
   } : null;
@@ -103,6 +104,7 @@ const ServiceDetail = () => {
   const galleryItems = [0, 1, 2].map((index) => serviceMedia[index] || { src: ServicePlaceholder });
   const address = [organization.address, organization.state, organization.postcode].filter(Boolean).join(", ");
   const serviceArea = selectedService?.service_area || firstService?.service_area;
+  const serviceAreaGeometry = selectedService?.service_area_geometry || firstService?.service_area_geometry;
   const locationText = serviceArea || address;
   const mapSrc = locationText ? `https://www.google.com/maps?q=${encodeURIComponent(locationText)}&output=embed` : "";
   const rating = Number(organization.rating || 0);
@@ -166,6 +168,8 @@ const ServiceDetail = () => {
                   description: serviceArea ? `This business provides services in ${serviceArea}. Contact them to confirm availability for your location.` : address ? `This business is based in ${address}. Contact them to confirm service availability.` : "Contact this business to confirm its service area.",
                   mapSrc,
                   address: locationText,
+                  serviceArea,
+                  geometry: serviceAreaGeometry,
                 }}
               />
             </div>
