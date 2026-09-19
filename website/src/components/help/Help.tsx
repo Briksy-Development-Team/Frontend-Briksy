@@ -15,6 +15,9 @@ import {
 } from 'lucide-react';
 import Helps from "../../assets/icons/help/help.svg"
 import ContactModal from './ContactModal';
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+
 
 const FAQ_DATA = [
     {
@@ -75,6 +78,7 @@ const Help = () => {
     const headerRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     const toggleAccordion = (id: number) => {
         setExpandedId(expandedId === id ? 0 : id);
@@ -114,9 +118,17 @@ const Help = () => {
     }, []);
 
     return (
-        <div className="min-h-screen mx-auto md:w-full font-helvetica pb-10 md:pb-20 relative mt-16 md:mt-28 px-4 md:px-0">
-
-            <div className="absolute top-6 md:top-0 right-4 md:right-8 z-10">
+        <div className="min-h-screen mx-auto md:w-full font-helvetica pb-10 md:pb-20 relative  md:mt-28  md:px-0">
+            <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
+                <button
+                    onClick={() => navigate("/profile")}
+                    className="flex items-center gap-2  text-[#342511] text-[1.25rem] font-medium"
+                >
+                    <ArrowLeft className=" w-5 h-5" />
+                    Help
+                </button>
+            </div>
+            <div className="absolute top-6 hidden md:flex md:top-0 right-4 md:right-8 z-10">
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="group flex items-center gap-1.5 md:gap-2 text-[0.75rem] md:text-[0.875rem] font-medium text-primary-brown transition-all duration-300 hover:text-primary-light-brown"
@@ -126,7 +138,7 @@ const Help = () => {
                 </button>
             </div>
 
-            <div className="mx-auto max-w-3xl pt-14 md:pt-16 relative z-0">
+            <div className="mx-auto max-w-3xl px-4 md:px-0 pt-14 md:pt-16 relative z-0">
 
                 <div className="text-center mb-8 md:mb-12">
                     <div ref={headerRef}>
@@ -135,7 +147,7 @@ const Help = () => {
                         </h1>
                     </div>
 
-                    
+
                     <div ref={searchRef} className="relative mx-auto max-w-2xl">
                         <input
                             type="text"
@@ -150,7 +162,7 @@ const Help = () => {
                     </div>
                 </div>
 
-                
+
                 <div ref={listRef} className="space-y-2 md:space-y-3">
                     {FAQ_DATA.filter(faq => faq.question.toLowerCase().includes(searchQuery.toLowerCase())).map((faq) => {
                         const isExpanded = expandedId === faq.id;

@@ -145,9 +145,9 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     <button
       type="button"
       onClick={() => setMode("ai")}
-      className="flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1   md:h-12 md:px-4 md:py-2 rounded-[0.375rem] bg-gradient-to-br from-[#79241D] to-[#DF4235] text-white font-medium shadow-md shadow-red-900/20 hover:from-[#d13a3a] hover:to-[#9e1c1c] transition border border-red-800/30"
+      className="flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1 md:h-12 md:px-4 md:py-2 rounded-[0.375rem] bg-[linear-gradient(135deg,#EB6101_12.5%,#773C30_37.5%,#D2691E_62.5%,#9E3D3F_87.5%)] text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition border border-red-800/30"
     >
-      <Sparkles size={18} fill="white" />
+      <Sparkles size={18} fill="#FBF8F3" />
       Ask Ai
     </button>
   );

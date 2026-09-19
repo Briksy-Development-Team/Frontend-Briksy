@@ -1,5 +1,7 @@
+import { ArrowLeft } from "lucide-react";
 
 import Placeholderproperty from "../../assets/profile/placeholderproperty.svg";
+import { useNavigate } from "react-router-dom";
 
 interface INotificationItem {
   id: number;
@@ -128,13 +130,23 @@ const NotificationCard = ({ item }: { item: INotificationItem }) => {
 };
 
 const Notification = () => {
-  
+  const navigate = useNavigate();
+
   const hasData = MOCK_NOTIFICATIONS.length > 0;
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-10 py-24  lg:pt-20 lg:pb-20">
-      <h1 className="text-center text-[1.875rem] font-medium text-primary-brown">
+    <div className="w-full max-w-2xl mx-auto space-y-10 md:py-24  lg:pt-20 lg:pb-20">
+      <h1 className="text-center hidden md:flex text-[1.875rem] font-medium text-primary-brown">
         Notifications
       </h1>
+      <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
+        <button
+          onClick={() => navigate("/profile")}
+          className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
+        >
+          <ArrowLeft className=" w-5 h-5" />
+          Notifications
+        </button>
+      </div>
 
       {!hasData ? (
         <div className="flex flex-col items-center justify-center pt-20">

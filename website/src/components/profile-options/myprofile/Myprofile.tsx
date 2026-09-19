@@ -138,7 +138,7 @@ const Myprofile = () => {
                 <input type="number" value={budgetMax} onChange={e => setBudgetMax(e.target.value)} placeholder="Any" className="h-[2.875rem] rounded-xl border border-[#C8C5BD] bg-white px-4 text-[1rem] text-[#30291F] outline-none focus:border-primary-brown" />
               </div>
             </form>
-            <button onClick={() => void handleSave()} disabled={saving || loading} className="flex items-center gap-2 mt-3 mx-auto w-full  justify-center  md:hidden bg-primary-brown text-white px-4 py-[0.9375rem] rounded-[62.4375rem] disabled:opacity-70 transition-opacity">
+            <button onClick={() => void handleSave()} disabled={saving || loading} className="flex items-center gap-2 mt-5 mx-auto w-full  justify-center  md:hidden bg-primary-brown text-white px-4 py-[0.9375rem] rounded-[62.4375rem] disabled:opacity-70 transition-opacity">
               {saving && <LoaderCircle className="w-4 h-4 animate-spin" />}
               Save Profile
             </button>
