@@ -181,6 +181,16 @@ const couponSlice = createSlice({
       .addCase(validateCoupon.fulfilled, (state, action) => {
         state.validationResult = action.payload;
       })
+      .addCase(activateCoupon.fulfilled, (state, action) => {
+        const updated = mapCoupon(action.payload?.data ?? action.payload);
+        const index = state.data.findIndex((item) => item.id === updated.id);
+        if (index >= 0) state.data[index] = updated;
+      })
+      .addCase(deactivateCoupon.fulfilled, (state, action) => {
+        const updated = mapCoupon(action.payload?.data ?? action.payload);
+        const index = state.data.findIndex((item) => item.id === updated.id);
+        if (index >= 0) state.data[index] = updated;
+      })
       .addCase(deleteCoupon.fulfilled, (state, action) => {
         state.data = state.data.filter((item) => item.id !== action.payload);
 

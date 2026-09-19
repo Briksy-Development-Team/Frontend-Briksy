@@ -162,9 +162,11 @@ const PrivateRoutes = () => {
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
               <ModuleGuard anyOf={["property_management"]}>
-                <SuspensedView>
-                  <PropertyOffersPage />
-                </SuspensedView>
+                <PermissionGuard anyOf={["property.view"]}>
+                  <SuspensedView>
+                    <PropertyOffersPage />
+                  </SuspensedView>
+                </PermissionGuard>
               </ModuleGuard>
             </RoleGuard>
           }
@@ -394,9 +396,11 @@ const PrivateRoutes = () => {
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
               <ModuleGuard anyOf={["service_management"]}>
-                <SuspensedView>
-                  <ServiceListPage />
-                </SuspensedView>
+                <PermissionGuard anyOf={["service.view"]}>
+                  <SuspensedView>
+                    <ServiceListPage />
+                  </SuspensedView>
+                </PermissionGuard>
               </ModuleGuard>
             </RoleGuard>
           }
@@ -410,9 +414,11 @@ const PrivateRoutes = () => {
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
               <ModuleGuard anyOf={["property_management"]}>
-                <SuspensedView>
-                  <PropertyListPage />
-                </SuspensedView>
+                <PermissionGuard anyOf={["property.view"]}>
+                  <SuspensedView>
+                    <PropertyListPage />
+                  </SuspensedView>
+                </PermissionGuard>
               </ModuleGuard>
             </RoleGuard>
           }

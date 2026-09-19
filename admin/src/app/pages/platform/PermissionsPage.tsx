@@ -156,7 +156,7 @@ const PermissionsPageContent = () => {
     () => [
       { value: '', label: 'Select a user' },
       ...users.map((user) => ({
-        value: getDisplayId(user),
+        value: user.id,
         label: `${user.name} (${user.email}) - ${getDisplayId(user)}`,
       })),
     ],
@@ -254,6 +254,8 @@ const PermissionsPageContent = () => {
                     onChange={(option) => setSelectedRoleId(option?.value ?? '')}
                     placeholder="Select a role..."
                     isSearchable
+                    menuPortalTarget={document.body}
+                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                   />
                 </div>
               </div>
@@ -332,6 +334,8 @@ const PermissionsPageContent = () => {
                     onChange={(option) => setSelectedUserId(option?.value ?? '')}
                     placeholder="Select a user..."
                     isSearchable
+                    menuPortalTarget={document.body}
+                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                   />
                 </div>
               </div>
@@ -362,6 +366,8 @@ const PermissionsPageContent = () => {
                             handleUserOverrideChange(permission.id, (option?.value ?? '') as 'allow' | 'deny' | '')
                           }
                           isSearchable={false}
+                          menuPortalTarget={document.body}
+                          styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                         />
                       </div>
                     </div>

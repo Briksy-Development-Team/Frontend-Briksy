@@ -223,7 +223,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("service_management") && (
+          {hasModule("service_management") && hasPermission("service.view") && (
             <SidebarMenuItem
               to={`${portalBase}/services`}
               title="Services Management"
@@ -263,7 +263,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("property_management") && (
+          {hasModule("property_management") && hasPermission("property.view") && (
             <>
               <SidebarMenuItem
                 to={`${portalBase}/property-management`}
@@ -280,7 +280,7 @@ const SidebarMenuMain = () => {
             </>
           )}
 
-          {hasModule("service_management") && (
+          {hasModule("service_management") && hasPermission("service.view") && (
             <SidebarMenuItem
               to={`${portalBase}/services`}
               title="Services Management"

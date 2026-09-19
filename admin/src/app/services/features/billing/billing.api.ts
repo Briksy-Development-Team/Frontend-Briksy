@@ -9,6 +9,7 @@ import type {
   DynamicIdSetting,
   SubscriptionPlanBilling,
 } from "./billing.types";
+import { buildApiParams } from "../../utils/buildApiParams";
 
 const getBasePath = () => {
   const auth = getAuth();
@@ -81,7 +82,17 @@ export const toggleSuperAdminAddonApi = async (id: string, is_active: boolean) =
 };
 
 export const fetchSuperAdminSubscriptionsApi = async (params?: Record<string, string>): Promise<CompanySubscription[]> => {
-  const response = await axiosInstance.get(`${getBasePath()}/subscriptions`, { params });
+  const response = await axiosInstance.get(`${getBasePath()}/subscriptions`, {
+    params: buildApiParams({
+      search: params?.search,
+      filters: {
+        organization_id: params?.organization_id,
+        plan_id: params?.plan_id,
+        status: params?.status,
+        billing_cycle: params?.billing_cycle,
+      },
+    }),
+  });
   return response.data.data ?? [];
 };
 
