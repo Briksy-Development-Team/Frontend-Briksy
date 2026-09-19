@@ -46,7 +46,7 @@ const InquiryList = () => {
                 total={total}
                 params={params}
                 onParamsChange={handleParamsChange}
-                columns={inquiryConfig.columns}
+                columns={!isSuperAdmin && hasModule("service_management") ? inquiryConfig.serviceColumns : inquiryConfig.columns}
                 filtersConfig={inquiryConfig.filters}
                 getRowLink={(row) => `${portalBase}/inquiry/${getDisplayId(row)}`}
                 enableRowClick

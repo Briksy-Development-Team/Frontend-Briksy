@@ -16,6 +16,7 @@ export function ServiceSidebar({
     registration: string;
     rating: number;
     reviewsCount: number;
+    address?: string | null;
   };
   onEnquiry?: () => void;
 }) {

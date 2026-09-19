@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Mail, MapPin, Phone, ShieldCheck, Star } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import { getOrganization, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { getService, type PublicService } from "../../../api/service/service.api";
@@ -10,7 +10,6 @@ import { EnquiryModal } from "../shared/EnquiryModal";
 
 // New UI Components
 import { ServiceSidebar } from "./components/ServiceSidebar";
-import { ServiceTabs } from "./components/ServiceMain";
 import {
   ServiceList,
   ServiceQualifications,
@@ -33,10 +32,30 @@ const ServiceDetail = () => {
   useEffect(() => {
     if (!id) return;
     let active = true;
-    getOrganization(id).then((response) => { if (active) setOrganization(response.data); }).catch((organizationReason: any) => {
-      if (organizationReason?.response?.status !== 404) throw organizationReason;
-      return getService(id).then((response) => { if (active) setService(response.data); });
-    }).catch((reason: any) => {
+    const load = async () => {
+      const loadOrganization = async (organizationId: string) => {
+        return (await getOrganization(organizationId)).data;
+      };
+
+      try {
+        // Trader cards use an organization slug/id in this route. Resolve that first
+        // to avoid unnecessary 404s against the service endpoint.
+        const organizationData = await loadOrganization(id);
+        if (active) setOrganization(organizationData);
+      } catch (organizationReason: any) {
+        if (organizationReason?.response?.status !== 404) throw organizationReason;
+
+        const serviceResponse = await getService(id);
+        if (!active) return;
+        setService(serviceResponse.data);
+        if (serviceResponse.data.organization?.id) {
+          const organizationData = await loadOrganization(serviceResponse.data.organization.id);
+          if (active) setOrganization(organizationData);
+        }
+      }
+    };
+
+    load().catch((reason: any) => {
       if (active) setError(reason?.response?.status === 404 ? "This professional or service was not found." : "Unable to load this professional or service.");
     }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -45,7 +64,7 @@ const ServiceDetail = () => {
   if (loading) return <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32">Loading professional...</div>;
   if (error || (!organization && !service)) return <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-primary-brown">{error || "Professional or service not found."}</div>;
 
-  if (service) {
+  if (service && !organization) {
     const provider = service.organization;
     const location = [provider?.address, provider?.state, provider?.postcode].filter(Boolean).join(", ");
     const media = [...service.images.map((item) => ({ ...item, type: "image" as const })), ...service.videos.map((item) => ({ ...item, type: "video" as const }))];
@@ -55,18 +74,39 @@ const ServiceDetail = () => {
   if (!organization) return null;
 
   const services = organization.services ?? [];
+  const selectedService = service ? {
+    id: service.id,
+    name: service.name,
+    slug: service.slug || service.name.toLowerCase().replace(/\s+/g, "-"),
+    description: service.description,
+    starting_price: service.rate_from,
+    rate_from: service.rate_from,
+    rate_to: service.rate_to,
+    service_area: service.service_area,
+    images: service.images,
+    videos: service.videos,
+  } : null;
+  const allServices = selectedService && !services.some((item) => item.id === selectedService.id)
+    ? [selectedService, ...services]
+    : services.map((item) => item.id === selectedService?.id ? { ...item, ...selectedService } : item);
 
-  const mappedServices = services.length ? services.map(s => ({
+  const mappedServices = allServices.map(s => ({
     id: s.id,
     image: s.images?.[0]?.url || ServicePlaceholder,
     title: s.name,
-    description: s.description || "Package tailored to client needs.",
-    price: s.starting_price != null ? `From $${s.starting_price}` : "Custom quote",
-    duration: "1 hr"
-  })) : [
-    { id: 1, image: ServicePlaceholder, title: "Wiring, Installation & Repair", description: "Safe wiring, socket and switch installation for homes & offices.", price: "$120", duration: "1 hr" },
-    { id: 2, image: ServicePlaceholder, title: "Plumbing Services", description: "Expert leak detection, pipe installation, and bathroom renovations.", price: "$220", duration: "2 hrs" }
-  ];
+    description: s.description || "No description provided for this service.",
+    price: (s.starting_price ?? s.rate_from) != null ? `From $${s.starting_price ?? s.rate_from}` : "Custom quote",
+    duration: s.service_area || "Contact for estimate",
+  }));
+  const firstService = allServices[0];
+  const serviceMedia = allServices.flatMap((item) => (item.images || []).map((image) => ({ src: image.url })));
+  const galleryItems = [0, 1, 2].map((index) => serviceMedia[index] || { src: ServicePlaceholder });
+  const address = [organization.address, organization.state, organization.postcode].filter(Boolean).join(", ");
+  const serviceArea = selectedService?.service_area || firstService?.service_area;
+  const locationText = serviceArea || address;
+  const mapSrc = locationText ? `https://www.google.com/maps?q=${encodeURIComponent(locationText)}&output=embed` : "";
+  const rating = Number(organization.rating || 0);
+  const price = selectedService?.rate_from ?? selectedService?.starting_price ?? firstService?.starting_price ?? firstService?.rate_from ?? 0;
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-20 font-helvetica">
@@ -84,14 +124,15 @@ const ServiceDetail = () => {
 
           <div className="lg:sticky w-[30%] lg:top-28 ">
             <ServiceSidebar
-              contact={{ price: 120, rateType: "/hour" }}
+              contact={{ price, rateType: "/hour" }}
               service={{
                 bannerImage: organization.banner_url || "",
                 avatar: organization.logo_url || ServicePlaceholder,
                 name: organization.name,
-                registration: organization.type?.name || "Licensed Professional in Home Wiring Specialist",
-                rating: organization.rating || 4.9,
-                reviewsCount: 164,
+                registration: organization.type?.name || "Trades & Professional Services",
+                rating,
+                reviewsCount: 0,
+                address,
               }}
               onEnquiry={() => setIsEnquiryOpen(true)}
             />
@@ -107,27 +148,24 @@ const ServiceDetail = () => {
                 companyName={organization.name}
                 companyLogo={organization.logo_url || ServicePlaceholder}
                 qualifications={[
-                  { title: "10 years of experience", description: "Body weight training, mobility coaching & survival Scrabble" },
-                  { title: "Career highlight", description: "Choreographing a routine for a local fitness commercial" },
-                  { title: "Education and training", description: "Apprenticeship, Cert IV in Fitness" }
+                  { title: "Business type", description: organization.type?.name || "Trades & Professional Services" },
+                  { title: "Briksy verification", description: organization.is_verified ? "Verified business on Briksy" : "Verification pending" },
+                  { title: "Service area", description: serviceArea || address || "Contact this business for service locations" }
                 ]}
               />
               <div className="w-[70%]">
                 <ServiceRecentWork
                   recentWork={{
-                    totalPhotos: 12,
-                    items: [
-                      { src: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop" },
-                      { src: "https://images.unsplash.com/photo-1581092921461-7031e4bfb83e?q=80&w=2070&auto=format&fit=crop" },
-                      { src: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=2070&auto=format&fit=crop" }
-                    ]
+                    totalPhotos: serviceMedia.length,
+                    items: galleryItems,
                   }}
                 /></div>
 
               <ServiceLocation
                 location={{
-                  description: "I travel to you in the area outlined on the map. To book in a different location, you can message me.",
-                  mapSrc: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1565451.6961476686!2d143.20816812836224!3d-36.99451188339893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad646b5d2ba4df7%3A0x4045675218ccd90!2sVictoria%2C%20Australia!5e0!3m2!1sen!2sus!4v1715000000000!5m2!1sen!2sus"
+                  description: serviceArea ? `This business provides services in ${serviceArea}. Contact them to confirm availability for your location.` : address ? `This business is based in ${address}. Contact them to confirm service availability.` : "Contact this business to confirm its service area.",
+                  mapSrc,
+                  address: locationText,
                 }}
               />
             </div>
@@ -136,27 +174,10 @@ const ServiceDetail = () => {
               <Reviews
                 name={organization.name}
                 data={{
-                  overall: organization.rating || 4.9,
-                  count: 164,
-                  distribution: { 5: 80, 4: 15, 3: 5, 2: 0, 1: 0 },
-                  list: [
-                    {
-                      id: 1,
-                      avatar: ServicePlaceholder,
-                      author: "Priya & Marcus",
-                      context: "Built in Cranbourne - May 2024",
-                      rating: 5,
-                      text: "He told us to hold off on weekly and recent rather than tell immediately. Built up SPA and added a bit more than that at auction. The advice was against his own short term interest and that told us everything."
-                    },
-                    {
-                      id: 2,
-                      avatar: ServicePlaceholder,
-                      author: "Priya & Marcus",
-                      context: "Built in Cranbourne - May 2024",
-                      rating: 5,
-                      text: "He told us to hold off on weekly and recent rather than tell immediately. Built up SPA and added a bit more than that at auction. The advice was against his own short term interest and that told us everything."
-                    }
-                  ]
+                  overall: rating,
+                  count: 0,
+                  distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+                  list: [],
                 }}
               />
             </div>

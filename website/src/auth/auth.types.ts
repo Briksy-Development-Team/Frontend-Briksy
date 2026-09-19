@@ -8,6 +8,7 @@ export interface AuthUser {
   generated_id?: string;
   display_id?: string;
   mobile_number?: string | null;
+  avatar_url?: string | null;
   display_name?: string | null;
   roles?: string[];
   permissions?: string[];

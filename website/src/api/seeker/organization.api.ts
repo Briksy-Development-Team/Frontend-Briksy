@@ -14,7 +14,18 @@ export type PublicOrganization = {
   is_favourite?: boolean;
   contact?: { email: string | null; phone: string | null };
   type?: { name: string; slug: string } | null;
-  services?: { id: string; name: string; slug: string; description?: string | null; starting_price?: number | null }[];
+  services?: {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string | null;
+    starting_price?: number | null;
+    rate_from?: number | null;
+    rate_to?: number | null;
+    service_area?: string | null;
+    images?: { id: string; url: string }[];
+    videos?: { id: string; url: string }[];
+  }[];
   address?: string | null;
   state?: string | null;
   postcode?: string | null;

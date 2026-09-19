@@ -249,21 +249,26 @@ export function ServiceLocation({ location }: { location: any }) {
       </div>
 
       <div className="w-full h-[25.875rem] rounded-[1.5rem] overflow-hidden">
-        <iframe
-          src={location.mapSrc}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Service area map"
-        />
+        {location.mapSrc ? (
+          <iframe
+            src={location.mapSrc}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Service area map"
+          />
+        ) : (
+          <div className="h-full w-full bg-white flex items-center justify-center text-sm text-primary-light-brown">
+            Service location will be confirmed after enquiry.
+          </div>
+        )}
       </div>
 
       <p className="text-[0.75rem] text-primary-light-brown">
-        You can also come to me once the job is booked: Flinders Street Station,
-        Melbourne, VIC 3000
+        {location.address ? `Service location: ${location.address}` : "Contact this business to confirm the service location."}
       </p>
     </div>
   );

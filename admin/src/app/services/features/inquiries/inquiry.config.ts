@@ -48,6 +48,46 @@ export const inquiryConfig = {
     },
   ] satisfies Column<Inquiry>[],
 
+  serviceColumns: [
+    {
+      Header: "ID",
+      accessor: "display_id",
+      sortable: true,
+      alwaysVisible: true,
+      Cell: ({ row, value }: { row: Inquiry; value: any }) => value || getDisplayId(row),
+    },
+    {
+      Header: "Company",
+      accessor: "organization_name",
+      sortable: false,
+    },
+    {
+      Header: "Customer Name",
+      accessor: "seeker_name",
+      sortable: false,
+    },
+    {
+      Header: "Customer Email",
+      accessor: "seeker_email",
+      sortable: false,
+    },
+    {
+      Header: "Subject",
+      accessor: "subject",
+      sortable: true,
+    },
+    {
+      Header: "Status",
+      accessor: "status",
+      sortable: true,
+    },
+    {
+      Header: "Created At",
+      accessor: "created_at",
+      sortable: true,
+    },
+  ] satisfies Column<Inquiry>[],
+
   filters: [
     {
       key: "status",
