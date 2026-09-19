@@ -245,6 +245,15 @@ const SidebarMenuMain = () => {
 
       {isAdmin && (
         <>
+          {hasModule("inquiry_management") && (
+            <SidebarMenuItem
+              to={`${portalBase}/inquiry`}
+              title={hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
+              fontIcon="bi-archive"
+              icon="/media/icons/duotune/iconsnew/"
+            />
+          )}
+
           {hasPermission("company.view") && (
             <SidebarMenuItem
               to={`${portalBase}/businesses`}
@@ -280,6 +289,13 @@ const SidebarMenuMain = () => {
             />
           )}
 
+          <SidebarMenuItem
+            to={`${portalBase}/billing`}
+            title="Pricing Plans"
+            fontIcon="bi-credit-card"
+            icon="/media/icons/duotune/finance/fin002.svg"
+          />
+
           {hasModule("buyer_management") && (
             <SidebarMenuItem
               to={`${portalBase}/buyer-briefs`}
@@ -313,15 +329,6 @@ const SidebarMenuMain = () => {
               title="Referrals"
               fontIcon="bi-archive"
               icon="/media/icons/duotune/iconsnew/ref.svg"
-            />
-          )}
-
-          {hasModule("inquiry_management") && (
-            <SidebarMenuItem
-              to={`${portalBase}/inquiry`}
-              title={hasModule("service_management") ? "Service Inquiries" : "Property Inquiries"}
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 

@@ -27,10 +27,11 @@ type Lang = {
 
 const navItems = [
   { label: "Buy", to: "/buy" },
-  { label: "Sell", to: "/sell" },
+  { label: "Sold", to: "/sold" },
   { label: "Rent", to: "/rent" },
   { label: "Agents", to: "/agents" },
   { label: "Builders", to: "/builders" },
+  { label: "Trades & Professionals", to: "/professionals" },
   { label: "Blogs", to: "/blogs" },
   { label: "Commercials", to: "/commercials" },
 ];

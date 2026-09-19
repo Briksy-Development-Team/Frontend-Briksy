@@ -13,7 +13,6 @@ import { Routes, Route } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 
 import ServiceModal from "../../services/features/service/component/ServiceModal";
-import ServiceImportModal from "../../services/features/service/component/ServiceImportModal";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { serviceListConfig } from "../../services/features/service/service_list.config";
 import type { RootState, AppDispatch } from "../../services/store";
@@ -31,7 +30,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const canManage = true;
-  const [isImportOpen, setIsImportOpen] = useState(false);
   const {
         data,
         total,
@@ -86,11 +84,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
                 permission: "service.create",
                 onClick: () => dispatch(openServiceModal(null)),
             },
-            ...(!isSuperAdmin ? [{
-                label: "Import Services",
-                permission: "service.create",
-                onClick: () => setIsImportOpen(true),
-            }] : []),
         ] : []}
                 rowActions={rowActions}
                 bulkActions={(ids) => onBulkDelete ? [{
@@ -100,15 +93,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
                 }] : []}
             />
 
-            {isImportOpen && (
-                <ServiceImportModal
-                    onClose={() => setIsImportOpen(false)}
-                    onCompleted={() => {
-                        setIsImportOpen(false);
-                        void dispatch(fetchServiceList(params));
-                    }}
-                />
-            )}
         </Content>
     );
 };

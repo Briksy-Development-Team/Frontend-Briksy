@@ -91,7 +91,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
           const isPopular = !!plan.popular
           const annualPrice = plan.yearly_price ?? plan.monthly_price ?? plan.price
           const displayedPrice = billingCycle === 'yearly'
-            ? annualPrice / 12
+            ? Math.round(annualPrice / 12)
             : (plan.monthly_price ?? plan.price)
 
           const accentColor = '#f5551a'
@@ -245,6 +245,16 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                         {(displayedPrice || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
+                    <div
+                      style={{
+                        color: isPopular ? 'rgba(255,255,255,0.75)' : '#8b6f54',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        marginTop: 6,
+                      }}
+                    >
+                      Inclusive of GST
+                    </div>
                     <p style={{ fontSize: 12, color: isPopular ? 'rgba(255,255,255,0.5)' : '#8b6f54', margin: '6px 0 0' }}>
                       {billingCycle === 'yearly'
                         ? 'Monthly equivalent · billed annually'
@@ -255,7 +265,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                     {plan.yearly_price ? (
                       <div className='d-flex align-items-center gap-2 mt-2 flex-wrap'>
                         <span style={{ fontSize: 12, color: isPopular ? '#fff' : '#342511', fontWeight: 700 }}>
-                          Annual ${plan.yearly_price.toLocaleString('en-IN')}
+                          Annual $<span>{Math.round(Number(plan.yearly_price)).toLocaleString('en-IN')}</span>
                         </span>
                         <span
                           className='badge'

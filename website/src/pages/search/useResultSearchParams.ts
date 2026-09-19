@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const CLEAN_ROUTES: Record<string, Record<string, string>> = {
   "/buy": { type: "property", intent: "buy" },
-  "/sell": { type: "property", intent: "sell" },
+  "/sold": { type: "property", intent: "sell" },
   "/rent": { type: "property", intent: "rent" },
   "/builders": { type: "builder" },
   "/agents": { type: "builder", tab: "agents" },

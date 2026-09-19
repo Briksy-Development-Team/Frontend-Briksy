@@ -3,7 +3,7 @@ import { getDisplayId } from "../../utils/displayId";
 
 export const inquiryDetailConfig: DetailConfig<any> = {
   header: {
-    titleAccessor: (data) => data?.subject || "Inquiry",
+    titleAccessor: (data) => data?.subject || "Enquiry",
     subtitleAccessor: (data) => getDisplayId(data),
     badges: [
       {
@@ -37,9 +37,9 @@ export const inquiryDetailConfig: DetailConfig<any> = {
       gridColumnSpan: 6,
       fields: [
         { label: "ID", accessor: (data) => getDisplayId(data), colSpan: 12 },
-        { label: "Seeker Name", accessor: "seeker_name", colSpan: 6 },
-        { label: "Seeker Email", accessor: "seeker_email", colSpan: 6 },
-        { label: "Seeker Phone", accessor: "seeker_phone", colSpan: 6 },
+        { label: "Customer Name", accessor: "seeker_name", colSpan: 6 },
+        { label: "Customer Email", accessor: "seeker_email", colSpan: 6 },
+        { label: "Customer Phone", accessor: "seeker_phone", colSpan: 6 },
         { label: "Status", accessor: "status", colSpan: 6 },
       ],
     },

@@ -18,8 +18,8 @@ const InquiryList = () => {
     const { isSuperAdmin } = useRoleAccess();
     const { hasModule } = useModuleAccess();
     const inquiryTitle = !isSuperAdmin && hasModule("service_management")
-        ? "Service Inquiries"
-        : "Property Inquiries";
+        ? "Service Enquiries"
+        : "Property Enquiries";
 
     const portalBase = getRolePortalBaseRoute(
         isSuperAdmin ? ["super_admin"] : ["admin"],

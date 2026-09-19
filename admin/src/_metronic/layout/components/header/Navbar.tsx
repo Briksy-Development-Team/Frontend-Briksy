@@ -3,6 +3,8 @@ import { KTIcon, toAbsoluteUrl } from '../../../helpers'
 import { HeaderUserMenu, ThemeModeSwitcher } from '../../../partials'
 import { useLayout } from '../../core'
 import { NotificationBell } from '../../../../app/services/features/notifications/NotificationBell'
+import { Link } from 'react-router-dom'
+import { useRoleAccess } from '../../../../app/modules/auth'
 
 const itemClass = 'ms-1 ms-md-4'
 const btnClass =
@@ -12,6 +14,7 @@ const btnIconClass = 'fs-2'
 
 const Navbar = () => {
   const { config } = useLayout()
+  const { isAdmin } = useRoleAccess()
   return (
     <div className='app-navbar flex-shrink-0'>
       {/* <div className={clsx('app-navbar-item', itemClass)}>
@@ -21,6 +24,14 @@ const Navbar = () => {
       </div> */}
 
       <NotificationBell />
+
+      {isAdmin && (
+        <div className={clsx('app-navbar-item', itemClass)}>
+          <Link to="/admin/billing" className="btn btn-sm btn-primary fw-bold">
+            Upgrade plan
+          </Link>
+        </div>
+      )}
 
 
 

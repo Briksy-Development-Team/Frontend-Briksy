@@ -45,7 +45,7 @@ export const serviceDetailConfig: DetailConfig<any> = {
     },
     {
       id: "inquiries",
-      label: "Inquiries",
+      label: "Enquiries",
       sections: ["service_inquiries"],
     },
     {
@@ -107,7 +107,7 @@ export const serviceDetailConfig: DetailConfig<any> = {
     {
       id: "service_inquiries",
       type: "table",
-      title: "Related Inquiries",
+      title: "Related Enquiries",
       gridColumnSpan: 12,
       fetchFn: () => {}, 
       dataSelector: () => [], 

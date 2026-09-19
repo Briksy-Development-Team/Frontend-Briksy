@@ -134,6 +134,7 @@ export type StaffMember = {
   id: string;
   name: string;
   email: string;
+  mobile_number?: string | null;
   permissions: PlatformPermission[];
   status: "active" | "inactive";
   created_at: string;
@@ -142,6 +143,7 @@ export type StaffMember = {
 export type StaffFormValues = {
   name: string;
   email: string;
+  mobile_number?: string;
   password?: string;
   permissions: PlatformPermission[];
 };

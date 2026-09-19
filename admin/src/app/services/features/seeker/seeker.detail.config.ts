@@ -40,7 +40,7 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
     },
     {
       id: "inquiries",
-      label: "Property Inquiries",
+      label: "Property Enquiries",
       sections: ["property_inquiries"],
     },
     {
@@ -83,7 +83,7 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
     {
       id: "property_inquiries",
       type: "table",
-      title: "Related Inquiries",
+      title: "Related Enquiries",
       fetchFn: async () => ({ data: [], meta: { pagination: { total: 0 } } }),
       dataSelector: () => [],
       totalSelector: () => 0,

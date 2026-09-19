@@ -22,12 +22,12 @@ export const inquiryConfig = {
       sortable: false,
     },
     {
-      Header: "Seeker Name",
+      Header: "Customer Name",
       accessor: "seeker_name",
       sortable: false,
     },
     {
-      Header: "Seeker Email",
+      Header: "Customer Email",
       accessor: "seeker_email",
       sortable: false,
     },
