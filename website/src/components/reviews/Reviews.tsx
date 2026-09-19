@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Star } from 'lucide-react';
+import ReviewsModal from './ReviewsModal';
 
 export default function Reviews({ data, name }: { data: any; name?: string }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const stars = [5, 4, 3, 2, 1];
 
   return (
@@ -48,7 +51,7 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
       </div>
 
       <div className="flex flex-col gap-8 mt-4">
-        {data.list.map((review: any) => (
+        {data.list.slice(0, 3).map((review: any) => (
           <div key={review.id} className="flex gap-4 border-b border-gray-50 pb-8 last:border-0 last:pb-0">
             <img src={review.avatar} alt={review.author} className="w-12 h-12 rounded-full object-cover shrink-0 bg-white-100" />
             <div className="flex flex-col gap-4">
@@ -72,11 +75,19 @@ export default function Reviews({ data, name }: { data: any; name?: string }) {
       </div>
 
       <div>
-        <button className="bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-gray-50 transition-colors"
+        >
           Show all {data.count} reviews
         </button>
         <p className='text-[0.875rem] mt-3 '>Reviews can only be left by customers who enquired through BRIKSY. </p>
-
+        <ReviewsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          data={data}
+          name={name}
+        />
       </div>
     </div>
   );

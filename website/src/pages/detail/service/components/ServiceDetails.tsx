@@ -144,9 +144,7 @@ export function ServiceQualifications({
         </div>
       </div>
 
-      <button className="w-full py-3.5 bg-[#EFEBE4] rounded-xl text-primary-brown font-medium  text-[0.9375rem] hover:bg-[#e4dfd5] transition-colors mt-2">
-        Message {companyName.split(" ")[0]}
-      </button>
+    
     </div>
   );
 }

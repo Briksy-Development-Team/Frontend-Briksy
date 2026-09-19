@@ -11,7 +11,7 @@ export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   const navigate = useNavigate();
 
   return (
-    <div className="text-[0.75rem] text-primary-light-brown mb-6 flex items-center gap-2  flex-wrap">
+    <div className="text-[0.75rem] hidden md:flex text-primary-light-brown mb-6 items-center gap-2  flex-wrap">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
         

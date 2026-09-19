@@ -20,7 +20,10 @@ import Profile from '../pages/profile/Profile.tsx'
 import BlogsPage from "../pages/blogs/BlogsPage";
 import BlogDetail from "../pages/blogs/BlogDetail";
 import PublicInfoPage from "../pages/static/PublicInfoPage";
-
+import Myprofile from "../components/profile-options/myprofile/Myprofile";
+import Mysavedata from "../components/profile-options/mysavedata/Mysavedata";
+import Mynotification from "../components/profile-options/mynotification/Mynotification";
+import Myprivacy from "../components/profile-options/myprivacy/Myprivacy";
 const AppRouter = () => {
   return (
     <Routes>
@@ -33,8 +36,12 @@ const AppRouter = () => {
         <Route path="/subs" element={<Pricing />} />
 
         <Route element={<ProtectedRoute />}>
-            <Route path="profile" element={<Profile />} />
-      
+          <Route path="profile" element={<Profile />}>
+            <Route path="personal-info" element={<Myprofile />} />
+            <Route path="saved-search" element={<Mysavedata />} />
+            <Route path="notifications" element={<Mynotification />} />
+            <Route path="privacy" element={<Myprivacy />} />
+          </Route>
         </Route>
 
         <Route path="/notification" element={<Notification />} />

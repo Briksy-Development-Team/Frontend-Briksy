@@ -43,9 +43,9 @@ export function DetailSidebar({
 
         <button
           onClick={onEnquiry}
-          className="w-full h-10 rounded-full bg-primary-brown text-white font-medium text-[0.875rem] hover:opacity-90 transition-opacity"
+          className="w-full h-10 rounded-full bg-primary-brown text-white py-[0.5rem] px-[1.5rem] font-medium text-[0.875rem] hover:opacity-90 transition-opacity"
         >
-          {buttonText}
+          Send a enquiry
         </button>
 
         {footerText && (

@@ -142,20 +142,18 @@ const Toggle = ({
 }) => (
   <button
     onClick={onClick}
-    className={`flex h-7 w-12 items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${
-      active ? "bg-[#3D2C1E]" : "bg-[#E0D8D0]"
-    }`}
+    className={`flex h-7 w-12 md:h-7 md:w-12 items-center rounded-full p-1 transition-colors duration-300 ease-in-out ${active ? "bg-[#3D2C1E]" : "bg-[#E0D8D0]"
+      }`}
   >
     <div
-      className={`h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out ${
-        active ? "translate-x-5" : "translate-x-0"
-      }`}
+      className={`md:h-5 md:w-5 h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out ${active ? "translate-x-5" : "translate-x-0"
+        }`}
     />
   </button>
 );
 
 const NotificationHeader = () => (
-  <div className="flex items-center justify-end px-6 py-4 bg-[#EDE8E4]/60 border-b border-white-100">
+  <div className=" items-center hidden md:flex justify-end px-6 py-4 bg-[#EDE8E4]/60 border-b border-white-100">
     <div className="flex gap-8 items-center justify-center">
       <div className="w-12 flex justify-center">
         <span className="text-[0.75rem] text-primary-light-brown">Email</span>
@@ -179,20 +177,20 @@ const ToggleRow = ({
   isLast: boolean;
 }) => (
   <div
-    className={`flex items-center justify-between px-6 py-6 ${!isLast ? "border-b border-white-100" : ""}`}
+    className={`flex flex-col md:flex-row items-start md:items-center justify-between md:px-6 px-4 py-6 ${!isLast ? "border-b border-white-100" : ""}`}
   >
     <div className="pr-10">
       <h3 className="font-medium text-primary-brown text-[0.875rem]">
         {row.title}
       </h3>
-      <p className="mt-1 text-[0.75rem] text-primary-light-brown">{row.desc}</p>
+      <p className="mt-1 text-[0.75rem] md:text-[0.875rem] text-primary-light-brown">{row.desc}</p>
     </div>
-    <div className="flex gap-8 items-center justify-center shrink-0">
-      <div className="w-12 flex justify-center">
-        <Toggle active={state.email} onClick={() => onToggle("email")} />
+    <div className="flex gap-8 mt-2 items-center justify-center shrink-0">
+      <div className="w-24 md:w-12 flex justify-center items-center space-x-2">
+        <p className=" text-primary-light-brown text-[0.75rem]">Email</p>   <Toggle active={state.email} onClick={() => onToggle("email")} />
       </div>
-      <div className="w-12 flex justify-center">
-        <Toggle active={state.push} onClick={() => onToggle("push")} />
+      <div className="w-24 md:w-12 flex justify-center items-center space-x-2">
+        <p className=" text-primary-light-brown text-[0.75rem]">Email</p>    <Toggle active={state.push} onClick={() => onToggle("push")} />
       </div>
     </div>
   </div>
@@ -211,23 +209,22 @@ const Mynotification = () => {
 
   return (
     <div className="w-full space-y-10">
-      <div className="space-y-1">
-        <h1 className="text-[1.875rem] font-medium text-primary-brown">
+      <div className="space-y-1  hidden md:flex md:flex-col">
+        <h1 className="text-[1.875rem]  font-medium text-primary-brown">
           Notifications
         </h1>
-        <p className="text-[0.75rem] text-primary-light-brown">
+        <p className="text-[0.875rem] text-primary-light-brown">
           Choose what you hear about, and where it reaches you.
         </p>
       </div>
 
-      <div className="flex items-center justify-between rounded-[1rem] border border-white-100 bg-white px-6 py-6">
-        <div className="pr-10">
+      <div className="flex items-center justify-between rounded-[1rem] border border-white-100 bg-white px-4 md:px-6 py-6">
+        <div className=" w-[80%] ">
           <h3 className="font-medium text-primary-brown text-[0.875rem]">
             Pause all notifications
           </h3>
-          <p className="mt-1 text-[0.75rem] text-primary-light-brown">
-            Mutes everything below. We'll still send you account security and
-            anything you've asked us to keep you posted on legally.
+          <p className="mt-1 text-[0.75rem]  text-primary-light-brown">
+            Mutes everything below. Security and legal emails still send.
           </p>
         </div>
         <Toggle active={pauseAll} onClick={() => setPauseAll(!pauseAll)} />
@@ -239,7 +236,7 @@ const Mynotification = () => {
             <h2 className="text-[1.25rem] font-medium text-primary-brown">
               {section.title}
             </h2>
-            <p className="text-[0.75rem] text-primary-light-brown">{section.desc}</p>
+            <p className="text-[0.75rem] md:text-[0.875rem] text-primary-light-brown">{section.desc}</p>
           </div>
           <div className="flex flex-col rounded-[1rem] border border-white-100 bg-white overflow-hidden">
             <NotificationHeader />
