@@ -16,7 +16,7 @@ const TraderGridCard = ({ item }: Props) => {
   return (
     <Link
       to={`/service/${item.id}`}
-      className="flex flex-col relative rounded-[20px] w-[19.4375rem] h-[25rem] pb-[6px] border border-transparent transition-colors duration-200 overflow-hidden
+      className="flex flex-col relative rounded-[20px] w-[19.4375rem] h-[28rem] pb-[6px] border border-transparent transition-colors duration-200 overflow-hidden
        mx-auto text-primary-brown bg-white hover:border-primary"
     >
       <div className="relative h-[35%] shrink-0 bg-[#bed6d7] rounded-t-[20px] overflow-hidden mb-[-36px]">
@@ -97,7 +97,7 @@ const TraderGridCard = ({ item }: Props) => {
           </div>
         </div>
 
-        <div className="mt-auto flex flex-col   py-1">
+        <div className="mt-auto flex flex-col   py-2">
           <div className="mb-2 h-px w-full bg-[#ede8e4]" />
           <div className="flex items-center justify-between gap-1.5">
             <span className="text-[1rem] leading-6 text-primary-brown">

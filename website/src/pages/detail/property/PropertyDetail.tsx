@@ -228,7 +228,7 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          <aside className="w-full lg:w-[30%] shrink-0 lg:sticky lg:top-32">
+          <aside className="w-full lg:w-[30%] hidden md:flex shrink-0 lg:sticky lg:top-32">
             <PropertySidebar sidebar={property.sidebar} onEnquiry={() => setIsEnquiryOpen(true)} />
           </aside>
         </div>
