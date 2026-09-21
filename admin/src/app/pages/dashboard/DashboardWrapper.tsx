@@ -141,7 +141,7 @@ const DashboardPage: FC = () => {
   const companyOptions = superAdminSummary?.recent_companies ?? [];
   const dashboardConfig = adminSummary?.dashboard_config ?? {
     title: "Business Dashboard",
-    primary_metric: "New Inquiries",
+    primary_metric: "New Enquiries",
     primary_metric_key: "new_inquiries",
     recent_title: "Recent Activity",
   };
@@ -693,7 +693,7 @@ const DashboardPage: FC = () => {
                     <DashboardChart
                       className="h-100 shadow-sm border-0"
                       title="Lead Funnel"
-                      subtitle="Visited -> inquiry -> qualified -> won"
+                      subtitle="Visited -> enquiry -> qualified -> won"
                       chartType="bar"
                       horizontal
                       showLegend={false}
@@ -736,7 +736,7 @@ const DashboardPage: FC = () => {
                       <DashboardChart
                         className="h-100 shadow-sm border-0"
                         title="Lead Source Funnel"
-                        subtitle="Inquiries grouped by source"
+                        subtitle="Enquiries grouped by source"
                         chartType="bar"
                         horizontal
                         showLegend={false}
@@ -1011,7 +1011,7 @@ const DashboardPage: FC = () => {
                 </h2>
                 <div className="text-gray-600">
                   {isAgent
-                    ? "Work assigned listings, inquiries, and company tasks with your permissions."
+                    ? "Work assigned listings, enquiries, and company tasks with your permissions."
                     : "Track your company performance, billing, and growth in one place."}
                 </div>
               </div>
@@ -1104,7 +1104,7 @@ const DashboardPage: FC = () => {
                     tone="#bf9f7d"
                   />
                   <MetricCard
-                    label="Inquiries"
+                    label="Enquiries"
                     value={adminSummary.metrics.inquiries}
                     tone="#bf9f7d"
                   />
@@ -1233,7 +1233,7 @@ const DashboardPage: FC = () => {
                           {formatPercent(adminSummary.lead_conversion_rate)}
                         </div>
                         <div className="text-gray-600 mt-2">
-                          Orders divided by inquiries across the selected
+                          Orders divided by enquiries across the selected
                           period.
                         </div>
                       </div>
@@ -1394,7 +1394,7 @@ const DashboardPage: FC = () => {
                     <DashboardChart
                       className="h-100"
                       title="Lead Conversion"
-                      subtitle="Orders as a percentage of inquiries"
+                      subtitle="Orders as a percentage of enquiries"
                       chartType="area"
                       actions={
                         <button
@@ -1435,7 +1435,7 @@ const DashboardPage: FC = () => {
                             Performance Trends
                           </span>
                           <span className="text-muted mt-1 fw-semibold fs-7">
-                            Orders, inquiries, and listings by month
+                            Orders, enquiries, and listings by month
                           </span>
                         </h3>
                         <div className="card-toolbar">
@@ -1448,7 +1448,7 @@ const DashboardPage: FC = () => {
                                 [
                                   "Month",
                                   "Properties",
-                                  "Inquiries",
+                                  "Enquiries",
                                   "Orders",
                                   "Lead Conversion %",
                                 ],
@@ -1477,7 +1477,7 @@ const DashboardPage: FC = () => {
                                     ? "Properties"
                                     : "Activity"}
                                 </th>
-                                <th>Inquiries</th>
+                                <th>Enquiries</th>
                                 <th>Orders</th>
                                 <th>Lead Conv.</th>
                               </tr>
@@ -1822,7 +1822,7 @@ const DashboardPage: FC = () => {
                   <div className="col-lg-4">
                     <div className="card h-100 shadow-sm border-0">
                       <div className="card-body">
-                        <div className="text-muted fs-7">New Inquiries</div>
+                        <div className="text-muted fs-7">New Enquiries</div>
                         <div className="fw-bold fs-2 text-dark">
                           {adminSummary.metrics.new_inquiries}
                         </div>
@@ -1905,7 +1905,7 @@ const DashboardPage: FC = () => {
                       <div className="card-header border-0 pt-5">
                         <h3 className="card-title align-items-start flex-column">
                           <span className="card-label fw-bold fs-3 mb-1">
-                            Recent Inquiries
+                            Recent Enquiries
                           </span>
                           <span className="text-muted mt-1 fw-semibold fs-7">
                             Fresh lead volume and pipeline activity
@@ -1915,7 +1915,7 @@ const DashboardPage: FC = () => {
                       <div className="card-body pt-0">
                         {adminSummary.recent_inquiries.length === 0 ? (
                           <div className="alert alert-light border mb-0">
-                            No recent inquiries found.
+                            No recent enquiries found.
                           </div>
                         ) : (
                           <div className="table-responsive">
@@ -1926,7 +1926,7 @@ const DashboardPage: FC = () => {
                                     <tr key={inquiry.id}>
                                       <td>
                                         <div className="fw-semibold">
-                                          {inquiry.subject ?? "Inquiry"}
+                                          {inquiry.subject ?? "Enquiry"}
                                         </div>
                                         <div className="text-muted fs-7 text-capitalize">
                                           {inquiry.status ?? "—"}

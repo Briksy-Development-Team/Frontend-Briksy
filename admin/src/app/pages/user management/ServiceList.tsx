@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchServiceList,
@@ -13,7 +13,6 @@ import { Routes, Route } from "react-router-dom";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 
 import ServiceModal from "../../services/features/service/component/ServiceModal";
-import ServiceImportModal from "../../services/features/service/component/ServiceImportModal";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { serviceListConfig } from "../../services/features/service/service_list.config";
 import type { RootState, AppDispatch } from "../../services/store";
@@ -31,7 +30,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
   const canManage = true;
-  const [isImportOpen, setIsImportOpen] = useState(false);
   const {
         data,
         total,
@@ -44,12 +42,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
     const { params, handleParamsChange } = useEntityTable((p) =>
         dispatch(fetchServiceList(p)),
     );
-
-    useEffect(() => {
-        if (!saving && !isModalOpen) {
-            dispatch(fetchServiceList(params));
-        }
-    }, [isModalOpen, saving, params, dispatch]);
 
     const title = "Services";
     const subtitle = isSuperAdmin
@@ -86,11 +78,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
                 permission: "service.create",
                 onClick: () => dispatch(openServiceModal(null)),
             },
-            ...(!isSuperAdmin ? [{
-                label: "Import Services",
-                permission: "service.create",
-                onClick: () => setIsImportOpen(true),
-            }] : []),
         ] : []}
                 rowActions={rowActions}
                 bulkActions={(ids) => onBulkDelete ? [{
@@ -100,15 +87,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
                 }] : []}
             />
 
-            {isImportOpen && (
-                <ServiceImportModal
-                    onClose={() => setIsImportOpen(false)}
-                    onCompleted={() => {
-                        setIsImportOpen(false);
-                        void dispatch(fetchServiceList(params));
-                    }}
-                />
-            )}
         </Content>
     );
 };
@@ -126,6 +104,7 @@ const ServiceListPageWrapper = () => {
         deletingService,
     } = useSelector((s: RootState) => s.services);
     const [bulkDeleteIds, setBulkDeleteIds] = useState<string[]>([]);
+    const [savedService, setSavedService] = useState<any>(null);
 
     const rowActions = canManage
         ? [
@@ -148,8 +127,8 @@ const ServiceListPageWrapper = () => {
             <Routes>
                 <Route index element={<ServiceListPage rowActions={rowActions} onBulkDelete={setBulkDeleteIds} />} />
                 <Route path="map" element={<ServiceMapPage />} />
-                <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} />} />
-                <Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} />
+                <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} dataPatch={savedService} />} />
+                <Route path=":id" element={<GenericDetailPage rowActions={rowActions} dataPatch={savedService} />} />
             </Routes>
 
             {canManage && isModalOpen && (
@@ -160,6 +139,7 @@ const ServiceListPageWrapper = () => {
                     onSubmit={(values) =>
                         dispatch(saveService({ id: editingService?.id, values }))
                             .unwrap()
+                            .then((saved) => setSavedService(saved))
                             .catch((error: any) => {
                                 toast.danger(error?.response?.data?.message ?? error?.message ?? "Unable to save service.");
                             })

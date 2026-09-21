@@ -23,6 +23,8 @@ const PropertyModal = ({
     onClose,
     onSubmit,
 }: Props) => {
+    const MAX_VIDEO_SIZE = 1024 * 1024 * 1024;
+    const ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/webm"]);
     const { isSuperAdmin } = useRoleAccess();
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [organizationSearch, setOrganizationSearch] = useState("");
@@ -64,8 +66,17 @@ const PropertyModal = ({
 
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [videoPreviews, setVideoPreviews] = useState<string[]>([]);
+    const [mediaError, setMediaError] = useState<string | null>(null);
 
     const handleMediaChange = (files: File[]) => {
+        const invalidVideo = files.find((file) => file.type.startsWith("video/") && (!ALLOWED_VIDEO_TYPES.has(file.type) || file.size > MAX_VIDEO_SIZE));
+        if (invalidVideo) {
+            setMediaError(`${invalidVideo.name} must be an MP4, MOV, AVI, MKV, or WebM video smaller than 1 GB.`);
+            setImages([]);
+            setVideos([]);
+            return;
+        }
+        setMediaError(null);
         setImages(files.filter((file) => file.type.startsWith("image/")));
         setVideos(files.filter((file) => file.type.startsWith("video/")));
     };
@@ -714,12 +725,13 @@ const PropertyModal = ({
                     <input
                         type="file"
                         multiple
-                        accept="image/jpeg,image/png,image/webp,video/*"
+                        accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm"
                         className="form-control"
                         onChange={(e) => handleMediaChange(Array.from(e.target.files ?? []))}
                     />
 
                     <div className="text-muted fs-7 mt-2">Upload images and videos together</div>
+                    {mediaError && <div className="text-danger fs-7 mt-2">{mediaError}</div>}
                 </div>
 
                 {images.length > 0 && (

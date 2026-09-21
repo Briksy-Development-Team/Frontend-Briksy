@@ -18,8 +18,8 @@ const InquiryList = () => {
     const { isSuperAdmin } = useRoleAccess();
     const { hasModule } = useModuleAccess();
     const inquiryTitle = !isSuperAdmin && hasModule("service_management")
-        ? "Service Inquiries"
-        : "Property Inquiries";
+        ? "Service Enquiries"
+        : "Property Enquiries";
 
     const portalBase = getRolePortalBaseRoute(
         isSuperAdmin ? ["super_admin"] : ["admin"],
@@ -46,7 +46,7 @@ const InquiryList = () => {
                 total={total}
                 params={params}
                 onParamsChange={handleParamsChange}
-                columns={inquiryConfig.columns}
+                columns={!isSuperAdmin && hasModule("service_management") ? inquiryConfig.serviceColumns : inquiryConfig.columns}
                 filtersConfig={inquiryConfig.filters}
                 getRowLink={(row) => `${portalBase}/inquiry/${getDisplayId(row)}`}
                 enableRowClick

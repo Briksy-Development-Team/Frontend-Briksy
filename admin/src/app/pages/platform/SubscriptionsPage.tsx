@@ -9,7 +9,7 @@ export default function SubscriptionsPage() {
   const [filters, setFilters] = useState({ organization_id: "", plan_id: "", status: "", billing_cycle: "" });
 
   const load = async (nextFilters = filters) => {
-    const params = Object.fromEntries(Object.entries(nextFilters).filter(([, value]) => value));
+    const params = Object.fromEntries(Object.entries(nextFilters).filter(([, value]) => value)) as Record<string, string>;
     setItems(await fetchSuperAdminSubscriptionsApi(params));
   };
 

@@ -1,0 +1,18 @@
+DirectoryIndex index.html
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve existing assets normally.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Let React Router handle application routes.
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+<FilesMatch "\.(html|js|css|json|svg|webp|png|jpg|jpeg|gif|ico|woff2?|ttf|otf|mp4)$">
+    Require all granted
+</FilesMatch>

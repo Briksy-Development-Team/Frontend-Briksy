@@ -98,12 +98,14 @@ export function EnquiryModal({
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-primary-brown">Phone</label>
+              <label className="mb-1 block text-sm text-primary-brown">Phone <span aria-hidden="true">*</span></label>
               <input
+                required
+                type="tel"
                 value={values.seeker_phone}
                 onChange={(event) => update("seeker_phone", event.target.value)}
                 className="w-full rounded-xl border border-[#E7E7E4] bg-[#F8F4EE] px-4 py-3 text-primary-brown outline-none focus:border-primary-brown"
-                placeholder="Optional"
+                placeholder="Your phone number"
               />
             </div>
           </div>

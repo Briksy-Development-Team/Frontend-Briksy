@@ -57,7 +57,7 @@ const AppRouter = () => {
 
         <Route path="/result" element={<SearchPage />} />
         <Route path="/buy" element={<SearchPage />} />
-        <Route path="/sell" element={<SearchPage />} />
+        <Route path="/sold" element={<SearchPage />} />
         <Route path="/rent" element={<SearchPage />} />
         <Route path="/builders" element={<SearchPage />} />
         <Route path="/agents" element={<SearchPage />} />

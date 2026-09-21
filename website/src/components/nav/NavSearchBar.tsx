@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal, X, TrendingUp, Sparkles } from "lucide-react
 import Filter from "../filter/Filter";
 import { useNavigate } from "react-router-dom";
 
-const TRENDING = ["Landscappers", "Concreter", "Fencing", "Mortgage Brokers", "Conveyancers", "Building and Pest"];
+const TRENDING = ["Landscapers", "Concreter", "Fencing", "Mortgage Brokers", "Conveyancers", "Building and Pest"];
 
 export const NavSearchButton = ({ onClick }: { onClick: () => void }) => (
   <button onClick={onClick} className="flex items-center justify-center rounded-[0.9375rem]" aria-label="Open search">

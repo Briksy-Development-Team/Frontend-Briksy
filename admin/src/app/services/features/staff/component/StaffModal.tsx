@@ -41,6 +41,7 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
   const [form, setForm] = useState<StaffFormValues>({
     name: "",
     email: "",
+    mobile_number: "",
     password: "",
     permissions: [],
   })
@@ -56,6 +57,7 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
       setForm({
         name: initialValues.name,
         email: initialValues.email,
+        mobile_number: initialValues.mobile_number ?? "",
         password: "",
         permissions: initialValues.permissions.filter((permission) =>
           (availablePermissions as readonly string[]).includes(permission),
@@ -154,6 +156,19 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
             <span className="fv-help-block">{emailError}</span>
           </div>
         )}
+      </div>
+
+      {/* Mobile number */}
+      <div className="fv-row mb-7">
+        <label className="fw-bold fs-6 mb-2">Mobile Number</label>
+        <input
+          type="tel"
+          placeholder="Mobile number"
+          value={form.mobile_number ?? ""}
+          onChange={(e) => setForm((p) => ({ ...p, mobile_number: e.target.value }))}
+          className="form-control form-control-solid"
+          autoComplete="tel"
+        />
       </div>
 
       {/* Password — only on create */}

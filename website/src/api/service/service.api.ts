@@ -10,6 +10,7 @@ export type PublicService = {
   slug?: string | null;
   description?: string | null;
   service_area?: string | null;
+  service_area_geometry?: { type: "Polygon"; coordinates: number[][][] } | null;
   rate_from?: number | null;
   rate_to?: number | null;
   organization?: {

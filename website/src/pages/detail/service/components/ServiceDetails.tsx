@@ -1,6 +1,14 @@
 import { X, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Approves from "../../../../assets/logo/apprrove.svg";
+import { loadGoogleMapsScript } from "../../../../utils/googleMapsLoader";
+
+type ServiceAreaGeometry = { type: "Polygon"; coordinates: number[][][] };
+
+const geometryToPath = (geometry?: ServiceAreaGeometry | null) =>
+  (geometry?.coordinates?.[0] ?? [])
+    .map(([lng, lat]) => Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null)
+    .filter((point): point is { lat: number; lng: number } => point !== null);
 
 
 export function ServiceList({ servicesData }: { servicesData: any }) {
@@ -163,11 +171,7 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
           className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100"
           onClick={() => setModalOpen(true)}
         >
-          <img
-            src={recentWork.items[0].src}
-            alt="Recent work"
-            className="w-full h-full object-cover"
-          />
+          {recentWork.items[0]?.type === "video" ? <video src={recentWork.items[0].src} muted playsInline className="w-full h-full object-cover" /> : <img src={recentWork.items[0]?.src} alt="Recent work" className="w-full h-full object-cover" />}
         </div>
 
         <div className="w-[35%] flex flex-col gap-2 h-full">
@@ -175,22 +179,14 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
             className="flex-1 rounded-xl overflow-hidden cursor-pointer relative bg-white-100"
             onClick={() => setModalOpen(true)}
           >
-            <img
-              src={recentWork.items[1].src}
-              alt="Recent work"
-              className="w-full h-full object-cover"
-            />
+            {recentWork.items[1]?.type === "video" ? <video src={recentWork.items[1].src} muted playsInline className="w-full h-full object-cover" /> : <img src={recentWork.items[1]?.src} alt="Recent work" className="w-full h-full object-cover" />}
           </div>
 
           <div
             className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100 relative"
             onClick={() => setModalOpen(true)}
           >
-            <img
-              src={recentWork.items[2].src}
-              alt="Recent work"
-              className="w-full h-full object-cover"
-            />
+            {recentWork.items[2]?.type === "video" ? <video src={recentWork.items[2].src} muted playsInline className="w-full h-full object-cover" /> : <img src={recentWork.items[2]?.src} alt="Recent work" className="w-full h-full object-cover" />}
             <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
               <span className="text-white text-3xl">...</span>
             </div>
@@ -207,33 +203,92 @@ export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
             <X size={22} />
           </button>
 
-          <div className="w-full max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+          <div className="w-full max-w-5xl h-[85vh] max-h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between shrink-0">
               <h3 className="text-[1.125rem] font-medium text-primary-brown">
-                Gallery · {recentWork.totalPhotos} photos
+                Gallery · {recentWork.totalPhotos} photos{recentWork.totalVideos ? `, ${recentWork.totalVideos} videos` : ""}
               </h3>
             </div>
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 min-h-0 overflow-y-scroll overscroll-contain p-6" style={{ scrollbarWidth: "thin", scrollbarColor: "#8B6F54 #F1ECE4" }}>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {recentWork.items.map((item: any, idx: number) => (
+                {(recentWork.allItems ?? recentWork.items).map((item: any, idx: number) => (
                   <div
                     key={idx}
                     className="aspect-square rounded-xl overflow-hidden relative bg-white-100"
                   >
-                    <img
-                      src={item.src}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
+                    {item.type === "video" ? <video src={item.src} controls playsInline className="w-full h-full object-cover" /> : <img src={item.src} className="w-full h-full object-cover" alt="" />}
                   </div>
                 ))}
               </div>
+              <p className="mt-4 text-center text-xs text-primary-light-brown">Scroll to view all media</p>
             </div>
           </div>
         </div>
       )}
     </div>
   );
+}
+
+function ServiceAreaMap({ location }: { location: any }) {
+  const mapElementRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<any>(null);
+  const polygonRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+  const polygonPath = useMemo(() => geometryToPath(location.geometry), [location.geometry]);
+
+  useEffect(() => {
+    let active = true;
+
+    loadGoogleMapsScript()
+      .then(() => {
+        if (!active || !mapElementRef.current || !(window as any).google?.maps) return;
+        const googleMaps = (window as any).google.maps;
+        const fallbackCenter = { lat: -25.2744, lng: 133.7751 };
+        mapRef.current = new googleMaps.Map(mapElementRef.current, {
+          center: polygonPath[0] || fallbackCenter,
+          zoom: polygonPath.length >= 3 ? 10 : 11,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+        });
+
+        if (polygonPath.length >= 3) {
+          polygonRef.current = new googleMaps.Polygon({
+            paths: polygonPath,
+            map: mapRef.current,
+            fillColor: "#f05537",
+            fillOpacity: 0.22,
+            strokeColor: "#f05537",
+            strokeOpacity: 0.9,
+            strokeWeight: 2,
+          });
+          const bounds = new googleMaps.LatLngBounds();
+          polygonPath.forEach((point: { lat: number; lng: number }) => bounds.extend(point));
+          mapRef.current.fitBounds(bounds);
+          return;
+        }
+
+        if (location.serviceArea) {
+          const geocoder = new googleMaps.Geocoder();
+          geocoder.geocode({ address: location.serviceArea }, (results: any[], status: string) => {
+            if (!active || status !== "OK" || !results?.[0]?.geometry?.location) return;
+            const position = results[0].geometry.location;
+            mapRef.current.setCenter(position);
+            markerRef.current = new googleMaps.Marker({ map: mapRef.current, position });
+          });
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+      polygonRef.current?.setMap(null);
+      markerRef.current?.setMap(null);
+      mapRef.current = null;
+    };
+  }, [location.serviceArea, polygonPath]);
+
+  return <div ref={mapElementRef} className="h-full w-full" />;
 }
 
 export function ServiceLocation({ location }: { location: any }) {
@@ -249,21 +304,28 @@ export function ServiceLocation({ location }: { location: any }) {
       </div>
 
       <div className="w-full h-[25.875rem] rounded-[1.5rem] overflow-hidden">
-        <iframe
-          src={location.mapSrc}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Service area map"
-        />
+        {location.geometry || location.serviceArea ? (
+          <ServiceAreaMap location={location} />
+        ) : location.mapSrc ? (
+          <iframe
+            src={location.mapSrc}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Service area map"
+          />
+        ) : (
+          <div className="h-full w-full bg-white flex items-center justify-center text-sm text-primary-light-brown">
+            Service location will be confirmed after enquiry.
+          </div>
+        )}
       </div>
 
       <p className="text-[0.75rem] text-primary-light-brown">
-        You can also come to me once the job is booked: Flinders Street Station,
-        Melbourne, VIC 3000
+        {location.address ? `Service location: ${location.address}` : "Contact this business to confirm the service location."}
       </p>
     </div>
   );

@@ -87,8 +87,8 @@ export const serviceListConfig = {
       label: "Status",
       type: "select" as const,
       options: [
-        { label: "Active", value: "true" },
-        { label: "Inactive", value: "false" }
+        { label: "Active", value: "1" },
+        { label: "Inactive", value: "0" }
       ],
     },
     {

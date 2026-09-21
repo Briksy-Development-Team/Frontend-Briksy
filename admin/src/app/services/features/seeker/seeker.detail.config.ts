@@ -40,7 +40,7 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
     },
     {
       id: "inquiries",
-      label: "Property Inquiries",
+      label: "Property Enquiries",
       sections: ["property_inquiries"],
     },
     {
@@ -83,11 +83,18 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
     {
       id: "property_inquiries",
       type: "table",
-      title: "Related Inquiries",
+      title: "Related Enquiries",
       fetchFn: async () => ({ data: [], meta: { pagination: { total: 0 } } }),
-      dataSelector: () => [],
-      totalSelector: () => 0,
-      columns: [], // Mock
+      dataSelector: (state: any, data: any) => data?.inquiries ?? [],
+      totalSelector: (state: any, data: any) => data?.inquiries?.length ?? 0,
+      columns: [
+        { Header: "Reference", accessor: "reference_no" },
+        { Header: "Subject", accessor: "subject" },
+        { Header: "Property", accessor: "property_title" },
+        { Header: "Organization", accessor: "organization_name" },
+        { Header: "Status", accessor: "status" },
+        { Header: "Created", accessor: "created_at" },
+      ],
     },
     {
       id: "email_history",

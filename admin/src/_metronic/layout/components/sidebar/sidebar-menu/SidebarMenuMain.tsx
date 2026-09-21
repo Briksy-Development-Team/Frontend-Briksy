@@ -223,7 +223,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("service_management") && (
+          {hasModule("service_management") && hasPermission("service.view") && (
             <SidebarMenuItem
               to={`${portalBase}/services`}
               title="Services Management"
@@ -245,6 +245,15 @@ const SidebarMenuMain = () => {
 
       {isAdmin && (
         <>
+          {hasModule("inquiry_management") && (
+            <SidebarMenuItem
+              to={`${portalBase}/inquiry`}
+              title={hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
+              fontIcon="bi-archive"
+              icon="/media/icons/duotune/iconsnew/"
+            />
+          )}
+
           {hasPermission("company.view") && (
             <SidebarMenuItem
               to={`${portalBase}/businesses`}
@@ -254,7 +263,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("property_management") && (
+          {hasModule("property_management") && hasPermission("property.view") && (
             <>
               <SidebarMenuItem
                 to={`${portalBase}/property-management`}
@@ -271,7 +280,7 @@ const SidebarMenuMain = () => {
             </>
           )}
 
-          {hasModule("service_management") && (
+          {hasModule("service_management") && hasPermission("service.view") && (
             <SidebarMenuItem
               to={`${portalBase}/services`}
               title="Services Management"
@@ -279,6 +288,13 @@ const SidebarMenuMain = () => {
               icon="/media/icons/duotune/iconsnew/service.svg"
             />
           )}
+
+          <SidebarMenuItem
+            to={`${portalBase}/billing`}
+            title="Pricing Plans"
+            fontIcon="bi-credit-card"
+            icon="/media/icons/duotune/finance/fin002.svg"
+          />
 
           {hasModule("buyer_management") && (
             <SidebarMenuItem
@@ -313,15 +329,6 @@ const SidebarMenuMain = () => {
               title="Referrals"
               fontIcon="bi-archive"
               icon="/media/icons/duotune/iconsnew/ref.svg"
-            />
-          )}
-
-          {hasModule("inquiry_management") && (
-            <SidebarMenuItem
-              to={`${portalBase}/inquiry`}
-              title={hasModule("service_management") ? "Service Inquiries" : "Property Inquiries"}
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
             />
           )}
 

@@ -66,7 +66,9 @@ export default function AdminBillingPage() {
         : (addon.monthly_price ?? addon.one_time_price ?? 0);
     return total + price * quantity;
   }, 0);
-  const total = useMemo(() => basePrice + addonTotal, [addonTotal, basePrice]);
+  const total = useMemo(() => Math.round(basePrice + addonTotal), [addonTotal, basePrice]);
+  const displayCurrency = (currency?: string | null) =>
+    currency?.toUpperCase() === "AUD" || !currency ? "$" : currency;
   const selectedAddonSelections: BillingCheckoutAddonSelection[] = selectedAddons.map((addon) => ({
     addon_id: addon.id,
     quantity: Math.max(1, addonQuantities[addon.id] ?? 1),
@@ -125,7 +127,7 @@ export default function AdminBillingPage() {
           <div className="card mb-5">
             <div className="card-body d-flex gap-3 align-items-center">
               <button className={`btn ${billingCycle === "monthly" ? "btn-primary" : "btn-light"}`} onClick={() => setBillingCycle("monthly")}>Monthly</button>
-              <button className={`btn ${billingCycle === "yearly" ? "btn-primary" : "btn-light"}`} onClick={() => setBillingCycle("yearly")}>Annual</button>
+              <button className={`btn ${billingCycle === "yearly" ? "btn-primary" : "btn-light"}`} onClick={() => setBillingCycle("yearly")}>Annual <span className="badge bg-success ms-2">Save 20%</span></button>
             </div>
           </div>
           <SubscriptionList
@@ -156,7 +158,7 @@ export default function AdminBillingPage() {
                             {billingCycle === "yearly"
                               ? addon.yearly_price ?? addon.monthly_price ?? addon.one_time_price ?? 0
                               : addon.monthly_price ?? addon.one_time_price ?? 0}{" "}
-                            {addon.currency}
+                            {displayCurrency(addon.currency)}
                           </span>
                         </div>
                         {selectedAddonIds.includes(addon.id) ? (
@@ -179,9 +181,9 @@ export default function AdminBillingPage() {
                 ))}
               </div>
               <div className="border-top pt-4">
-                <div className="d-flex justify-content-between mb-2"><span>Base</span><strong>{basePrice} {selectedPlan?.currency ?? "AUD"}</strong></div>
-                <div className="d-flex justify-content-between mb-2"><span>Add-ons</span><strong>{addonTotal} {selectedPlan?.currency ?? "AUD"}</strong></div>
-                <div className="d-flex justify-content-between fs-4"><span>Total</span><strong>{total} {selectedPlan?.currency ?? "AUD"}</strong></div>
+                <div className="d-flex justify-content-between mb-2"><span>Base</span><strong>{basePrice} {displayCurrency(selectedPlan?.currency)}</strong></div>
+                <div className="d-flex justify-content-between mb-2"><span>Add-ons</span><strong>{addonTotal} {displayCurrency(selectedPlan?.currency)}</strong></div>
+                <div className="d-flex justify-content-between fs-4"><span>Total</span><strong>{total} {displayCurrency(selectedPlan?.currency)}</strong></div>
               </div>
               <button className="btn btn-primary w-100 mt-5" onClick={checkout} disabled={!selectedPlan}>Subscribe / Upgrade</button>
             </div>

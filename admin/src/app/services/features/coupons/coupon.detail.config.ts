@@ -7,8 +7,11 @@ export const couponDetailConfig: DetailConfig<any> = {
     avatarAccessor: () => "",
     badges: [
       {
-        label: (data: any) => data.is_active ? "Active" : "Inactive",
-        color: (data: any) => data.is_active ? "success" : "secondary"
+        label: (data: any) => {
+          const status = String(data?.status ?? "inactive").toLowerCase();
+          return status.charAt(0).toUpperCase() + status.slice(1);
+        },
+        color: (data: any) => String(data?.status ?? "inactive").toLowerCase() === "active" ? "success" : "secondary"
       }
     ],
     metrics: [
@@ -32,8 +35,8 @@ export const couponDetailConfig: DetailConfig<any> = {
         { label: "Code", accessor: "code", colSpan: 6 },
         { label: "Type", accessor: "discount_type", colSpan: 6 },
         { label: "Value", accessor: "discount_value", colSpan: 6 },
-        { label: "Valid From", accessor: "valid_from", colSpan: 6 },
-        { label: "Valid Until", accessor: "valid_until", colSpan: 6 },
+        { label: "Valid From", accessor: "starts_at", colSpan: 6 },
+        { label: "Valid Until", accessor: "expires_at", colSpan: 6 },
         { label: "Usage Limit", accessor: "usage_limit", colSpan: 6 },
       ]
     }

@@ -44,11 +44,6 @@ export const serviceDetailConfig: DetailConfig<any> = {
       sections: ["service_gallery", "service_video_gallery"],
     },
     {
-      id: "inquiries",
-      label: "Inquiries",
-      sections: ["service_inquiries"],
-    },
-    {
       id: "emails",
       label: "Emails",
       sections: ["email_history"],
@@ -103,16 +98,6 @@ export const serviceDetailConfig: DetailConfig<any> = {
       imagesAccessor: (data) => (data?.videos ?? [])
         .map((video: any) => typeof video === "string" ? video : video?.url)
         .filter(Boolean),
-    },
-    {
-      id: "service_inquiries",
-      type: "table",
-      title: "Related Inquiries",
-      gridColumnSpan: 12,
-      fetchFn: () => {}, 
-      dataSelector: () => [], 
-      totalSelector: () => 0, 
-      columns: [], 
     },
     {
       id: "email_history",

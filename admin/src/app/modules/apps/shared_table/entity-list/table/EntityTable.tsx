@@ -226,7 +226,7 @@ const EntityTable = <T extends { id: string | number }>({
                         style={{ ...tdBase(isSelected, false), textAlign: "center" }}
                       >
                         {rowActionsForItem.length > 0 ? (
-                          <div className="dropdown">
+                          <div className="dropdown dropup">
                             <button
                               type="button"
                               data-bs-toggle="dropdown"
@@ -250,6 +250,8 @@ const EntityTable = <T extends { id: string | number }>({
                                 border: "1px solid #ececec",
                                 boxShadow: "0 12px 32px rgba(0,0,0,0.10)",
                                 minWidth: 175,
+                                maxHeight: 240,
+                                overflowY: "auto",
                                 padding: "6px",
                               }}
                             >

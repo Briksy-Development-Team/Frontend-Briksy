@@ -5,6 +5,7 @@ export type PropertySearchParams = {
   purpose?: "sell" | "rent";
   category?: "residential" | "commercial";
   search?: string;
+  organization_slug?: string;
   suburb?: string;
   postcode?: string;
   min_price?: number;
@@ -106,6 +107,7 @@ export const propertyQueryToParams = (
         ? "residential"
         : undefined,
   search: query.get("q") || query.get("search") || undefined,
+  organization_slug: query.get("organization_slug") || undefined,
   suburb: query.get("suburb") || undefined,
   postcode: query.get("postcode") || undefined,
   min_price: queryNumber(query, "min_price"),
