@@ -119,12 +119,12 @@ const CouponPage = () => {
     {
       label: "Activate",
       permission: "coupon.update",
-      onClick: (row: any) => dispatch(activateCoupon(row.id)),
+      onClick: (row: any) => dispatch(activateCoupon(row.id)).unwrap(),
     },
     {
       label: "Deactivate",
       permission: "coupon.update",
-      onClick: (row: any) => dispatch(deactivateCoupon(row.id)),
+      onClick: (row: any) => dispatch(deactivateCoupon(row.id)).unwrap(),
     },
     {
       label: "Delete",

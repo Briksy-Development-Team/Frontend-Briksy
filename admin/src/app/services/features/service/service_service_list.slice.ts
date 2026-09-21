@@ -132,8 +132,17 @@ const serviceSlice = createSlice({
         state.saving = true;
       })
 
-      .addCase(saveService.fulfilled, (state) => {
+      .addCase(saveService.fulfilled, (state, action) => {
         state.saving = false;
+
+        const saved = mapServiceList(action.payload);
+        const index = state.data.findIndex((item) => item.id === saved.id);
+        if (index >= 0) {
+          state.data[index] = saved;
+        } else {
+          state.data.unshift(saved);
+          state.total += 1;
+        }
 
         state.isModalOpen = false;
         state.editingService = null;

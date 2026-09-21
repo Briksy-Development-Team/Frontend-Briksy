@@ -102,8 +102,11 @@ const ServiceDetail = () => {
   const firstService = allServices[0];
   const favoriteTargetId = selectedService?.id || firstService?.id || organization.id;
   const favoriteTargetType = selectedService?.id || firstService?.id ? "service" as const : "organization" as const;
-  const serviceMedia = allServices.flatMap((item) => (item.images || []).map((image) => ({ src: image.url })));
-  const galleryItems = [0, 1, 2].map((index) => serviceMedia[index] || { src: ServicePlaceholder });
+  const serviceMedia = allServices.flatMap((item) => [
+    ...(item.images || []).map((image) => ({ src: image.url, type: "image" as const })),
+    ...(item.videos || []).map((video) => ({ src: video.url, type: "video" as const })),
+  ]);
+  const galleryItems = [0, 1, 2].map((index) => serviceMedia[index] || { src: ServicePlaceholder, type: "image" as const });
   const address = [organization.address, organization.state, organization.postcode].filter(Boolean).join(", ");
   const serviceArea = selectedService?.service_area || firstService?.service_area;
   const serviceAreaGeometry = selectedService?.service_area_geometry || firstService?.service_area_geometry;
@@ -162,8 +165,10 @@ const ServiceDetail = () => {
               <div className="w-[70%]">
                 <ServiceRecentWork
                   recentWork={{
-                    totalPhotos: serviceMedia.length,
-                    items: galleryItems,
+                  totalPhotos: serviceMedia.filter((item) => item.type === "image").length,
+                  totalVideos: serviceMedia.filter((item) => item.type === "video").length,
+                  items: galleryItems,
+                  allItems: serviceMedia,
                   }}
                 /></div>
 

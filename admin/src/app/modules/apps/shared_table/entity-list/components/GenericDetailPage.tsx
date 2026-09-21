@@ -84,7 +84,7 @@ const matchesRouteIdentifier = (data: any, id: string) => {
   return candidates.some((value) => String(value ?? '') === String(id))
 }
 
-const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
+const GenericDetailPage = ({ rowActions, dataPatch }: { rowActions?: any[]; dataPatch?: any }) => {
   const location = useLocation()
   const { id } = useParams()
   const state = location.state as any
@@ -118,11 +118,28 @@ const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
   const [isLoading, setIsLoading] = useState<boolean>(!initialData)
   const [error, setError] = useState<string | null>(null)
 
+  const detailRowActions = useMemo(() => rowActions?.map((action) => ({
+    ...action,
+    onClick: async (row: any) => {
+      const result = await action.onClick(row)
+      const updated = result?.data ?? result
+
+      if (updated && typeof updated === 'object') {
+        setData((current: any) => ({ ...current, ...updated }))
+      }
+    },
+  })), [rowActions])
+
   useEffect(() => {
     setData(initialData)
     setIsLoading(!initialData)
     setError(null)
   }, [initialData])
+
+  useEffect(() => {
+    if (!dataPatch || !id || !matchesRouteIdentifier(dataPatch, String(id))) return
+    setData((current: any) => ({ ...current, ...dataPatch }))
+  }, [dataPatch, id])
 
   useEffect(() => {
     let active = true
@@ -201,7 +218,7 @@ const GenericDetailPage = ({ rowActions }: { rowActions?: any[] }) => {
         data={data}
         isLoading={isLoading}
         error={error}
-        rowActions={rowActions}
+        rowActions={detailRowActions}
       />
     </Content>
   )

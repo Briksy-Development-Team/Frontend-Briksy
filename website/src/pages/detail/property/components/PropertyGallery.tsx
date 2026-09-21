@@ -56,9 +56,14 @@ export const PropertyGallery = ({ images = [] }: { images?: GalleryImageInput[] 
     {galleryImages.length < 5 && <button type="button" className="mt-3 hidden md:inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-primary-brown shadow-sm" onClick={() => setGalleryOpen(true)}><List size={18} /> All photos</button>}
 
     {galleryOpen && <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3 sm:p-6" onClick={() => setGalleryOpen(false)}>
-      <div className="w-full max-w-5xl max-h-[92vh] bg-white rounded-2xl overflow-hidden flex flex-col" onClick={(event) => event.stopPropagation()}>
+      <div className="w-full max-w-5xl h-[92vh] max-h-[92vh] bg-white rounded-2xl overflow-hidden flex flex-col" onClick={(event) => event.stopPropagation()}>
         <div className="px-5 py-4 border-b border-[#EBE5D9] flex items-center justify-between shrink-0"><h3 className="text-[1.125rem] font-bold text-primary-brown">All media · {photoCount} photos, {galleryImages.length - photoCount} videos</h3><button type="button" aria-label="Close" className="w-9 h-9 flex items-center justify-center text-primary-brown hover:bg-[#f5f1eb] rounded-full" onClick={() => setGalleryOpen(false)}><X size={22} /></button></div>
-        <div className="flex-1 min-h-0 overflow-y-auto p-5"><div className="grid grid-cols-2 md:grid-cols-3 gap-3">{galleryImages.map((media, index) => <button type="button" key={media.id ?? media.src ?? index} aria-label={`Open ${media.type === 'video' ? 'video' : 'image'} ${index + 1}`} className="aspect-square rounded-xl overflow-hidden relative text-left" style={{ backgroundColor: PLACEHOLDER_COLORS[index % PLACEHOLDER_COLORS.length] }} onClick={() => openMedia(index)}><MediaPreview media={media} className="w-full h-full object-cover" />{media.type === 'video' && <span className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90"><Play size={16} className="text-primary-brown ml-0.5" fill="currentColor" /></span></span>}</button>)}</div></div>
+        <div className="flex-1 min-h-0 overflow-y-scroll overscroll-contain p-5" style={{ scrollbarWidth: "thin", scrollbarColor: "#8B6F54 #F1ECE4" }}>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {galleryImages.map((media, index) => <button type="button" key={media.id ?? media.src ?? index} aria-label={`Open ${media.type === 'video' ? 'video' : 'image'} ${index + 1}`} className="aspect-square rounded-xl overflow-hidden relative text-left" style={{ backgroundColor: PLACEHOLDER_COLORS[index % PLACEHOLDER_COLORS.length] }} onClick={() => openMedia(index)}><MediaPreview media={media} className="w-full h-full object-cover" />{media.type === 'video' && <span className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/90"><Play size={16} className="text-primary-brown ml-0.5" fill="currentColor" /></span></span>}</button>)}
+          </div>
+          <p className="mt-4 text-center text-xs text-primary-light-brown">Scroll to view all media</p>
+        </div>
       </div>
     </div>}
 
