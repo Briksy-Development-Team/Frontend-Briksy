@@ -30,7 +30,7 @@ import PropertyMapView from "../../services/features/properties/component/Proper
 import { fetchPropertyApi } from "../../services/features/properties/property.api";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { useToast } from "../../services/ui/toast/useToast";
-import type { PropertyList } from "../../services/features/properties/property.types";
+import type { Property, PropertyList } from "../../services/features/properties/property.types";
 import { usePropertyReviewActions } from "../../services/features/properties/usePropertyReviewActions";
 
 const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
@@ -41,6 +41,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const [mapProperties, setMapProperties] = useState<PropertyList[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [savedProperty, setSavedProperty] = useState<Property | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [mapFilters, setMapFilters] = useState({
     status: "",
@@ -366,11 +367,11 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
         />
         <Route
           path=":id"
-          element={<GenericDetailPage rowActions={propertyRowActions} />}
+          element={<GenericDetailPage rowActions={propertyRowActions} dataPatch={savedProperty} />}
         />
         <Route
           path="detail/:id"
-          element={<GenericDetailPage rowActions={propertyRowActions} />}
+          element={<GenericDetailPage rowActions={propertyRowActions} dataPatch={savedProperty} />}
         />
       </Routes>
 
@@ -381,12 +382,13 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           onClose={() => dispatch(closePropertyModal())}
           onSubmit={async (values) => {
             try {
-              await dispatch(
+              const saved = await dispatch(
                 saveProperty({
                   id: editingProperty?.id,
                   values,
                 }),
               ).unwrap();
+              setSavedProperty(saved);
 
               dispatch(fetchPropertyList(params));
               toast.success(editingProperty ? "Property updated." : "Property created.");
