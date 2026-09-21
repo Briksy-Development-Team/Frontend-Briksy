@@ -5,7 +5,7 @@ import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, Pro
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { ShieldCheck, Share } from "lucide-react";
+import { ShieldCheck, Share, ChevronLeft } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -128,10 +128,11 @@ const PropertyDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen mt-20 font-helvetica flex flex-col ">
-      <main className="flex-1 w-full  px-[5%]  py-6">
+    <div className="min-h-screen md:mt-20 font-helvetica flex flex-col ">
+      <main className="flex-1 w-full  px-[5%] pb-6 md:pb-0  md:py-6">
 
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+        {/* Desktop Header */}
+        <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
 
           <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0">
@@ -150,8 +151,31 @@ const PropertyDetail = () => {
           </div>
         </div>
 
+        <div className="mb-10 w-full relative">
+          {/* Mobile Overlay Header */}
+          <div className="md:hidden absolute top-4 left-0  right-0 z-10 flex justify-between items-center pointer-events-none">
+            <button 
+              onClick={() => window.history.back()} 
+              className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown pointer-events-auto hover:bg-gray-50"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            
+            <div className="flex items-center gap-3 pointer-events-auto">
+              <button className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown hover:bg-gray-50">
+                <Share size={18} />
+              </button>
+              <FavoriteButton
+                variant="icon-only"
+                iconSize={18}
+                className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown hover:bg-gray-50"
+                targetId={property.id}
+                targetType="property"
+                initialIsFavourite={Boolean(propertyData.is_favourite)}
+              />
+            </div>
+          </div>
 
-        <div className="mb-10 w-full">
           <PropertyGallery images={property.images} />
         </div>
 
@@ -159,7 +183,17 @@ const PropertyDetail = () => {
         <div className="flex flex-col lg:flex-row gap-10 items-start relative">
           <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
 
-            <PropertyTitle title={property.title} subtitle={property.subtitle} />
+            <PropertyTitle 
+              title={property.title} 
+              beds={propertyData.bedroom_option}
+              baths={propertyData.bathroom_option}
+              car={propertyData.car_space_option}
+              sqm={propertyData.internal_sqm || propertyData.land_sqm}
+              rating={property.company.rating}
+              ratingCount={property.reviews?.count || 0} // Using reviews count for rating count since they seem related in the mock
+              reviewsCount={property.company.reviews}
+              organizationName={property.company.name}
+            />
             <PropertyAgentCard agent={property.agent} />
 
             <div className="flex flex-col gap-12 pb-8">
@@ -228,7 +262,7 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          <aside className="w-full lg:w-[30%] shrink-0 lg:sticky lg:top-32">
+          <aside className="w-full lg:w-[30%] hidden md:flex shrink-0 lg:sticky lg:top-32">
             <PropertySidebar sidebar={property.sidebar} onEnquiry={() => setIsEnquiryOpen(true)} />
           </aside>
         </div>

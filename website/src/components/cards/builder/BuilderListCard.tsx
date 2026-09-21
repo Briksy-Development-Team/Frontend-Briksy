@@ -20,7 +20,7 @@ const BuilderListCard = ({ item }: Props) => (
       <img loading="lazy"
         src={Approves}
         alt="Verified"
-        className="absolute -bottom-6 left-1/2 h-16 w-16 -translate-x-1/2"
+        className="absolute -bottom-3 left-1/2 h-8 w-8 -translate-x-1/2"
       />
     </div>
 

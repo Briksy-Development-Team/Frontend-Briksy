@@ -13,7 +13,7 @@ const Toggle = ({
             }`}
     >
         <div
-            className={`md:h-5 md:w-5 h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out ${active ? "translate-x-5" : "translate-x-0"
+            className={`md:h-5 md:w-5 h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out ${active ? "translate-x-5" : "translate-x-0"
                 }`}
         />
     </button>
@@ -25,7 +25,7 @@ const Myprivacy = () => {
     const [marketing, setMarketing] = useState(false);
 
     return (
-        <div className="w-full space-y-10">
+        <div className="w-full space-y-10 ">
             <div className="space-y-1">
                 <h1 className="text-[1.875rem] hidden md:flex font-medium text-primary-brown">
                     Privacy

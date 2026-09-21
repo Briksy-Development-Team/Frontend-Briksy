@@ -40,7 +40,7 @@ const AppRouter = () => {
             <Route path="personal-info" element={<Myprofile />} />
             <Route path="saved-search" element={<Mysavedata />} />
             <Route path="notifications" element={<Mynotification />} />
-            <Route path="privacy" element={<Myprivacy />} />
+          <Route path="privacy" element={<Myprivacy />} />
           </Route>
         </Route>
 

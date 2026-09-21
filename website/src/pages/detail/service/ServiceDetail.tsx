@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Mail, MapPin, Phone } from "lucide-react";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
-import { getOrganization, type PublicOrganization } from "../../../api/seeker/organization.api";
-import { getService, type PublicService } from "../../../api/service/service.api";
+import {
+  getOrganization,
+  type PublicOrganization,
+} from "../../../api/seeker/organization.api";
+import {
+  getService,
+  type PublicService,
+} from "../../../api/service/service.api";
 import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
@@ -16,11 +22,14 @@ import {
   ServiceRecentWork,
   ServiceLocation,
 } from "./components/ServiceDetails";
+import { ServiceMobileHeader } from "./components/ServiceMobileHeader";
 import Reviews from "../../../components/reviews/Reviews";
 
 const ServiceDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [organization, setOrganization] = useState<PublicOrganization | null>(null);
+  const [organization, setOrganization] = useState<PublicOrganization | null>(
+    null,
+  );
   const [service, setService] = useState<PublicService | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,14 +70,169 @@ const ServiceDetail = () => {
     return () => { active = false; };
   }, [id]);
 
-  if (loading) return <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32">Loading professional...</div>;
-  if (error || (!organization && !service)) return <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-primary-brown">{error || "Professional or service not found."}</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32">
+        Loading professional...
+      </div>
+    );
+  if (error || (!organization && !service))
+    return (
+      <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-primary-brown">
+        {error || "Professional or service not found."}
+      </div>
+    );
 
   if (service && !organization) {
     const provider = service.organization;
-    const location = [provider?.address, provider?.state, provider?.postcode].filter(Boolean).join(", ");
-    const media = [...service.images.map((item) => ({ ...item, type: "image" as const })), ...service.videos.map((item) => ({ ...item, type: "video" as const }))];
-    return <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-24 font-helvetica"><div className="mx-auto w-full px-[5%] py-6"><Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Services", isBack: true }, { label: service.name }]} /><div className="mt-8 grid gap-12 lg:grid-cols-[30%_1fr]"><div className="h-fit rounded-3xl bg-white p-6 lg:sticky lg:top-28"><img src={service.images[0]?.url || ServicePlaceholder} alt="" className="h-28 w-28 rounded-2xl object-cover" /><h1 className="mt-5 text-3xl font-medium text-primary-brown">{service.name}</h1><p className="mt-2 text-primary-light-brown">{service.category || "Professional service"}</p><div className="mt-6 space-y-3 text-sm text-primary-light-brown">{location && <p className="flex gap-2"><MapPin size={17} />{location}</p>}{provider?.contact_phone && <a className="flex gap-2" href={`tel:${provider.contact_phone}`}><Phone size={17} />{provider.contact_phone}</a>}{provider?.contact_email && <a className="flex gap-2" href={`mailto:${provider.contact_email}`}><Mail size={17} />{provider.contact_email}</a>}</div><button type="button" onClick={() => setIsEnquiryOpen(true)} className="mt-6 h-11 w-full rounded-full bg-primary-brown text-white">Send an Enquiry</button></div><div className="space-y-8"><div className="rounded-3xl bg-white p-7"><h2 className="text-xl font-medium text-primary-brown">{service.title || service.name}</h2><p className="mt-4 text-primary-light-brown">{service.description || "No description provided for this service."}</p>{(service.rate_from != null || service.rate_to != null) && <p className="mt-4 text-primary-brown">{service.rate_from != null && `From $${service.rate_from}`}{service.rate_to != null && ` to $${service.rate_to}`}</p>}</div>{media.length > 0 && <div className="rounded-3xl bg-white p-7"><h2 className="text-xl font-medium text-primary-brown">Service gallery</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{media.map((item) => item.type === "video" ? <video key={item.id} src={item.url} controls playsInline className="w-full rounded-2xl bg-black" /> : <img key={item.id} src={item.url} alt={service.name} className="aspect-video w-full rounded-2xl object-cover" />)}</div></div>}</div></div></div><EnquiryModal open={isEnquiryOpen} companyName={provider?.name} initialSubject={`${service.name} enquiry`} submitting={enquirySubmitting} error={enquiryError} success={enquirySuccess} onClose={() => setIsEnquiryOpen(false)} onSubmit={async (values) => { if (!provider?.id) { setEnquiryError("This service has no organisation attached yet."); return; } setEnquirySubmitting(true); setEnquiryError(null); try { await createInquiry({ organization_id: provider.id, lead_source: "service_profile", subject: values.subject, message: values.message, seeker_name: values.seeker_name, seeker_email: values.seeker_email, seeker_phone: values.seeker_phone || null }); setEnquirySuccess("Your enquiry has been sent successfully."); } catch (reason: any) { setEnquiryError(reason?.response?.data?.message || "Unable to send enquiry. Please try again."); } finally { setEnquirySubmitting(false); } }} /></div>;
+    const location = [provider?.address, provider?.state, provider?.postcode]
+      .filter(Boolean)
+      .join(", ");
+    const media = [
+      ...service.images.map((item) => ({ ...item, type: "image" as const })),
+      ...service.videos.map((item) => ({ ...item, type: "video" as const })),
+    ];
+    return (
+      <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-24 font-helvetica">
+        <div className="mx-auto w-full px-[5%] py-6">
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Services", isBack: true },
+              { label: service.name },
+            ]}
+          />
+          <div className="mt-8 grid gap-12 lg:grid-cols-[30%_1fr]">
+            <div className="h-fit rounded-3xl bg-white p-6 lg:sticky lg:top-28">
+              <img
+                src={service.images[0]?.url || ServicePlaceholder}
+                alt=""
+                className="h-28 w-28 rounded-2xl object-cover"
+              />
+              <h1 className="mt-5 text-3xl font-medium text-primary-brown">
+                {service.name}
+              </h1>
+              <p className="mt-2 text-primary-light-brown">
+                {service.category || "Professional service"}
+              </p>
+              <div className="mt-6 space-y-3 text-sm text-primary-light-brown">
+                {location && (
+                  <p className="flex gap-2">
+                    <MapPin size={17} />
+                    {location}
+                  </p>
+                )}
+                {provider?.contact_phone && (
+                  <a
+                    className="flex gap-2"
+                    href={`tel:${provider.contact_phone}`}
+                  >
+                    <Phone size={17} />
+                    {provider.contact_phone}
+                  </a>
+                )}
+                {provider?.contact_email && (
+                  <a
+                    className="flex gap-2"
+                    href={`mailto:${provider.contact_email}`}
+                  >
+                    <Mail size={17} />
+                    {provider.contact_email}
+                  </a>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsEnquiryOpen(true)}
+                className="mt-6 h-11 w-full rounded-full bg-primary-brown text-white"
+              >
+                Send an Enquiry
+              </button>
+            </div>
+            <div className="space-y-8">
+              <div className="rounded-3xl bg-white p-7">
+                <h2 className="text-xl font-medium text-primary-brown">
+                  {service.title || service.name}
+                </h2>
+                <p className="mt-4 text-primary-light-brown">
+                  {service.description ||
+                    "No description provided for this service."}
+                </p>
+                {(service.rate_from != null || service.rate_to != null) && (
+                  <p className="mt-4 text-primary-brown">
+                    {service.rate_from != null && `From $${service.rate_from}`}
+                    {service.rate_to != null && ` to $${service.rate_to}`}
+                  </p>
+                )}
+              </div>
+              {media.length > 0 && (
+                <div className="rounded-3xl bg-white p-7">
+                  <h2 className="text-xl font-medium text-primary-brown">
+                    Service gallery
+                  </h2>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                    {media.map((item) =>
+                      item.type === "video" ? (
+                        <video
+                          key={item.id}
+                          src={item.url}
+                          controls
+                          playsInline
+                          className="w-full rounded-2xl bg-black"
+                        />
+                      ) : (
+                        <img
+                          key={item.id}
+                          src={item.url}
+                          alt={service.name}
+                          className="aspect-video w-full rounded-2xl object-cover"
+                        />
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <EnquiryModal
+          open={isEnquiryOpen}
+          companyName={provider?.name}
+          initialSubject={`${service.name} enquiry`}
+          submitting={enquirySubmitting}
+          error={enquiryError}
+          success={enquirySuccess}
+          onClose={() => setIsEnquiryOpen(false)}
+          onSubmit={async (values) => {
+            if (!provider?.id) {
+              setEnquiryError("This service has no organisation attached yet.");
+              return;
+            }
+            setEnquirySubmitting(true);
+            setEnquiryError(null);
+            try {
+              await createInquiry({
+                organization_id: provider.id,
+                lead_source: "service_profile",
+                subject: values.subject,
+                message: values.message,
+                seeker_name: values.seeker_name,
+                seeker_email: values.seeker_email,
+                seeker_phone: values.seeker_phone || null,
+              });
+              setEnquirySuccess("Your enquiry has been sent successfully.");
+            } catch (reason: any) {
+              setEnquiryError(
+                reason?.response?.data?.message ||
+                  "Unable to send enquiry. Please try again.",
+              );
+            } finally {
+              setEnquirySubmitting(false);
+            }
+          }}
+        />
+      </div>
+    );
   }
 
   if (!organization) return null;
@@ -116,20 +280,21 @@ const ServiceDetail = () => {
   const price = selectedService?.rate_from ?? selectedService?.starting_price ?? firstService?.starting_price ?? firstService?.rate_from ?? 0;
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-20 font-helvetica">
-      <div className=" w-full px-[3%] py-6">
+    <div className="min-h-screen bg-[#F8F4EE] pb-16 md:pt-20 font-helvetica">
+      <div className=" w-full px-[3%] md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
             { label: "Find a professional", isBack: true },
             { label: organization.type?.name || "Trades and repairs" },
-            { label: organization.name }
+            { label: organization.name },
           ]}
         />
 
-        <div className="mt-8  gap-12  flex items-start">
+        <ServiceMobileHeader organization={organization} />
 
-          <div className="lg:sticky w-[30%] lg:top-28 ">
+        <div className="mt-4 md:mt-8 gap-12 flex flex-col lg:flex-row items-start">
+          <div className="w-full lg:sticky lg:w-[30%] lg:top-28 hidden md:block">
             <ServiceSidebar
               contact={{ price, rateType: "/hour" }}
                 service={{
@@ -147,7 +312,7 @@ const ServiceDetail = () => {
             />
           </div>
 
-          <div className="flex flex-col w-[70%] gap-12 pt-6">
+          <div className="flex flex-col w-full lg:w-[70%] gap-12 pt-0 md:pt-6">
             <div id="services">
               <ServiceList servicesData={{ list: mappedServices }} />
             </div>
@@ -170,7 +335,8 @@ const ServiceDetail = () => {
                   items: galleryItems,
                   allItems: serviceMedia,
                   }}
-                /></div>
+                />
+              </div>
 
               <ServiceLocation
                 location={{
@@ -208,7 +374,9 @@ const ServiceDetail = () => {
         onClose={() => setIsEnquiryOpen(false)}
         onSubmit={async (values) => {
           if (!organization?.id) {
-            setEnquiryError("This professional has no organisation ID attached yet.");
+            setEnquiryError(
+              "This professional has no organisation ID attached yet.",
+            );
             return;
           }
           setEnquirySubmitting(true);
@@ -221,11 +389,14 @@ const ServiceDetail = () => {
               message: values.message,
               seeker_name: values.seeker_name,
               seeker_email: values.seeker_email,
-              seeker_phone: values.seeker_phone || null
+              seeker_phone: values.seeker_phone || null,
             });
             setEnquirySuccess("Your enquiry has been sent successfully.");
           } catch (reason: any) {
-            setEnquiryError(reason?.response?.data?.message || "Unable to send enquiry. Please try again.");
+            setEnquiryError(
+              reason?.response?.data?.message ||
+                "Unable to send enquiry. Please try again.",
+            );
           } finally {
             setEnquirySubmitting(false);
           }
