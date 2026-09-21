@@ -1,25 +1,67 @@
-import { ShieldCheck, List } from "lucide-react";
+import { ShieldCheck, List, Star } from "lucide-react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 
 export const PropertyTitle = ({
   title,
   beds,
   baths,
+  car,
   sqm,
+  rating,
+  ratingCount,
+  reviewsCount,
+  organizationName,
 }: {
   title: string;
   beds?: string | number | null;
   baths?: string | number | null;
+  car?: string | number | null;
   sqm?: string | number | null;
+  rating?: number | null;
+  ratingCount?: number | null;
+  reviewsCount?: number | null;
+  organizationName?: string | null;
 }) => (
   <div>
-    <h1 className="mt-2 text-[1.4rem] md:text-[1.875rem] font-medium text-primary-brown">
+    <h1 className="text-[1.4rem] md:text-[1.875rem] font-medium text-primary-brown leading-tight">
       {title}
     </h1>
-    <div className="text-[1rem] text-primary-brown mt-1">
-      {beds || "—"} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{baths || "—"}{" "}
-      Bath&nbsp;&nbsp;•&nbsp;&nbsp;{sqm || "—"} sqm
+    <div className="text-[1.125rem] text-primary-brown mt-1.5 font-normal">
+      {[
+        beds ? `${beds} Bed` : null,
+        baths ? `${baths} Bath` : null,
+        car ? `${car} Car` : null,
+        sqm ? `${sqm} sqm` : null,
+      ]
+        .filter(Boolean)
+        .join(" \u00A0\u2022\u00A0 ")}
     </div>
+
+    {(rating || organizationName) && (
+      <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[0.95rem] text-[#8C8370] font-medium">
+        {rating ? (
+          <div className="flex items-center gap-1 text-primary-brown">
+            <Star
+              className="text-[#ff6b4a] -mt-1"
+              size={15}
+              fill="#ff6b4a"
+              strokeWidth={1}
+            />
+            <span className="text-primary-light-brown">{rating}</span>
+            <span className="text-primary-light-brown font-normal ml-0.5">
+              ( {ratingCount || 0} ){" "}
+              {reviewsCount ? `(${reviewsCount} reviews)` : ""}
+            </span>
+          </div>
+        ) : null}
+
+        {rating && organizationName && <span className="mx-1">·</span>}
+
+        {organizationName && (
+          <span className="font-normal">Listed by {organizationName}</span>
+        )}
+      </div>
+    )}
   </div>
 );
 

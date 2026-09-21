@@ -91,6 +91,8 @@ const BuilderDetail = () => {
     .slice(0, 5)
     .map((service) => service.name);
   const viewModel = {
+    id: builder.id,
+    is_favourite: builder.is_favourite,
     name: builder.name,
     type: builder.type?.name,
     registration: builder.is_verified

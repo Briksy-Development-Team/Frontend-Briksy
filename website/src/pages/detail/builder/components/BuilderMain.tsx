@@ -1,15 +1,36 @@
-import { ShieldCheck, Star } from 'lucide-react';
+import { ShieldCheck, Star, ChevronLeft, Share } from 'lucide-react';
 import Approves from '../../../../assets/logo/apprrove.svg';
+import FavoriteButton from '../../../../components/custom/FavoriteButton';
 
 export function BuilderHeader({ builder }: { builder: any }) {
+  const circleBtn = "w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown hover:bg-gray-50";
+
   return (
     <div className="w-full flex flex-col gap-6">
-      <div className="w-full relative h-64 md:h-48 md:rounded-[0.75rem] overflow-hidden">
-        <img src={builder.bannerImage} alt="Banner" className="w-full h-full object-cover" />
+      <div className="w-full relative h-[300px] sm:h-[400px]  md:h-48 md:rounded-[0.75rem] overflow-hidden  md:mx-0 w-[calc(100%+6%)] md:w-full">
+        
+        {/* Mobile Overlay Header */}
+        <div className="md:hidden absolute top-4 inset-x-0 px-[3%] flex justify-between z-10">
+          <button onClick={() => window.history.back()} className={circleBtn}>
+            <ChevronLeft size={20} />
+          </button>
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <button className={circleBtn}>
+              <Share size={18} />
+            </button>
+            <FavoriteButton
+              variant="icon-only"
+              showText={false}
+              iconSize={18}
+              className={circleBtn}
+              targetId={builder.id}
+              targetType="organization"
+              initialIsFavourite={Boolean(builder.is_favourite)}
+            />
+          </div>
+        </div>
 
-        {/* <div className="  h-36 shrink-0 absolute  flex md:hidden rounded-2xl overflow-hidden  bg-white">
-          <img src={builder.logo} alt={builder.name} className="w-full  h-full object-cover" />
-        </div> */}
+        <img src={builder.bannerImage} alt="Banner" className="w-full h-full object-cover" />
       </div>
 
       <div className="flex flex-col px-[3%] md:px-0  md:flex-row gap-6 items-start">
