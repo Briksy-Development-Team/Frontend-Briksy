@@ -1,7 +1,7 @@
 import { Star, ChevronLeft, MapPin, ShieldCheck, Share } from "lucide-react";
 import FavoriteButton from "../../../../components/custom/FavoriteButton";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
-import { PublicOrganization } from "../../../../api/seeker/organization.api";
+import type { PublicOrganization } from "../../../../api/seeker/organization.api";
 
 const circleBtn =
   "w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown";
@@ -39,7 +39,7 @@ export function ServiceMobileHeader({ organization: org }: { organization: Publi
         </div>
       </div>
 
-\      <img
+  <img
         src={org.logo_url || ServicePlaceholder}
         alt={org.name}
         className="relative -mt-16 ml-4 w-[120px] h-[120px] rounded-full object-cover border-[5px] border-white bg-white shadow-xl"

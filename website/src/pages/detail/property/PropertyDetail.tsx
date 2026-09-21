@@ -188,7 +188,7 @@ const PropertyDetail = () => {
               beds={propertyData.bedroom_option}
               baths={propertyData.bathroom_option}
               car={propertyData.car_space_option}
-              sqm={propertyData.internal_sqm || propertyData.land_sqm}
+              sqm={propertyData.floor_area_sqm || propertyData.land_area_sqm}
               rating={property.company.rating}
               ratingCount={property.reviews?.count || 0} // Using reviews count for rating count since they seem related in the mock
               reviewsCount={property.company.reviews}

@@ -8,7 +8,7 @@ type FavoriteButtonProps = {
   initialIsFavourite?: boolean;
   className?: string;
   iconSize?: number;
-  variant?: "overlay" | "inline";
+  variant?: "overlay" | "inline" | "icon-only";
   showText?: boolean;
   targetId?: string | number;
   targetType?: FavoriteType;

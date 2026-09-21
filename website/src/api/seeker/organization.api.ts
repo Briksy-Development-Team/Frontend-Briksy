@@ -9,6 +9,7 @@ export type PublicOrganization = {
   logo_url?: string | null;
   banner_url?: string | null;
   rating: number;
+  reviews_count?: number;
   abn?: string | null;
   is_verified: boolean;
   is_favourite?: boolean;
