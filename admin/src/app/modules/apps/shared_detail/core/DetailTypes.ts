@@ -28,8 +28,8 @@ export interface TableSectionConfig<T> extends BaseSectionConfig {
   // The fetch function for the related table
   fetchFn: (params: QueryParams, data: T) => void;
   // Selector to get data and total from Redux store
-  dataSelector: (state: any) => any[];
-  totalSelector: (state: any) => number;
+  dataSelector: (state: any, data?: T) => any[];
+  totalSelector: (state: any, data?: T) => number;
   columns: Column<any>[];
   filtersConfig?: any;
   enableRowClick?: boolean;

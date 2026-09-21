@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
 import { storePendingFavoriteAction } from "../../auth/auth.intent";
-import { toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
+import { getSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
 
 type FavoriteButtonProps = {
   initialIsFavourite?: boolean;
@@ -21,6 +21,24 @@ export default function FavoriteButton({
   const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
   const [saving, setSaving] = useState(false);
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    let active = true;
+
+    if (!isAuthenticated || !targetId) {
+      setIsFavourite(initialIsFavourite);
+      return () => { active = false; };
+    }
+
+    void getSeekerFavorites(targetType).then((response) => {
+      if (!active) return;
+      setIsFavourite((response.data ?? []).some((item) => String(item.target?.id ?? "") === String(targetId)));
+    }).catch(() => {
+      // Keep the button usable even if the initial favourites request fails.
+    });
+
+    return () => { active = false; };
+  }, [initialIsFavourite, isAuthenticated, targetId, targetType]);
 
   return (
     <button
@@ -41,6 +59,8 @@ export default function FavoriteButton({
         try {
           const response = await toggleSeekerFavorite(String(targetId), targetType);
           setIsFavourite(response.data.action === "added");
+        } catch (error) {
+          console.error("Unable to update favourite.", error);
         } finally {
           setSaving(false);
         }

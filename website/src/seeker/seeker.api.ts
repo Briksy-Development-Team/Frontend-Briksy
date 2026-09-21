@@ -3,7 +3,7 @@ import api from '../api/clients.api'
 import { toggleLocalFavorite } from '../favorites/localFavorites'
 import type { ApiEnvelope } from '../auth/auth.types'
 
-export type FavoriteType = 'property' | 'organization'
+export type FavoriteType = 'property' | 'organization' | 'service'
 
 export interface FavoriteOrganizationTarget {
   id: string

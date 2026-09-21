@@ -1,7 +1,7 @@
 import api from '../clients.api'
 import type { ApiEnvelope } from '../../auth/auth.types'
 
-export type FavoriteType = 'property' | 'organization'
+export type FavoriteType = 'property' | 'organization' | 'service'
 
 export interface FavoriteOrganizationTarget {
   id: string
@@ -17,6 +17,16 @@ export interface FavoriteOrganizationTarget {
     name: string
     slug: string
   } | null
+}
+
+export interface FavoriteServiceTarget {
+  id: string
+  name: string
+  title?: string | null
+  description?: string | null
+  service_area?: string | null
+  organization?: { id: string; name: string; slug?: string | null } | null
+  images?: PropertyMedia[]
 }
 
 export interface PropertyMedia {
@@ -57,7 +67,7 @@ export interface FavoritePropertyTarget {
   created_at?: string
 }
 
-export type FavoriteTarget = FavoritePropertyTarget | FavoriteOrganizationTarget | null
+export type FavoriteTarget = FavoritePropertyTarget | FavoriteOrganizationTarget | FavoriteServiceTarget | null
 
 export interface FavoriteItem {
   id: string

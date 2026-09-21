@@ -10,6 +10,7 @@ export function ServiceSidebar({
   contact: { price: number; rateType?: string };
   service: {
     id?: string;
+    favoriteType?: "service" | "organization";
     bannerImage?: string;
     avatar: string;
     name: string;
@@ -84,6 +85,8 @@ export function ServiceSidebar({
               variant="inline"
               showText={false}
               iconSize={14}
+              targetId={service.id}
+              targetType={service.favoriteType ?? "service"}
               className="text-primary-light-brown hover:text-primary-brown transition-colors"
             />
           </div>

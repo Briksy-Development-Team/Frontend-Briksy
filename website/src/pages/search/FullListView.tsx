@@ -22,15 +22,14 @@ export default function FullListView({
   tab?: FilterTab | null;
 }) {
   const [page, setPage] = useState(1);
-  const allItems = useListingData(resultType, "", tab);
+  const allItems = useListingData(resultType, "", tab, section);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [resultType, section, tab]);
 
-  const mid = Math.ceil(allItems.length / 2);
-  const items = section === "popular" ? allItems.slice(0, mid) : allItems.slice(mid);
+  const items = allItems;
 
   const totalItems = items.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;

@@ -100,6 +100,8 @@ const ServiceDetail = () => {
     duration: s.service_area || "Contact for estimate",
   }));
   const firstService = allServices[0];
+  const favoriteTargetId = selectedService?.id || firstService?.id || organization.id;
+  const favoriteTargetType = selectedService?.id || firstService?.id ? "service" as const : "organization" as const;
   const serviceMedia = allServices.flatMap((item) => (item.images || []).map((image) => ({ src: image.url })));
   const galleryItems = [0, 1, 2].map((index) => serviceMedia[index] || { src: ServicePlaceholder });
   const address = [organization.address, organization.state, organization.postcode].filter(Boolean).join(", ");
@@ -127,8 +129,10 @@ const ServiceDetail = () => {
           <div className="lg:sticky w-[30%] lg:top-28 ">
             <ServiceSidebar
               contact={{ price, rateType: "/hour" }}
-              service={{
-                bannerImage: organization.banner_url || "",
+                service={{
+                id: favoriteTargetId,
+                favoriteType: favoriteTargetType,
+                  bannerImage: organization.banner_url || "",
                 avatar: organization.logo_url || ServicePlaceholder,
                 name: organization.name,
                 registration: organization.type?.name || "Trades & Professional Services",

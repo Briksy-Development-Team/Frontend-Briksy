@@ -1,5 +1,5 @@
 export const SERVICE_CATEGORIES = [
-  { slug: "landscapers", label: "Landscappers" },
+  { slug: "landscapers", label: "Landscapers" },
   { slug: "concreter", label: "Concreter" },
   { slug: "fencing", label: "Fencing" },
   { slug: "mortgage-brokers", label: "Mortgage Brokers" },

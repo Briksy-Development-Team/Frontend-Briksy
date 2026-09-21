@@ -97,7 +97,9 @@ export default function BrowseView({
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
+  const [newlyProperties, setNewlyProperties] = useState<PublicProperty[]>([]);
   const [commercialProperties, setCommercialProperties] = useState<PublicProperty[]>([]);
+  const [newlyCommercialProperties, setNewlyCommercialProperties] = useState<PublicProperty[]>([]);
   const [searchParams, setSearchParams] = useResultSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,13 +125,17 @@ export default function BrowseView({
     if (resultType === "all") {
       Promise.all([
         getProperties({ ...query, purpose: query.purpose, verified_only: 1 }),
+        getProperties({ ...query, purpose: query.purpose, sort: "created_at", direction: "desc", verified_only: 1 }),
         getProperties({ ...query, purpose: query.purpose, category: "commercial", verified_only: 1 }),
+        getProperties({ ...query, purpose: query.purpose, category: "commercial", sort: "created_at", direction: "desc", verified_only: 1 }),
         getOrganizations({ search: query.search, verified_only: 1 })
       ])
-        .then(([propRes, comRes, orgsRes]: any) => {
+        .then(([propRes, newlyPropRes, comRes, newlyComRes, orgsRes]: any) => {
           if (!active) return;
           setProperties(propRes.data);
+          setNewlyProperties(newlyPropRes.data);
           setCommercialProperties(comRes.data);
+          setNewlyCommercialProperties(newlyComRes.data);
           setOrganizations(orgsRes.data);
           setTotal(propRes.meta?.pagination?.total ?? propRes.data.length);
         })
@@ -141,11 +147,14 @@ export default function BrowseView({
         });
     } else {
       const request = resultType === "property" || resultType === "comercial"
-        ? getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
+        ? Promise.all([
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
+          ])
         : getOrganizations({ type: organizationTypeForResult(resultType, tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {
         if (!active) return;
-        if (resultType === "property" || resultType === "comercial") { setProperties(r.data); setTotal(r.meta?.pagination?.total ?? r.data.length); }
+        if (resultType === "property" || resultType === "comercial") { setProperties(r[0].data); setNewlyProperties(r[1].data); setTotal(r[0].meta?.pagination?.total ?? r[0].data.length); }
         else setOrganizations(r.data);
       }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
         .finally(() => { if (active) setLoading(false); });
@@ -156,10 +165,12 @@ export default function BrowseView({
   const builders = organizations.map(organizationToBuilder);
   const traders = organizations.map(organizationToTrader);
   const propertyCards = properties.map(propertyToCard);
+  const newlyPropertyCards = newlyProperties.map(propertyToCard);
 
   const allTraders = organizations.filter(o => o.type?.slug === "trades-professionals" || (!o.type?.slug && !o.type?.name)).map(organizationToTrader);
   const allAgenciesAndBuilders = organizations.filter(o => o.type?.slug === "real-estate" || o.type?.slug === "builders").map(organizationToBuilder);
   const allCommercialCards = commercialProperties.map(propertyToCard);
+  const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 
   if (loading) return <p className="py-10 text-center text-sm text-[#8B6F54]">Loading results...</p>;
   if (error) return <p className="rounded-2xl bg-white p-8 text-center text-red-700">{error}</p>;
@@ -209,13 +220,13 @@ export default function BrowseView({
       {resultType === "property" && (
         <>
           <Section title="Popular Properties" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
-          <Section title="Newly Listed Properties" count={total} items={propertyCards.slice(4)} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
+          <Section title="Newly Listed Properties" count={newlyPropertyCards.length} items={newlyPropertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
       {resultType === "comercial" && (
         <>
           <Section title="Popular Commercial" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
-          <Section title="Newly Listed Commercial" count={total} items={propertyCards.slice(4)} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
+          <Section title="Newly Listed Commercial" count={newlyCommercialCards.length} items={newlyCommercialCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
     </>

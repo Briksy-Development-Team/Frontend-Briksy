@@ -59,6 +59,7 @@ export default function ResultsView({
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
+  const [newlyProperties, setNewlyProperties] = useState<PublicProperty[]>([]);
   const [searchParams] = useResultSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,13 +75,17 @@ export default function ResultsView({
     const serviceSlug = searchParams.get("service_slug") || undefined;
     const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" ? "rent" : undefined);
     const request = resultType === "property" || resultType === "comercial"
-      ? getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 })
+      ? Promise.all([
+          getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 }),
+          getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
+        ])
       : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase()), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "comercial") {
-        setProperties(r.data);
-        setTotal(r.meta?.pagination?.total ?? r.data.length);
+        setProperties(r[0].data);
+        setNewlyProperties(r[1].data);
+        setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
       } else {
         setOrganizations(r.data);
         setTotal(r.data.length);
@@ -93,6 +98,7 @@ export default function ResultsView({
   const traders = organizations.map(organizationToTrader);
   const builders = organizations.map(organizationToBuilder);
   const propertyCards = properties.map(propertyToCard);
+  const newlyPropertyCards = newlyProperties.map(propertyToCard);
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
 
   if (loading) return <p className="text-sm text-[#8B6F54]">Loading results...</p>;
@@ -124,7 +130,7 @@ export default function ResultsView({
           {(resultType === "property" || resultType === "comercial") && (
             <>
               <Section title="Popular Properties" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
-              <Section title="Newly Listed Properties" count={total} items={propertyCards.slice(4)} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
+              <Section title="Newly Listed Properties" count={newlyPropertyCards.length} items={newlyPropertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
             </>
           )}
         </>

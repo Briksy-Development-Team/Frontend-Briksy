@@ -14,8 +14,8 @@ export default function RelatedTable<T>({ config, data: entityData }: Props<T>) 
     config.fetchFn(params, entityData)
   );
 
-  const rows = useSelector(config.dataSelector) || [];
-  const total = useSelector(config.totalSelector) || 0;
+  const rows = useSelector((state) => config.dataSelector(state, entityData)) || [];
+  const total = useSelector((state) => config.totalSelector(state, entityData)) || 0;
 
   return (
     <div className="card shadow-sm h-100">
