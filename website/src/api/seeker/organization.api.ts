@@ -39,6 +39,7 @@ export type PublicBuilderProject = {
   project_type?: string | null;
   status: string;
   description?: string | null;
+  features?: string[] | null;
   location?: string | null;
   state?: string | null;
   postcode?: string | null;

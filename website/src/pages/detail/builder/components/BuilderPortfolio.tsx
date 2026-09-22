@@ -113,6 +113,18 @@ export function BuilderHomes({ homes, description, propertiesHref }: { homes: an
 export function BuilderProjects({ projects }: { projects: PublicBuilderProject[] }) {
   if (!projects.length) return null;
 
+  const renderInline = (text: string) => text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) return <strong key={index}>{part.slice(2, -2)}</strong>;
+    if (part.startsWith("*") && part.endsWith("*")) return <em key={index}>{part.slice(1, -1)}</em>;
+    return part;
+  });
+
+  const renderDescription = (description: string) => description.split("\n").map((line, index) => {
+    if (line.startsWith("## ")) return <h4 key={index} className="mt-3 font-medium text-primary-brown">{renderInline(line.slice(3))}</h4>;
+    if (line.startsWith("- ")) return <p key={index} className="pl-3 before:mr-2 before:content-['•']">{renderInline(line.slice(2))}</p>;
+    return line ? <p key={index}>{renderInline(line)}</p> : <div key={index} className="h-2" />;
+  });
+
   return <section className="flex flex-col gap-6" aria-labelledby="builder-projects-title">
     <div className="flex flex-col gap-2">
       <h2 id="builder-projects-title" className="text-[1.25rem] font-medium text-primary-brown">Our projects</h2>
@@ -128,7 +140,8 @@ export function BuilderProjects({ projects }: { projects: PublicBuilderProject[]
           <span className="shrink-0 rounded-full bg-[#F7F1EA] px-3 py-1 text-xs capitalize text-primary-brown">{project.status.replaceAll('_', ' ')}</span>
         </div>
         {(project.location || project.state || project.postcode) && <p className="mt-4 text-sm text-primary-light-brown">{[project.location, project.state, project.postcode].filter(Boolean).join(', ')}</p>}
-        {project.description && <p className="mt-3 text-sm leading-6 text-primary-light-brown">{project.description}</p>}
+        {project.features && project.features.length > 0 && <ul className="mt-4 flex flex-wrap gap-2">{project.features.map((feature) => <li key={feature} className="rounded-full bg-[#F7F1EA] px-3 py-1 text-xs text-primary-brown">{feature}</li>)}</ul>}
+        {project.description && <div className="mt-3 space-y-1 text-sm leading-6 text-primary-light-brown">{renderDescription(project.description)}</div>}
       </article>)}
     </div>
   </section>;
