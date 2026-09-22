@@ -12,6 +12,7 @@ import Traders from "../../../assets/icons/search/trades.svg";
 gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 174;
+const SCROLL_PER_CARD = 600;
 
 const getFrame = (i: number) =>
   `/frames-webp/frame_${String(i).padStart(4, "0")}.webp`;
@@ -91,6 +92,7 @@ const DesktopCommunity = () => {
     const resize = () => {
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
+
       draw(currentFrameRef.current);
     };
 
@@ -100,6 +102,7 @@ const DesktopCommunity = () => {
 
       img.onload = () => {
         if (i === 0) resize();
+
         if (i === FRAME_COUNT - 1) {
           ScrollTrigger.refresh();
         }
@@ -113,24 +116,30 @@ const DesktopCommunity = () => {
 
     if (cards.some((card) => !card)) return;
 
-    // Initial position
+    const getHiddenDistance = () => window.innerHeight + 100;
+
     gsap.set(cards, {
-      y: "110vh",
+      y: getHiddenDistance(),
     });
 
-    // Each card gets exactly the same amount of scroll time
+    const totalScroll = SCROLL_PER_CARD * cards.length;
     const CARD_DURATION = 1 / cards.length;
 
-    const RANGES: [number, number][] = cards.map((_, i) => {
-      const start = i * CARD_DURATION;
-      return [start, start + CARD_DURATION];
-    });
-
     const updateCards = (progress: number) => {
+      const hiddenDistance = window.innerHeight + 100;
+
+      // Bigger overlap only where the handoff currently feels delayed.
+      const overlaps = [0, 0.12, 0, 0.12];
+
       cards.forEach((card, i) => {
         if (!card) return;
 
-        const [start, end] = RANGES[i];
+        const start =
+          i === 0
+            ? 0
+            : i * CARD_DURATION - overlaps[i];
+
+        const end = (i + 1) * CARD_DURATION;
 
         const t = gsap.utils.clamp(
           0,
@@ -138,18 +147,34 @@ const DesktopCommunity = () => {
           (progress - start) / (end - start)
         );
 
-        gsap.set(card, {
-          y: `${gsap.utils.interpolate(110, -110, t)}vh`,
-        });
+        let y: number;
+
+        if (t < 0.5) {
+          y = gsap.utils.interpolate(
+            hiddenDistance,
+            0,
+            t / 0.5
+          );
+        } else {
+          y = gsap.utils.interpolate(
+            0,
+            -hiddenDistance,
+            (t - 0.5) / 0.5
+          );
+        }
+
+        gsap.set(card, { y });
       });
     };
 
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-      end: "+=1500",
+      end: `+=${totalScroll}`,
       pin: true,
-      scrub: 0.6,
+
+      // Small smoothing without noticeable lag
+      scrub: 0.15,
 
       onUpdate: (self) => {
         const frame = Math.round(
@@ -168,6 +193,7 @@ const DesktopCommunity = () => {
     updateCards(0);
 
     window.addEventListener("resize", resize);
+    window.addEventListener("resize", () => updateCards(trigger.progress));
 
     return () => {
       window.removeEventListener("resize", resize);
@@ -180,18 +206,23 @@ const DesktopCommunity = () => {
       ref={sectionRef}
       className="relative flex h-screen w-full items-center justify-center overflow-hidden"
     >
-
       <div className="relative mx-auto h-full w-full max-w-[100rem]">
+
         {/* Canvas */}
         <div className="absolute inset-0 mt-10 flex items-center justify-center mix-blend-darken">
-          <canvas ref={canvasRef} className="h-[32.5625rem] w-[54.75rem]" />
+          <canvas
+            ref={canvasRef}
+            className="h-[32.5625rem] w-[54.75rem]"
+          />
         </div>
 
         {/* Cards */}
         {CARDS.map((card, index) => (
           <div
             key={card.title}
-            ref={(el) => { cardRefs.current[index] = el; }}
+            ref={(el) => {
+              cardRefs.current[index] = el;
+            }}
             style={{
               [card.anchor]: card.offset,
               [card.side]: "6.75rem",
@@ -201,8 +232,13 @@ const DesktopCommunity = () => {
           >
             <div className="flex items-start justify-between gap-[1.25rem]">
               <span className="flex h-[3rem] w-[3rem] shrink-0 items-center justify-center">
-                <img src={card.icon} alt="" className="h-full w-full" />
+                <img
+                  src={card.icon}
+                  alt=""
+                  className="h-full w-full"
+                />
               </span>
+
               <img
                 src={card.img}
                 alt=""
@@ -213,10 +249,14 @@ const DesktopCommunity = () => {
             <div className="flex flex-col items-start">
               <p
                 className="whitespace-nowrap text-[1rem] leading-6 text-primary-brown"
-                style={{ fontFamily: "'Helvetica Neue', sans-serif", fontWeight: 700 }}
+                style={{
+                  fontFamily: "'Helvetica Neue', sans-serif",
+                  fontWeight: 700,
+                }}
               >
                 {card.title}
               </p>
+
               <p
                 className="mt-[0.375rem] text-[0.875rem] text-primary-light-brown"
                 style={{
@@ -238,7 +278,7 @@ const DesktopCommunity = () => {
 
 const MobileCommunity = () => {
   return (
-    <section className="w-full  px-3 py-9 font-helvetica">
+    <section className="w-full px-3 py-9 font-helvetica">
       <div className="flex flex-col gap-4">
         {CARDS.map((card) => (
           <div
@@ -246,9 +286,14 @@ const MobileCommunity = () => {
             className="flex flex-col gap-6 rounded-[1.25rem] bg-white p-4"
           >
             <div className="flex items-start justify-between">
-              <span className="flex h-8 w-8 md:h-12 md:w-12 shrink-0 items-center justify-center">
-                <img src={card.icon} alt="" className="h-full w-full" />
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center md:h-12 md:w-12">
+                <img
+                  src={card.icon}
+                  alt=""
+                  className="h-full w-full"
+                />
               </span>
+
               <img
                 src={card.img}
                 alt={card.title}
@@ -260,15 +305,17 @@ const MobileCommunity = () => {
               <p className="text-base font-bold leading-6 text-primary-brown">
                 {card.title}
               </p>
+
               <p
                 className="text-sm text-primary-light-brown"
-                style={{ lineHeight: "1.25rem", letterSpacing: "0.02625rem" }}
+                style={{
+                  lineHeight: "1.25rem",
+                  letterSpacing: "0.02625rem",
+                }}
               >
                 {card.desc}
               </p>
             </div>
-
-
           </div>
         ))}
       </div>
@@ -282,6 +329,7 @@ const Community = () => {
       <div className="hidden md:block">
         <DesktopCommunity />
       </div>
+
       <div className="block md:hidden">
         <MobileCommunity />
       </div>
