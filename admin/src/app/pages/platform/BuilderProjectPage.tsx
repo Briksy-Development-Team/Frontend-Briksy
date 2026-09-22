@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axiosInstance from "../../services/api/axiosInstance";
 import PropertyModal from "../../services/features/properties/component/PropertyModal";
 import { createPropertyApi } from "../../services/features/properties/property.api";
 import type { PropertyFormValues } from "../../services/features/properties/property.types";
 
 type Project = { id: string; name: string; project_type?: string | null; status: string; location?: string | null; state?: string | null };
-type ProjectForm = { name: string; project_type: string; status: string; location: string; state: string; postcode: string; description: string };
-const EMPTY_FORM: ProjectForm = { name: "", project_type: "", status: "planning", location: "", state: "", postcode: "", description: "" };
+type ProjectForm = { name: string; project_type: string; status: string; location: string; state: string; postcode: string; description: string; features: string[] };
+const EMPTY_FORM: ProjectForm = { name: "", project_type: "", status: "planning", location: "", state: "", postcode: "", description: "", features: [] };
 
 export default function BuilderProjectPage() {
   const [items, setItems] = useState<Project[]>([]);
@@ -18,6 +18,8 @@ export default function BuilderProjectPage() {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showPropertyForm, setShowPropertyForm] = useState(false);
   const [form, setForm] = useState<ProjectForm>(EMPTY_FORM);
+  const [featureInput, setFeatureInput] = useState("");
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
   const loadProjects = useCallback(async () => {
     setLoading(true);
@@ -35,6 +37,29 @@ export default function BuilderProjectPage() {
   useEffect(() => { void loadProjects(); }, [loadProjects]);
 
   const updateForm = (key: keyof ProjectForm, value: string) => setForm((current) => ({ ...current, [key]: value }));
+
+  const addFeature = () => {
+    const feature = featureInput.trim();
+    if (!feature) return;
+    setForm((current) => current.features.some((item) => item.toLowerCase() === feature.toLowerCase()) || current.features.length >= 30
+      ? current
+      : { ...current, features: [...current.features, feature] });
+    setFeatureInput("");
+  };
+
+  const formatDescription = (before: string, after = before) => {
+    const editor = descriptionRef.current;
+    if (!editor) return;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const selected = form.description.slice(start, end) || "text";
+    const updated = `${form.description.slice(0, start)}${before}${selected}${after}${form.description.slice(end)}`;
+    setForm((current) => ({ ...current, description: updated }));
+    requestAnimationFrame(() => {
+      editor.focus();
+      editor.setSelectionRange(start + before.length, start + before.length + selected.length);
+    });
+  };
 
   const saveProject = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -91,7 +116,23 @@ export default function BuilderProjectPage() {
             <div className="col-md-4"><label className="form-label">Suburb / location</label><input className="form-control" maxLength={150} value={form.location} onChange={(event) => updateForm("location", event.target.value)} /></div>
             <div className="col-md-2"><label className="form-label">State</label><input className="form-control" maxLength={10} value={form.state} onChange={(event) => updateForm("state", event.target.value)} /></div>
             <div className="col-md-2"><label className="form-label">Postcode</label><input className="form-control" maxLength={10} value={form.postcode} onChange={(event) => updateForm("postcode", event.target.value)} /></div>
-            <div className="col-12"><label className="form-label">Description</label><textarea className="form-control" rows={3} value={form.description} onChange={(event) => updateForm("description", event.target.value)} /></div>
+            <div className="col-12">
+              <label className="form-label">Project features</label>
+              <div className="d-flex gap-2"><input className="form-control" maxLength={80} placeholder="e.g. Solar panels" value={featureInput} onChange={(event) => setFeatureInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFeature(); } }} /><button type="button" className="btn btn-light-primary" onClick={addFeature} disabled={!featureInput.trim() || form.features.length >= 30}>Add feature</button></div>
+              {form.features.length > 0 && <div className="mt-3 d-flex flex-wrap gap-2">{form.features.map((feature) => <span key={feature} className="badge badge-light d-inline-flex align-items-center gap-2 py-2 px-3">{feature}<button type="button" className="btn btn-sm p-0 text-danger" aria-label={`Remove ${feature}`} onClick={() => setForm((current) => ({ ...current, features: current.features.filter((item) => item !== feature) }))}>×</button></span>)}</div>}
+              <div className="form-text">Add up to 30 highlights, such as home designs, amenities, or sustainability features.</div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Description</label>
+              <div className="d-flex gap-2 mb-2" role="toolbar" aria-label="Description formatting">
+                <button type="button" className="btn btn-sm btn-light" onClick={() => formatDescription("**") }><strong>B</strong></button>
+                <button type="button" className="btn btn-sm btn-light" onClick={() => formatDescription("*")}><em>I</em></button>
+                <button type="button" className="btn btn-sm btn-light" onClick={() => formatDescription("## ", "")}>Heading</button>
+                <button type="button" className="btn btn-sm btn-light" onClick={() => formatDescription("- ", "")}>• List item</button>
+              </div>
+              <textarea ref={descriptionRef} className="form-control" rows={6} maxLength={20000} value={form.description} placeholder="Describe this project. Select words and use the toolbar to style them." onChange={(event) => updateForm("description", event.target.value)} />
+              <div className="form-text">Select text, then use bold or italic. Heading and list buttons insert formatted lines.</div>
+            </div>
           </div>
           <div className="mt-5 flex justify-content-end gap-2"><button type="button" className="btn btn-light" onClick={() => { setShowProjectForm(false); setForm(EMPTY_FORM); }}>Cancel</button><button type="submit" className="btn btn-primary" disabled={savingProject}>{savingProject ? "Saving…" : "Save project"}</button></div>
         </form>}
