@@ -248,7 +248,7 @@ const SidebarMenuMain = () => {
           {hasModule("inquiry_management") && (
             <SidebarMenuItem
               to={`${portalBase}/inquiry`}
-              title={hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
+              title={hasModule("builder_management") ? "Enquiries" : hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
               fontIcon="bi-archive"
               icon="/media/icons/duotune/iconsnew/"
             />

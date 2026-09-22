@@ -74,7 +74,7 @@ export default function BuilderProjectPage() {
       <div className="card-header flex-wrap gap-3">
         <h3 className="card-title">Builder Projects</h3>
         <div className="card-toolbar flex gap-2">
-          {/* <button type="button" className="btn btn-light-primary" onClick={() => { setNotice(null); setShowPropertyForm(true); }}>Add Property</button> */}
+          <button type="button" className="btn btn-light-primary" onClick={() => { setNotice(null); setShowPropertyForm(true); }}>Add Property</button>
           <button type="button" className="btn btn-primary" onClick={() => { setNotice(null); setShowProjectForm((shown) => !shown); }}>Add Project</button>
         </div>
       </div>

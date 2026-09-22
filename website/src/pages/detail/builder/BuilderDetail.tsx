@@ -1,5 +1,5 @@
 import { BuilderHeader, BuilderAbout } from "./components/BuilderMain";
-import { BuilderHomes } from "./components/BuilderPortfolio";
+import { BuilderHomes, BuilderProjects } from "./components/BuilderPortfolio";
 import { BuilderSidebar } from "./components/BuilderSidebar";
 import { Share } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -8,6 +8,8 @@ import Breadcrumb from "../../../components/nav/Breadcrumb";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import {
   getOrganization,
+  getBuilderProjects,
+  type PublicBuilderProject,
   type PublicOrganization,
 } from "../../../api/seeker/organization.api";
 import { getProperties } from "../../../api/property/property.api";
@@ -23,6 +25,7 @@ const BuilderDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [builder, setBuilder] = useState<PublicOrganization | null>(null);
   const [homes, setHomes] = useState<any[]>([]);
+  const [projects, setProjects] = useState<PublicBuilderProject[]>([]);
   const [propertyCount, setPropertyCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,18 +41,23 @@ const BuilderDetail = () => {
 
     loadBuilder
       .then((organizationResponse) =>
-        getProperties({
-          organization_slug: organizationResponse.data.slug || undefined,
-          per_page: 12,
-        }).then((propertyResponse) => ({
+        Promise.all([
+          getProperties({
+            organization_slug: organizationResponse.data.slug || undefined,
+            per_page: 12,
+          }),
+          getBuilderProjects(organizationResponse.data.id),
+        ]).then(([propertyResponse, projectsResponse]) => ({
           organizationResponse,
           propertyResponse,
+          projectsResponse,
         })),
       )
-      .then(({ organizationResponse, propertyResponse }) => {
+      .then(({ organizationResponse, propertyResponse, projectsResponse }) => {
         if (!active) return;
         setBuilder(organizationResponse.data);
         setHomes(propertyResponse.data.map(propertyToCard));
+        setProjects(projectsResponse);
         setPropertyCount(
           propertyResponse.meta?.pagination?.total ??
             propertyResponse.data.length,
@@ -148,6 +156,9 @@ const BuilderDetail = () => {
                   propertiesHref={`/result?type=property&organization_slug=${encodeURIComponent(builder.slug || "")}`}
                   description={`${propertyCount} published propert${propertyCount === 1 ? "y" : "ies"} for ${builder.name}.`}
                 />
+              </div>
+              <div id="projects">
+                <BuilderProjects projects={projects} />
               </div>
               <div id="about">
                 <BuilderAbout about={viewModel.about} />

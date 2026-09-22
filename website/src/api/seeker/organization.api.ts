@@ -33,8 +33,22 @@ export type PublicOrganization = {
   postcode?: string | null;
 };
 
+export type PublicBuilderProject = {
+  id: string;
+  name: string;
+  project_type?: string | null;
+  status: string;
+  description?: string | null;
+  location?: string | null;
+  state?: string | null;
+  postcode?: string | null;
+};
+
 export const getOrganizations = async (params: Record<string, string | number | boolean | undefined> = {}) =>
   (await api.get<ApiPage<PublicOrganization>>("/seeker/organizations", { params: { per_page: 100, ...params } })).data;
 
 export const getOrganization = async (id: string): Promise<{ data: PublicOrganization }> =>
   (await api.get<{ data: PublicOrganization }>(`/seeker/organizations/${id}`)).data;
+
+export const getBuilderProjects = async (organizationId: string): Promise<PublicBuilderProject[]> =>
+  (await api.get<{ data: PublicBuilderProject[] }>(`/seeker/organizations/${organizationId}/builder-projects`)).data.data;
