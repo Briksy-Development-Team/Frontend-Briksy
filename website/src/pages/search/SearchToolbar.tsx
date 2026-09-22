@@ -115,9 +115,10 @@ export default function SearchToolbar({
 
   return (
     <div className="flex  flex-col gap-4">
-      <div className="flex items-center  gap-y-2   justify-between flex-wrap py-1">
-        <div className="flex-1 max-w-[35rem] pr-[3%]  gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-8 md:pr-2  flex items-center justify-between text-left transition-colors shrink-0">
-          <div className="flex items-center w-full  bg-white h-full rounded-[6.25rem] px-2  gap-x-[6px] overflow-hidden ">
+      <div className="flex flex-col lg:items-center lg:flex-row  gap-y-2   justify-between flex-wrap py-1">
+        <div className="flex-1 max-w-[30rem] pr-[3%]  gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-8 md:pr-2 
+         flex items-center justify-between text-left transition-colors shrink-0">
+          <div className="flex items-center  w-full  bg-white h-full rounded-[6.25rem] px-2  gap-x-[6px] overflow-hidden ">
             <Search className="md:w-5 md:h-5 h-4 w-4 text-gray-100 shrink-0" />
             <input
               type="text"
@@ -128,12 +129,12 @@ export default function SearchToolbar({
             />
           </div>
 
-          <div className="flex items-center bg-primary-brown text-white md:text-primary-brown md:bg-white rounded-[5.4348rem] p-[0.7065rem] gap-3 shrink-0">
-            <div className="w-[1px] h-8 hidden md:flex " />
+          <div className="flex items-center bg-primary-brown text-white md:text-primary-brown  md:bg-white rounded-[5.4348rem] p-[0.7065rem] gap-3 shrink-0">
+            <div className="w-px h-4 hidden md:block bg-[#EDE8E4]" />
             <button
               type="button"
               onClick={onAskAi}
-              className="flex items-center justify-center gap-2 px-0 md:px-2 h-full    text-[0.875rem]"
+              className="flex items-center justify-center  gap-2 px-0 md:px-2 h-full    text-[0.875rem]"
             >
               <Sparkles className="w-4 h-4" />
               <p className="hidden md:flex"> Ask Ai</p>

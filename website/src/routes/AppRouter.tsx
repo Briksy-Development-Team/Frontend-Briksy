@@ -43,7 +43,7 @@ const AppRouter = () => {
             <Route path="privacy" element={<Myprivacy />} />
           </Route>
         </Route>
-        <Route path="/privacy" element={<Myprivacy />} />
+        <Route path="/privacy-policy" element={<Myprivacy />} />
 
         <Route path="/notification" element={<Notification />} />
         <Route path="/help-support" element={<Help />} />

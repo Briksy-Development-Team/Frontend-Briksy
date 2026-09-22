@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Toggle = ({
     active,
@@ -23,11 +25,20 @@ const Myprivacy = () => {
     const [suggested, setSuggested] = useState(true);
     const [updates, setUpdates] = useState(true);
     const [marketing, setMarketing] = useState(false);
+    const navigate = useNavigate();
+
+    const handleBack = () => {
+        if (window.history.length > 1) {
+            navigate(-1);
+        } else {
+            navigate("/");
+        }
+    };
 
     return (
         <div className="w-full space-y-10 ">
-            <div className="space-y-1">
-                <h1 className="text-[1.875rem] hidden md:flex font-medium text-primary-brown">
+            <div className="space-y-1 hidden md:flex">
+                <h1 className="text-[1.875rem]  font-medium text-primary-brown">
                     Privacy
                 </h1>
                 <p className="text-[0.75rem] md:text-[0.875rem] text-primary-light-brown">
@@ -35,7 +46,22 @@ const Myprivacy = () => {
                 </p>
             </div>
 
-            <div className="space-y-4">
+
+            <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
+                <button
+                    onClick={handleBack}
+                    className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
+                >
+                    <ArrowLeft className=" w-5 h-5" />
+                    Notifications
+                </button>
+            </div>
+
+            <p className="text-[1rem] flex md:hidden px-[3%] text-primary-light-brown">
+                Control how your activity is used to personalise Briksy.
+            </p>
+
+            <div className="space-y-4 px-[3%]">
                 <h2 className="text-[1.25rem] font-medium text-primary-brown">
                     Personalisation
                 </h2>
@@ -87,7 +113,7 @@ const Myprivacy = () => {
                 </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 px-[3%]">
                 <h2 className="text-[1.25rem] font-medium text-primary-brown">
                     Your data
                 </h2>
@@ -102,13 +128,13 @@ const Myprivacy = () => {
                         </p>
                     </div>
                     <div className="text-[2rem] font-medium text-primary-brown">
-                         ›
+                        ›
                     </div>
                 </button>
             </div>
 
             {/* Footer Note */}
-            <div className="rounded-xl bg-[#EEECE0] md:text-[0.875rem] px-4 md:px-6 py-5 text-[0.75rem] text-primary-light-brown">
+            <div className="rounded-xl bg-[#EEECE0] px-[3%] md:text-[0.875rem] px-4 md:px-6 py-5 text-[0.75rem] text-primary-light-brown">
                 Briksy never sells your contact details. Providers only see your name
                 and message after you send them an enquiry.
             </div>

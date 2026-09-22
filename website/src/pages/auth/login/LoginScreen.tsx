@@ -52,7 +52,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
         password,
       });
 
-      navigate("/profile", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       setErrors({ email: "", password: "Invalid email or password" });
     } finally {

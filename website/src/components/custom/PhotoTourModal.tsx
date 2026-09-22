@@ -104,7 +104,7 @@ export function PhotoTourModal({
               {subtitle}
             </h2>
 
-            <div ref={listRef} className=" w-[50%] overflow-y-auto overscroll-contain pb-16 flex flex-col gap-8 md:gap-12 items-center md:items-start">
+            <div ref={listRef} className=" md:w-[50%] overflow-y-auto mx-auto md:mx-0 overscroll-contain pb-16 flex flex-col gap-8 md:gap-12 items-center md:items-start">
               {media.map((m, i) => (
                 <div key={i} data-index={i} className="w-full h-[350px]  shrink-0 rounded-[1.5rem] md:rounded-[1rem] overflow-hidden bg-black/5 shadow-sm">
                   {m.videoUrl
