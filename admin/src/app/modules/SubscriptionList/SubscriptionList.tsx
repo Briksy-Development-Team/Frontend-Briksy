@@ -98,8 +98,9 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
           const popularGradient = 'linear-gradient(145deg, #342511 0%, #5c3d1a 100%)'
 
           return (
-            <div className='col-xl-4 col-md-6 col-sm-12' key={plan.id}>
+            <div className='col-xl-3 col-md-6 col-12' key={plan.id}>
               <div
+                onClick={() => !canManage && onSelectPlan?.(plan)}
                 style={{
                   background: isPopular ? popularGradient : '#fff',
                   border: isPopular ? 'none' : isCurrent ? `2px solid ${accentColor}` : '1.5px solid #ede8e4',
@@ -116,6 +117,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                     : '0 4px 20px rgba(52,37,17,0.06)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                   overflow: 'visible',
+                  cursor: canManage ? 'default' : 'pointer',
                 }}
               >
                 {/* Popular badge */}
