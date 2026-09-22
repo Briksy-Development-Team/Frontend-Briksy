@@ -1,8 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axiosInstance from "../../services/api/axiosInstance";
+import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { Content } from "../../../_metronic/layout/components/content";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import PropertyModal from "../../services/features/properties/component/PropertyModal";
 import { createPropertyApi } from "../../services/features/properties/property.api";
 import type { PropertyFormValues } from "../../services/features/properties/property.types";
+import { builderProjectConfig } from "../../services/features/builder_projects/builder_project.config";
+import type { BuilderProject } from "../../services/features/builder_projects/builder_project.types";
+import {
+  BuilderProjectModal,
+  type ProjectFormValues,
+} from "../../services/features/builder_projects/component/BuilderProjectModal";
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 
 type Project = { id: string; name: string; project_type?: string | null; status: string; location?: string | null; state?: string | null };
 type ProjectForm = { name: string; project_type: string; status: string; location: string; state: string; postcode: string; description: string; features: string[] };
@@ -12,7 +23,7 @@ export default function BuilderProjectPage() {
   const [items, setItems] = useState<Project[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+
   const [savingProject, setSavingProject] = useState(false);
   const [savingProperty, setSavingProperty] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -21,22 +32,26 @@ export default function BuilderProjectPage() {
   const [featureInput, setFeatureInput] = useState("");
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
-  const loadProjects = useCallback(async () => {
-    setLoading(true);
+  const fetchProjects = useCallback(async (params?: any) => {
     setError(null);
     try {
-      const response = await axiosInstance.get<{ data: { data: Project[] } }>("/admin/builder-projects");
-      setItems(response.data.data.data ?? []);
+      const response = await axiosInstance.get<{ data: { data: BuilderProject[]; total?: number } }>(
+        "/admin/builder-projects",
+        { params }
+      );
+      const items = response.data.data.data ?? [];
+      setData(items);
+      setTotal(response.data.data.total ?? items.length);
     } catch {
       setError("Builder projects could not be loaded.");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
-  useEffect(() => { void loadProjects(); }, [loadProjects]);
+  const { params, handleParamsChange } = useEntityTable(fetchProjects);
 
-  const updateForm = (key: keyof ProjectForm, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  useEffect(() => {
+    void fetchProjects(params);
+  }, [fetchProjects, params]);
 
   const addFeature = () => {
     const feature = featureInput.trim();
@@ -67,11 +82,10 @@ export default function BuilderProjectPage() {
     setError(null);
     setNotice(null);
     try {
-      await axiosInstance.post("/admin/builder-projects", form);
-      setForm(EMPTY_FORM);
-      setShowProjectForm(false);
+      await axiosInstance.post("/admin/builder-projects", values);
+      setShowProjectModal(false);
       setNotice("Project added successfully.");
-      await loadProjects();
+      await fetchProjects(params);
     } catch (reason: any) {
       setError(reason?.response?.data?.message ?? "Unable to add this project.");
     } finally {
@@ -85,7 +99,7 @@ export default function BuilderProjectPage() {
     setNotice(null);
     try {
       await createPropertyApi(values);
-      setShowPropertyForm(false);
+      setShowPropertyModal(false);
       setNotice("Property added successfully. It will appear in your property listings after review.");
     } catch (reason: any) {
       setError(reason?.response?.data?.message ?? "Unable to add this property.");
@@ -94,18 +108,12 @@ export default function BuilderProjectPage() {
     }
   };
 
-  return <>
-    <div className="card">
-      <div className="card-header flex-wrap gap-3">
-        <h3 className="card-title">Builder Projects</h3>
-        <div className="card-toolbar flex gap-2">
-          <button type="button" className="btn btn-light-primary" onClick={() => { setNotice(null); setShowPropertyForm(true); }}>Add Property</button>
-          <button type="button" className="btn btn-primary" onClick={() => { setNotice(null); setShowProjectForm((shown) => !shown); }}>Add Project</button>
-        </div>
-      </div>
-      <div className="card-body">
-        {error && <div className="alert alert-danger">{error}</div>}
-        {notice && <div className="alert alert-success">{notice}</div>}
+  return (
+    <Content>
+      <PageHeader
+        title="Builder Projects"
+        subtitle="Manage and view residential and commercial developments"
+      />
 
         {showProjectForm && <form className="mb-8 rounded border p-5" onSubmit={saveProject}>
           <h4 className="mb-5">Add a project</h4>
@@ -137,12 +145,58 @@ export default function BuilderProjectPage() {
           <div className="mt-5 flex justify-content-end gap-2"><button type="button" className="btn btn-light" onClick={() => { setShowProjectForm(false); setForm(EMPTY_FORM); }}>Cancel</button><button type="submit" className="btn btn-primary" disabled={savingProject}>{savingProject ? "Saving…" : "Save project"}</button></div>
         </form>}
 
-        {loading ? <div className="py-8 text-center">Loading projects…</div> : <div className="table-responsive"><table className="table align-middle"><thead><tr><th>Project</th><th>Type</th><th>Status</th><th>Location</th></tr></thead><tbody>
-          {items.map((item) => <tr key={item.id}><td>{item.name}</td><td>{item.project_type || "—"}</td><td>{item.status.replace(/_/g, " ")}</td><td>{[item.location, item.state].filter(Boolean).join(", ") || "—"}</td></tr>)}
-          {items.length === 0 && <tr><td colSpan={4} className="py-8 text-center text-muted">No projects yet. Add a project to showcase your developments.</td></tr>}
-        </tbody></table></div>}
-      </div>
-    </div>
-    {showPropertyForm && <PropertyModal isSubmitting={savingProperty} onClose={() => setShowPropertyForm(false)} onSubmit={saveProperty} />}
-  </>;
+      <EntityList
+        data={data}
+        total={total}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={builderProjectConfig.columns}
+        filtersConfig={builderProjectConfig.filters}
+        enableRowClick
+        getRowLink={(row) => `/admin/builder-projects/${row.id}`}
+        storageKey="builderProjectsColumns"
+        headerActions={[
+          {
+            label: "Add Property",
+            onClick: () => {
+              setNotice(null);
+              setShowPropertyModal(true);
+            },
+          },
+          {
+            label: "Add Project",
+            onClick: () => {
+              setNotice(null);
+              setShowProjectModal(true);
+            },
+          },
+        ]}
+      />
+
+      {showProjectModal && (
+        <BuilderProjectModal
+          isSubmitting={savingProject}
+          onClose={() => setShowProjectModal(false)}
+          onSubmit={saveProject}
+        />
+      )}
+
+      {showPropertyModal && (
+        <PropertyModal
+          isSubmitting={savingProperty}
+          onClose={() => setShowPropertyModal(false)}
+          onSubmit={saveProperty}
+        />
+      )}
+    </Content>
+  );
+};
+
+export default function BuilderProjectPage() {
+  return (
+    <Routes>
+      <Route index element={<BuilderProjectList />} />
+      <Route path=":id" element={<GenericDetailPage />} />
+    </Routes>
+  );
 }
