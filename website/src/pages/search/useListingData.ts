@@ -23,7 +23,7 @@ const organizationTypeFor = (
   resultType: ResultType,
   tab?: FilterTab | null,
 ) => {
-  if (resultType === "builder" && tab === "Agents") return "real-estate";
+  if (resultType === "builder" && tab === "Agents") return "buyers-agent";
   if (resultType === "builder") return "builders";
   return "trades-professionals";
 };

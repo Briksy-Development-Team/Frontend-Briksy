@@ -38,7 +38,7 @@ export default function FullListView({
   const endIdx = Math.min(page * ITEMS_PER_PAGE, totalItems);
 
   const getTitle = () => {
-    const typeName = resultType === "property" ? "properties" : resultType === "comercial" ? "commercial properties" : resultType === "builder" ? (tab === "Agents" ? "organizations" : "builders") : "professionals";
+    const typeName = resultType === "property" ? "properties" : resultType === "comercial" ? "commercial properties" : resultType === "builder" ? (tab === "Agents" ? "buyer agents" : "builders") : "professionals";
     const countText = totalItems === 0 ? "No" : totalItems;
     return `${countText} licensed ${typeName} · Showing ${startIdx}–${endIdx}`;
   };

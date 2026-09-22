@@ -14,7 +14,7 @@ import { Mousewheel } from "swiper/modules";
 import "swiper/css";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null) => {
-  if (resultType === "builder" && tab === "agents") return "real-estate";
+  if (resultType === "builder" && tab === "agents") return "buyers-agent";
   if (resultType === "builder") return "builders";
   return "trades-professionals";
 };
@@ -123,8 +123,8 @@ export default function ResultsView({
           )}
           {resultType === "builder" && (
             <>
-              <Section title={isAgents ? "Popular Organizations" : "Popular Builders"} count={builders.length} items={builders.slice(0, 4)} Card={BuilderGridCard} onViewMore={() => onViewMore("popular")} />
-              <Section title={isAgents ? "Newly Listed Organizations" : "Newly Listed Builders"} count={builders.length} items={builders.slice(4)} Card={BuilderGridCard} onViewMore={() => onViewMore("newly")} />
+              <Section title={isAgents ? "Popular Buyer Agents" : "Popular Builders"} count={builders.length} items={builders.slice(0, 4)} Card={BuilderGridCard} onViewMore={() => onViewMore("popular")} />
+              <Section title={isAgents ? "Newly Listed Buyer Agents" : "Newly Listed Builders"} count={builders.length} items={builders.slice(4)} Card={BuilderGridCard} onViewMore={() => onViewMore("newly")} />
             </>
           )}
           {(resultType === "property" || resultType === "comercial") && (
