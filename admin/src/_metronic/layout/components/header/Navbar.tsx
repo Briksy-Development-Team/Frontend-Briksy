@@ -23,7 +23,6 @@ const Navbar = () => {
         </div>
       </div> */}
 
-      <NotificationBell />
 
       {isAdmin && (
         <div className={clsx('app-navbar-item', itemClass)}>
@@ -32,6 +31,7 @@ const Navbar = () => {
           </Link>
         </div>
       )}
+      <NotificationBell />
 
 
 

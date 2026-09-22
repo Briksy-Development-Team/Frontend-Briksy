@@ -127,28 +127,97 @@ export default function AdminBillingPage() {
     <Content>
       <PageHeader title="Billing" subtitle="Choose a plan and optional add-ons" />
       {current ? (
-        <div className="alert alert-info mb-6">
-          Current subscription: <strong>{current.plan?.name ?? "None"}</strong> · {current.status}
+        <div
+          className="card mb-6 overflow-hidden border-0 shadow-sm"
+          style={{
+            background: "linear-gradient(135deg, rgba(245, 85, 26, 0.08) 0%, rgba(52, 37, 17, 0.03) 100%)",
+            border: "1.5px solid rgba(245, 85, 26, 0.2)",
+            borderRadius: "16px",
+          }}
+        >
+          <div className="card-body p-6 d-flex align-items-center justify-content-between flex-wrap gap-4">
+            <div className="d-flex align-items-center gap-4">
+              <div
+                className="d-flex align-items-center justify-content-center rounded-circle text-white shadow-sm"
+                style={{ width: 44, height: 44, background: "#f5551a", fontSize: 20 }}
+              >
+                ⚡
+              </div>
+              <div>
+                <span className="text-muted fs-8 fw-bold text-uppercase" style={{ letterSpacing: "0.05em" }}>
+                  Active Subscription
+                </span>
+                <h3 className="mb-0 fw-bolder text-gray-900 fs-4">
+                  {current.plan?.name ?? "No Active Plan"}
+                  <span
+                    className={`badge ms-3 fs-8 py-2 px-3 text-capitalize ${
+                      current.status === "active" ? "bg-success text-white" : "bg-warning text-dark"
+                    }`}
+                    style={{ borderRadius: 12 }}
+                  >
+                    ✓ {current.status}
+                  </span>
+                </h3>
+              </div>
+            </div>
+          </div>
         </div>
       ) : null}
 
       <div className="row g-5">
         {/* Plans Catalog Full Width Column (4 per row desktop, 2 tablet, 1 mobile) */}
         <div className="col-12">
-          <div className="card mb-5">
-            <div className="card-body d-flex gap-3 align-items-center">
-              <button
-                className={`btn ${billingCycle === "monthly" ? "btn-primary" : "btn-light"}`}
-                onClick={() => setBillingCycle("monthly")}
+          <div className="card mb-6 border-0 shadow-sm" style={{ borderRadius: 18, background: "#fff" }}>
+            <div className="card-body py-4 px-6 d-flex align-items-center justify-content-between flex-wrap gap-4">
+              <div>
+                <h4 className="fw-bolder text-gray-900 mb-1">Billing Cycle</h4>
+                <p className="text-muted fs-7 mb-0">Choose annual billing to receive a 20% discount on all plans</p>
+              </div>
+              <div
+                className="d-inline-flex align-items-center p-1"
+                style={{ background: "#f5f2ed", borderRadius: 30, border: "1px solid #ede8e4" }}
               >
-                Monthly
-              </button>
-              <button
-                className={`btn ${billingCycle === "yearly" ? "btn-primary" : "btn-light"}`}
-                onClick={() => setBillingCycle("yearly")}
-              >
-                Annual <span className="badge bg-success ms-2">Save 20%</span>
-              </button>
+                <button
+                  type="button"
+                  className="btn btn-sm px-6 py-2 fw-bold"
+                  style={{
+                    borderRadius: 24,
+                    background: billingCycle === "monthly" ? "#f5551a" : "transparent",
+                    color: billingCycle === "monthly" ? "#fff" : "#6b5846",
+                    border: "none",
+                    boxShadow: billingCycle === "monthly" ? "0 4px 12px rgba(245,85,26,0.3)" : "none",
+                    transition: "all 0.2s",
+                  }}
+                  onClick={() => setBillingCycle("monthly")}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm px-6 py-2 fw-bold d-flex align-items-center gap-2"
+                  style={{
+                    borderRadius: 24,
+                    background: billingCycle === "yearly" ? "#f5551a" : "transparent",
+                    color: billingCycle === "yearly" ? "#fff" : "#6b5846",
+                    border: "none",
+                    boxShadow: billingCycle === "yearly" ? "0 4px 12px rgba(245,85,26,0.3)" : "none",
+                    transition: "all 0.2s",
+                  }}
+                  onClick={() => setBillingCycle("yearly")}
+                >
+                  Annual
+                  <span
+                    className="badge py-1 px-2 fs-9 fw-bolder"
+                    style={{
+                      background: billingCycle === "yearly" ? "#fff" : "#10b981",
+                      color: billingCycle === "yearly" ? "#f5551a" : "#fff",
+                      borderRadius: 10,
+                    }}
+                  >
+                    Save 20%
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
 
