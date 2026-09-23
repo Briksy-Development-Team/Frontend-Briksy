@@ -63,7 +63,7 @@ const Heroone = () => {
                 ref={sectionRef}
                 className="relative h-screen overflow-clip bg-[#C2B4AA]  lg:px-0 font-helvetica"
             >
-                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-24">
+                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-28">
                     <div className="mb-6 flex items-center gap-2">
                         <div ref={avatarsRef} className="flex -space-x-3">
                             {AVATARS.map((src, i) => (

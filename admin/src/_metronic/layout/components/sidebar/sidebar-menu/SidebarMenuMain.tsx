@@ -250,7 +250,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/inquiry`}
               title={hasModule("builder_management") ? "Enquiries" : hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
               fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/proe.svg"
             />
           )}
 
@@ -269,13 +269,13 @@ const SidebarMenuMain = () => {
                 to={`${portalBase}/property-management`}
                 title="Property Management"
                 fontIcon="bi-archive"
-                icon="/media/icons/duotune/iconsnew/"
+                icon="/media/icons/duotune/iconsnew/prom.svg"
               />
               <SidebarMenuItem
                 to={`${portalBase}/property-offers`}
                 title="Property Offers"
                 fontIcon="bi-archive"
-                icon="/media/icons/duotune/iconsnew/"
+                icon="/media/icons/duotune/iconsnew/proo.svg"
               />
             </>
           )}
@@ -337,7 +337,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/activity-logs`}
               title="Activity Logs"
               fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/act.svg"
             />
           )}
         </>

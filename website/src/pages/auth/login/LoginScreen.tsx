@@ -51,20 +51,12 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
         password: "",
       });
 
-      const payload = { email: email.trim(), password };
-      const response = await login(payload);
-      if (response.abilities.includes('seeker')) {
-        navigate("/profile", { replace: true });
-      } else {
-        window.localStorage.setItem('kt-auth-react-v', JSON.stringify({
-          api_token: response.token,
-          token_type: response.token_type,
-          abilities: response.abilities,
-          user: response.user,
-        }));
-        const isSuperAdmin = response.abilities.some((ability) => ability.startsWith('super_admin'));
-        window.location.assign(isSuperAdmin ? '/super-admin/dashboard' : '/admin/dashboard');
-      }
+      await login({
+        email: email.trim(),
+        password,
+      });
+
+      navigate("/", { replace: true });
     } catch (error) {
       setErrors({ email: "", password: "We couldn't sign you in with those details." });
     } finally {
