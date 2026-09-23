@@ -80,7 +80,11 @@ export const getProperties = async (
     },
   );
 
-  console.log("Properties API response:", response.data);
+  if (!response.data || !Array.isArray(response.data.data)) {
+    throw new Error(
+      "The properties request returned a non-API response. Check that VITE_APP_API_URL points to the deployed Laravel API (including /api) and that hosting routes /api requests to Laravel.",
+    );
+  }
 
   return response.data;
 };

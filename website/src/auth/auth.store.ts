@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import {
   getSeekerProfile,
+  loginAccount,
   loginSeeker,
   logoutSeeker,
   registerSeeker,
@@ -150,6 +151,25 @@ export const loginSeekerSession = async (
 
   setStoredAuth(nextAuth);
   dispatch(setSession(nextAuth));
+};
+
+export const loginAccountSession = async (
+  dispatch: SeekerAuthDispatch,
+  payload: LoginPayload,
+): Promise<AuthResponse> => {
+  const response = await loginAccount({
+    email: payload.email.trim(),
+    password: payload.password,
+  });
+  const account = response.data;
+
+  if (account.abilities.includes("seeker")) {
+    const nextAuth = buildStoredAuth(account);
+    setStoredAuth(nextAuth);
+    dispatch(setSession(nextAuth));
+  }
+
+  return account;
 };
 
 export const registerSeekerSession = async (

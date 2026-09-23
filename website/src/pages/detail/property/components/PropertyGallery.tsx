@@ -1,5 +1,5 @@
-import { List, Play, X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { List, Play } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { PhotoTourModal, type Media } from '../../../../components/custom/PhotoTourModal';
 
 type ImageInput = string | { src?: string; type?: 'image' | 'video'; videoSrc?: string };
@@ -29,7 +29,7 @@ export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
       .map((i) => typeof i === 'string'
         ? { src: i }
         : { src: i.src, videoUrl: i.type === 'video' ? (i.videoSrc ?? i.src) : undefined })
-      .filter((m): m is Media => !!m.src);
+      .filter((m): m is { src: string; videoUrl?: string } => !!m.src);
 
     const video = all.find((m) => m.videoUrl);
     const photos = all.filter((m) => !m.videoUrl);

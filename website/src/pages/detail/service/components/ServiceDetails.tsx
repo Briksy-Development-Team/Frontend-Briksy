@@ -1,4 +1,4 @@
-import { X, ShieldCheck, Play } from "lucide-react";
+import { ShieldCheck, Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { loadGoogleMapsScript } from "../../../../utils/googleMapsLoader";

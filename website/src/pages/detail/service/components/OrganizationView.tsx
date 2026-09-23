@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Breadcrumb from "../../../../components/nav/Breadcrumb";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
-import { PublicService } from "../../../../api/service/service.api";
-import { PublicOrganization } from "../../../../api/seeker/organization.api";
+import type { PublicService } from "../../../../api/service/service.api";
+import type { PublicOrganization } from "../../../../api/seeker/organization.api";
 import { ServiceSidebar } from "./ServiceSidebar";
 import { ServiceList, ServiceQualifications, ServiceRecentWork, ServiceLocation } from "./ServiceDetails";
 import { ServiceMobileHeader } from "./ServiceMobileHeader";

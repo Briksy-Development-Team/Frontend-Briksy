@@ -82,6 +82,7 @@ export type CompanySubscription = {
   stripe_subscription_id?: string | null;
   stripe_checkout_session_id?: string | null;
   latest_invoice_id?: string | null;
+  invoice_download_url?: string | null;
   current_period_start?: string | null;
   current_period_end?: string | null;
   canceled_at?: string | null;
