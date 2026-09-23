@@ -98,6 +98,7 @@ export type BillingCheckoutResponse = {
 };
 
 export type BillingCheckoutVerificationResponse = {
+  entitlements?: import("../../../modules/auth/core/_models").EntitlementModel;
   checkout_session_id?: string;
   checkout_status?: string | null;
   payment_status?: string | null;

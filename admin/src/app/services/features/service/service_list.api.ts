@@ -44,6 +44,13 @@ const toFormData = (payload: ServiceFormValues) => {
   return formData;
 };
 
+export type ServiceCategoryOption = { slug: string; label: string; name: string };
+
+export const fetchServiceCategoriesApi = async () => {
+  const res = await axiosInstance.get<ApiResponse<{ active: boolean; categories: ServiceCategoryOption[]; message?: string | null }>>(`${getBasePath()}/categories`);
+  return res.data.data;
+};
+
 export const fetchServiceGroupApi = async (params: GetServiceListParams, organizationId?: string) => {
   const path = organizationId
     ? getBasePath().replace("/services", `/organizations/${organizationId}/services`)

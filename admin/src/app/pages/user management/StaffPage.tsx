@@ -22,12 +22,13 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { Content } from "../../../_metronic/layout/components/content"
 import { StaffModal } from "../../services/features/staff/component/StaffModal"
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage"
-import { useRoleAccess } from "../../modules/auth"
+import { useAuth, useRoleAccess } from "../../modules/auth"
 import { getRolePortalBaseRoute } from "../../modules/auth/core/roleRoutes"
 
 const StaffList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { isSuperAdmin } = useRoleAccess()
+  const { entitlements } = useAuth()
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin'])
   const resolveStaffId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
     row.display_id ?? row.generated_id ?? row.id
@@ -51,6 +52,9 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
     }
   }, [isModalOpen, saving, params, dispatch])
 
+  const staffLimit = entitlements?.limits?.staff_members ?? null;
+  const limitReached = !isSuperAdmin && staffLimit !== null && total >= staffLimit;
+
   if (error) return (
     <Content>
       <PageHeader
@@ -68,6 +72,11 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         subtitle={isSuperAdmin ? "Manage platform staff access and permissions" : "Manage company users"}
       />
 
+      {!isSuperAdmin && staffLimit !== null ? (
+        <div className={`alert ${limitReached ? "alert-warning" : "alert-light-info"} mb-5`}>
+          {total} / {staffLimit} staff seats used{limitReached ? ". Upgrade your plan to add more staff." : ""}
+        </div>
+      ) : null}
       <EntityList
         data={data}
         total={total}
@@ -83,7 +92,13 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         headerActions={[{
           label: "Add Staff",
           permission: "user.create",
-          onClick: () => dispatch(openStaffModal(null)),
+          onClick: () => {
+            if (limitReached) {
+              window.alert(`Your current plan allows up to ${staffLimit} staff members. Upgrade your plan to add more staff.`);
+              return;
+            }
+            dispatch(openStaffModal(null));
+          },
         }]}
         rowActions={rowActions}
       />

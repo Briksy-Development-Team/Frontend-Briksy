@@ -30,7 +30,7 @@ export const ServiceEnquiry = ({ open, onClose, organizationId, companyName, sub
         setSubmitting(true);
         setError(null);
         try {
-          await createInquiry({
+          const result = await createInquiry({
             organization_id: organizationId,
             lead_source: "service_profile",
             subject: values.subject,
@@ -39,7 +39,9 @@ export const ServiceEnquiry = ({ open, onClose, organizationId, companyName, sub
             seeker_email: values.seeker_email,
             seeker_phone: values.seeker_phone || null,
           });
-          setSuccess("Your enquiry has been sent successfully.");
+          setSuccess(result.data?.email_delivery?.status !== "sent"
+            ? `${result.message} Our team can still view it.`
+            : "Your enquiry has been sent successfully.");
         } catch (reason: any) {
           setError(reason?.response?.data?.message || "Unable to send enquiry. Please try again.");
         } finally {

@@ -87,7 +87,7 @@ export function PhotoTourModal({
                 className={`relative w-[100px] h-[100px] shrink-0 rounded-[1rem] overflow-hidden border-[3px] transition-all ${active === i ? 'border-primary-brown shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
                   }`}
               >
-                <img src={m.src} alt="" className="w-full h-full object-cover" />
+                {m.videoUrl ? <video src={m.videoUrl} muted playsInline preload="metadata" className="w-full h-full object-cover" /> : <img src={m.src} alt="" className="w-full h-full object-cover" />}
                 {m.videoUrl && (
                   <span className="absolute inset-0 flex items-center justify-center bg-black/10 pointer-events-none">
                     <Play size={20} className="text-white ml-0.5" fill="currentColor" />

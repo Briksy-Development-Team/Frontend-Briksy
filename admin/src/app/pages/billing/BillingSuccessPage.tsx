@@ -4,7 +4,6 @@ import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { fetchBillingCurrentSubscriptionApi, verifyBillingCheckoutSessionApi } from "../../services/features/billing/billing.api";
 import type { BillingCheckoutVerificationResponse, CompanySubscription } from "../../services/features/billing/billing.types";
-import { getUserByToken } from "../../modules/auth/core/_requests";
 import { useAuth } from "../../modules/auth";
 
 const formatDate = (value?: string | null) => (value ? new Date(value).toLocaleDateString() : "N/A");
@@ -29,7 +28,7 @@ export default function BillingSuccessPage() {
   const [stripeDetails, setStripeDetails] = useState<BillingCheckoutVerificationResponse["stripe_details"] | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string>("Verifying your payment...");
-  const { setCurrentUser } = useAuth();
+  const { refreshSession } = useAuth();
 
   const checkoutSessionId = useMemo(() => searchParams.get("session_id"), [searchParams]);
 
@@ -44,32 +43,38 @@ export default function BillingSuccessPage() {
           const current = await fetchBillingCurrentSubscriptionApi();
           if (!active) return;
           setSubscription(current);
-          try { setCurrentUser((await getUserByToken()).data.user); } catch { /* webhook may still be syncing */ }
+          try { await refreshSession(); } catch { /* webhook may still be syncing */ }
           setMessage("Payment confirmed. Your subscription data has already been refreshed.");
           window.history.replaceState({}, document.title, window.location.pathname);
           return;
         }
 
         if (checkoutSessionId) {
-          const verification = await verifyBillingCheckoutSessionApi(checkoutSessionId);
+          let verification = await verifyBillingCheckoutSessionApi(checkoutSessionId);
+          for (let attempt = 1; attempt < 5 && verification.subscription?.status !== "active" && verification.subscription?.status !== "trialing"; attempt += 1) {
+            await new Promise((resolve) => window.setTimeout(resolve, 1500));
+            verification = await verifyBillingCheckoutSessionApi(checkoutSessionId);
+          }
           if (!active) return;
 
           setSubscription(verification.subscription ?? null);
-          try { setCurrentUser((await getUserByToken()).data.user); } catch { /* webhook may still be syncing */ }
+          try { await refreshSession(); } catch { /* webhook may still be syncing */ }
           setStripeDetails(verification.stripe_details ?? null);
           setMessage(
             verification.checkout_status === "complete"
               ? "Payment confirmed. Your subscription has been refreshed."
               : "Payment is still syncing. Stripe may take a moment to finalize the subscription.",
           );
-          sessionStorage.setItem(storageKey, "true");
+          if (["active", "trialing"].includes(verification.subscription?.status ?? "")) {
+            sessionStorage.setItem(storageKey, "true");
+          }
           window.history.replaceState({}, document.title, window.location.pathname);
         } else {
           const current = await fetchBillingCurrentSubscriptionApi();
           if (!active) return;
 
           setSubscription(current);
-          try { setCurrentUser((await getUserByToken()).data.user); } catch { /* webhook may still be syncing */ }
+          try { await refreshSession(); } catch { /* webhook may still be syncing */ }
           setStripeDetails(null);
           setMessage("Payment completed. Your subscription data has been refreshed.");
         }
@@ -88,7 +93,7 @@ export default function BillingSuccessPage() {
     return () => {
       active = false;
     };
-  }, [checkoutSessionId]);
+  }, [checkoutSessionId, refreshSession]);
 
   const planName = subscription?.plan?.name ?? "Unknown";
   const amount =

@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { type FC, useEffect } from 'react'
+import { type FC, useCallback, useEffect } from 'react'
 import { type TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { WithChildren } from '../../../../_metronic/helpers'
-import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser, setPermissions, setEnabledModules, setBusinessProfile } from './auth.store'
+import { clearSession, setAuth as setAuthState, setBootstrapping, setCurrentUser, setPermissions, setEnabledModules, setBusinessProfile, setEntitlements } from './auth.store'
 import { getAuth, removeAuth, setAuth as persistAuth } from './AuthHelpers'
 import { getPermissionsByToken, getUserByToken, login as loginRequest, logout as logoutRequest, register as registerRequest } from './_requests'
 import type { AuthModel, AuthResponse, UserModel } from './_models'
@@ -17,10 +17,12 @@ type AuthContextProps = {
   enabledModules: string[]
   businessType: string | null
   businessVerificationStatus: string | null
+  entitlements: UserModel['entitlements']
   isBootstrapping: boolean
   saveAuth: (auth: AuthModel | undefined) => void
   setCurrentUser: (user: UserModel | undefined) => void
-  logout: () => Promise<void>
+  refreshSession: () => Promise<UserModel | undefined>
+  logout: (redirectTo?: string) => Promise<void>
   login: (email: string, password: string) => Promise<string>
   register: (payload: {
     first: string
@@ -77,6 +79,7 @@ const mapAuthResponse = (response: AuthResponse): AuthModel => ({
             permissions.data.user?.business_verification_status ?? null,
         }),
       )
+      dispatch(setEntitlements(permissions.data.entitlements))
     } catch (error) {
       // Permission hydration must not log a valid user out. Route guards will
       // still enforce access, while the session remains available.
@@ -140,13 +143,55 @@ const useAuth = (): AuthContextProps => {
     dispatch(setCurrentUser(user))
   }
 
-  const logout = async () => {
+  const refreshSession = useCallback(async (): Promise<UserModel | undefined> => {
+    const userResponse = await getUserByToken()
+    const freshUser = userResponse.data.user
+    const permissionResponse = await getPermissionsByToken()
+    const freshPermissions = permissionResponse.data.effective_permission_names ?? []
+    const freshModules = permissionResponse.data.enabled_modules ?? []
+    const freshEntitlements = permissionResponse.data.entitlements
+    const storedAuth = getAuth()
+    const nextAuth = storedAuth
+      ? {
+          ...storedAuth,
+          user: freshUser,
+          permissions: freshPermissions,
+          enabled_modules: freshModules,
+          entitlements: freshEntitlements,
+        }
+      : undefined
+
+    dispatch(setCurrentUser(freshUser))
+    dispatch(setPermissions(freshPermissions))
+    dispatch(setEnabledModules(freshModules))
+    dispatch(setBusinessProfile({
+      businessType: permissionResponse.data.user?.business_type ?? null,
+      businessVerificationStatus: permissionResponse.data.user?.business_verification_status ?? null,
+    }))
+    dispatch(setEntitlements(freshEntitlements))
+    if (nextAuth) {
+      dispatch(setAuthState(nextAuth))
+      persistAuth(nextAuth)
+    }
+
+    return freshUser
+  }, [dispatch])
+
+  const logout = async (redirectTo?: string) => {
     try {
       await logoutRequest()
     } catch (error) {
       console.error('Logout request failed.', error)
     } finally {
       removeAuth()
+
+      // Leave the portal before clearing React state so the admin router does
+      // not redirect an unauthenticated portal URL to /admin/login.
+      if (redirectTo) {
+        window.location.replace(redirectTo)
+        return
+      }
+
       dispatch(clearSession())
     }
   }
@@ -169,6 +214,7 @@ const useAuth = (): AuthContextProps => {
           permissions.data.user?.business_verification_status ?? null,
       }),
     )
+    dispatch(setEntitlements(permissions.data.entitlements))
 
     return homeRoute
   }
@@ -226,6 +272,7 @@ const useAuth = (): AuthContextProps => {
           permissions.data.user?.business_verification_status ?? null,
       }),
     )
+    dispatch(setEntitlements(permissions.data.entitlements))
 
     return homeRoute
   }
@@ -237,9 +284,11 @@ const useAuth = (): AuthContextProps => {
     enabledModules: authState.enabledModules,
     businessType: authState.businessType,
     businessVerificationStatus: authState.businessVerificationStatus,
+    entitlements: authState.entitlements,
     isBootstrapping: authState.isBootstrapping,
     saveAuth,
     setCurrentUser: updateCurrentUser,
+    refreshSession,
     logout,
     login,
     register,
