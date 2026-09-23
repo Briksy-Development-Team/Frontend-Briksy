@@ -13,7 +13,11 @@ import {
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 
-export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
+type LoginScreenProps = {
+  go: (s: Screen) => void;
+};
+
+export const LoginScreen = ({ go }: LoginScreenProps) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -47,14 +51,22 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
         password: "",
       });
 
-      await login({
-        email: email.trim(),
-        password,
-      });
-
-      navigate("/profile", { replace: true });
+      const payload = { email: email.trim(), password };
+      const response = await login(payload);
+      if (response.abilities.includes('seeker')) {
+        navigate("/profile", { replace: true });
+      } else {
+        window.localStorage.setItem('kt-auth-react-v', JSON.stringify({
+          api_token: response.token,
+          token_type: response.token_type,
+          abilities: response.abilities,
+          user: response.user,
+        }));
+        const isSuperAdmin = response.abilities.some((ability) => ability.startsWith('super_admin'));
+        window.location.assign(isSuperAdmin ? '/super-admin/dashboard' : '/admin/dashboard');
+      }
     } catch (error) {
-      setErrors({ email: "", password: "Invalid email or password" });
+      setErrors({ email: "", password: "We couldn't sign you in with those details." });
     } finally {
       setIsLoading(false);
     }
@@ -156,14 +168,9 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
       </div>
 
       <div className="flex text-sm text-primary-light-brown lg:hidden justify-center gap-x-2 mt-20 w-full">
-        {" "}
         <p>Not a member yet?</p>
-        <Link
-          to="/register"
-          className="underline underline-offset-2 transition hover:text-white"
-        >
-          Create an account
-        </Link>      </div>
+        <Link to="/register" className="underline underline-offset-2 transition hover:text-white">Create an account</Link>
+      </div>
 
 
 

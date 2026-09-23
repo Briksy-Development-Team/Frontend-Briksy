@@ -2,6 +2,6 @@
 .env
 /dist
 /node_modules
-/website/android/build
-/website/.env.android
-
+/node_modules
+/node_modules/.bin
+/node_modules

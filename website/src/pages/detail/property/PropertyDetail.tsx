@@ -52,9 +52,11 @@ const PropertyDetail = () => {
         ...(propertyData.images || []).map((item, index) => ({ ...item, id: `image-${index}`, type: 'image' as const })),
         ...(propertyData.videos || []).map((item, index) => ({ ...item, id: `video-${index}`, type: 'video' as const })),
       ]);
-      return media
+      let formattedMedia = media
         .filter((item, index, all) => item.url && all.findIndex((candidate) => candidate.id ? candidate.id === item.id : candidate.url === item.url) === index)
         .map((item) => ({ id: item.id, src: item.url ?? undefined, type: item.type, videoSrc: item.type === 'video' ? item.url ?? undefined : undefined }));
+      
+      return formattedMedia;
     })(),
     agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: propertyData.organization?.logo_url || "" },
     about: propertyData.description || "No description provided.",

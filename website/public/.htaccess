@@ -4,6 +4,17 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Let the Laravel application handle API and docs requests before the SPA fallback.
+    RewriteRule ^storage/(.*)$ backend/public/storage/$1 [L]
+    RewriteRule ^api/storage/(.*)$ backend/public/storage/$1 [L]
+    RewriteRule ^api(?:/(.*))?$ backend/public/index.php [L,QSA]
+    RewriteRule ^docs(?:/(.*))?$ backend/public/index.php [L,QSA]
+
+    # Keep admin and super-admin deep links on the admin app entry point.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(?:admin|super-admin)(?:/.*)?$ admin/index.html [L]
+
     # Serve existing assets normally.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

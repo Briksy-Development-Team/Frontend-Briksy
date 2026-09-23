@@ -32,6 +32,20 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
 
   return (
     <div style={{ fontFamily: 'Inter, Helvetica, sans-serif' }}>
+      <style>{`
+        .briksy-plan-card {
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease !important;
+            border: 2px solid #F8F4EE !important;
+          }
+        .briksy-plan-card:hover {
+          border: 2px solid #f5551a !important;
+          box-shadow: 0 16px 40px rgba(245, 85, 26, 0.22) !important;
+        }
+        .briksy-plan-card.popular:hover {
+          border: 2px solid #f5551a !important;
+          box-shadow: 0 24px 60px rgba(245, 85, 26, 0.35) !important;
+        }
+      `}</style>
 
       {/* ── Header ── */}
       <div className='d-flex justify-content-between align-items-center mb-10 flex-wrap gap-4'>
@@ -43,8 +57,8 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
             {canManage
               ? 'Manage and configure subscription plans'
               : currentPlan
-              ? `Current plan: ${currentPlan.name} — upgrade anytime`
-              : 'Pick the plan that fits your agency best'}
+                ? `Current plan: ${currentPlan.name} — upgrade anytime`
+                : 'Pick the plan that fits your agency best'}
           </p>
         </div>
         {canManage && (
@@ -98,8 +112,10 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
           const popularGradient = 'linear-gradient(145deg, #342511 0%, #5c3d1a 100%)'
 
           return (
-            <div className='col-xl-4 col-md-6 col-sm-12' key={plan.id}>
+            <div className='col-xl-3 col-md-6 col-12' key={plan.id}>
               <div
+                className={`briksy-plan-card ${isPopular ? 'popular' : ''}`}
+                onClick={() => !canManage && onSelectPlan?.(plan)}
                 style={{
                   background: isPopular ? popularGradient : '#fff',
                   border: isPopular ? 'none' : isCurrent ? `2px solid ${accentColor}` : '1.5px solid #ede8e4',
@@ -112,10 +128,11 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                   boxShadow: isPopular
                     ? '0 24px 60px rgba(52,37,17,0.30)'
                     : isCurrent
-                    ? '0 8px 30px rgba(245,85,26,0.12)'
-                    : '0 4px 20px rgba(52,37,17,0.06)',
+                      ? '0 8px 30px rgba(245,85,26,0.12)'
+                      : '0 4px 20px rgba(52,37,17,0.06)',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                   overflow: 'visible',
+                  cursor: canManage ? 'default' : 'pointer',
                 }}
               >
                 {/* Popular badge */}
@@ -138,7 +155,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                       boxShadow: '0 4px 12px rgba(245,85,26,0.4)',
                     }}
                   >
-                     Most Popular
+                    Most Popular
                   </div>
                 )}
 
@@ -224,8 +241,8 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                         (index === 0
                           ? 'Perfect for small agencies'
                           : index === 1
-                          ? 'Best for growing teams'
-                          : 'For large organizations')}
+                            ? 'Best for growing teams'
+                            : 'For large organizations')}
                     </p>
                   </div>
 
@@ -259,8 +276,8 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                       {billingCycle === 'yearly'
                         ? 'Monthly equivalent · billed annually'
                         : plan.monthly_price
-                        ? `Monthly $${plan.monthly_price.toLocaleString('en-IN')}`
-                        : 'Monthly pricing unavailable'}
+                          ? `Monthly $${plan.monthly_price.toLocaleString('en-IN')}`
+                          : 'Monthly pricing unavailable'}
                     </p>
                     {plan.yearly_price ? (
                       <div className='d-flex align-items-center gap-2 mt-2 flex-wrap'>
@@ -327,13 +344,13 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                         background: isCurrent
                           ? 'rgba(58,132,81,0.12)'
                           : isPopular
-                          ? accentColor
-                          : `rgba(245,85,26,0.10)`,
+                            ? accentColor
+                            : `rgba(245,85,26,0.10)`,
                         color: isCurrent
                           ? '#3a8451'
                           : isPopular
-                          ? '#fff'
-                          : accentColor,
+                            ? '#fff'
+                            : accentColor,
                         fontWeight: 700,
                         fontSize: 14,
                         cursor: isCurrent ? 'default' : 'pointer',
@@ -403,8 +420,8 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                                 ? '#fff'
                                 : '#342511'
                               : isPopular
-                              ? 'rgba(255,255,255,0.4)'
-                              : '#8b6f54',
+                                ? 'rgba(255,255,255,0.4)'
+                                : '#8b6f54',
                             fontWeight: feature.enabled ? 500 : 400,
                           }}
                         >

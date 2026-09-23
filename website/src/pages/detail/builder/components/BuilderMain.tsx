@@ -7,7 +7,7 @@ export function BuilderHeader({ builder }: { builder: any }) {
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <div className="w-full relative h-[300px] sm:h-[400px]  md:h-48 md:rounded-[0.75rem] overflow-hidden  md:mx-0 w-[calc(100%+6%)] md:w-full">
+      <div className="w-full relative h-[300px] sm:h-[400px]  md:h-60 md:rounded-[0.75rem] overflow-hidden  md:mx-0 w-[calc(100%+6%)] md:w-full">
         
         {/* Mobile Overlay Header */}
         <div className="md:hidden absolute top-4 inset-x-0 px-[3%] flex justify-between z-10">

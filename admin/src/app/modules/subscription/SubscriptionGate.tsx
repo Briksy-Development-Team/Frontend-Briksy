@@ -16,6 +16,12 @@ const SubscriptionGate = () => {
   const shouldShow = !isSuperAdmin && (required || expired) && !window.location.pathname.startsWith("/admin/billing/");
 
   useEffect(() => {
+    if (subscription?.status === "active" || subscription?.status === "trialing" || subscription?.is_trial_active) {
+      setRequired(false);
+    }
+  }, [subscription?.status, subscription?.is_trial_active]);
+
+  useEffect(() => {
     const onSubscriptionRequired = () => setRequired(true);
     window.addEventListener("briksy:subscription-required", onSubscriptionRequired);
     return () => window.removeEventListener("briksy:subscription-required", onSubscriptionRequired);

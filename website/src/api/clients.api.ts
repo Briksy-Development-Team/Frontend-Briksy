@@ -61,7 +61,18 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const contentType = String(response.headers?.["content-type"] ?? "").toLowerCase();
+    const bodyIsHtml = typeof response.data === "string" && /<!doctype html|<html[\s>]/i.test(response.data);
+
+    if (contentType.includes("text/html") || bodyIsHtml) {
+      return Promise.reject(new Error(
+        "The API request returned the Briksy website HTML instead of JSON. Route /api/* to the Laravel backend or set VITE_APP_API_URL to the Laravel API base (including /api).",
+      ));
+    }
+
+    return response;
+  },
   (error) => {
     const status = error?.response?.status;
     const requestUrl = String(error?.config?.url ?? "");

@@ -1,4 +1,4 @@
-import { X, ShieldCheck } from "lucide-react";
+import { ShieldCheck, Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { loadGoogleMapsScript } from "../../../../utils/googleMapsLoader";
@@ -157,73 +157,91 @@ export function ServiceQualifications({
   );
 }
 
-export function ServiceRecentWork({ recentWork }: { recentWork: any }) {
+import { PhotoTourModal } from "../../../../components/custom/PhotoTourModal";
+
+export function ServiceRecentWork({ recentWork, title = "My gallery" }: { recentWork: any, title?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [initialGalleryIndex, setInitialGalleryIndex] = useState(0);
+
+  const allMedia = (recentWork.allItems ?? recentWork.items).map((item: any, idx: number) => ({
+    id: `gallery-item-${idx}`,
+    src: item.src,
+    type: item.type,
+    videoSrc: item.type === "video" ? item.src : undefined,
+  }));
 
   return (
     <div className="flex flex-col gap-5">
       <h2 className="text-[1.5rem] font-medium text-primary-brown">
-        My gallery
+        {title}
       </h2>
 
       <div className="flex gap-2 h-[280px] md:h-[400px]">
         <div
-          className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100"
-          onClick={() => setModalOpen(true)}
+          className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100 relative group"
+          onClick={() => { setInitialGalleryIndex(0); setModalOpen(true); }}
         >
-          {recentWork.items[0]?.type === "video" ? <video src={recentWork.items[0].src} muted playsInline className="w-full h-full object-cover" /> : <img src={recentWork.items[0]?.src} alt="Recent work" className="w-full h-full object-cover" />}
+          {recentWork.items[0]?.type === "video" ? (
+            <>
+              <video src={`${recentWork.items[0].src}#t=0.1`} preload="metadata" muted playsInline className="w-full h-full object-cover" />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center text-primary-brown">
+                  <Play size={20} className="ml-1" fill="currentColor" />
+                </div>
+              </div>
+            </>
+          ) : <img src={recentWork.items[0]?.src} alt="Recent work" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
         </div>
 
         <div className="w-[35%] flex flex-col gap-2 h-full">
           <div
-            className="flex-1 rounded-xl overflow-hidden cursor-pointer relative bg-white-100"
-            onClick={() => setModalOpen(true)}
+            className="flex-1 rounded-xl overflow-hidden cursor-pointer relative bg-white-100 group"
+            onClick={() => { setInitialGalleryIndex(1); setModalOpen(true); }}
           >
-            {recentWork.items[1]?.type === "video" ? <video src={recentWork.items[1].src} muted playsInline className="w-full h-full object-cover" /> : <img src={recentWork.items[1]?.src} alt="Recent work" className="w-full h-full object-cover" />}
+            {recentWork.items[1]?.type === "video" ? (
+              <>
+                <video src={`${recentWork.items[1].src}#t=0.1`} preload="metadata" muted playsInline className="w-full h-full object-cover" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-primary-brown">
+                    <Play size={16} className="ml-0.5" fill="currentColor" />
+                  </div>
+                </div>
+              </>
+            ) : <img src={recentWork.items[1]?.src} alt="Recent work" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
           </div>
 
           <div
-            className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100 relative"
-            onClick={() => setModalOpen(true)}
+            className="flex-1 rounded-xl overflow-hidden cursor-pointer bg-white-100 relative group"
+            onClick={() => { setInitialGalleryIndex(2); setModalOpen(true); }}
           >
-            {recentWork.items[2]?.type === "video" ? <video src={recentWork.items[2].src} muted playsInline className="w-full h-full object-cover" /> : <img src={recentWork.items[2]?.src} alt="Recent work" className="w-full h-full object-cover" />}
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-              <span className="text-white text-3xl">...</span>
-            </div>
+            {recentWork.items[2]?.type === "video" ? (
+              <>
+                <video src={`${recentWork.items[2].src}#t=0.1`} preload="metadata" muted playsInline className="w-full h-full object-cover" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-primary-brown">
+                    <Play size={16} className="ml-0.5" fill="currentColor" />
+                  </div>
+                </div>
+              </>
+            ) : <img src={recentWork.items[2]?.src} alt="Recent work" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+            
+            {allMedia.length > 3 && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <span className="text-white text-3xl font-light">+{allMedia.length - 3}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <button
-            className="absolute top-5 right-5 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
-            onClick={() => setModalOpen(false)}
-          >
-            <X size={22} />
-          </button>
-
-          <div className="w-full max-w-5xl h-[85vh] max-h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between shrink-0">
-              <h3 className="text-[1.125rem] font-medium text-primary-brown">
-                Gallery · {recentWork.totalPhotos} photos{recentWork.totalVideos ? `, ${recentWork.totalVideos} videos` : ""}
-              </h3>
-            </div>
-            <div className="flex-1 min-h-0 overflow-y-scroll overscroll-contain p-6" style={{ scrollbarWidth: "thin", scrollbarColor: "#8B6F54 #F1ECE4" }}>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {(recentWork.allItems ?? recentWork.items).map((item: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="aspect-square rounded-xl overflow-hidden relative bg-white-100"
-                  >
-                    {item.type === "video" ? <video src={item.src} controls playsInline className="w-full h-full object-cover" /> : <img src={item.src} className="w-full h-full object-cover" alt="" />}
-                  </div>
-                ))}
-              </div>
-              <p className="mt-4 text-center text-xs text-primary-light-brown">Scroll to view all media</p>
-            </div>
-          </div>
-        </div>
+        <PhotoTourModal
+          media={allMedia}
+          initialIndex={initialGalleryIndex}
+          onClose={() => setModalOpen(false)}
+          title={`Gallery · ${recentWork.totalPhotos} photos${recentWork.totalVideos ? `, ${recentWork.totalVideos} videos` : ""}`}
+          subtitle="My gallery"
+        />
       )}
     </div>
   );
