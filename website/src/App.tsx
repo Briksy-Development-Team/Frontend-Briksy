@@ -1,6 +1,8 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
+import { App as CapacitorApp } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -13,6 +15,39 @@ import { ReadyProvider, useReady } from "./components/utils/ReadyContext";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
+
+const EXIT_PATHS = new Set(["/", "/login", "/register"]);
+
+const AndroidBackButtonHandler = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    const listener = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
+      if (EXIT_PATHS.has(location.pathname)) {
+        CapacitorApp.exitApp();
+        return;
+      }
+
+      if (canGoBack) {
+        navigate(-1);
+        return;
+      }
+
+      navigate("/");
+    });
+
+    return () => {
+      listener.then((handle) => handle.remove());
+    };
+  }, [location.pathname, navigate]);
+
+  return null;
+};
 
 const AppContent = () => {
   const [appReady, setAppReady] = useState(false);
@@ -40,6 +75,7 @@ const AppContent = () => {
       )}
 
       <ScrollToTop />
+      <AndroidBackButtonHandler />
       <AppRouter />
     </>
   );
