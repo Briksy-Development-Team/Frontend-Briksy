@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
 import axiosInstance from "../../services/api/axiosInstance";
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
@@ -16,16 +15,15 @@ import {
 } from "../../services/features/builder_projects/component/BuilderProjectModal";
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 
-const BuilderProjectList = () => {
-  const [data, setData] = useState<BuilderProject[]>([]);
-  const [total, setTotal] = useState(0);
+export default function BuilderProjectPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-
   const [savingProject, setSavingProject] = useState(false);
   const [savingProperty, setSavingProperty] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [data, setData] = useState<BuilderProject[]>([]);
+  const [total, setTotal] = useState(0);
 
   const fetchProjects = useCallback(async (params?: any) => {
     setError(null);
@@ -86,9 +84,6 @@ const BuilderProjectList = () => {
         subtitle="Manage and view residential and commercial developments"
       />
 
-      {error && <div className="alert alert-danger mb-5">{error}</div>}
-      {notice && <div className="alert alert-success mb-5">{notice}</div>}
-
       <EntityList
         data={data}
         total={total}
@@ -133,14 +128,5 @@ const BuilderProjectList = () => {
         />
       )}
     </Content>
-  );
-};
-
-export default function BuilderProjectPage() {
-  return (
-    <Routes>
-      <Route index element={<BuilderProjectList />} />
-      <Route path=":id" element={<GenericDetailPage />} />
-    </Routes>
   );
 }

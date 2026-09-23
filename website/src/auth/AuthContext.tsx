@@ -5,7 +5,7 @@ import { Provider, type TypedUseSelectorHook, useDispatch, useSelector } from 'r
 import {
   bootstrapSeekerAuth,
   clearSession,
-  loginSeekerSession,
+  loginAccountSession,
   logoutSeekerSession,
   registerSeekerSession,
   seekerAuthStore,
@@ -13,7 +13,7 @@ import {
   type SeekerAuthRootState,
 } from './auth.store'
 import { clearStoredAuth } from './auth.storage'
-import type { AuthRole, AuthUser, LoginPayload, RegisterPayload } from './auth.types'
+import type { AuthResponse, AuthRole, AuthUser, LoginPayload, RegisterPayload } from './auth.types'
 
 interface AuthContextValue {
   user: AuthUser | null
@@ -23,7 +23,7 @@ interface AuthContextValue {
   isAuthenticated: boolean
   isSeeker: boolean
   isBootstrapping: boolean
-  login: (payload: LoginPayload) => Promise<void>
+  login: (payload: LoginPayload) => Promise<AuthResponse>
   register: (payload: RegisterPayload) => Promise<void>
   logout: () => Promise<void>
 }
@@ -91,7 +91,7 @@ export const useAuth = (): AuthContextValue => {
       isSeeker: auth.roles.length === 1 && auth.roles[0] === 'seeker',
       isBootstrapping: auth.isBootstrapping,
       login: async (payload: LoginPayload) => {
-        await loginSeekerSession(dispatch, payload)
+        return loginAccountSession(dispatch, payload)
       },
       register: async (payload: RegisterPayload) => {
         await registerSeekerSession(dispatch, payload)

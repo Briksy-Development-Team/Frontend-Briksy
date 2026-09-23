@@ -159,6 +159,22 @@ export default function AdminBillingPage() {
                   </span>
                 </h3>
               </div>
+              <div className="d-flex align-items-center gap-3 flex-wrap">
+                <div>
+                  <div className="text-muted fs-8 fw-bold text-uppercase">Latest invoice</div>
+                  <div className="fw-semibold">{current.latest_invoice_id ?? "No invoice yet"}</div>
+                </div>
+                {current.invoice_download_url ? (
+                  <a
+                    className="btn btn-sm btn-light-primary"
+                    href={current.invoice_download_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Download invoice
+                  </a>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

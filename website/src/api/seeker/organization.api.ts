@@ -39,13 +39,19 @@ export type PublicBuilderProject = {
   project_type?: string | null;
   status: string;
   description?: string | null;
+  features?: string[] | null;
   location?: string | null;
   state?: string | null;
   postcode?: string | null;
 };
 
-export const getOrganizations = async (params: Record<string, string | number | boolean | undefined> = {}) =>
-  (await api.get<ApiPage<PublicOrganization>>("/seeker/organizations", { params: { per_page: 100, ...params } })).data;
+export const getOrganizations = async (params: Record<string, string | number | boolean | undefined> = {}) => {
+  const response = await api.get<ApiPage<PublicOrganization>>("/seeker/organizations", { params: { per_page: 100, ...params } });
+  if (!Array.isArray(response.data?.data)) {
+    throw new Error("The organizations API returned an invalid response.");
+  }
+  return response.data;
+};
 
 export const getOrganization = async (id: string): Promise<{ data: PublicOrganization }> =>
   (await api.get<{ data: PublicOrganization }>(`/seeker/organizations/${id}`)).data;

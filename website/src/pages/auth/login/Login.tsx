@@ -20,8 +20,7 @@ import { LinkSentScreen } from './LinkSentScreen'
 import { NewPasswordScreen } from './NewPasswordScreen'
 import { UpdatedScreen } from './UpdatedScreen'
 
-const LOGIN_SCREENS: Record<Screen, ComponentType<{ go: (screen: Screen) => void }>> = {
-  login: LoginScreen,
+const LOGIN_SCREENS: Record<Exclude<Screen, 'login'>, ComponentType<{ go: (screen: Screen) => void }>> = {
   forgot: ForgotScreen,
   'link-sent': LinkSentScreen,
   'new-password': NewPasswordScreen,
@@ -29,7 +28,7 @@ const LOGIN_SCREENS: Record<Screen, ComponentType<{ go: (screen: Screen) => void
 }
 
 const Login = () => {
-  const { isAuthenticated, isBootstrapping } = useAuth()
+  const { isAuthenticated, isBootstrapping, isSeeker } = useAuth()
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -38,12 +37,13 @@ const Login = () => {
   const [screen, setScreen] = useState<Screen>('login')
 
   const fromPath = (location.state as { from?: string } | null)?.from ?? '/account/profile'
-  const ScreenComponent = LOGIN_SCREENS[screen]
+  const ScreenComponent = screen === 'login' ? null : LOGIN_SCREENS[screen]
 
   useEffect(() => {
     if (
       isBootstrapping ||
       !isAuthenticated ||
+      !isSeeker ||
       redirectingRef.current
     ) {
       return
@@ -83,6 +83,7 @@ const Login = () => {
   }, [
     fromPath,
     isAuthenticated,
+    isSeeker,
     isBootstrapping,
     navigate,
   ])
@@ -139,19 +140,16 @@ const Login = () => {
           </div>
 
           <div className="absolute bottom-6 left-6 right-6 z-10 text-sm text-[#eeece0]/85">
-            New here?{' '}
-
-            <Link
-              to="/register"
-              className="underline underline-offset-2 transition hover:text-white"
-            >
-              Create an account
-            </Link>
+            <>New here?{' '}
+              <Link to="/register" className="underline underline-offset-2 transition hover:text-white">Create an account</Link>
+            </>
           </div>
         </div>
 
         <main className="flex flex-1  justify-center">
-          <ScreenComponent go={setScreen} />
+          {screen === 'login' || !ScreenComponent
+            ? <LoginScreen go={setScreen} />
+            : <ScreenComponent go={setScreen} />}
         </main>
       </div>
     </div>

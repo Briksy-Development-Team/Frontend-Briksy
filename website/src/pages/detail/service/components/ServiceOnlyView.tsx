@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
 import Breadcrumb from "../../../../components/nav/Breadcrumb";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
-import { PublicService } from "../../../../api/service/service.api";
-import { PublicOrganization } from "../../../../api/seeker/organization.api";
+import type { PublicService } from "../../../../api/service/service.api";
 import { ServiceEnquiry } from "./ServiceEnquiry";
 import { ServiceRecentWork } from "./ServiceDetails";
 

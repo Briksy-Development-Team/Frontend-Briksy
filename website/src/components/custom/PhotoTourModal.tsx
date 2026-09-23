@@ -10,7 +10,7 @@ interface GalleryImage {
   videoUrl?: string;
 }
 
-type Media = GalleryImage;
+export type Media = GalleryImage;
 
 export function PhotoTourModal({
   media = [],
@@ -28,7 +28,6 @@ export function PhotoTourModal({
   const [active, setActive] = useState(initialIndex);
   const listRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';

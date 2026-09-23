@@ -13,7 +13,11 @@ import {
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 
-export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
+type LoginScreenProps = {
+  go: (s: Screen) => void;
+};
+
+export const LoginScreen = ({ go }: LoginScreenProps) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -54,7 +58,7 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
 
       navigate("/", { replace: true });
     } catch (error) {
-      setErrors({ email: "", password: "Invalid email or password" });
+      setErrors({ email: "", password: "We couldn't sign you in with those details." });
     } finally {
       setIsLoading(false);
     }
@@ -156,14 +160,9 @@ export const LoginScreen = ({ go }: { go: (s: Screen) => void }) => {
       </div>
 
       <div className="flex text-sm text-primary-light-brown lg:hidden justify-center gap-x-2 mt-20 w-full">
-        {" "}
         <p>Not a member yet?</p>
-        <Link
-          to="/register"
-          className="underline underline-offset-2 transition hover:text-white"
-        >
-          Create an account
-        </Link>      </div>
+        <Link to="/register" className="underline underline-offset-2 transition hover:text-white">Create an account</Link>
+      </div>
 
 
 

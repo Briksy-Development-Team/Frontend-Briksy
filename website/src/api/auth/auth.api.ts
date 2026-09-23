@@ -9,6 +9,12 @@ export const registerSeeker = async (
   return response.data
 }
 
+export const loginAccount = async (payload: LoginPayload): Promise<ApiEnvelope<AuthResponse>> => {
+  const response = await api.post<ApiEnvelope<AuthResponse>>('/auth/login', payload)
+
+  return response.data
+}
+
 export const loginSeeker = async (payload: LoginPayload): Promise<ApiEnvelope<AuthResponse>> => {
   const response = await api.post<ApiEnvelope<AuthResponse>>('/seeker/auth/login', payload)
 
