@@ -47,7 +47,7 @@ const Myprivacy = () => {
             </div>
 
 
-            <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
+            <div className="flex bg-white md:hidden items-center mb-4 gap-3 px-5 py-5 ">
                 <button
                     onClick={handleBack}
                     className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
