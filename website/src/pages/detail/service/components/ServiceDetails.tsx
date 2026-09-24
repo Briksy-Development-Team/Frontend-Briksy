@@ -22,13 +22,13 @@ export function ServiceList({ servicesData }: { servicesData: any }) {
         General estimate due to external variables involved
       </p>
 
-      <div className="flex flex-col gap-4 w-full">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 w-full">
         {servicesData.list.map((s: any) => (
           <div
             key={s.id}
             className="flex items-center gap-5 p-2 rounded-[1.5rem]  border bg-[#FFFFFF] border-gray-50 "
           >
-            <div className="w-32 h-32  shrink-0 rounded-[1.5rem] overflow-hidden bg-gray-100">
+            <div className="w-32 h-32 md:w-24 md:h-24  shrink-0 rounded-[1.5rem] overflow-hidden bg-gray-100">
               <img
                 src={s.image}
                 alt={s.title}
@@ -36,18 +36,18 @@ export function ServiceList({ servicesData }: { servicesData: any }) {
               />
             </div>
             <div className="flex-1 flex flex-col justify-center">
-              <p className="text-[0.875rem] font-medium text-primary-brown leading-snug">
+              <p className="text-[0.875rem]  md:text-xs lg:text-sm font-medium text-primary-brown leading-snug">
                 {s.title}
               </p>
-              <p className="text-[0.875rem] text-primary-light-brown mt-1 leading-snug">
+              <p className="text-[0.875rem] md:text-xs lg:text-sm text-primary-light-brown mt-1 leading-snug">
                 {s.description}
               </p>
               <div className="flex items-center gap-2 mt-2 text-[0.875rem]">
-                <span className="font-medium text-primary-brown">
+                <span className="font-medium text-xs text-primary-brown">
                   {s.price}
                 </span>
                 <span className="text-gray-300">/</span>
-                <span className="text-primary-light-brown font-medium">
+                <span className="text-primary-light-brown text-xs font-medium">
                   {s.duration}
                 </span>
               </div>
@@ -78,7 +78,7 @@ export function ServiceQualifications({
       </h2>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full md:w-[30%] bg-white rounded-3xl p-6 border border-gray-50 shadow-sm hidden md:flex md:flex-col items-center justify-center text-center gap-3">
+        <div className="w-full lg:w-[30%] bg-white rounded-3xl p-3 xl:p-6 border border-gray-50 shadow-sm hidden md:flex md:flex-col items-center justify-center text-center gap-3">
           <div className="flex w-fit flex-col  items-center">
             <img
               loading="lazy"
@@ -96,7 +96,7 @@ export function ServiceQualifications({
             </div>
           </div>
           <div>
-            <p className="font-medium text-[1.25rem] text-primary-brown">
+            <p className="font-medium text-[0.875rem] xl:text-[1.25rem] text-primary-brown">
               {companyName}
             </p>
             <p className="text-[0.75rem] text-primary-light-brown mt-1">

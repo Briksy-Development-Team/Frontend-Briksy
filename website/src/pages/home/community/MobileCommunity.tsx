@@ -26,7 +26,6 @@ const MobileCommunity = () => {
 
       const tl = gsap.timeline();
 
-      // 1. Build the scroll timeline for cards
       cards.forEach((card, i) => {
         if (i === 0) return;
 
@@ -52,11 +51,10 @@ const MobileCommunity = () => {
         );
       });
 
-      // 2. Pin the section in the center of the screen
       ScrollTrigger.create({
         trigger: container.current,
-        start: "center center", // Changed from "top top" to center the 70vh section
-        end: `+=${(CARDS.length - 1) * 60}%`,
+        start: "center center",
+        end: `+=${(CARDS.length - 1) * 40}%`,
         pin: true,
         scrub: 2,
         animation: tl,
@@ -68,14 +66,14 @@ const MobileCommunity = () => {
   return (
     <section
       ref={container}
-      // Changed h-[100vh] to h-[70vh] (or h-[75vh] if you need slightly more breathing room)
       className="relative w-full h-[100vh] overflow-hidden flex flex-col justify-center items-center font-helvetica"
     >
       {CARDS.map((card, index) => (
         <div
           key={card.title}
           ref={(el) => (cardRefs.current[index] = el)}
-          className="absolute inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-[26rem] flex flex-col gap-6 rounded-[1.25rem] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 will-change-transform"
+          className="absolute inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-[26rem] flex flex-col gap-6 
+          rounded-[1.25rem] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]  will-change-transform"
         >
           <div className="flex items-start justify-between">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center md:h-12 md:w-12">
