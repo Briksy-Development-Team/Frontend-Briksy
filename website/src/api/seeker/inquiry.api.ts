@@ -12,7 +12,17 @@ export type CreateInquiryPayload = {
   seeker_phone?: string | null;
 };
 
-export const createInquiry = async (payload: CreateInquiryPayload) => {
+export type CreateInquiryResponse = {
+  success: boolean;
+  message: string;
+  data?: {
+    reference_no?: string;
+    display_id?: string;
+    email_delivery?: { status?: string };
+  };
+};
+
+export const createInquiry = async (payload: CreateInquiryPayload): Promise<CreateInquiryResponse> => {
   const response = await api.post("/seeker/inquiries", payload);
 
   return response.data;

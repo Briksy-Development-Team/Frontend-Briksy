@@ -12,6 +12,7 @@ import {
 } from "./staff.api";
 
 import { mapStaff } from "./staff.mapper";
+import axios from "axios";
 
 import type { Staff, StaffFormValues, GetStaffParams } from "./staff.types";
 
@@ -62,13 +63,17 @@ export const saveStaff = createAsyncThunk(
   "staff/save",
   async (payload: { id?: string; values: StaffFormValues }) => {
     let response;
-    if (payload.id) {
-      response = await updateStaffApi(payload.id, payload.values);
-    } else {
-      response = await createStaffApi(payload.values);
+    try {
+      if (payload.id) {
+        response = await updateStaffApi(payload.id, payload.values);
+      } else {
+        response = await createStaffApi(payload.values);
+      }
+      return { id: payload.id ?? null, staff: response?.data ?? null };
+    } catch (error) {
+      const message = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
+      throw new Error(message || "Unable to save staff member.");
     }
-
-    return { id: payload.id ?? null, staff: response?.data ?? null };
   },
 );
 
