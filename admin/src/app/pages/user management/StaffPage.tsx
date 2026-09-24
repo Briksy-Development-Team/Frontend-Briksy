@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { Route, Routes } from "react-router-dom"
 import { useEffect } from "react"
+import { useMemo } from "react"
 
 import {
   fetchStaff,
@@ -54,6 +55,14 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
 
   const staffLimit = entitlements?.limits?.staff_members ?? null;
   const limitReached = !isSuperAdmin && staffLimit !== null && total >= staffLimit;
+  const filtersConfig = useMemo(
+    () => staffConfig.filters.map((filter) =>
+      filter.key === "roles" && filter.type === "select" && !isSuperAdmin
+        ? { ...filter, options: ["admin", "admin_staff"] }
+        : filter
+    ),
+    [isSuperAdmin]
+  );
 
   if (error) return (
     <Content>
@@ -83,7 +92,7 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         params={params}
         onParamsChange={handleParamsChange}
         columns={staffConfig.columns}
-        filtersConfig={staffConfig.filters}
+        filtersConfig={filtersConfig}
         enableRowClick
         getRowLink={(row) =>
           isSuperAdmin ? `${portalBase}/staff/${resolveStaffId(row)}` : `${portalBase}/users/${resolveStaffId(row)}`
