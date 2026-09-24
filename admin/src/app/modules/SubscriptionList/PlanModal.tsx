@@ -340,52 +340,6 @@ const PlanModal = ({
       </div>
 
       <div className="row g-5 mb-7">
-        <div className="col-md-6">
-          <label className="required fw-bold fs-6 mb-2">Monthly Price</label>
-          <input
-            type="number"
-            className={clsx("form-control form-control-solid", {
-              "is-invalid": !!priceError,
-            })}
-            placeholder="e.g. 1999"
-            value={form.price || ""}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, price: Number(event.target.value) }))
-            }
-            onBlur={() => setTouched((current) => ({ ...current, price: true }))}
-          />
-          {priceError ? (
-            <div className="fv-plugins-message-container">
-              <span className="fv-help-block">{priceError}</span>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="col-md-6">
-          <label className="required fw-bold fs-6 mb-2">
-            {form.plan_family === "trades_professional" ? "Service Area / Suburb Limit" : "Property Limit"}
-          </label>
-          <input
-            type="number"
-            className={clsx("form-control form-control-solid", {
-              "is-invalid": !!propertyLimitError,
-            })}
-            placeholder="e.g. 25"
-            value={form.propertyLimit || ""}
-            onChange={(event) =>
-              setForm((current) => ({ ...current, propertyLimit: Number(event.target.value) }))
-            }
-            onBlur={() => setTouched((current) => ({ ...current, propertyLimit: true }))}
-          />
-          {propertyLimitError ? (
-            <div className="fv-plugins-message-container">
-              <span className="fv-help-block">{propertyLimitError}</span>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="row g-5 mb-7">
         <div className="col-12">
           <label className="fw-bold fs-6 mb-2">Description</label>
           <textarea

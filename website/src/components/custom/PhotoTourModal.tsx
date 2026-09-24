@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { ChevronLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Thumbs, Mousewheel } from 'swiper/modules';
+import { Mousewheel } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
@@ -99,7 +99,15 @@ export function PhotoTourModal({
   targetId?: string | number;
   initialIsFavourite?: boolean;
 }) {
-  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [active, setActive] = useState(initialIndex);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const goTo = (index: number) => {
+    swiperRef.current?.slideTo(index);
+    setActive(index);
+    stripRef.current?.children[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  };
 
   return (
     <ModalWrapper isOpen>
@@ -163,15 +171,15 @@ export function PhotoTourModal({
 
             <div className="flex-1 md:flex-none md:w-[55%] min-h-0 pb-2">
               <Swiper
-                modules={[Thumbs, Mousewheel, FreeMode]}
-                thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                modules={[Mousewheel]}
                 direction="vertical"
                 mousewheel
-                freeMode
                 initialSlide={initialIndex}
                 spaceBetween={24}
                 slidesPerView="auto"
                 className="h-full"
+                onSwiper={(swiper) => { swiperRef.current = swiper; }}
+                onSlideChange={(swiper) => setActive(swiper.activeIndex)}
               >
                 {media.map((m, i) => (
                   <SwiperSlide key={i} style={{ height: 'auto' }}>

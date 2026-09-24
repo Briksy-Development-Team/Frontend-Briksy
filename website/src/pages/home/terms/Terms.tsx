@@ -115,10 +115,6 @@ const Terms = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
-  const scrollToSection = (id: string) => {
-    gsap.to(window, { duration: 1.2, scrollTo: `#${id}`, ease: 'power3.inOut' });
-  };
-
   useGSAP(
     () => {
       const els = gsap.utils.toArray<Element>('.term-section');
