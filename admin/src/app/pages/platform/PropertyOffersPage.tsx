@@ -17,7 +17,6 @@ import {
   togglePropertyOfferApi,
 } from "../../services/features/offers/offers.api";
 import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
-import { getDisplayId } from "../../services/utils/displayId";
 
 type OfferForm = Partial<PropertyOffer> & {
   highlights_text?: string;
@@ -34,6 +33,75 @@ const emptyOffer: OfferForm = {
   sort_order: 0,
 };
 
+function PropertyOffersList({
+  items,
+  loading,
+  error,
+  rowActions,
+  onNewOffer,
+}: {
+  items: PropertyOffer[];
+  loading: boolean;
+  error: string | null;
+  rowActions: any[];
+  onNewOffer: () => void;
+}) {
+  const { isSuperAdmin } = useRoleAccess();
+  const portalBase = getRolePortalBaseRoute(
+    isSuperAdmin ? ["super_admin"] : ["admin"]
+  );
+
+  const { params, handleParamsChange } = useEntityTable(() => undefined);
+
+  const filteredItems = useMemo(() => {
+    let result = [...items];
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.title?.toLowerCase().includes(q) ||
+          item.property_listing?.title?.toLowerCase().includes(q) ||
+          item.tag_label?.toLowerCase().includes(q)
+      );
+    }
+    if (params.filters?.is_active) {
+      const isActiveBool = params.filters.is_active === "1";
+      result = result.filter((item) => item.is_active === isActiveBool);
+    }
+    return result;
+  }, [items, params.search, params.filters]);
+
+  return (
+    <Content>
+      <PageHeader
+        title="Property Offers"
+        subtitle="Create promotional offers for listings"
+      />
+      {loading ? <div className="text-muted mb-4">Loading offers...</div> : null}
+      {error ? <div className="alert alert-danger mb-5">{error}</div> : null}
+
+      <EntityList
+        data={filteredItems}
+        total={filteredItems.length}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={offersConfig.columns}
+        filtersConfig={offersConfig.filters}
+        getRowLink={(row) => `${portalBase}/property-offers/${row.id}`}
+        enableRowClick
+        storageKey="propertyOfferColumns"
+        headerActions={[
+          {
+            label: "New Offer",
+            onClick: onNewOffer,
+          },
+        ]}
+        rowActions={rowActions}
+      />
+    </Content>
+  );
+}
+
 export default function PropertyOffersPage() {
   const [items, setItems] = useState<PropertyOffer[]>([]);
   const [properties, setProperties] = useState<PropertyList[]>([]);
@@ -42,6 +110,7 @@ export default function PropertyOffersPage() {
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<OfferForm | null>(null);
   const [deletingOffer, setDeletingOffer] = useState<PropertyOffer | null>(null);
+  const [savedOffer, setSavedOffer] = useState<PropertyOffer | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -81,7 +150,7 @@ export default function PropertyOffersPage() {
 
     setSaving(true);
     try {
-      await savePropertyOfferApi(
+      const res = await savePropertyOfferApi(
         {
           ...editing,
           property_listing_id: editing.property_listing_id,
@@ -93,6 +162,9 @@ export default function PropertyOffersPage() {
         },
         editing.id
       );
+      if (res) {
+        setSavedOffer(res);
+      }
       setEditing(null);
       await load();
     } catch (error: any) {
@@ -119,8 +191,10 @@ export default function PropertyOffersPage() {
     {
       label: "Toggle Active",
       onClick: async (row: PropertyOffer) => {
-        await togglePropertyOfferApi(row.id, !row.is_active);
+        const updated = await togglePropertyOfferApi(row.id, !row.is_active);
+        setSavedOffer(updated);
         await load();
+        return updated;
       },
     },
     {
@@ -131,84 +205,25 @@ export default function PropertyOffersPage() {
   ];
 
   return (
-    <Content>
-      <PageHeader title="Property Offers" subtitle="Create promotional offers for listings" />
-      <div className="card">
-        <div className="card-header d-flex align-items-center justify-content-between">
-          <div className="fw-semibold">Offers</div>
-          <button className="btn btn-primary" onClick={() => setEditing(emptyOffer)}>New Offer</button>
-        </div>
-        <div className="card-body">
-          {loading ? <div className="text-muted">Loading...</div> : null}
-          {error ? <div className="alert alert-danger">{error}</div> : null}
-          <div className="table-responsive">
-            <table className="table align-middle table-row-bordered">
-              <thead>
-                <tr className="text-muted fs-7 text-uppercase">
-                  <th>Title</th>
-                  <th>Property</th>
-                  <th>Tag</th>
-                  <th>Order</th>
-                  <th>Status</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((offer) => (
-                  <tr key={offer.id}>
-                    <td className="fw-semibold">{offer.title}</td>
-                    <td>{offer.property_listing?.title ?? offer.property_listing_id}</td>
-                    <td>{offer.tag_label ?? "—"}</td>
-                    <td>{offer.sort_order}</td>
-                    <td>{offer.is_active ? "Active" : "Inactive"}</td>
-                    <td className="text-end">
-                      <div className="dropdown dropup position-static">
-                        <button type="button" className="btn btn-sm btn-light btn-active-light-primary" data-bs-toggle="dropdown" data-bs-display="static">
-                          Actions
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end shadow">
-                          <li>
-                            <button type="button" className="dropdown-item" onClick={() => setEditing({
-                              ...offer,
-                              highlights_text: Array.isArray(offer.highlights) ? offer.highlights.join("\n") : "",
-                            })}>
-                              Edit
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item"
-                              onClick={async () => {
-                                await togglePropertyOfferApi(offer.id, !offer.is_active);
-                                await load();
-                              }}
-                            >
-                              Toggle
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item text-danger"
-                              onClick={async () => {
-                                await deletePropertyOfferApi(offer.id);
-                                await load();
-                              }}
-                            >
-                              Delete
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <>
+      <Routes>
+        <Route
+          index
+          element={
+            <PropertyOffersList
+              items={items}
+              loading={loading}
+              error={error}
+              rowActions={rowActions}
+              onNewOffer={() => setEditing(emptyOffer)}
+            />
+          }
+        />
+        <Route
+          path=":id"
+          element={<GenericDetailPage rowActions={rowActions} dataPatch={savedOffer} />}
+        />
+      </Routes>
 
       {editing ? (
         <ModalShell
