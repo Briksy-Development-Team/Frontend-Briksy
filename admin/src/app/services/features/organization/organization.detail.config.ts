@@ -82,11 +82,6 @@ export const organizationDetailConfig: DetailConfig<any> = {
         label: getVerificationStatus,
         color: getVerificationColor,
       },
-      {
-        label: () => "Briksy Exclusive",
-        color: () => "warning",
-        showIf: (data: any) => data?.is_briksy_exclusive ?? true,
-      },
     ],
     metrics: [
       {

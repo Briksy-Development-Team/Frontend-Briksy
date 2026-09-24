@@ -22,23 +22,48 @@ type Props = {
   defaultFamily?: PlanFamily;
 };
 
-const defaultFeatureList = (): PlanFeature[] =>
-  DEFAULT_FEATURES.map((feature) => ({
+const mediaFeatureNames = (family: PlanFamily) =>
+  family === "trades_professional"
+    ? ["Portfolio Photos", "Portfolio Videos"]
+    : family === "property_owner"
+      ? ["Property Images", "Property Videos"]
+      : [];
+
+const defaultFeatureList = (family: PlanFamily): PlanFeature[] =>
+  DEFAULT_FEATURES
+    .filter((feature) => !feature.name.includes("Images") && !feature.name.includes("Videos") && !feature.name.includes("Photos"))
+    .concat(DEFAULT_FEATURES.filter((feature) => mediaFeatureNames(family).includes(feature.name)))
+    .map((feature) => ({
     name: feature.name,
     enabled: false,
     value: feature.numeric ? 0 : undefined,
   }));
 
-const normalizeFeatureList = (features?: PlanFeature[]) => {
+const normalizeFeatureList = (features: PlanFeature[] | undefined, family: PlanFamily) => {
   if (!features?.length) {
-    return defaultFeatureList();
+    return defaultFeatureList(family);
   }
 
-  return features.map((feature) => ({
+  const normalized = features.map((feature) => ({
     name: feature.name,
     enabled: feature.enabled,
     value: feature.value ?? undefined,
   }));
+
+  const existing = new Set(normalized.map((feature) => feature.name.toLowerCase()));
+  mediaFeatureNames(family).forEach((name) => {
+    if (!existing.has(name.toLowerCase())) {
+      normalized.push({ name, enabled: false, value: 0 });
+    }
+  });
+
+  return normalized;
+};
+
+const featureDisplayName = (name: string) => {
+  if (["Property Images", "Portfolio Photos"].includes(name)) return "Images Limit";
+  if (["Property Videos", "Portfolio Videos"].includes(name)) return "Videos Limit";
+  return name;
 };
 
 const PlanModal = ({
@@ -64,7 +89,7 @@ const PlanModal = ({
     trial_days: null,
     propertyLimit: 0,
     popular: false,
-    features: defaultFeatureList(),
+    features: defaultFeatureList(defaultFamily),
     permissions: [],
     addon_ids: [],
   });
@@ -99,7 +124,7 @@ const PlanModal = ({
       trial_days: initialValues.trial_days ?? null,
       propertyLimit: initialValues.propertyLimit ?? 0,
       popular: initialValues.popular,
-      features: normalizeFeatureList(initialValues.features),
+      features: normalizeFeatureList(initialValues.features, initialValues.plan_family ?? defaultFamily),
       permissions: initialValues.permissions ?? [],
       addon_ids: initialValues.addons?.map((addon) => addon.id) ?? [],
     });
@@ -111,8 +136,9 @@ const PlanModal = ({
       form.plan_family.length > 0 &&
       form.name.trim().length > 0 &&
       form.price >= 0 &&
-      form.propertyLimit >= 0,
-    [form.name, form.plan_family, form.price, form.propertyLimit],
+      form.propertyLimit >= 0 &&
+      form.features.every((feature) => feature.value === undefined || feature.value === null || feature.value >= 0),
+    [form.features, form.name, form.plan_family, form.price, form.propertyLimit],
   );
 
   const filteredPermissionGroups = useMemo(() => {
@@ -310,6 +336,7 @@ const PlanModal = ({
             setForm((current) => ({
               ...current,
               plan_family: event.target.value as PlanFamily,
+              features: normalizeFeatureList(current.features, event.target.value as PlanFamily),
             }))
           }
         >
@@ -526,12 +553,13 @@ const PlanModal = ({
                     checked={feature.enabled}
                     onChange={() => toggleFeature(index)}
                   />
-                  <span className="fw-semibold text-gray-800">{feature.name}</span>
+                  <span className="fw-semibold text-gray-800">{featureDisplayName(feature.name)}</span>
                 </label>
 
                 {isNumeric(feature) ? (
                   <input
                     type="number"
+                    min={0}
                     className="form-control form-control-solid w-100px"
                     value={feature.value ?? 0}
                     onChange={(event) => updateFeatureValue(index, event.target.value)}

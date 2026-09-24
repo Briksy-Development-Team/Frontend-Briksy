@@ -25,11 +25,6 @@ export const propertyDetailConfig: DetailConfig<any> = {
         label: (data) => (data?.location_verified ? "Location verified" : "Location unverified"),
         color: (data) => (data?.location_verified ? "success" : "warning"),
       },
-      {
-        label: () => "Briksy Exclusive",
-        color: () => "warning",
-        showIf: (data: any) => (data?.organization?.is_briksy_exclusive ?? data?.is_briksy_exclusive ?? true),
-      },
     ],
     metrics: [
       {
@@ -67,7 +62,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
     },
     {
       id: "offers",
-      label: "Briksy Exclusive",
+      label: "Offers",
       sections: ["exclusive_offers"],
       showIf: (data) => Array.isArray(data?.briksy_exclusive_offers) && data.briksy_exclusive_offers.length > 0,
     },
@@ -166,7 +161,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
     {
       id: "exclusive_offers",
       type: "custom",
-      title: "BRIKSY EXCLUSIVE",
+      title: "Promotional Offers",
       gridColumnSpan: 12,
       showIf: (data) => Array.isArray(data?.briksy_exclusive_offers) && data.briksy_exclusive_offers.length > 0,
       component: (props) => React.createElement(PropertyOffersSection, { data: props.data }),
