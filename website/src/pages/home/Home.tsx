@@ -17,7 +17,6 @@ const Home = () => {
       <ImageAnimation />
 
       <Community />
-      {/* <About /> */}
       <BuilderList />
       <TrendingProperty />
       <ServiceList />

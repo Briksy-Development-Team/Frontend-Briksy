@@ -122,7 +122,7 @@ const ImageAnimation = () => {
         </Swiper>
       </div>
 
-      <div className="my-auto h-auto lg:h-[80vh] w-full lg:w-1/2 flex flex-col justify-center lg:justify-evenly gap-12 lg:gap-0 py-12 lg:py-0">
+      <div className="my-auto h-auto lg:h-[80vh] w-full lg:w-1/2 flex flex-col justify-center lg:justify-evenly gap-12 lg:gap-0 pt-12 md:py-12 lg:py-0">
         <div className="flex flex-col justify-center space-y-4 lg:space-y-[1.5rem] w-[90%] lg:w-[70%] mx-auto text-center lg:text-left items-center lg:items-start">
           <p className="text-[0.875rem] text-primary-brown uppercase tracking-wide">HOW BRIKSY WORKS</p>
           <div className="text-[1.875rem] text-primary-brown flex flex-col lg:text-[3rem] leading-tight lg:leading-12 font-medium">
