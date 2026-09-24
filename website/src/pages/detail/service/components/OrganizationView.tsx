@@ -9,6 +9,8 @@ import { ServiceMobileHeader } from "./ServiceMobileHeader";
 import Reviews from "../../../../components/reviews/Reviews";
 import { ServiceEnquiry } from "./ServiceEnquiry";
 import { joinAddress, toMedia } from "./ServiceOnlyView";
+import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
+import FraudBanner from "../../../../components/custom/FraudBanner";
 
 export function OrganizationView({ organization, service }: { organization: PublicOrganization, service: PublicService | null }) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -91,7 +93,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
                 ]}
               />
 
-              <div className="w-[70%]">
+              <div className="md:w-[70%]">
                 <ServiceRecentWork
                   recentWork={{
                     totalPhotos: serviceMedia.filter((m) => m.type === "image").length,
@@ -126,6 +128,20 @@ export function OrganizationView({ organization, service }: { organization: Publ
           </div>
         </div>
       </div>
+      <div className="mt-10  w-full flex items-center justify-center ">
+        <FraudBanner />
+      </div>
+
+      <MobileStickyAction
+        price={
+          focus?.starting_price != null
+            ? `$${focus.starting_price}`
+            : focus?.rate_from != null
+              ? `$${focus.rate_from}`
+              : "Contact"
+        }
+        onEnquiry={() => setIsEnquiryOpen(true)}
+      />
 
       <ServiceEnquiry
         open={isEnquiryOpen}
