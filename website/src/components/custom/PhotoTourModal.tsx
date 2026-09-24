@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { ChevronLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Thumbs, Mousewheel } from 'swiper/modules';
+import { Mousewheel } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
@@ -99,7 +99,15 @@ export function PhotoTourModal({
   targetId?: string | number;
   initialIsFavourite?: boolean;
 }) {
-  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [active, setActive] = useState(initialIndex);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const swiperRef = useRef<SwiperType | null>(null);
+
+  const goTo = (index: number) => {
+    swiperRef.current?.slideTo(index);
+    setActive(index);
+    stripRef.current?.children[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  };
 
   return (
     <ModalWrapper isOpen>
@@ -134,41 +142,25 @@ export function PhotoTourModal({
             </div>
           </div>
 
-          {/* ── Thumbnail strip (Swiper — drag/touch/mouse) ── */}
-          <div className="px-[3%] pt-4 pb-3 shrink-0">
-            <Swiper
-              modules={[FreeMode, Thumbs]}
-              onSwiper={setThumbsSwiper}
-              spaceBetween={10}
-              slidesPerView="auto"
-              freeMode
-              watchSlidesProgress
-              className="thumbs-swiper"
-            >
-              {media.map((m, i) => (
-                <SwiperSlide key={i} style={{ width: 90, height: 90 }}>
-                  <div className="relative w-[90px] h-[90px] rounded-[0.875rem] overflow-hidden cursor-pointer">
-                    {isVideo(m) ? (
-                      <>
-                        <video
-                          src={getVideoSrc(m)}
-                          poster={m.src}
-                          preload="metadata"
-                          muted
-                          playsInline
-                          className="w-full h-full object-cover pointer-events-none"
-                        />
-                        <span className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                          <Play size={16} className="text-white ml-0.5" fill="currentColor" />
-                        </span>
-                      </>
-                    ) : (
-                      <img src={m.src} alt="" className="w-full h-full object-cover" />
-                    )}
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+          {/* Horizontal thumbnails (scrolls left/right) */}
+          <div ref={stripRef} className="flex gap-4 overflow-x-auto px-[3%] pt-4 pb-6 shrink-0">
+            {media.map((m, i) => (
+              <button
+                type="button"
+                key={i}
+                aria-label={`Go to ${m.videoUrl ? 'video' : 'photo'} ${i + 1}`}
+                onClick={() => goTo(i)}
+                className={`relative w-[100px] h-[100px] shrink-0 rounded-[1rem] overflow-hidden border-[3px] transition-all ${active === i ? 'border-primary-brown shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
+                  }`}
+              >
+                {m.videoUrl ? <video src={m.videoUrl} muted playsInline preload="metadata" className="w-full h-full object-cover" /> : <img src={m.src} alt="" className="w-full h-full object-cover" />}
+                {m.videoUrl && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/10 pointer-events-none">
+                    <Play size={20} className="text-white ml-0.5" fill="currentColor" />
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
 
           {/* ── Main viewer (Swiper — vertical, drag/touch/mousewheel) ── */}
@@ -179,15 +171,15 @@ export function PhotoTourModal({
 
             <div className="flex-1 md:flex-none md:w-[55%] min-h-0 pb-2">
               <Swiper
-                modules={[Thumbs, Mousewheel, FreeMode]}
-                thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                modules={[Mousewheel]}
                 direction="vertical"
                 mousewheel
-                freeMode
                 initialSlide={initialIndex}
                 spaceBetween={24}
                 slidesPerView="auto"
                 className="h-full"
+                onSwiper={(swiper) => { swiperRef.current = swiper; }}
+                onSlideChange={(swiper) => setActive(swiper.activeIndex)}
               >
                 {media.map((m, i) => (
                   <SwiperSlide key={i} style={{ height: 'auto' }}>

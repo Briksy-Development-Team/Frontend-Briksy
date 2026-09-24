@@ -18,7 +18,7 @@ const MobileCommunity = () => {
 
       gsap.set(cards, {
         transformOrigin: "center center",
-        y: (i) => (i === 0 ? 0 : "100vh"), // Keeps incoming cards safely off-screen
+        y: (i) => (i === 0 ? 0 : window.innerHeight), // Keeps incoming cards safely off-screen
         scale: 1,
         rotationZ: 0,
         zIndex: (i) => i + 1,
@@ -71,9 +71,10 @@ const MobileCommunity = () => {
       {CARDS.map((card, index) => (
         <div
           key={card.title}
-          ref={(el) => (cardRefs.current[index] = el)}
-          className="absolute inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-[26rem] flex flex-col gap-6 
-          rounded-[1.25rem] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)]  will-change-transform"
+          ref={(el) => {
+            cardRefs.current[index] = el;
+          }}
+          className="absolute inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-[26rem] flex flex-col gap-6 rounded-[1.25rem] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 will-change-transform"
         >
           <div className="flex items-start justify-between">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center md:h-12 md:w-12">

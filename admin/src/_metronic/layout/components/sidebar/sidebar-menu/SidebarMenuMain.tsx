@@ -3,6 +3,7 @@ import {
   usePermissionAccess,
   useRoleAccess,
   useModuleAccess,
+  useAuth,
 } from "../../../../../app/modules/auth";
 import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
@@ -15,6 +16,8 @@ const SidebarMenuMain = () => {
   const { isSuperAdmin, isAdmin } = useRoleAccess();
   const { hasPermission } = usePermissionAccess();
   const { hasModule } = useModuleAccess();
+  const { entitlements } = useAuth();
+  const promoOffersEnabled = isSuperAdmin || Boolean(entitlements?.features?.promo_offers?.enabled);
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : isAdmin ? ["admin"] : [],
   );
@@ -224,12 +227,22 @@ const SidebarMenuMain = () => {
           )}
 
           {hasModule("service_management") && hasPermission("service.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/services`}
-              title="Services Management"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/service.svg"
-            />
+            <>
+              <SidebarMenuItem
+                to={`${portalBase}/services`}
+                title="Services Management"
+                fontIcon="bi-archive"
+                icon="/media/icons/duotune/iconsnew/service.svg"
+              />
+              {promoOffersEnabled && (
+                <SidebarMenuItem
+                  to={`${portalBase}/service-offers`}
+                  title="Service Offers"
+                  fontIcon="bi-archive"
+                  icon="/media/icons/duotune/iconsnew/proo.svg"
+                />
+              )}
+            </>
           )}
 
           {hasPermission("permission.view") && (

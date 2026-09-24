@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { KTCard } from "../../../_metronic/helpers";
-import { useRoleAccess } from "../../modules/auth";
+import { useAuth, useRoleAccess } from "../../modules/auth";
 import type { SettingItem } from "../../services/features/settings/settings.types";
 import type { Organization } from "../../services/features/organization/organization.types";
 import { NotificationPreferences } from "../../services/features/notifications/NotificationPreferences";
@@ -16,6 +16,7 @@ import { fetchCurrentOrganizationApi, uploadOrganizationMediaApi } from "../../s
 
 const SettingsPage = () => {
   const { isSuperAdmin } = useRoleAccess();
+  const { entitlements } = useAuth();
   const [items, setItems] = useState<SettingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,9 +109,11 @@ const SettingsPage = () => {
 
   const renderProfileMediaUpload = (group: string) => {
     if (isSuperAdmin || group.toLowerCase() !== "profile") return null;
+    const profileEnabled = entitlements?.features?.business_profile?.enabled ?? false;
 
     return (
       <div className="border-top pt-5 mt-1">
+        <div className="alert alert-light-info py-2 fs-7">Business profile media allowance<br />• One profile image and one banner image<br />• Only media included with your active plan is available publicly.</div>
         <div className="row g-5">
           <div className="col-12 col-lg-5">
             <label className="form-label fw-semibold">Profile picture</label>
@@ -127,6 +130,7 @@ const SettingsPage = () => {
                 className="form-control form-control-solid"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
+                disabled={!profileEnabled}
                 onChange={(e) => setProfileImage(e.target.files?.[0] ?? null)}
               />
             </div>
@@ -147,6 +151,7 @@ const SettingsPage = () => {
                 className="form-control form-control-solid"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
+                disabled={!profileEnabled}
                 onChange={(e) => setBannerImage(e.target.files?.[0] ?? null)}
               />
             </div>
@@ -154,12 +159,12 @@ const SettingsPage = () => {
         </div>
 
         <div className="d-flex align-items-center justify-content-between gap-3 mt-5">
-          {mediaMessage ? <div className="text-muted fs-7">{mediaMessage}</div> : <div />}
+          {mediaMessage ? <div className="text-muted fs-7">{mediaMessage}</div> : !profileEnabled ? <div className="text-warning fs-7">Business Profile media is not included in your current plan.</div> : <div /> }
           <button
             type="button"
             className="btn btn-primary"
             onClick={uploadMedia}
-            disabled={mediaLoading || !organization || (!profileImage && !bannerImage)}
+            disabled={mediaLoading || !organization || !profileEnabled || (!profileImage && !bannerImage)}
           >
             {mediaLoading ? "Uploading..." : "Upload Images"}
           </button>

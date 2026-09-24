@@ -1,6 +1,6 @@
 import {createSlice, type PayloadAction} from '@reduxjs/toolkit'
 import {getAuth} from './AuthHelpers'
-import type {AuthModel, UserModel} from './_models'
+import type {AuthModel, EntitlementModel, UserModel} from './_models'
 
 export interface AdminAuthState {
   auth: AuthModel | undefined
@@ -9,6 +9,7 @@ export interface AdminAuthState {
   enabledModules: string[]
   businessType: string | null
   businessVerificationStatus: string | null
+  entitlements: EntitlementModel | undefined
   isBootstrapping: boolean
 }
 
@@ -19,6 +20,7 @@ const getInitialState = (): AdminAuthState => ({
   enabledModules: [],
   businessType: null,
   businessVerificationStatus: null,
+  entitlements: undefined,
   isBootstrapping: true,
 })
 
@@ -37,6 +39,7 @@ const authSlice = createSlice({
       state.permissions = action.payload?.permissions ?? []
       state.businessType = action.payload?.business_type ?? state.businessType
       state.businessVerificationStatus = action.payload?.business_verification_status ?? state.businessVerificationStatus
+      state.entitlements = action.payload?.entitlements ?? state.entitlements
     },
     setPermissions(state, action: PayloadAction<string[]>) {
       state.permissions = action.payload
@@ -74,6 +77,11 @@ const authSlice = createSlice({
         state.currentUser.business_verification_status = state.businessVerificationStatus
       }
     },
+    setEntitlements(state, action: PayloadAction<EntitlementModel | undefined>) {
+      state.entitlements = action.payload
+      if (state.auth) state.auth.entitlements = action.payload
+      if (state.currentUser) state.currentUser.entitlements = action.payload
+    },
     clearSession(state) {
       state.auth = undefined
       state.currentUser = undefined
@@ -81,11 +89,12 @@ const authSlice = createSlice({
       state.enabledModules = []
       state.businessType = null
       state.businessVerificationStatus = null
+      state.entitlements = undefined
       state.isBootstrapping = false
     },
   },
 })
 
-export const {setBootstrapping, setAuth, setCurrentUser, setPermissions, setEnabledModules, setBusinessProfile, clearSession} = authSlice.actions
+export const {setBootstrapping, setAuth, setCurrentUser, setPermissions, setEnabledModules, setBusinessProfile, setEntitlements, clearSession} = authSlice.actions
 
 export default authSlice.reducer

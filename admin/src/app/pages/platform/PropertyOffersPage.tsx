@@ -17,7 +17,7 @@ type OfferForm = Partial<PropertyOffer> & {
 
 const emptyOffer: OfferForm = {
   title: "",
-  tag_label: "BRIKSY EXCLUSIVE",
+  tag_label: "",
   summary: "",
   description: "",
   highlights_text: "",
@@ -25,8 +25,6 @@ const emptyOffer: OfferForm = {
   is_active: true,
   sort_order: 0,
 };
-
-const FIXED_TAG_LABEL = "BRIKSY EXCLUSIVE";
 
 export default function PropertyOffersPage() {
   const [items, setItems] = useState<PropertyOffer[]>([]);
@@ -78,7 +76,7 @@ export default function PropertyOffersPage() {
           ...editing,
           property_listing_id: editing.property_listing_id,
           title: editing.title,
-          tag_label: FIXED_TAG_LABEL,
+          tag_label: editing.tag_label?.trim() || null,
           highlights: editing.highlights_text
             ? editing.highlights_text.split("\n").map((line) => line.trim()).filter(Boolean)
             : editing.highlights ?? [],
@@ -96,7 +94,7 @@ export default function PropertyOffersPage() {
 
   return (
     <Content>
-      <PageHeader title="Property Offers" subtitle="Create Briksy Exclusive offers for listings" />
+      <PageHeader title="Property Offers" subtitle="Create promotional offers for listings" />
       <div className="card">
         <div className="card-header d-flex align-items-center justify-content-between">
           <div className="fw-semibold">Offers</div>
@@ -122,7 +120,7 @@ export default function PropertyOffersPage() {
                   <tr key={offer.id}>
                     <td className="fw-semibold">{offer.title}</td>
                     <td>{offer.property_listing?.title ?? offer.property_listing_id}</td>
-                    <td>{offer.tag_label ?? "BRIKSY EXCLUSIVE"}</td>
+                    <td>{offer.tag_label ?? "—"}</td>
                     <td>{offer.sort_order}</td>
                     <td>{offer.is_active ? "Active" : "Inactive"}</td>
                     <td className="text-end">
@@ -213,7 +211,12 @@ export default function PropertyOffersPage() {
             </div>
             <div className="col-md-6">
               <label className="form-label">Tag Label</label>
-              <input className="form-control form-control-solid" value={FIXED_TAG_LABEL} readOnly />
+              <input
+                className="form-control form-control-solid"
+                value={editing.tag_label ?? ""}
+                onChange={(e) => setEditing((current) => ({ ...current, tag_label: e.target.value }))}
+                placeholder="Optional"
+              />
             </div>
             <div className="col-md-3">
               <label className="form-label">Sort Order</label>

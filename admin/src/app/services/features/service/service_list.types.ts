@@ -93,7 +93,7 @@ export type ServiceFormValues = {
 
   description?: string;
 
-  category: ServiceCategory;
+  category?: ServiceCategory | string;
 
   service_area?: string;
 

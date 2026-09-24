@@ -12,6 +12,7 @@ export default function PlanCard({ plan, planIndex }: PlanCardProps) {
 
   return (
     <article
+      data-plan-index={planIndex}
       className={`relative flex flex-col space-y-[1rem] rounded-2xl p-6 transition-shadow ${
         isPopular
           ? 'bg-white border-2 border-primary-brown shadow-xl'

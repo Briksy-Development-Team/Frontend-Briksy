@@ -8,6 +8,18 @@ export interface AuthModel {
   enabled_modules?: string[];
   business_type?: string | null;
   business_verification_status?: string | null;
+  entitlements?: EntitlementModel;
+}
+
+export interface EntitlementModel {
+  status: string;
+  active: boolean;
+  organization_id?: string | null;
+  plan?: { id: string; name: string; family?: string | null; currency?: string; monthly_price?: number | null; yearly_price?: number | null } | null;
+  subscription?: { id: string; status: string; billing_cycle?: string | null; current_period_start?: string | null; current_period_end?: string | null } | null;
+  limits: Record<string, number | null>;
+  features: Record<string, { enabled: boolean; value: number | null; configured?: boolean }>;
+  capabilities: Record<string, boolean>;
 }
 
 export interface AuthResponse {
@@ -105,6 +117,7 @@ export interface UserModel {
       price: number;
     } | null;
   };
+  entitlements?: EntitlementModel;
   pic?: string;
   language?: "en" | "de" | "es" | "fr" | "ja" | "zh" | "ru";
   timeZone?: string;

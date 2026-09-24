@@ -3,7 +3,8 @@ import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 import type { Property, PropertyFormValues, PropertyImage, PropertyVideo } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 import { LocationMapPreview } from "../../maps/LocationMapPreview";
-import { useRoleAccess } from "../../../../modules/auth";
+import { useAuth, useRoleAccess } from "../../../../modules/auth";
+import { mediaAllowance } from "../../../../modules/subscription/mediaEntitlements";
 import { deletePropertyMediaApi, fetchPropertyFeaturesApi } from "../property.api";
 import { fetchOrganizationApi, fetchOrganizationByIdApi } from "../../organization/organization.api";
 import { mapOrganization } from "../../organization/organization.mapper";
@@ -26,6 +27,8 @@ const PropertyModal = ({
     const MAX_VIDEO_SIZE = 1024 * 1024 * 1024;
     const ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/webm"]);
     const { isSuperAdmin } = useRoleAccess();
+    const { entitlements } = useAuth();
+    const allowance = mediaAllowance(entitlements);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [organizationSearch, setOrganizationSearch] = useState("");
     const [organizationsLoading, setOrganizationsLoading] = useState(false);
@@ -76,9 +79,23 @@ const PropertyModal = ({
             setVideos([]);
             return;
         }
+        const nextImages = files.filter((file) => file.type.startsWith("image/"));
+        const nextVideos = files.filter((file) => file.type.startsWith("video/"));
+        if (allowance.imagesConfigured && allowance.images !== null && existingImages.length + nextImages.length > allowance.images) {
+            setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.images} images. Remove an image or upgrade your plan.`);
+            return;
+        }
+        if (nextVideos.length > 0 && !allowance.videoIncluded) {
+            setMediaError("Video uploads are not included in your current plan.");
+            return;
+        }
+        if (allowance.videosConfigured && allowance.videos !== null && existingVideos.length + nextVideos.length > allowance.videos) {
+            setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.videos} videos. Remove a video or upgrade your plan.`);
+            return;
+        }
         setMediaError(null);
-        setImages(files.filter((file) => file.type.startsWith("image/")));
-        setVideos(files.filter((file) => file.type.startsWith("video/")));
+        setImages(nextImages);
+        setVideos(nextVideos);
     };
 
     useEffect(() => {
@@ -720,6 +737,8 @@ const PropertyModal = ({
             {/* Upload Images */}
             <div className="fv-row mb-7">
                 <label className="form-label">Property Media</label>
+
+                <div className="alert alert-light-info py-2 fs-7">Plan media allowance<br />• {allowance.imagesConfigured ? `Up to ${allowance.images ?? 0} images` : "Image limit is not configured"}<br />• {allowance.videosConfigured ? `Up to ${allowance.videos ?? 0} videos` : "Video limit is not configured"}<br />• Only media within your current plan allowance will be displayed publicly.</div>
 
                 <div className="border border-dashed border-gray-300 rounded p-5">
                     <input

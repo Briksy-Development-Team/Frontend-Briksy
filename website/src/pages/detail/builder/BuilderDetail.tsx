@@ -203,7 +203,7 @@ const BuilderDetail = () => {
           setEnquirySubmitting(true);
           setEnquiryError(null);
           try {
-            await createInquiry({
+            const result = await createInquiry({
               organization_id: builder.id,
               lead_source: "builder_profile",
               subject: values.subject,
@@ -212,7 +212,9 @@ const BuilderDetail = () => {
               seeker_email: values.seeker_email,
               seeker_phone: values.seeker_phone || null,
             });
-            setEnquirySuccess("Your enquiry has been sent successfully.");
+            setEnquirySuccess(result.data?.email_delivery?.status !== "sent"
+              ? `${result.message} Our team can still view it.`
+              : "Your enquiry has been sent successfully.");
           } catch (reason: any) {
             setEnquiryError(
               reason?.response?.data?.message ||

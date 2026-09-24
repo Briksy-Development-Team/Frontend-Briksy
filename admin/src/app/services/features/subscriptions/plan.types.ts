@@ -98,5 +98,9 @@ export const DEFAULT_FEATURES: { name: string; numeric?: boolean }[] = [
   { name: "Priority Support" },
   { name: "CRM Integration" },
   { name: "Lead Management" },
+  { name: "Property Images", numeric: true },
+  { name: "Property Videos", numeric: true },
+  { name: "Portfolio Photos", numeric: true },
+  { name: "Portfolio Videos", numeric: true },
   { name: "Custom Branding" },
 ];
