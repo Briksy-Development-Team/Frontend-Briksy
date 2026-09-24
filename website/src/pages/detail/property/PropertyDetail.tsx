@@ -5,7 +5,7 @@ import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, Pro
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { ShieldCheck, Share, ChevronLeft } from "lucide-react";
+import { Share, ChevronLeft } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";

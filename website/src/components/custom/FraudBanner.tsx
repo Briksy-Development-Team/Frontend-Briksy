@@ -11,12 +11,12 @@ export default function FraudBanner({
 }: FraudBannerProps) {
   return (
     <div
-      className={`flex items-center w-[95%]  mb-6  gap-4 md:w-[70%] lg:w-[50%] bg-white rounded-xl pr-6 py-1.5 shadow-[0_0_13px_rgba(0,0,0,0.12)] ${className}`}
+      className={`flex items-center gap-4 w-[50%] bg-white rounded-xl pr-6 py-1.5 shadow-[0_0_13px_rgba(0,0,0,0.12)] ${className}`}
     >
       <div className="w-[75px] h-[75px] flex items-center justify-center shrink-0">
         <img src={Approve} alt="" />
       </div>
-      <p className="text-[0.75rem] md:text-[0.875rem] text-black leading-relaxed max-w-[573px]">
+      <p className="text-[0.875rem] text-black leading-relaxed max-w-[573px]">
         {text}
       </p>
     </div>

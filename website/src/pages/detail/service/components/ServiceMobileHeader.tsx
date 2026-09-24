@@ -1,4 +1,4 @@
-import { Star, ChevronLeft, MapPin, ShieldCheck, Share } from "lucide-react";
+import { Star, ChevronLeft, MapPin, Share } from "lucide-react";
 import FavoriteButton from "../../../../components/custom/FavoriteButton";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
 import type { PublicOrganization } from "../../../../api/seeker/organization.api";

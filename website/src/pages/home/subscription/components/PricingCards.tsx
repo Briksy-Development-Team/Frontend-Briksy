@@ -13,8 +13,8 @@ export default function PricingCards({ plans, stats }: PricingCardsProps) {
     <div className="space-y-8">
       {/* Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
-        {plans.map((plan, i) => (
-          <PlanCard key={plan.id} plan={plan} planIndex={i} />
+        {plans.map((plan) => (
+          <PlanCard key={plan.id} plan={plan} />
         ))}
       </div>
 

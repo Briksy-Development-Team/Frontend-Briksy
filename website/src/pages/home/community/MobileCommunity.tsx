@@ -18,7 +18,7 @@ const MobileCommunity = () => {
 
       gsap.set(cards, {
         transformOrigin: "center center",
-        y: (i) => (i === 0 ? 0 : window.innerHeight), // Keeps incoming cards safely off-screen
+        y: (i) => (i === 0 ? 0 : window.innerHeight),
         scale: 1,
         rotationZ: 0,
         zIndex: (i) => i + 1,
@@ -26,6 +26,7 @@ const MobileCommunity = () => {
 
       const tl = gsap.timeline();
 
+      // 1. Build the scroll timeline for cards
       cards.forEach((card, i) => {
         if (i === 0) return;
 
@@ -51,10 +52,11 @@ const MobileCommunity = () => {
         );
       });
 
+      // 2. Pin the section in the center of the screen
       ScrollTrigger.create({
         trigger: container.current,
-        start: "center center",
-        end: `+=${(CARDS.length - 1) * 40}%`,
+        start: "center center", // Changed from "top top" to center the 70vh section
+        end: `+=${(CARDS.length - 1) * 60}%`,
         pin: true,
         scrub: 2,
         animation: tl,
@@ -66,6 +68,7 @@ const MobileCommunity = () => {
   return (
     <section
       ref={container}
+      // Changed h-[100vh] to h-[70vh] (or h-[75vh] if you need slightly more breathing room)
       className="relative w-full h-[100vh] overflow-hidden flex flex-col justify-center items-center font-helvetica"
     >
       {CARDS.map((card, index) => (

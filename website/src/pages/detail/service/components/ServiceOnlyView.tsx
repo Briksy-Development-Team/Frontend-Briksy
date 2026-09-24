@@ -142,11 +142,7 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
 
       <MobileStickyAction
         price={
-          service.starting_price != null
-            ? `$${service.starting_price}`
-            : service.rate_from != null
-              ? `$${service.rate_from}`
-              : "Contact"
+          service.rate_from != null ? `$${service.rate_from}` : "Contact"
         }
         onEnquiry={() => setIsEnquiryOpen(true)}
       />

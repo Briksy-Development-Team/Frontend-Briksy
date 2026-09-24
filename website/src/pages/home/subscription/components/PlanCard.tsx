@@ -4,15 +4,13 @@ import type { Plan } from '../data/subscription.data';
 
 interface PlanCardProps {
   plan: Plan;
-  planIndex: number;
 }
 
-export default function PlanCard({ plan, planIndex }: PlanCardProps) {
+export default function PlanCard({ plan }: PlanCardProps) {
   const isPopular = plan.popular;
 
   return (
     <article
-      data-plan-index={planIndex}
       className={`relative flex flex-col space-y-[1rem] rounded-2xl p-6 transition-shadow ${
         isPopular
           ? 'bg-white border-2 border-primary-brown shadow-xl'
