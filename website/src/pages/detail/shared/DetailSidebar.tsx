@@ -18,7 +18,7 @@ export function DetailSidebar({
   onEnquiry,
 }: Props) {
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 lg:w-full md:w-[80%] mx-auto">
       <div
         className="w-full bg-white rounded-xl py-3 px-9 flex justify-center items-center gap-2.5"
         style={{ boxShadow: "0px 0px 13px 0px rgba(0, 0, 0, 0.12)" }}

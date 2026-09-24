@@ -62,7 +62,7 @@ export function ServiceSidebar({
       {/* Name / info — centered below avatar */}
       <div className="flex flex-col items-center gap-3 text-center px-4">
         <div className="flex flex-col gap-[0.8125rem]">
-          <h1 className="text-[1.25rem] font-medium text-primary-brown leading-tight">
+          <h1 className="text-[1.25rem] font-medium text-primary-brown mt-8 leading-tight">
             {service.name}
           </h1>
           <p className="text-[0.875rem] text-primary-brown">

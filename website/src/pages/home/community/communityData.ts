@@ -10,9 +10,7 @@ export const getFrame = (i: number) =>
   `/frames-webp/frame_${String(i).padStart(4, "0")}.webp`;
 
 export type CardData = {
-  side: "left" | "right";
-  anchor: "top" | "bottom";
-  offset: string;
+  position: string;
   icon: string;
   img: string;
   title: string;
@@ -21,36 +19,35 @@ export type CardData = {
 
 export const CARDS: CardData[] = [
   {
-    side: "right",
-    anchor: "top",
-    offset: "12%",
+    position:
+      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[8rem] 2xl:top-[14%]",
     icon: Property,
     img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=240&fit=crop",
     title: "For Professionals & Trades",
     desc: "Showcase your services, experience, and past work while connecting with people actively looking for trusted property professionals.",
   },
+
   {
-    side: "left",
-    anchor: "bottom",
-    offset: "2rem",
+    position:
+      "md:left-[1rem] md:bottom-[2rem] lg:left-[4rem] lg:bottom-[2.5rem] xl:left-[6.75rem] xl:bottom-[2rem] 2xl:left-[8rem] 2xl:bottom-[3rem]",
     icon: Stars,
     img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=240&fit=crop",
     title: "For Mortgage Brokers",
     desc: "Connect with property buyers and sellers who need trusted financial guidance throughout their property journey.",
   },
+
   {
-    side: "right",
-    anchor: "top",
-    offset: "12%",
+    position:
+      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[8rem] 2xl:top-[14%]",
     icon: Leaf,
     img: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400&h=240&fit=crop",
     title: "For Buyers & Sellers",
     desc: "Find verified properties and professionals, compare your options, and connect with the right people for your next property move.",
   },
+
   {
-    side: "left",
-    anchor: "bottom",
-    offset: "2rem",
+    position:
+      "md:left-[1rem] md:bottom-[2rem] lg:left-[4rem] lg:bottom-[2.5rem] xl:left-[6.75rem] xl:bottom-[2rem] 2xl:left-[8rem] 2xl:bottom-[3rem]",
     icon: Traders,
     img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=240&fit=crop",
     title: "For BRIKSY Teams",

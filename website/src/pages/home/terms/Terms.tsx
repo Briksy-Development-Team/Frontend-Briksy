@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { useAuth } from '../../../auth/AuthContext';
 import FraudBanner from '../../../components/custom/FraudBanner';
+import { ArrowLeft } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -137,26 +138,29 @@ const Terms = () => {
 
   return (
     <main ref={container} className="min-h-screen md:mt-20 font-helvetica  text-primary-brown">
-
-      {/* ── Last updated bar ── */}
+      <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
+        >
+          <ArrowLeft className=" w-5 h-5" />
+          Terms & Conditions
+        </button>
+      </div>
       <div className="px-[3%] py-3 border-b border-white-100">
         <p className="text-[0.75rem] text-primary-light-brown">
           Last Updated: {LAST_UPDATED}
         </p>
       </div>
 
-      {/* ── Body: left content + right sidebar ── */}
       <div className="flex gap-12 px-[5%] pt-8 pb-20">
 
-        {/* ── Main content ── */}
         <div className="flex-1 min-w-0">
 
-          {/* Title */}
           <h1 className="text-[1.75rem] md:text-[2.25rem] font-medium leading-tight mb-6">
             BRIKSY — Terms & Conditions
           </h1>
 
-          {/* Intro */}
           <p className="text-[0.9rem] text-primary-light-brown leading-relaxed mb-2">
             Welcome to BRIKSY. These Terms & Conditions govern your access to and use of the BRIKSY website, application, marketplace, and related services.
           </p>
@@ -164,7 +168,6 @@ const Terms = () => {
             By accessing or using BRIKSY, you agree to these Terms. If you do not agree with these Terms, please do not use the platform.
           </p>
 
-          {/* Sections */}
           {SECTIONS.map((section, i) => (
             <div
               key={section.id}
@@ -182,8 +185,8 @@ const Terms = () => {
                   {section.id === 'about'
                     ? 'Depending on your needs, BRIKSY allows you to:'
                     : section.id === 'accounts'
-                    ? 'When creating an account, you agree to:'
-                    : null}
+                      ? 'When creating an account, you agree to:'
+                      : null}
                 </p>
               )}
 
@@ -204,7 +207,6 @@ const Terms = () => {
             </div>
           ))}
 
-          {/* ── Legal links ── */}
           <div className="mt-8 space-y-0">
             {LEGAL_LINKS.map((link, i) => (
               <div key={i} className="py-5 border-b border-white-100">
@@ -217,16 +219,13 @@ const Terms = () => {
             ))}
           </div>
 
-          {/* ── Fraud banner ── */}
           <div className="mt-10  w-full flex items-center justify-center ">
             <FraudBanner />
           </div>
         </div>
 
-        {/* ── Sidebar ── */}
         <aside className="hidden lg:block w-[280px] shrink-0">
 
-          {/* Help card */}
           <div className="sticky top-[6rem] border border-white-100 rounded-xl p-4 bg-white shadow-sm mb-6">
             <p className="text-[0.9rem] font-medium text-primary-brown mb-0.5">
               Get help with your reservations, account, and more.

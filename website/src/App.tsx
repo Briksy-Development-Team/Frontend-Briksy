@@ -13,6 +13,9 @@ import Loader from "./components/loader/Loader";
 import { lenisInstance } from "./lenis";
 import { ReadyProvider, useReady } from "./components/utils/ReadyContext";
 
+import { CookieConsentProvider } from "./context/CookieConsentContext";
+import CookieConsent from "./components/consent/CookieConsent";
+
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
 
@@ -77,6 +80,7 @@ const AppContent = () => {
       <ScrollToTop />
       <AndroidBackButtonHandler />
       <AppRouter />
+      <CookieConsent />
     </>
   );
 };
@@ -109,11 +113,13 @@ function App() {
   }, []);
 
   return (
-    <ReadyProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </ReadyProvider>
+    <CookieConsentProvider>
+      <ReadyProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </ReadyProvider>
+    </CookieConsentProvider>
   );
 }
 

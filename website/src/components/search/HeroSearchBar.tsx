@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  SlidersHorizontal,
-  Sparkles,
-} from "lucide-react";
+import { SlidersHorizontal, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import Filter from "../filter/Filter";
@@ -146,14 +143,17 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     <button
       type="button"
       onClick={() => setMode("ai")}
-      className="flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1 md:h-12 md:mt-0 md:px-4 md:py-2 rounded-[0.375rem] bg-[linear-gradient(135deg,#EB6101_12.5%,#773C30_37.5%,#D2691E_62.5%,#9E3D3F_87.5%)] text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition border border-red-800/30"
+      className="
+      flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1 md:h-12 md:mt-0 md:px-4 md:py-2 rounded-[0.375rem] border-[3px] border-transparent
+      [background:linear-gradient(110.61deg,#79241D_22.989%,#DF4235_86.442%)_padding-box,linear-gradient(290deg,#DF4235,#79241D)_border-box]
+      text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition
+    "
     >
       <Sparkles size={18} fill="#FBF8F3" />
       Ask Ai
     </button>
   );
 
-  // ── Mobile dropdown (< md) ──────────────────────────────────────────────────
   const mobileDropdown = (
     <div ref={dropdownRef} className="relative">
       <button
@@ -233,7 +233,6 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
 
   return (
     <div ref={rootRef} className="mx-auto w-full max-w-4xl relative">
-
       {/* ── Mobile layout (< md) ── */}
       <div className="md:hidden bg-white border border-[#ede8e4] rounded-[12px] shadow-lg overflow-visible">
         <div className="flex items-center gap-2 px-4 py-[18px]">
@@ -242,9 +241,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         </div>
 
         <div className="border-t border-[#ede8e4] w-full px-2 flex justify-between h-[49px]">
-          <div className="flex items-center pl-2">
-            {mobileDropdown}
-          </div>
+          <div className="flex items-center pl-2">{mobileDropdown}</div>
           {aiButton}
         </div>
       </div>
@@ -252,9 +249,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       {/* ── Desktop layout (≥ md) ── */}
       <div className="hidden md:block w-full rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md shadow-lg overflow-hidden">
         {/* Tab row — full width across the entire card */}
-        <div className="px-3 pt-3 pb-2">
-          {desktopTabs}
-        </div>
+        <div className="px-3 pt-3 pb-2">{desktopTabs}</div>
 
         {/* Search row */}
         <div className="flex items-center gap-2 px-3 pb-3">
