@@ -85,6 +85,11 @@ export default function PropertyOffersPage() {
       );
       setEditing(null);
       await load();
+    } catch (error: any) {
+      const responseMessage = error?.response?.data?.message;
+      const message = responseMessage ?? error?.message ?? "Unable to save property offer.";
+      setError(message);
+      window.alert(message);
     } finally {
       setSaving(false);
     }
