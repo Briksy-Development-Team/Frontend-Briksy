@@ -40,7 +40,7 @@ export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
   const tiles = [1, 2, 3, 4].map((i) => media[i]);
 
   return <>
-    <div className="flex gap-2 h-[300px] sm:h-[400px] md:h-[480px] -mx-[5%] md:mx-0 md:rounded-2xl overflow-hidden md:overflow-visible">
+    <div className="flex gap-2 h-[300px] md:h-[300px]  xl:h-[480px] -mx-[5%] md:mx-0 md:rounded-2xl overflow-hidden md:overflow-visible">
       {/* Hero: the only box on mobile */}
       <div className="relative flex-1 min-w-0 h-full md:rounded-xl overflow-hidden" style={{ backgroundColor: COLORS[0] }}>
         <button type="button" aria-label="Open property media" className="relative block w-full h-full" onClick={() => media[0] && setTour(0)}>
@@ -56,7 +56,7 @@ export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
       </div>
 
       {/* Desktop only: 4 tiles, video in the 3rd */}
-      <div className="hidden md:flex flex-wrap gap-2 content-start w-[488px]">
+      <div className="hidden md:grid grid-cols-2 gap-2 content-start w-[300px] lg:w-[500px] xl:w-[488px]">
         {tiles.map((tile, i) => {
           const isLast = i === 3;
           return (
@@ -64,7 +64,7 @@ export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
               type="button"
               key={i}
               aria-label={`Open property media ${i + 1}`}
-              className="relative w-[240px] h-[236px] rounded-xl overflow-hidden"
+              className="relative w-[150px] lg:w-[250px]  xl:w-[240px] h-[145px] xl:h-[236px] rounded-xl overflow-hidden"
               style={{ backgroundColor: COLORS[i + 1] }}
               onClick={() => (isLast ? setTour(0) : tile && setTour(i + 1))}
             >

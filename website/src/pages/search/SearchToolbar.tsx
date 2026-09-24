@@ -178,7 +178,7 @@ export default function SearchToolbar({
           />
           <button
             onClick={onToggleMap}
-            className={`py-2 px-3 rounded-full border flex items-center gap-2 transition-colors shrink-0 ${showMap
+            className={`py-2 px-3 rounded-full hidden border md:flex items-center gap-2 transition-colors shrink-0 ${showMap
               ? "bg-[#342511] text-white border-[#342511]"
               : "bg-white text-[#342511] border-[#EDE8E4]"
               }`}
