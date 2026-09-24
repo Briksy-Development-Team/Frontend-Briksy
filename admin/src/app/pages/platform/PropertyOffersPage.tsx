@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
+import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
+import { offersConfig } from "../../services/features/offers/offers.config";
 import type { PropertyList, PropertyOffer } from "../../services/features/properties/property.types";
 import { fetchPropertyListApi } from "../../services/features/properties/property.api";
 import {
@@ -10,6 +16,8 @@ import {
   savePropertyOfferApi,
   togglePropertyOfferApi,
 } from "../../services/features/offers/offers.api";
+import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
+import { getDisplayId } from "../../services/utils/displayId";
 
 type OfferForm = Partial<PropertyOffer> & {
   highlights_text?: string;
@@ -33,6 +41,7 @@ export default function PropertyOffersPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<OfferForm | null>(null);
+  const [deletingOffer, setDeletingOffer] = useState<PropertyOffer | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -57,11 +66,12 @@ export default function PropertyOffersPage() {
   }, []);
 
   const propertyOptions = useMemo(
-    () => properties.map((property) => ({
-      id: property.id,
-      label: `${property.display_id ?? property.generated_id ?? property.id} - ${property.title}`,
-    })),
-    [properties],
+    () =>
+      properties.map((property) => ({
+        id: property.id,
+        label: `${property.display_id ?? property.generated_id ?? property.id} - ${property.title}`,
+      })),
+    [properties]
   );
 
   const submit = async () => {
@@ -81,7 +91,7 @@ export default function PropertyOffersPage() {
             ? editing.highlights_text.split("\n").map((line) => line.trim()).filter(Boolean)
             : editing.highlights ?? [],
         },
-        editing.id,
+        editing.id
       );
       setEditing(null);
       await load();
@@ -96,6 +106,29 @@ export default function PropertyOffersPage() {
   };
 
   const selectedProperty = properties.find((property) => property.id === editing?.property_listing_id);
+
+  const rowActions = [
+    {
+      label: "Edit",
+      onClick: (row: PropertyOffer) =>
+        setEditing({
+          ...row,
+          highlights_text: Array.isArray(row.highlights) ? row.highlights.join("\n") : "",
+        }),
+    },
+    {
+      label: "Toggle Active",
+      onClick: async (row: PropertyOffer) => {
+        await togglePropertyOfferApi(row.id, !row.is_active);
+        await load();
+      },
+    },
+    {
+      label: "Delete",
+      className: "text-danger",
+      onClick: (row: PropertyOffer) => setDeletingOffer(row),
+    },
+  ];
 
   return (
     <Content>
@@ -282,6 +315,20 @@ export default function PropertyOffersPage() {
           </div>
         </ModalShell>
       ) : null}
-    </Content>
+
+      {deletingOffer ? (
+        <DeleteConfirmModal
+          title="Delete Offer"
+          message={`Are you sure you want to delete offer "${deletingOffer.title}"?`}
+          onClose={() => setDeletingOffer(null)}
+          onConfirm={async () => {
+            await deletePropertyOfferApi(deletingOffer.id);
+            setDeletingOffer(null);
+            await load();
+          }}
+          isSubmitting={saving}
+        />
+      ) : null}
+    </>
   );
 }

@@ -6,7 +6,6 @@ type ImageInput = string | { src?: string; type?: 'image' | 'video'; videoSrc?: 
 
 const COLORS = ['#c8cfc4', '#b8c4b4', '#d0cdc0', '#c4cfc9', '#cbc4af'];
 
-// Photo, plus a play button if it's the video
 const Thumb = ({ m, size = 48 }: { m: Media; size?: number }) => (
   <>
     <img src={m.src} alt="Property media" className="w-full h-full object-cover" />
@@ -21,7 +20,7 @@ const Thumb = ({ m, size = 48 }: { m: Media; size?: number }) => (
 );
 
 export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
-  const [tour, setTour] = useState<number | null>(null); 
+  const [tour, setTour] = useState<number | null>(null);
 
 
   const media = useMemo(() => {
