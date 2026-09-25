@@ -128,7 +128,7 @@ const SidebarMenuMain = () => {
                 {hasPermission("addon.view") && (
                   <SidebarMenuItem
                     to={`${portalBase}/addons`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
                     title="Add-ons"
                     fontIcon="bi-layers"
                   />
@@ -137,7 +137,7 @@ const SidebarMenuMain = () => {
                 {hasPermission("plan.view") && (
                   <SidebarMenuItem
                     to={`${portalBase}/plans`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
                     title="Plans"
                     fontIcon="bi-layers"
                   />
@@ -146,7 +146,7 @@ const SidebarMenuMain = () => {
                 {hasPermission("subscription.view") && (
                   <SidebarMenuItem
                     to={`${portalBase}/subscriptions`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
                     title="Subscriptions"
                     fontIcon="bi-layers"
                   />
@@ -154,7 +154,7 @@ const SidebarMenuMain = () => {
 
                 <SidebarMenuItem
                   to={`${portalBase}/invoices`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
                   title="Invoices"
                   fontIcon="bi-layers"
                 />
@@ -181,7 +181,7 @@ const SidebarMenuMain = () => {
               {hasPermission("email_template.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/email-templates`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
 
                   title="Email Templates"
                   fontIcon="bi-layers"
@@ -191,7 +191,7 @@ const SidebarMenuMain = () => {
               {hasPermission("activity_logs.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/activity-logs`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
                   title="Activity Logs"
                   fontIcon="bi-layers"
                 />
@@ -333,7 +333,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/builder-projects`}
               title="Builder Projects"
               fontIcon="bi-building"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/builder.svg"
             />
           )}
 
@@ -342,7 +342,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/users`}
               title="Staff Management"
               fontIcon="bi-archive"
-            icon="/media/icons/duotune/iconsnew/user.svg"
+              icon="/media/icons/duotune/iconsnew/user.svg"
             />
           )}
 

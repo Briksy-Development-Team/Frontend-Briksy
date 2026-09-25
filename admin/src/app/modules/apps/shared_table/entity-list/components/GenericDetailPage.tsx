@@ -14,6 +14,8 @@ import { staffDetailConfig } from '../../../../../services/features/staff/staff.
 import { planRequestDetailConfig } from '../../../../../services/features/plan_requests/plan-request.detail.config'
 import { inquiryDetailConfig } from '../../../../../services/features/inquiries/inquiry.detail.config'
 import { builderProjectDetailConfig } from '../../../../../services/features/builder_projects/builder_project.detail.config'
+import { offerDetailConfig } from '../../../../../services/features/offers/offers.detail.config'
+import { serviceOfferDetailConfig } from '../../../../../services/features/service/service_offers.detail.config'
 import type { DetailConfig } from '../../../shared_detail/core/DetailTypes'
 
 type DetailRegistryEntry = {
@@ -71,6 +73,14 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
   'builder-projects': {
     config: builderProjectDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/builder-projects/${id}`,
+  },
+  'property-offers': {
+    config: offerDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/property-offers/${id}`,
+  },
+  'service-offers': {
+    config: serviceOfferDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/service-offers/${id}`,
   },
 }
 

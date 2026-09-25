@@ -171,7 +171,7 @@ export function ServiceRecentWork({
   const allMedia = (recentWork.allItems ?? recentWork.items).map(
     (item: any, idx: number) => ({
       id: `gallery-item-${idx}`,
-      src: item.src,
+      src: item.type === "video" ? undefined : item.src,
       type: item.type,
       videoSrc: item.type === "video" ? item.src : undefined,
     }),

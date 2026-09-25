@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { ChevronLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Thumbs, Mousewheel } from 'swiper/modules';
+import { FreeMode, Thumbs } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
@@ -22,7 +22,10 @@ interface GalleryImage {
 export type Media = GalleryImage;
 
 const isVideo = (m: Media) => !!(m.videoUrl || m.videoSrc || m.type === 'video');
-const getVideoSrc = (m: Media) => m.videoUrl ?? m.videoSrc ?? '';
+const getVideoSrc = (m: Media) => {
+  const url = m.videoUrl ?? m.videoSrc ?? '';
+  return url ? `${url}#t=0.1` : url;
+};
 
 // ── Video player card ─────────────────────────────────────────────────────────
 function VideoCard({ m }: { m: Media }) {
@@ -55,10 +58,9 @@ function VideoCard({ m }: { m: Media }) {
         playsInline
         preload="metadata"
         onEnded={() => setPlaying(false)}
-        className="w-full h-full object-contain cursor-pointer"
+        className="w-full h-full object-cover cursor-pointer"
       />
 
-      {/* Central play/pause overlay */}
       <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 pointer-events-none ${playing ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
         }`}>
         <span className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg">
@@ -68,7 +70,6 @@ function VideoCard({ m }: { m: Media }) {
         </span>
       </div>
 
-      {/* Mute button corner */}
       <button
         type="button"
         onClick={toggleMute}
@@ -87,7 +88,6 @@ export function PhotoTourModal({
   initialIndex = 0,
   onClose,
   title = 'Photo tour',
-  subtitle = 'Our Property Glims',
   targetId,
   initialIsFavourite = false,
 }: {
@@ -95,7 +95,6 @@ export function PhotoTourModal({
   initialIndex?: number;
   onClose: () => void;
   title?: string;
-  subtitle?: string;
   targetId?: string | number;
   initialIsFavourite?: boolean;
 }) {
@@ -114,24 +113,24 @@ export function PhotoTourModal({
         onClick={onClose}
       >
         <div
-          className="w-full max-w-7xl h-full bg-[#F5F1EB] overflow-hidden flex flex-col shadow-2xl"
+          className="w-full max-w-7xl lg:h-full bg-[#F8F4EE] overflow-hidden flex flex-col shadow-2xl rounded-2xl"
           onClick={(e) => e.stopPropagation()}
         >
 
           {/* ── Header ── */}
-          <div className="relative px-6 py-5 flex items-center justify-between shrink-0 border-b border-[#EBE5D9]/50">
-            <button type="button" onClick={onClose} className="w-10 h-10 flex items-center justify-center text-primary-brown hover:bg-black/5 rounded-full">
+          <div className="grid grid-cols-3 items-center px-6 py-5 shrink-0">
+            <button type="button" onClick={onClose} className="w-10 h-10 flex items-center justify-center text-primary-brown hover:bg-black/5 rounded-full justify-self-start">
               <ChevronLeft size={24} />
             </button>
-            <h3 className="absolute left-1/2 -translate-x-1/2 text-[1.125rem] font-bold text-primary-brown">{title}</h3>
-            <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium">
+            <h3 className="text-[1.125rem] font-medium text-primary-brown text-center">{title}</h3>
+            <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] justify-self-end">
               <button type="button" className="flex items-center gap-2 hover:opacity-70 transition">
-                <Share size={18} /> Share
+                <Share size={20} /> Share
               </button>
               <FavoriteButton
                 variant="inline"
                 showText={true}
-                iconSize={18}
+                iconSize={20}
                 className="hover:opacity-70 transition text-primary-brown"
                 targetId={targetId}
                 targetType="property"
@@ -198,12 +197,16 @@ export function PhotoTourModal({
 
       <style>{`
         .thumbs-swiper .swiper-slide {
-          opacity: 0.55;
-          transition: opacity 0.2s;
+          border: 2px solid transparent;
+          border-radius: 6px;
+          overflow: hidden;
+          filter: brightness(0.7);
+          transition: filter 0.2s, border-color 0.2s;
         }
 
         .thumbs-swiper .swiper-slide-thumb-active {
-          opacity: 1;
+          border-color: #342511;
+          filter: brightness(1);
         }
       `}</style>
     </ModalWrapper>
