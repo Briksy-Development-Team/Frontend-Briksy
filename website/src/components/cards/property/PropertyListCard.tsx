@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Heart, LoaderCircle } from 'lucide-react'
 import type { Property } from '../../../types/property'
 import Mappin from '../../../assets/icons/location.svg'
+import { SafeImage } from '../../custom/SafeImage'
 import { useAuth } from '../../../auth/AuthContext'
 import { storePendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
@@ -42,7 +43,7 @@ const PropertyListCard = ({ item }: Props) => {
   return (
     <Link to={`/property/${item.id}`} className="flex items-center gap-3 rounded-[1.25rem] border border-[#E7E7E4] bg-white px-2 py-2 font-helvetica lg:gap-4 hover:border hover:border-primary">
     <div className="relative w-[108px] aspect-4/5 shrink-0 overflow-hidden rounded-2xl">
-      <img loading="lazy"
+      <SafeImage loading="lazy"
         src={item.image}
         alt={item.title}
         className="h-full w-full object-cover"
@@ -94,7 +95,7 @@ const PropertyListCard = ({ item }: Props) => {
 
       <div className=" flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
-          <img loading="lazy"
+          <SafeImage loading="lazy"
             src={item.posterAvatar}
             alt={item.posterName}
             className="h-7 w-7 rounded-full object-cover"

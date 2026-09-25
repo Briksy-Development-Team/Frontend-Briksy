@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useAuth } from "../../../auth/AuthContext";
 import { getSeekerProfile, updateSeekerProfile } from "../../../api/seeker/seeker.api";
+import { SafeImage } from "../../custom/SafeImage";
 
 const Myprofile = () => {
   const { user } = useAuth();
@@ -86,7 +87,7 @@ const Myprofile = () => {
         <div className="flex flex-col md:flex-row w-full h-full gap-8 md:gap-0">
           <div className="w-full md:w-[30%] flex flex-col items-center space-y-[0.75rem]">
             {user?.avatar_url ? (
-              <img src={user.avatar_url} className="w-[104px] h-[104px] md:w-[14.75rem] md:h-[14.75rem] rounded-full object-cover shadow-sm" alt={user.name} />
+              <SafeImage src={user.avatar_url} className="w-[104px] h-[104px] md:w-[14.75rem] md:h-[14.75rem] rounded-full object-cover shadow-sm" alt={user.name} />
             ) : (
               <div className="w-[104px] h-[104px] md:w-[14.75rem] md:h-[14.75rem] rounded-full bg-[#342511] flex items-center justify-center text-white text-4xl md:text-7xl font-semibold shadow-sm">
                 {user?.name ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "?"}

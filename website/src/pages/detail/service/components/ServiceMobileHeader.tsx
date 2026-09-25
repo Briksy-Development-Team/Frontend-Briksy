@@ -3,6 +3,7 @@ import FavoriteButton from "../../../../components/custom/FavoriteButton";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
 import type { PublicOrganization } from "../../../../api/seeker/organization.api";
 import Verify from "../../../../assets/icons/verify.svg";
+import { SafeImage } from "../../../../components/custom/SafeImage";
 
 const circleBtn =
   "w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown";
@@ -19,13 +20,11 @@ export function ServiceMobileHeader({
         className="relative h-[300px] -mx-[3%] bg-[#E2CBB3]"
         style={{ width: "calc(100% + 6%)" }}
       >
-        {org.banner_url && (
-          <img
-            src={org.banner_url}
+        <SafeImage
+            src={org.banner_url || ''}
             alt="Banner"
             className="w-full h-full object-cover"
           />
-        )}
         <div className="absolute top-4 inset-x-0 px-[3%] flex justify-between">
           <button onClick={() => window.history.back()} className={circleBtn}>
             <ChevronLeft size={20} />
@@ -47,7 +46,7 @@ export function ServiceMobileHeader({
         </div>
       </div>
 
-      <img
+      <SafeImage
         src={org.logo_url || ServicePlaceholder}
         alt={org.name}
         className="relative -mt-16 ml-0 w-[120px] h-[120px] rounded-full object-cover border-[5px] border-white bg-white shadow-xl"

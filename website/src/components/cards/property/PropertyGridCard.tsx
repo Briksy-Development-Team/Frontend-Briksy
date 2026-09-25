@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import type { Property } from "../../../types/property";
 import FavoriteButton from "../../custom/FavoriteButton";
+import { SafeImage } from "../../custom/SafeImage";
 
 type Props = {
   item: Property
@@ -16,7 +17,7 @@ const PropertyGridCard = ({ item }: Props) => {
       className="flex h-[28rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
     >
       <div className="relative h-[60%] shrink-0 overflow-hidden">
-        <img
+        <SafeImage
           loading="lazy"
           src={item.image}
           alt={item.title}
@@ -58,7 +59,7 @@ const PropertyGridCard = ({ item }: Props) => {
 
           <div className="mt-3 flex w-full items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2">
-              <img
+              <SafeImage
                 loading="lazy"
                 src={item.posterAvatar}
                 alt={item.posterName}

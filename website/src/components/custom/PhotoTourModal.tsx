@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { ChevronLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Thumbs } from 'swiper/modules';
+import { FreeMode, Mousewheel, Thumbs } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
@@ -22,6 +22,7 @@ interface GalleryImage {
 export type Media = GalleryImage;
 
 const isVideo = (m: Media) => !!(m.videoUrl || m.videoSrc || m.type === 'video');
+
 const getVideoSrc = (m: Media) => {
   const url = m.videoUrl ?? m.videoSrc ?? '';
   return url ? `${url}#t=0.1` : url;
@@ -35,18 +36,18 @@ function VideoCard({ m }: { m: Media }) {
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const vid = ref.current;
-    if (!vid) return;
-    if (vid.paused) { vid.play(); setPlaying(true); }
-    else { vid.pause(); setPlaying(false); }
+    const video = ref.current;
+    if (!video) return;
+    if (video.paused) { video.play(); setPlaying(true); }
+    else { video.pause(); setPlaying(false); }
   };
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const vid = ref.current;
-    if (!vid) return;
-    vid.muted = !vid.muted;
-    setMuted(vid.muted);
+    const video = ref.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setMuted(video.muted);
   };
 
   return (
@@ -57,16 +58,21 @@ function VideoCard({ m }: { m: Media }) {
         poster={m.src}
         playsInline
         preload="metadata"
+        draggable={false}
         onEnded={() => setPlaying(false)}
         className="w-full h-full object-cover cursor-pointer"
       />
 
-      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 pointer-events-none ${playing ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
-        }`}>
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 pointer-events-none ${
+          playing ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
+        }`}
+      >
         <span className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg">
           {playing
             ? <Pause size={28} className="text-white" fill="currentColor" />
-            : <Play size={28} className="text-white ml-1" fill="currentColor" />}
+            : <Play size={28} className="text-white ml-1" fill="currentColor" />
+          }
         </span>
       </div>
 
@@ -99,7 +105,12 @@ export function PhotoTourModal({
   initialIsFavourite?: boolean;
 }) {
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [active, setActive] = useState(initialIndex);
+
+  // Thumbnail thumb size — smaller on mobile
+  const thumbW = typeof window !== 'undefined' && window.innerWidth < 640 ? 76 : 110;
+  const thumbH = typeof window !== 'undefined' && window.innerWidth < 640 ? 56 : 79;
 
   const goTo = (index: number) => {
     mainSwiper?.slideTo(index);
@@ -108,30 +119,48 @@ export function PhotoTourModal({
 
   return (
     <ModalWrapper isOpen>
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 sm:p-6"
+        className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-2 sm:p-4 lg:p-6"
         onClick={onClose}
       >
+        {/* Modal card */}
         <div
-          className="w-full max-w-7xl lg:h-full bg-[#F8F4EE] overflow-hidden flex flex-col shadow-2xl rounded-2xl"
+          className="
+            relative w-full max-w-7xl bg-[#F8F4EE] rounded-2xl shadow-2xl
+            flex flex-col overflow-hidden
+            h-[92svh] sm:h-[90svh] lg:h-[88svh]
+          "
           onClick={(e) => e.stopPropagation()}
         >
-
           {/* ── Header ── */}
-          <div className="grid grid-cols-3 items-center px-6 py-5 shrink-0">
-            <button type="button" onClick={onClose} className="w-10 h-10 flex items-center justify-center text-primary-brown hover:bg-black/5 rounded-full justify-self-start">
-              <ChevronLeft size={24} />
+          <div className="grid grid-cols-3 items-center px-4 sm:px-6 py-3 sm:py-5 shrink-0 border-b border-black/5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center text-primary-brown hover:bg-black/5 rounded-full justify-self-start"
+            >
+              <ArrowLeft size={20} />
             </button>
-            <h3 className="text-[1.125rem] font-medium text-primary-brown text-center">{title}</h3>
-            <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] justify-self-end">
-              <button type="button" className="flex items-center gap-2 hover:opacity-70 transition">
-                <Share size={20} /> Share
+
+            <h3 className="text-base sm:text-[1.125rem] font-medium text-primary-brown text-center truncate">
+              {title}
+            </h3>
+
+            <div className="flex items-center gap-1 sm:gap-1.5 text-primary-brown text-sm justify-self-end">
+              <button
+                type="button"
+                className="hidden sm:flex items-center gap-2 h-10 px-1.5 rounded-lg hover:bg-black/5 transition"
+              >
+                <Share size={20} />
+                <span className="hidden md:inline">Share</span>
               </button>
+
               <FavoriteButton
                 variant="inline"
-                showText={true}
+                showText
                 iconSize={20}
-                className="hover:opacity-70 transition text-primary-brown"
+                className="flex items-center gap-2 h-10 px-1.5 rounded-lg hover:bg-black/5 transition text-primary-brown"
                 targetId={targetId}
                 targetType="property"
                 initialIsFavourite={initialIsFavourite}
@@ -139,76 +168,96 @@ export function PhotoTourModal({
             </div>
           </div>
 
-          {/* Horizontal thumbnails (scrolls left/right) */}
-          <div className="flex gap-4 overflow-x-auto px-[3%] pt-4 pb-6 shrink-0">
-            {media.map((m, i) => (
-              <button
-                type="button"
-                key={i}
-                aria-label={`Go to ${m.videoUrl ? 'video' : 'photo'} ${i + 1}`}
-                onClick={() => goTo(i)}
-                className={`relative w-[100px] h-[100px] shrink-0 rounded-[1rem] overflow-hidden border-[3px] transition-all ${active === i ? 'border-primary-brown shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
-                  }`}
-              >
-                {m.videoUrl ? <video src={m.videoUrl} muted playsInline preload="metadata" className="w-full h-full object-cover" /> : <img src={m.src} alt="" className="w-full h-full object-cover" />}
-                {m.videoUrl && (
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/10 pointer-events-none">
-                    <Play size={20} className="text-white ml-0.5" fill="currentColor" />
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
+          {/* ── Body: main viewer + thumbnails ── */}
+          <div className="flex-1 min-h-0 flex flex-col px-3 sm:px-[3%] pt-3 pb-4 gap-3">
 
-          {/* ── Main viewer (Swiper — vertical, drag/touch/mousewheel) ── */}
-          <div className="flex-1 min-h-0 flex gap-8 justify-between px-[3%] pt-2 overflow-hidden">
-            <h2 className="hidden md:block w-1/3 shrink-0 text-[1.5rem] lg:text-[2rem] font-medium text-primary-brown leading-tight pt-2">
-              {subtitle}
-            </h2>
-
-            <div className="flex-1 md:flex-none md:w-[55%] min-h-0 pb-2">
+            {/* Main image/video slider */}
+            {/* NOTE: Swiper slidesPerView="auto" REQUIRES inline width on slides — Tailwind responsive classes are ignored */}
+            <div className="flex-1 min-h-0">
               <Swiper
-                modules={[Thumbs, Mousewheel, FreeMode]}
-                direction="vertical"
-                mousewheel
-                freeMode
-                initialSlide={initialIndex}
-                spaceBetween={24}
+                modules={[Mousewheel, Thumbs]}
+                thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                mousewheel={{ forceToAxis: true }}
                 slidesPerView="auto"
+                spaceBetween={12}
+                initialSlide={initialIndex}
                 onSwiper={setMainSwiper}
-                onSlideChange={(swiper) => setActive(swiper.activeIndex)}
-                className="h-full"
+                onSlideChange={(s) => setActive(s.activeIndex)}
+                className="h-full w-full"
+                style={{ touchAction: 'pan-y' }}
               >
                 {media.map((m, i) => (
-                  <SwiperSlide key={i} style={{ height: 'auto' }}>
-                    <div className="w-full h-[320px] md:h-[380px] rounded-[1.25rem] overflow-hidden bg-black/5 shadow-sm">
+                  <SwiperSlide
+                    key={i}
+                    // Must use inline style — Tailwind w-[] is ignored by Swiper's layout engine
+                    style={{ width: '85%', height: '100%' }}
+                  >
+                    <div className="w-full h-full rounded-xl sm:rounded-[1.25rem] overflow-hidden bg-black/5 shadow-sm">
                       {isVideo(m)
                         ? <VideoCard m={m} />
-                        : <img src={m.src} alt="Property media" className="w-full h-full object-cover" />}
+                        : <img src={m.src} alt="Property media" draggable={false} className="w-full h-full object-cover" />
+                      }
                     </div>
                   </SwiperSlide>
                 ))}
               </Swiper>
             </div>
-          </div>
 
+            {/* Thumbnail strip */}
+            <div className="shrink-0">
+              <Swiper
+                onSwiper={setThumbsSwiper}
+                modules={[FreeMode, Mousewheel, Thumbs]}
+                freeMode
+                watchSlidesProgress
+                mousewheel={{ forceToAxis: true }}
+                slidesPerView="auto"
+                spaceBetween={8}
+              >
+                {media.map((m, i) => (
+                  <SwiperSlide
+                    key={i}
+                    style={{ width: thumbW, height: thumbH }}
+                  >
+                    <button
+                      type="button"
+                      aria-label={`Go to ${isVideo(m) ? 'video' : 'photo'} ${i + 1}`}
+                      onClick={() => goTo(i)}
+                      className={`relative w-full h-full rounded-md overflow-hidden border-2 transition-colors ${
+                        active === i ? 'border-primary-brown' : 'border-transparent'
+                      }`}
+                    >
+                      {isVideo(m) ? (
+                        <video
+                          src={getVideoSrc(m)}
+                          muted
+                          playsInline
+                          preload="metadata"
+                          draggable={false}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <img src={m.src} alt="" draggable={false} className="w-full h-full object-cover" />
+                      )}
+
+                      {active !== i && (
+                        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+                      )}
+
+                      {isVideo(m) && (
+                        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <Play size={14} className="text-white ml-0.5" fill="currentColor" />
+                        </span>
+                      )}
+                    </button>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+          </div>
         </div>
       </div>
-
-      <style>{`
-        .thumbs-swiper .swiper-slide {
-          border: 2px solid transparent;
-          border-radius: 6px;
-          overflow: hidden;
-          filter: brightness(0.7);
-          transition: filter 0.2s, border-color 0.2s;
-        }
-
-        .thumbs-swiper .swiper-slide-thumb-active {
-          border-color: #342511;
-          filter: brightness(1);
-        }
-      `}</style>
     </ModalWrapper>
   );
 }

@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import type { Trader } from "../../../types/trader";
 import Approves from "../../../assets/logo/apprrove.svg";
 import Mappin from "../../../assets/icons/location.svg";
+import { SafeImage } from "../../custom/SafeImage";
 
 type Props = {
   item: Trader;
@@ -11,7 +12,7 @@ type Props = {
 const TraderListCard = ({ item }: Props) => (
   <Link to={`/service/${item.id}`} className="flex items-center gap-3 px-4 py-4 lg:gap-4 border text-primary-brown bg-white border-[#E7E7E4] hover:border hover:border-primary rounded-[1.25rem]">
     <div className="relative shrink-0">
-      <img loading="lazy"
+      <SafeImage loading="lazy"
         src={item.avatar}
         alt={item.name}
         className="  h-16 w-16 lg:h-24 lg:w-24 rounded-full object-cover"

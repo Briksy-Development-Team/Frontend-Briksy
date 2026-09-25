@@ -174,10 +174,18 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
 
             {/* Search */}
             {pastHero && !isSearchOpen && (
-              <NavSearchButton
-                onClick={() => setMode("search")}
-              />
+              <>
+                {/* Below md: go straight to /all */}
+                <div className="md:hidden">
+                  <NavSearchButton onClick={() => navigate("/result?type=all")} />
+                </div>
+                {/* md and up: open the search overlay */}
+                <div className="hidden md:block">
+                  <NavSearchButton onClick={() => setMode("search")} />
+                </div>
+              </>
             )}
+
 
             {/* Language — desktop only */}
             <button
@@ -210,17 +218,15 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
       {/* Backdrop */}
       <div
         onClick={() => setMobileOpen(false)}
-        className={`lg:hidden fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ${
-          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`lg:hidden fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
         aria-hidden
       />
 
       {/* Drawer panel — slides in from the left */}
       <div
-        className={`lg:hidden fixed top-0 left-0 h-full w-full z-40 bg-[#f5f2ed] flex flex-col transform transition-transform duration-300 ease-in-out ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`lg:hidden fixed top-0 left-0 h-full w-full z-40 bg-[#f5f2ed] flex flex-col transform transition-transform duration-300 ease-in-out ${mobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Drawer header — matches navbar height */}
         <div className="flex h-20 items-center justify-between px-5 bg-primary-brown shrink-0">
