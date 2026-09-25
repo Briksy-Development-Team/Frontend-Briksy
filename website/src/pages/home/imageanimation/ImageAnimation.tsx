@@ -62,8 +62,8 @@ const cards: Card[] = [
 const ImageAnimation = () => {
   const navigate = useNavigate();
   return (
-    <div className="relative flex flex-col lg:flex-row h-auto min-h-screen lg:h-screen w-full font-helvetica overflow-hidden">
-      <div className="relative mt-10 md:my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 lg:px-12 pt-8 lg:pt-0">
+    <div className="relative flex flex-col lg:flex-row  h-auto min-h-screen lg:h-screen w-full font-helvetica overflow-hidden">
+      <div className="relative mt-10 md:my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 xl:px-12 pt-8 lg:pt-0">
         <img
           src={WholeBg}
           alt=""
@@ -122,16 +122,16 @@ const ImageAnimation = () => {
         </Swiper>
       </div>
 
-      <div className="my-auto h-auto lg:h-[80vh] w-full lg:w-1/2 flex flex-col justify-center lg:justify-evenly gap-12 lg:gap-0 py-12 lg:py-0">
-        <div className="flex flex-col justify-center space-y-4 lg:space-y-[1.5rem] w-[90%] lg:w-[70%] mx-auto text-center lg:text-left items-center lg:items-start">
+      <div className="my-auto h-auto lg:h-[80vh] w-full lg:w-1/2 flex flex-col justify-center items-start lg:justify-evenly gap-12 lg:gap-0 pt-12 md:py-12 lg:py-0">
+        <div className="flex flex-col justify-center space-y-4 lg:space-y-[1.5rem] w-[90%] xl:w-[70%] mx-auto text-center lg:text-left items-center lg:items-start">
           <p className="text-[0.875rem] text-primary-brown uppercase tracking-wide">HOW BRIKSY WORKS</p>
-          <span className="text-[1.875rem] text-primary-brown  flex flex-col   lg:text-[3rem] leading-tight lg:leading-12 font-medium">
-            <p className="" >
-              <p className="text-nowrap ">Everything property.</p>
+          <div className="text-[1.875rem] text-primary-brown flex flex-col lg:text-[3rem] leading-tight lg:leading-12 font-medium">
+            <div>
+              <div className="text-nowrap">Everything property.</div>
               <br className="hidden lg:block" />
-              <p className="text-nowrap "> Everyone you need.</p>
-            </p>
-          </span>
+              <div className="text-nowrap">Everyone you need.</div>
+            </div>
+          </div>
           <p className="text-primary-light-brown text-[1rem] text-gray-700">
             From finding a property to building, improving,
             and managing it connect with the right people
@@ -142,8 +142,8 @@ const ImageAnimation = () => {
           </button>
         </div>
 
-        <div className="flex flex-col-reverse lg:flex-row items-center lg:items-end justify-between w-[90%] lg:w-[70%] mx-auto gap-6 lg:gap-[1rem]">
-          <div className="w-full lg:w-[70%] space-y-4 lg:space-y-[1rem] text-center lg:text-left">
+        <div className="flex flex-col-reverse lg:flex-row items-center lg:items-end justify-between w-[90%] xl:w-[70%] mx-auto gap-6 xl:gap-[1rem]">
+          <div className="w-full xl:w-[70%] space-y-4 xl:space-y-[1rem] text-center lg:text-left">
             <p className="italic text-[1rem] text-gray-700">
               "Briksy made it easier to find the right professionals and manage
               everything around our property without jumping between different
@@ -164,7 +164,7 @@ const ImageAnimation = () => {
               <img
                 src={Imges}
                 alt=""
-                className="h-[5.5625rem] w-[4.5rem]  rounded-[67.5rem] bg-gray-100"
+                className="  xl:h-[5.5625rem] w-[4.5rem]  rounded-[67.5rem] bg-gray-100"
               />
             </span>
           </div>

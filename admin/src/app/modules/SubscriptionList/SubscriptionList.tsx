@@ -14,6 +14,11 @@ type Props = {
 
 export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, onSelectPlan, billingCycle = 'monthly' }: Props) => {
   const currentPlan = plans.find((p) => p.is_current)
+  const featureLabel = (name: string) => {
+    if (name === 'Property Images' || name === 'Portfolio Photos') return 'Images Limit'
+    if (name === 'Property Videos' || name === 'Portfolio Videos') return 'Videos Limit'
+    return name
+  }
   const familyLabel = (family?: string) => {
     if (family === 'trades_professional') {
       return 'Trades & Professionals'
@@ -425,7 +430,7 @@ export const SubscriptionList = ({ plans, canManage, onAdd, onEdit, onDelete, on
                             fontWeight: feature.enabled ? 500 : 400,
                           }}
                         >
-                          {feature.name}
+                          {featureLabel(feature.name)}
                           {feature.value !== undefined && (
                             <span style={{ fontWeight: 700, marginLeft: 4 }}>
                               : {feature.value}

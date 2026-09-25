@@ -63,7 +63,7 @@ const Heroone = () => {
                 ref={sectionRef}
                 className="relative h-screen overflow-clip bg-[#C2B4AA]  lg:px-0 font-helvetica"
             >
-                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-24">
+                <div className="relative z-20 flex flex-col items-center pt-28 lg:pt-28">
                     <div className="mb-6 flex items-center gap-2">
                         <div ref={avatarsRef} className="flex -space-x-3">
                             {AVATARS.map((src, i) => (
@@ -87,12 +87,12 @@ const Heroone = () => {
                     </h1>
 
                     <p className="mt-6 max-w-2xl text-center text-[0.875rem] lg:text-[1rem]  text-black">
-                        We partner with leadership teams to <br className="block lg:hidden" /> simplify complex challenges.
+                        We partner with leadership teams to <br className="block md:hidden" /> simplify complex challenges.
                     </p>
                 </div>
 
                 <div className="absolute  inset-x-0 bottom-0 z-10 pointer-events-none overflow-visible">
-                    <img ref={houseRef} src={House} alt="" className="hidden lg:block w-full" />
+                    <img ref={houseRef} src={House} alt="" className="hidden sm:block w-full" />
                     <img src={HeroM} alt="" className="block sm:hidden w-full" />
 
                     <div
@@ -107,7 +107,7 @@ const Heroone = () => {
         "
                     />
                 </div>
-                <div className="absolute left-1/2 bottom-1/3 lg:bottom-25  z-30 w-full max-w-5xl -translate-x-1/2 px-6">
+                <div className="absolute left-1/2 bottom-1/3 sm:bottom-36 lg:bottom-25  z-30 w-full max-w-5xl -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />
                 </div>
             </section>

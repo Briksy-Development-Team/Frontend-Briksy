@@ -31,9 +31,11 @@ const ProfileDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* Desktop trigger: pill with hamburger + avatar */}
       <button
         onClick={() => setDropdownOpen((v) => !v)}
-        className="p-2 rounded-3xl space-x-2 border bg-white flex items-center justify-center transition-colors border-gray-300 text-gray-800"
+        className="flex p-2 rounded-3xl space-x-2 border bg-white items-center justify-center transition-colors border-gray-300 text-gray-800"
+        aria-label="Menu"
       >
         <Menu size={20} />
         <img loading="lazy" src={Place} alt="profile" />

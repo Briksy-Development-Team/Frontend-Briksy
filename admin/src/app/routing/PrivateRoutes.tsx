@@ -28,6 +28,7 @@ const EmailTemplatePage = lazy(() => import("../pages/email/EmailTemplatePage"))
 const PropertyListPage = lazy(() => import("../pages/user management/PropertyList"));
 const PropertyMapPage = lazy(() => import("../pages/platform/PropertyMapPage"));
 const PropertyOffersPage = lazy(() => import("../pages/platform/PropertyOffersPage"));
+const ServiceOffersPage = lazy(() => import("../pages/platform/ServiceOffersPage"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
 const BuyerBriefPage = lazy(() => import("../pages/platform/BuyerBriefPage"));
 const BuilderProjectPage = lazy(() => import("../pages/platform/BuilderProjectPage"));
@@ -161,11 +162,24 @@ const PrivateRoutes = () => {
           path="/admin/property-offers/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <ModuleGuard anyOf={["property_management"]}>
+              <ModuleGuard anyOf={["property_management", "builder_management"]}>
                 <PermissionGuard anyOf={["property.view"]}>
                   <SuspensedView>
                     <PropertyOffersPage />
                   </SuspensedView>
+                </PermissionGuard>
+              </ModuleGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
+          path="/admin/service-offers/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <ModuleGuard anyOf={["service_management"]}>
+                <PermissionGuard anyOf={["service.view"]}>
+                  <SuspensedView><ServiceOffersPage /></SuspensedView>
                 </PermissionGuard>
               </ModuleGuard>
             </RoleGuard>
@@ -251,6 +265,11 @@ const PrivateRoutes = () => {
               </SuspensedView>
             </RoleGuard>
           }
+        />
+
+        <Route
+          path="/super-admin/service-offers/*"
+          element={<RoleGuard allow={["super_admin"]}><SuspensedView><ServiceOffersPage /></SuspensedView></RoleGuard>}
         />
 
         <Route
@@ -408,12 +427,13 @@ const PrivateRoutes = () => {
 
         <Route path="/admin/buyer-briefs/*" element={<RoleGuard allow={["admin", "admin_staff"]}><ModuleGuard anyOf={["buyer_management"]}><SuspensedView><BuyerBriefPage /></SuspensedView></ModuleGuard></RoleGuard>} />
         <Route path="/admin/builder-projects/*" element={<RoleGuard allow={["admin", "admin_staff"]}><ModuleGuard anyOf={["builder_management"]}><SuspensedView><BuilderProjectPage /></SuspensedView></ModuleGuard></RoleGuard>} />
+        <Route path="/super-admin/builder-projects/*" element={<RoleGuard allow={["super_admin", "super_admin_employee"]}><SuspensedView><BuilderProjectPage /></SuspensedView></RoleGuard>} />
 
         <Route
           path="/admin/property-management/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
-              <ModuleGuard anyOf={["property_management"]}>
+              <ModuleGuard anyOf={["property_management", "builder_management"]}>
                 <PermissionGuard anyOf={["property.view"]}>
                   <SuspensedView>
                     <PropertyListPage />

@@ -5,6 +5,8 @@ import ServicePlaceholder from "../../../../assets/place holder/serviceholder.sv
 import type { PublicService } from "../../../../api/service/service.api";
 import { ServiceEnquiry } from "./ServiceEnquiry";
 import { ServiceRecentWork } from "./ServiceDetails";
+import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
+import FraudBanner from "../../../../components/custom/FraudBanner";
 
 export const joinAddress = (
   o?: {
@@ -18,13 +20,13 @@ export const toMedia = (
   images: { url: string }[] = [],
   videos: { url: string }[] = [],
 ) => [
-  ...images.map(({ url }) => ({ src: url, type: "image" as const })),
-  ...videos.map(({ url }) => ({
-    src: url,
-    type: "video" as const,
-    videoUrl: url,
-  })),
-];
+    ...images.map(({ url }) => ({ src: url, type: "image" as const })),
+    ...videos.map(({ url }) => ({
+      src: url,
+      type: "video" as const,
+      videoUrl: url,
+    })),
+  ];
 
 export function ServiceOnlyView({ service }: { service: PublicService }) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -103,12 +105,6 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
                 {service.description ||
                   "No description provided for this service."}
               </p>
-              {(service.rate_from != null || service.rate_to != null) && (
-                <p className="mt-4 text-primary-brown">
-                  {service.rate_from != null && `From $${service.rate_from}`}
-                  {service.rate_to != null && ` to $${service.rate_to}`}
-                </p>
-              )}
             </div>
 
             {media.length > 0 && (
@@ -134,6 +130,13 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
           </div>
         </div>
       </div>
+      <div className="mt-10  w-full flex items-center justify-center ">
+        <FraudBanner />
+      </div>
+
+      <MobileStickyAction
+        onEnquiry={() => setIsEnquiryOpen(true)}
+      />
 
       <ServiceEnquiry
         open={isEnquiryOpen}

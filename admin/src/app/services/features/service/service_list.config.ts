@@ -52,16 +52,6 @@ export const serviceListConfig = {
       Cell: ({ value }: { value: any }) => value || "—",
     },
     {
-      Header: "Rate From",
-      accessor: "rate_from",
-      Cell: ({ value }: { value: any }) => (value ?? "—"),
-    },
-    {
-      Header: "Rate To",
-      accessor: "rate_to",
-      Cell: ({ value }: { value: any }) => (value ?? "—"),
-    },
-    {
       Header: "Organizations Count",
       accessor: "organization_count",
       sortable: true,

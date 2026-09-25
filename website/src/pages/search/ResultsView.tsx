@@ -59,7 +59,7 @@ export default function ResultsView({
 }) {
   const [organizations, setOrganizations] = useState<PublicOrganization[]>([]);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
-  const [newlyProperties, setNewlyProperties] = useState<PublicProperty[]>([]);
+  const [, setNewlyProperties] = useState<PublicProperty[]>([]);
   const [searchParams] = useResultSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,11 +98,18 @@ export default function ResultsView({
   const traders = organizations.map(organizationToTrader);
   const builders = organizations.map(organizationToBuilder);
   const propertyCards = properties.map(propertyToCard);
-  const newlyPropertyCards = newlyProperties.map(propertyToCard);
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
+  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "comercial" ? "Commercial Properties" : "Properties");
 
   if (loading) return <p className="text-sm text-[#8B6F54]">Loading results...</p>;
   if (error) return <p className="text-sm text-red-700">{error}</p>;
+  if (resultType === "trader" && traders.length === 0) {
+    return (
+      <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown">
+        <p>No services found for the selected filters.</p>
+      </div>
+    );
+  }
   if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) {
     return <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p></div>;
   }
@@ -116,10 +123,7 @@ export default function ResultsView({
       ) : (
         <>
           {resultType === "trader" && (
-            <>
-              <Section title="Popular Professionals" count={traders.length} items={traders.slice(0, 4)} Card={TraderGridCard} onViewMore={() => onViewMore("popular")} />
-              <Section title="Newly Traders" count={traders.length} items={traders.slice(4)} Card={TraderGridCard} onViewMore={() => onViewMore("newly")} />
-            </>
+            <Section title={selectedHeading} count={traders.length} items={traders} Card={TraderGridCard} onViewMore={() => onViewMore("popular")} />
           )}
           {resultType === "builder" && (
             <>
@@ -128,10 +132,7 @@ export default function ResultsView({
             </>
           )}
           {(resultType === "property" || resultType === "comercial") && (
-            <>
-              <Section title="Popular Properties" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
-              <Section title="Newly Listed Properties" count={newlyPropertyCards.length} items={newlyPropertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
-            </>
+            <Section title={selectedHeading} count={total} items={propertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
           )}
         </>
       )}

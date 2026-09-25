@@ -1,12 +1,18 @@
-import { Star, ChevronLeft, MapPin, ShieldCheck, Share } from "lucide-react";
+import { Star, ChevronLeft, MapPin, Share } from "lucide-react";
 import FavoriteButton from "../../../../components/custom/FavoriteButton";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
 import type { PublicOrganization } from "../../../../api/seeker/organization.api";
+import Verify from "../../../../assets/icons/verify.svg";
+import { SafeImage } from "../../../../components/custom/SafeImage";
 
 const circleBtn =
   "w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown";
 
-export function ServiceMobileHeader({ organization: org }: { organization: PublicOrganization }) {
+export function ServiceMobileHeader({
+  organization: org,
+}: {
+  organization: PublicOrganization;
+}) {
   return (
     <div className="w-full md:hidden mb-8">
       {/* Banner */}
@@ -14,9 +20,11 @@ export function ServiceMobileHeader({ organization: org }: { organization: Publi
         className="relative h-[300px] -mx-[3%] bg-[#E2CBB3]"
         style={{ width: "calc(100% + 6%)" }}
       >
-        {org.banner_url && (
-          <img src={org.banner_url} alt="Banner" className="w-full h-full object-cover" />
-        )}
+        <SafeImage
+            src={org.banner_url || ''}
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
         <div className="absolute top-4 inset-x-0 px-[3%] flex justify-between">
           <button onClick={() => window.history.back()} className={circleBtn}>
             <ChevronLeft size={20} />
@@ -35,18 +43,17 @@ export function ServiceMobileHeader({ organization: org }: { organization: Publi
               initialIsFavourite={Boolean(org.is_favourite)}
             />
           </div>
-
         </div>
       </div>
 
-  <img
+      <SafeImage
         src={org.logo_url || ServicePlaceholder}
         alt={org.name}
-        className="relative -mt-16 ml-4 w-[120px] h-[120px] rounded-full object-cover border-[5px] border-white bg-white shadow-xl"
+        className="relative -mt-16 ml-0 w-[120px] h-[120px] rounded-full object-cover border-[5px] border-white bg-white shadow-xl"
       />
 
       {/* Info */}
-      <div className="px-4 mt-4 flex flex-col gap-2 text-primary-brown">
+      <div className=" mt-4 flex flex-col gap-2 text-primary-brown">
         <h1 className="text-xl font-bold">{org.name}</h1>
         <p className="text-sm">{org.type?.name}</p>
 
@@ -61,8 +68,8 @@ export function ServiceMobileHeader({ organization: org }: { organization: Publi
           <span className="truncate">{org.address}</span>
         </p>
 
-        <span className="self-start flex items-center gap-2 px-4 py-2 rounded-full border text-sm">
-          <ShieldCheck size={20} /> Verified by Briksy
+        <span className="self-start flex items-center gap-2 px-4 py-2 rounded-full border border-[#EDE8E4] text-sm">
+          <img src={Verify} alt="" /> Verified by Briksy
         </span>
       </div>
     </div>

@@ -13,6 +13,7 @@ import {
 } from "./service_list.api";
 
 import { mapServiceList } from "./service_list.mapper";
+import axios from "axios";
 
 import type { ServiceList, ServiceFormValues } from "./service_list.types";
 
@@ -64,11 +65,15 @@ export const fetchServiceList = createAsyncThunk(
 export const saveService = createAsyncThunk(
   "services/save",
   async (payload: { id?: string; values: ServiceFormValues }) => {
-    if (payload.id) {
-      return await updateServiceApi(payload.id, payload.values);
+    try {
+      if (payload.id) {
+        return await updateServiceApi(payload.id, payload.values);
+      }
+      return await createServiceApi(payload.values);
+    } catch (error) {
+      const message = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
+      throw new Error(message || "Unable to save service.");
     }
-
-    return await createServiceApi(payload.values);
   },
 );
 
@@ -148,8 +153,9 @@ const serviceSlice = createSlice({
         state.editingService = null;
       })
 
-      .addCase(saveService.rejected, (state) => {
+      .addCase(saveService.rejected, (state, action) => {
         state.saving = false;
+        state.error = action.error.message ?? "Unable to save service.";
       })
 
       .addCase(deleteService.pending, (state) => {

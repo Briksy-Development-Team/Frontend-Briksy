@@ -37,7 +37,7 @@ export const Field = ({ label, error, children, ...props }: { label: string; err
 );
 
 export const Btn = ({ children, className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button {...props} className={`w-full bg-primary-brown text-[#EEECE0] font-medium rounded-[56.25rem] lg:rounded-[0.875rem] h-12 transition-colors   ${className}`}>{children}</button>
+  <button {...props} className={`w-full bg-primary-brown text-[#EEECE0] font-medium rounded-[56.25rem] lg:rounded-[0.875rem] py-[0.5rem] h-12 transition-colors   ${className}`}>{children}</button>
 );
 
 export const StepIndicator = ({ step, go }: { step: number; go?: (s: RegisterStep) => void }) => (

@@ -11,6 +11,7 @@ import BuildIcon from "../../assets/icons/search/build.svg?react";
 import TraderIcon from "../../assets/icons/search/trades.svg?react";
 import ComercialIcon from "../../assets/icons/search/comercial.svg?react";
 import MapIcon from "../../assets/icons/search/map.svg?react";
+import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
 
 type CategoryDef = {
   id: string;
@@ -38,24 +39,24 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "builders",
-    label: "BUILDERS / Org.",
+    label: "BUILDERS",
     resultType: "builder",
     icon: <BuildIcon className="w-4 h-4" />,
     tabs: ["Builders", "Agents"],
   },
   {
     id: "professionals",
-    label: "Professionals",
+    label: "Trades & Professionals",
     resultType: "trader",
     icon: <TraderIcon className="w-4 h-4" />,
-    tabs: ["Traders"],
+    tabs: SERVICE_CATEGORIES.map((category) => category.label),
   },
   {
     id: "commercial",
     label: "Commercial",
     resultType: "comercial",
     icon: <ComercialIcon className="w-4 h-4" />,
-    tabs: ["Rent"],
+    tabs: ["Buy", "Lease", "Sold", "Leased"],
   },
 ];
 
@@ -70,10 +71,18 @@ const SORT_OPTIONS = [
 const TAB_LABELS: Record<FilterTab, string> = {
   Buy: "Buy",
   Rent: "Rent",
+  Lease: "Lease",
   Sold: "Sold",
+  Leased: "Leased",
   Builders: "Builders",
   Agents: "Organizations",
   Traders: "Sole Traders",
+  Landscappers: "Landscappers",
+  Concreter: "Concreter",
+  Fencing: "Fencing",
+  "Mortgage Brokers": "Mortgage Brokers",
+  Conveyancers: "Conveyancers",
+  "Building and Pest": "Building and Pest",
 };
 
 const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
@@ -115,9 +124,10 @@ export default function SearchToolbar({
 
   return (
     <div className="flex  flex-col gap-4">
-      <div className="flex items-center  gap-y-2   justify-between flex-wrap py-1">
-        <div className="flex-1 max-w-[35rem] pr-[3%]  gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-8 md:pr-2  flex items-center justify-between text-left transition-colors shrink-0">
-          <div className="flex items-center w-full  bg-white h-full rounded-[6.25rem] px-2  gap-x-[6px] overflow-hidden ">
+      <div className="flex flex-col lg:items-center lg:flex-row  gap-y-2   justify-between flex-wrap py-1">
+        <div className="flex-1 max-w-[30rem] pr-[3%]  gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-8 md:pr-2 
+         flex items-center justify-between text-left transition-colors shrink-0">
+          <div className="flex items-center  w-full  bg-white h-full rounded-[6.25rem] px-2  gap-x-[6px] overflow-hidden ">
             <Search className="md:w-5 md:h-5 h-4 w-4 text-gray-100 shrink-0" />
             <input
               type="text"
@@ -128,15 +138,15 @@ export default function SearchToolbar({
             />
           </div>
 
-          <div className="flex items-center bg-primary-brown text-white md:text-primary-brown md:bg-white rounded-[5.4348rem] p-[0.7065rem] gap-3 shrink-0">
-            <div className="w-[1px] h-8 hidden md:flex " />
+          <div className="flex items-center bg-primary-brown text-white md:text-primary-brown  md:bg-white rounded-[5.4348rem] p-[0.7065rem] gap-3 shrink-0">
+            <div className="w-px h-4 hidden md:block bg-[#EDE8E4]" />
             <button
               type="button"
               onClick={onAskAi}
-              className="flex items-center justify-center gap-2 px-0 md:px-2 h-full    text-[0.875rem]"
+              className="flex items-center justify-center  gap-2 px-0 md:px-2 h-full    text-[0.875rem]"
             >
               <Sparkles className="w-4 h-4" />
-              <p className="hidden md:flex"> Ask Ai</p>
+              <p className="hidden md:flex"> Ask AI</p>
             </button>
           </div>
         </div>
@@ -177,7 +187,7 @@ export default function SearchToolbar({
           />
           <button
             onClick={onToggleMap}
-            className={`py-2 px-3 rounded-full border flex items-center gap-2 transition-colors shrink-0 ${showMap
+            className={`py-2 px-3 rounded-full hidden border md:flex items-center gap-2 transition-colors shrink-0 ${showMap
               ? "bg-[#342511] text-white border-[#342511]"
               : "bg-white text-[#342511] border-[#EDE8E4]"
               }`}
@@ -195,7 +205,7 @@ export default function SearchToolbar({
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
             initialTab={
-              activeTab || (activeCategory.id === "commercial" ? "Rent" : "Buy")
+              activeTab || "Buy"
             }
           />,
           document.body,

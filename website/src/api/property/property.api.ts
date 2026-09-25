@@ -11,6 +11,8 @@ export type PublicProperty = {
   status: string | null;
   is_favourite?: boolean;
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  property_category?: string | null;
   price?: number | null;
 
   property_type?: {

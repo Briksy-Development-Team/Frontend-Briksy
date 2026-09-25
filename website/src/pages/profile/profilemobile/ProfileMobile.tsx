@@ -1,6 +1,7 @@
 import { ChevronRight ,ArrowLeft } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/AuthContext";
+import { SafeImage } from "../../../components/custom/SafeImage";
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -23,7 +24,8 @@ export default function ProfileMobile() {
     const section = location.pathname.split('/').pop() || '';
     let label = 'Back';
     if (section === 'personal-info') label = 'Personal info';
-    else if (section === 'saved-search') label = 'Save Search';
+    else if (section === 'saved-search') label = 'Like searches';
+    else if (section === 'collections') label = 'Collections';
     else if (section === 'notifications') label = 'Notification';
     else if (section === 'privacy') label = 'Privacy';
 
@@ -49,7 +51,7 @@ export default function ProfileMobile() {
 
   const menuRows1 = [
     { label: "Personal info", view: "personal-info" },
-    { label: "Save Search", view: "saved-search" },
+    { label: "Collections", view: "collections" },
     { label: "Notification", view: "notifications" },
     { label: "Privacy", view: "privacy" },
   ];
@@ -74,7 +76,7 @@ export default function ProfileMobile() {
       <div className="flex flex-col gap-5 px-5 mt-28">
        <div className="bg-white rounded-3xl shadow-[0px_8px_24px_rgba(0,0,0,0.1)] px-6 py-8 flex flex-col items-center gap-2">
           {user?.avatar_url ? (
-            <img
+            <SafeImage
               src={user.avatar_url}
               alt={user.name}
               className="w-24 h-24 rounded-full object-cover border-4 border-white shadow"

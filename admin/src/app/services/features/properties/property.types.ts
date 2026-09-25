@@ -64,6 +64,8 @@ export type Property = {
 
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  property_category?: "residential" | "commercial" | string | null;
   price?: number | null;
 
   address?: string | null;
@@ -101,6 +103,7 @@ export type Property = {
     id: string;
     name: string;
     slug?: string;
+    category?: string | null;
   } | null;
 
   has_briksy_exclusive_offer?: boolean;
@@ -169,6 +172,7 @@ export type PropertyFormValues = {
   location_verified_at?: string;
   property_type_id?: string;
   listing_purpose?: "SELL" | "RENT" | "BOTH";
+  transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED";
   price?: string | number | null;
 
   images?: (File | string)[];
@@ -185,6 +189,8 @@ export type PropertyList = {
 
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  property_category?: "residential" | "commercial" | string | null;
   price?: number | null;
 
   description?: string | null;
@@ -226,6 +232,7 @@ export type PropertyList = {
     id: string;
     name: string;
     slug?: string;
+    category?: string | null;
   } | null;
 
   has_briksy_exclusive_offer?: boolean;

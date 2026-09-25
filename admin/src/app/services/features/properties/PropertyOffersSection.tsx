@@ -20,7 +20,7 @@ const PropertyOffersSection = ({ data }: Props) => {
   const offers = data.briksy_exclusive_offers ?? [];
 
   if (offers.length === 0) {
-    return <div className="text-muted">No exclusive offers are currently active for this property.</div>;
+    return <div className="text-muted">No promotional offers are currently active for this property.</div>;
   }
 
   return (
@@ -30,7 +30,7 @@ const PropertyOffersSection = ({ data }: Props) => {
           <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
             <div>
               <div className="d-flex align-items-center gap-2 mb-2">
-                <span className="badge badge-light-primary">{offer.tag_label ?? "BRIKSY EXCLUSIVE"}</span>
+                {offer.tag_label ? <span className="badge badge-light-primary">{offer.tag_label}</span> : null}
                 <h4 className="mb-0 text-gray-900">{offer.title}</h4>
               </div>
               {offer.summary ? <div className="text-gray-700 fw-semibold">{offer.summary}</div> : null}

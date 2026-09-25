@@ -9,6 +9,7 @@ import {
   propertyToCard,
 } from "../../api/public.mappers";
 import { useResultSearchParams } from "./useResultSearchParams";
+import { serviceSlugForLabel } from "../../constants/serviceCategories";
 
 const isPropertyType = (resultType: ResultType) =>
   resultType === "property" || resultType === "comercial";
@@ -34,6 +35,11 @@ const purposeFor = (tab?: FilterTab | null) => {
   return undefined;
 };
 
+const transactionStatusFor = (tab?: FilterTab | null) =>
+  tab && ["Buy", "Lease", "Sold", "Leased"].includes(tab)
+    ? tab.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED"
+    : undefined;
+
 export function useListingData(
   resultType: ResultType,
   filter = "",
@@ -49,8 +55,10 @@ export function useListingData(
     if (isPropertyType(resultType)) {
       getProperties({
         verified_only: 1,
-        purpose: purposeFor(tab),
-        search: filter || (resultType === "comercial" ? "rent" : undefined),
+        category: resultType === "comercial" ? "commercial" : undefined,
+        purpose: resultType === "comercial" ? undefined : purposeFor(tab),
+        transaction_status: resultType === "comercial" ? transactionStatusFor(tab) : undefined,
+        search: filter || undefined,
         organization_slug: organizationSlug,
         ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),
       })
@@ -62,7 +70,9 @@ export function useListingData(
     getOrganizations({
       type: organizationTypeFor(resultType, tab),
       service_slug:
-        resultType === "trader" && filter ? slugify(filter) : undefined,
+        resultType === "trader"
+          ? serviceSlugForLabel(tab || "") || (filter ? slugify(filter) : undefined)
+          : undefined,
       verified_only: 1,
       ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),
     })

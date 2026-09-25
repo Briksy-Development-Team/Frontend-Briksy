@@ -3,6 +3,7 @@ import { MapPin, Star, ArrowRight } from "lucide-react";
 import type { Builder } from "../../../types/builder";
 import FavoriteButton from "../../custom/FavoriteButton";
 import Approves from "../../../assets/logo/apprrove.svg";
+import { SafeImage } from "../../custom/SafeImage";
 
 type Props = {
   item: Builder;
@@ -19,7 +20,7 @@ const BuilderGridCard = ({ item }: Props) => {
        transition-colors duration-200 overflow-hidden mx-auto text-primary-brown bg-white hover:border-primary"
     >
       <div className="relative h-[35%] shrink-0 bg-[#bed6d7] rounded-t-[20px] overflow-hidden">
-        <img
+        <SafeImage
           loading="lazy"
           src={item.bannerImage}
           alt={item.name}
@@ -36,7 +37,7 @@ const BuilderGridCard = ({ item }: Props) => {
       </div>
 
       <div className="relative -mt-9 flex w-fit flex-col items-center pl-8 shrink-0">
-        <img
+        <SafeImage
           loading="lazy"
           src={item.avatar}
           alt={item.name}

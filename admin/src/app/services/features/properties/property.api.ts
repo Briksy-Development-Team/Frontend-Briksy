@@ -16,6 +16,7 @@ const toFormData = (payload: PropertyFormValues) => {
   if (payload.organization_id) formData.append("organization_id", payload.organization_id);
   formData.append("status", payload.status);
   if (payload.listing_purpose) formData.append("listing_purpose", payload.listing_purpose);
+  if (payload.transaction_status) formData.append("transaction_status", payload.transaction_status);
   if (payload.price !== undefined && payload.price !== null && payload.price !== "") formData.append("price", String(payload.price));
 
   if (payload.description) {
@@ -97,6 +98,20 @@ const toFormData = (payload: PropertyFormValues) => {
 
 export const fetchPropertyFeaturesApi = async (): Promise<PropertyFeatureGroup[]> => {
   const res = await axiosInstance.get<ApiResponse<PropertyFeatureGroup[]>>(`${getBasePath().replace("/properties", "/property-features")}`);
+  return res.data.data ?? [];
+};
+
+export type PropertyTypeOption = {
+  id: string;
+  name: string;
+  slug?: string | null;
+  category?: string | null;
+};
+
+export const fetchPropertyTypesApi = async (): Promise<PropertyTypeOption[]> => {
+  const res = await axiosInstance.get<ApiResponse<PropertyTypeOption[]>>(
+    getBasePath().replace("/properties", "/property-types"),
+  );
   return res.data.data ?? [];
 };
 

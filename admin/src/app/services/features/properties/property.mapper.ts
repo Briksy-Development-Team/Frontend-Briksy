@@ -5,6 +5,8 @@ type PropertyApi = {
   title: string;
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
+  transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  property_category?: string | null;
   price?: number | null;
   description?: string | null;
   address?: string | null;
@@ -42,6 +44,7 @@ type PropertyApi = {
     id: string;
     name: string;
     slug?: string;
+    category?: string | null;
   } | null;
   has_briksy_exclusive_offer?: boolean;
   briksy_exclusive_offers?: {
@@ -102,6 +105,8 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   title: item.title ?? "",
   status: item.status,
   listing_purpose: item.listing_purpose ?? null,
+  transaction_status: item.transaction_status ?? null,
+  property_category: item.property_category ?? item.property_type?.category ?? null,
   price: item.price ?? null,
   description: item.description ?? null,
   rating: item.rating ?? undefined,
@@ -148,6 +153,8 @@ export const mapProperty = (item: PropertyApi): Property => ({
   title: item.title ?? "",
   status: item.status,
   listing_purpose: item.listing_purpose ?? null,
+  transaction_status: item.transaction_status ?? null,
+  property_category: item.property_category ?? item.property_type?.category ?? null,
   price: item.price ?? null,
   description: item.description ?? null,
   address: item.address ?? null,

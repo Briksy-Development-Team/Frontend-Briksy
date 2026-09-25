@@ -3,6 +3,7 @@ import { Heart } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
 import { storePendingFavoriteAction } from "../../auth/auth.intent";
 import { getSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
+import CollectionModal from "../collections/CollectionModal";
 
 type FavoriteButtonProps = {
   initialIsFavourite?: boolean;
@@ -20,6 +21,7 @@ export default function FavoriteButton({
 }: FavoriteButtonProps) {
   const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
   const [saving, setSaving] = useState(false);
+  const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function FavoriteButton({
   }, [initialIsFavourite, isAuthenticated, targetId, targetType]);
 
   return (
+    <>
     <button
       type="button"
       aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
@@ -59,6 +62,9 @@ export default function FavoriteButton({
         try {
           const response = await toggleSeekerFavorite(String(targetId), targetType);
           setIsFavourite(response.data.action === "added");
+          if (response.data.action === "added" && response.data.collection_selection_required) {
+            setCollectionPromptOpen(true);
+          }
         } catch (error) {
           console.error("Unable to update favourite.", error);
         } finally {
@@ -74,5 +80,13 @@ export default function FavoriteButton({
       />
       {showText && <span className="ml-2 font-medium">{isFavourite ? "Liked" : "Like"}</span>}
     </button>
+    {collectionPromptOpen && targetId && (
+      <CollectionModal
+        propertyId={String(targetId)}
+        targetType={targetType}
+        onClose={() => setCollectionPromptOpen(false)}
+      />
+    )}
+    </>
   );
 }

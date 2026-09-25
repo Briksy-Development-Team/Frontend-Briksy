@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
 import type { FilterMode } from "./filterConfig";
+import { SERVICE_CATEGORIES, serviceSlugForLabel } from "../../constants/serviceCategories";
 
 type FilterProps = {
   isOpen: boolean;
@@ -15,18 +16,21 @@ type FilterProps = {
 const ALL_TABS: { label: string; value: FilterMode }[] = [
   { label: "Buy", value: "Buy" },
   { label: "Rent", value: "Rent" },
+  { label: "Lease", value: "Lease" },
   { label: "Sold", value: "Sold" },
+  { label: "Leased", value: "Leased" },
   { label: "Builders", value: "Builders" },
   { label: "Organizations", value: "Agents" },
   { label: "Sole Traders", value: "Traders" },
+  ...SERVICE_CATEGORIES.map((category) => ({ label: category.label, value: category.label as FilterMode })),
 ];
 
 const TABS_BY_CATEGORY: Record<string, FilterMode[]> = {
   all: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
   properties: ["Buy", "Rent", "Sold"],
   builders: ["Builders", "Agents"],
-  professionals: ["Traders"],
-  commercial: ["Buy", "Rent"],
+  professionals: ["Traders", ...SERVICE_CATEGORIES.map((category) => category.label as FilterMode)],
+  commercial: ["Buy", "Lease", "Sold", "Leased"],
 };
 
 const getVisibleTabs = (category = "all") => {
@@ -114,8 +118,9 @@ const Filter = ({
     params.set("page", "1");
 
     const typeMap: Record<FilterMode, string> = {
-      Buy: "property", Rent: "property", Sold: "property",
+      Buy: "property", Rent: "property", Lease: "comercial", Sold: "property", Leased: "comercial",
       Builders: "builder", Agents: "builder", Traders: "trader",
+      Landscappers: "trader", Concreter: "trader", Fencing: "trader", "Mortgage Brokers": "trader", Conveyancers: "trader", "Building and Pest": "trader",
     };
     params.set("type", typeMap[activeTab]);
 
@@ -125,6 +130,12 @@ const Filter = ({
 
     if (activeTab === "Buy") params.set("purpose", "sell");
     if (activeTab === "Rent") params.set("purpose", "rent");
+    const serviceSlug = serviceSlugForLabel(activeTab);
+    if (serviceSlug) params.set("service_slug", serviceSlug);
+    if (category.toLowerCase() === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(activeTab)) {
+      params.set("type", "comercial");
+      params.set("transaction_status", activeTab.toUpperCase());
+    }
 
     Object.entries(currentValues).forEach(([key, value]) => {
       if (value === undefined || value === null || value === "") return;

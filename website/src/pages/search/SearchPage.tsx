@@ -8,6 +8,7 @@ import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 import FullListView from "./FullListView";
 import { useResultSearchParams } from "./useResultSearchParams";
+import { SERVICE_CATEGORIES, serviceSlugForLabel } from "../../constants/serviceCategories";
 
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
@@ -35,7 +36,8 @@ const SearchPage = () => {
     SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
 
   const rawTabParam = searchParams.get("tab");
-  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "sold" ? "Sold" : rawTabParam === "builders" ? "Builders" : rawTabParam === "agents" ? "Agents" : rawTabParam === "traders" ? "Traders" : null;
+  const professionalTab = SERVICE_CATEGORIES.find((category) => category.label.toLowerCase() === rawTabParam)?.label;
+  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "lease" ? "Lease" : rawTabParam === "sold" ? "Sold" : rawTabParam === "leased" ? "Leased" : rawTabParam === "builders" ? "Builders" : rawTabParam === "agents" ? "Agents" : rawTabParam === "traders" ? "Traders" : professionalTab || null;
   const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
 
   useEffect(() => {
@@ -64,19 +66,27 @@ const SearchPage = () => {
       next.delete("page");
       next.delete("intent");
       next.delete("purpose");
+      next.delete("transaction_status");
+      next.delete("service_slug");
       if (!tab) {
         next.delete("tab");
         next.delete("type");
         return;
       }
       next.set("tab", tab.toLowerCase());
-      if (tab === "Buy" || tab === "Rent" || tab === "Sold") {
-        next.set("type", "property");
+      if (["Buy", "Rent", "Lease", "Sold", "Leased"].includes(tab)) {
+        next.set("type", activeCategoryId === "commercial" ? "comercial" : "property");
+        if (activeCategoryId === "commercial") {
+          next.set("transaction_status", tab.toUpperCase());
+          return;
+        }
         if (tab === "Buy") next.set("purpose", "sell");
         if (tab === "Rent") next.set("purpose", "rent");
         return;
       }
-      next.set("type", tab === "Traders" ? "trader" : "builder");
+      const serviceSlug = serviceSlugForLabel(tab);
+      next.set("type", tab === "Traders" || serviceSlug ? "trader" : "builder");
+      if (serviceSlug) next.set("service_slug", serviceSlug);
     });
   };
 

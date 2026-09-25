@@ -14,6 +14,7 @@ export type PropertyTypeOption = {
   id: string;
   name: string;
   slug?: string | null;
+  category?: string | null;
 };
 
 export type PropertyImportRecord = ImportRecord;

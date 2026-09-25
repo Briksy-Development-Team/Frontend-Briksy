@@ -18,6 +18,8 @@ import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
+import MobileStickyAction from "../../../components/custom/MobileStickyAction";
+import FraudBanner from "../../../components/custom/FraudBanner";
 
 type HttpLikeError = Error & { response?: { status?: number } };
 
@@ -60,7 +62,7 @@ const BuilderDetail = () => {
         setProjects(projectsResponse);
         setPropertyCount(
           propertyResponse.meta?.pagination?.total ??
-            propertyResponse.data.length,
+          propertyResponse.data.length,
         );
       })
       .catch((reason: HttpLikeError) => {
@@ -122,7 +124,7 @@ const BuilderDetail = () => {
   };
 
   return (
-    <div className="min-h-screen md:mt-20 mt-0 font-helvetica flex flex-col">
+    <div className="min-h-screen md:mt-20 mt-0 font-helvetica flex flex-col pb-6 md:pb-0">
       <main className="flex-1 w-full md:px-[3%] md:py-6">
         <div className="  hidden sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb
@@ -177,6 +179,18 @@ const BuilderDetail = () => {
           </div>
         </div>
       </main>
+      <div className="mt-10  w-full flex items-center justify-center ">
+        <FraudBanner />
+      </div>
+      <MobileStickyAction
+        price="Contact"
+        onEnquiry={() => {
+          setEnquiryError(null);
+          setEnquirySuccess(null);
+          setIsEnquiryOpen(true);
+        }}
+      />
+
       <EnquiryModal
         open={isEnquiryOpen}
         companyName={builder.name}
@@ -189,7 +203,7 @@ const BuilderDetail = () => {
           setEnquirySubmitting(true);
           setEnquiryError(null);
           try {
-            await createInquiry({
+            const result = await createInquiry({
               organization_id: builder.id,
               lead_source: "builder_profile",
               subject: values.subject,
@@ -198,11 +212,13 @@ const BuilderDetail = () => {
               seeker_email: values.seeker_email,
               seeker_phone: values.seeker_phone || null,
             });
-            setEnquirySuccess("Your enquiry has been sent successfully.");
+            setEnquirySuccess(result.data?.email_delivery?.status !== "sent"
+              ? `${result.message} Our team can still view it.`
+              : "Your enquiry has been sent successfully.");
           } catch (reason: any) {
             setEnquiryError(
               reason?.response?.data?.message ||
-                "Unable to send enquiry. Please try again.",
+              "Unable to send enquiry. Please try again.",
             );
           } finally {
             setEnquirySubmitting(false);

@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Heart, LoaderCircle } from 'lucide-react'
 import type { Property } from '../../../types/property'
 import Mappin from '../../../assets/icons/location.svg'
+import { SafeImage } from '../../custom/SafeImage'
 import { useAuth } from '../../../auth/AuthContext'
 import { storePendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
+import CollectionModal from '../../collections/CollectionModal'
 
 type Props = {
   item: Property
@@ -16,6 +18,7 @@ const PropertyListCard = ({ item }: Props) => {
   const navigate = useNavigate();
   const [isFavourite, setIsFavourite] = useState(item.isFavourite);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
 
   const handleFavouriteClick = async () => {
     if (isProcessing) {
@@ -32,6 +35,9 @@ const PropertyListCard = ({ item }: Props) => {
       setIsProcessing(true)
       const result = await toggleSeekerFavorite(String(item.id), 'property')
       setIsFavourite(result.data.action === 'added')
+      if (result.data.action === 'added' && result.data.collection_selection_required) {
+        setCollectionPromptOpen(true)
+      }
     } catch (error) {
       console.error('Failed to toggle favourite.', error)
     } finally {
@@ -40,15 +46,18 @@ const PropertyListCard = ({ item }: Props) => {
   }
 
   return (
+    <>
     <Link to={`/property/${item.id}`} className="flex items-center gap-3 rounded-[1.25rem] border border-[#E7E7E4] bg-white px-2 py-2 font-helvetica lg:gap-4 hover:border hover:border-primary">
     <div className="relative w-[108px] aspect-4/5 shrink-0 overflow-hidden rounded-2xl">
-      <img loading="lazy"
+      <SafeImage loading="lazy"
         src={item.image}
         alt={item.title}
         className="h-full w-full object-cover"
       />
       <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {( { SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string> )[item.purpose || ""] || item.badge}
+        {item.propertyCategory === "commercial"
+          ? item.transactionStatus || (item.purpose === "RENT" ? "LEASE" : "BUY")
+          : ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[item.purpose || ""] || item.badge}
       </span>
       <button
         type="button"
@@ -94,7 +103,7 @@ const PropertyListCard = ({ item }: Props) => {
 
       <div className=" flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
-          <img loading="lazy"
+          <SafeImage loading="lazy"
             src={item.posterAvatar}
             alt={item.posterName}
             className="h-7 w-7 rounded-full object-cover"
@@ -107,6 +116,14 @@ const PropertyListCard = ({ item }: Props) => {
       </div>
     </div>
     </Link>
+    {collectionPromptOpen && (
+      <CollectionModal
+        propertyId={String(item.id)}
+        targetType="property"
+        onClose={() => setCollectionPromptOpen(false)}
+      />
+    )}
+    </>
   )
 }
 

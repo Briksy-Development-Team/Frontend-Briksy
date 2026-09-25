@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import axiosInstance from "../../services/api/axiosInstance";
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
@@ -16,6 +17,8 @@ import {
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 
 export default function BuilderProjectPage() {
+  const location = useLocation();
+  const reviewMode = location.pathname.startsWith("/super-admin/");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [savingProject, setSavingProject] = useState(false);
@@ -29,7 +32,7 @@ export default function BuilderProjectPage() {
     setError(null);
     try {
       const response = await axiosInstance.get<{ data: { data: BuilderProject[]; total?: number } }>(
-        "/admin/builder-projects",
+        reviewMode ? "/super-admin/builder-projects" : "/admin/builder-projects",
         { params }
       );
       const items = response.data.data.data ?? [];
@@ -38,7 +41,7 @@ export default function BuilderProjectPage() {
     } catch {
       setError("Builder projects could not be loaded.");
     }
-  }, []);
+  }, [reviewMode]);
 
   const { params, handleParamsChange } = useEntityTable(fetchProjects);
 
@@ -53,12 +56,30 @@ export default function BuilderProjectPage() {
     try {
       await axiosInstance.post("/admin/builder-projects", values);
       setShowProjectModal(false);
-      setNotice("Project added successfully.");
+      setNotice("Project submitted successfully. It will be published after Super Admin review.");
       await fetchProjects(params);
     } catch (reason: any) {
       setError(reason?.response?.data?.message ?? "Unable to add this project.");
     } finally {
       setSavingProject(false);
+    }
+  };
+
+  const reviewProject = async (id: string, action: "approve" | "reject") => {
+    const rejection_reason = action === "reject"
+      ? window.prompt("Reason for rejecting this project:") ?? ""
+      : undefined;
+    if (action === "reject" && !rejection_reason?.trim()) return;
+
+    setError(null);
+    try {
+      await axiosInstance.patch("/super-admin/builder-projects/" + id + "/" + action, rejection_reason
+        ? { rejection_reason }
+        : undefined);
+      setNotice(action === "approve" ? "Project approved and published." : "Project rejected.");
+      await fetchProjects(params);
+    } catch (reason: any) {
+      setError(reason?.response?.data?.message ?? "Unable to update this project.");
     }
   };
 
@@ -69,7 +90,7 @@ export default function BuilderProjectPage() {
     try {
       await createPropertyApi(values);
       setShowPropertyModal(false);
-      setNotice("Property added successfully. It will appear in your property listings after review.");
+      setNotice("Property submitted successfully. It will be published after Super Admin review.");
     } catch (reason: any) {
       setError(reason?.response?.data?.message ?? "Unable to add this property.");
     } finally {
@@ -80,8 +101,8 @@ export default function BuilderProjectPage() {
   return (
     <Content>
       <PageHeader
-        title="Builder Projects"
-        subtitle="Manage and view residential and commercial developments"
+        title={reviewMode ? "Builder Project Reviews" : "Builder Projects"}
+        subtitle={reviewMode ? "Review projects submitted by builders" : "Manage and view residential and commercial developments"}
       />
 
       <EntityList
@@ -91,10 +112,10 @@ export default function BuilderProjectPage() {
         onParamsChange={handleParamsChange}
         columns={builderProjectConfig.columns}
         filtersConfig={builderProjectConfig.filters}
-        enableRowClick
+        enableRowClick={!reviewMode}
         getRowLink={(row) => `/admin/builder-projects/${row.id}`}
         storageKey="builderProjectsColumns"
-        headerActions={[
+        headerActions={reviewMode ? [] : [
           {
             label: "Add Property",
             onClick: () => {
@@ -110,6 +131,20 @@ export default function BuilderProjectPage() {
             },
           },
         ]}
+        rowActions={reviewMode ? [
+          {
+            label: "Approve & Publish",
+            className: "text-success",
+            showIf: (row: BuilderProject) => row.status === "Pending Review",
+            onClick: (row: BuilderProject) => void reviewProject(row.id, "approve"),
+          },
+          {
+            label: "Reject",
+            className: "text-danger",
+            showIf: (row: BuilderProject) => row.status === "Pending Review",
+            onClick: (row: BuilderProject) => void reviewProject(row.id, "reject"),
+          },
+        ] : undefined}
       />
 
       {showProjectModal && (

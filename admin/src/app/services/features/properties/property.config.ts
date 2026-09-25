@@ -31,7 +31,10 @@ export const propertyListConfig = {
     {
       Header: "Purpose",
       accessor: "listing_purpose",
-      Cell: ({ value }: { value: any }) => value ? React.createElement("span", { className: "badge badge-light-primary" }, ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[value] ?? value) : "—",
+      Cell: ({ row, value }: { row: PropertyList; value: any }) => {
+        const label = row.property_category === "commercial" ? row.transaction_status : value ? ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[value] : null;
+        return label ? React.createElement("span", { className: "badge badge-light-primary" }, label) : "—";
+      },
     },
     {
       Header: "Organization",
@@ -76,6 +79,12 @@ export const propertyListConfig = {
       options: ["SELL", "RENT", "BOTH"],
     },
     {
+      key: "transaction_status",
+      label: "Commercial Status",
+      type: "select" as const,
+      options: ["BUY", "LEASE", "SOLD", "LEASED"],
+    },
+    {
       key: "suburb",
       label: "Suburb",
       type: "text" as const,
@@ -93,11 +102,6 @@ export const propertyListConfig = {
     {
       key: "verified_only",
       label: "Verified Only",
-      type: "boolean" as const,
-    },
-    {
-      key: "briksy_exclusive",
-      label: "Briksy Exclusive",
       type: "boolean" as const,
     },
   ],

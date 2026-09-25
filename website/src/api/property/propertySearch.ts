@@ -3,6 +3,7 @@ import type { SortType } from "../../types/search";
 
 export type PropertySearchParams = {
   purpose?: "sell" | "rent";
+  transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED";
   category?: "residential" | "commercial";
   search?: string;
   organization_slug?: string;
@@ -100,6 +101,7 @@ export const propertyQueryToParams = (
           query.get("intent") === "sell"
         ? "sell"
         : undefined,
+  transaction_status: (query.get("transaction_status")?.toUpperCase() as PropertySearchParams["transaction_status"]) || undefined,
   category:
     query.get("category") === "commercial"
       ? "commercial"

@@ -1,199 +1,252 @@
-import  { useRef } from "react";
-import gsap from "gsap";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import { useAuth } from '../../../auth/AuthContext';
+import FraudBanner from '../../../components/custom/FraudBanner';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-const sections = [
-    {
-        id: "acceptance",
-        number: "01",
-        title: "Acceptance of Terms",
-        content:
-            'By accessing or using the Brisky platform ("Platform"), you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the Platform. These terms apply to all users including seekers, agents, agencies, and builders.',
-    },
-    {
-        id: "platform",
-        number: "02",
-        title: "Platform Description",
-        content:
-            "Brisky is an ABN-anchored property marketplace connecting property seekers with verified agents, agencies, and builders across Australia. We provide search, verification, and connection services. We are not a party to any transaction between users.",
-    },
-    {
-        id: "registration",
-        number: "03",
-        title: "User Registration",
-        content:
-            "To access certain features, you must register an account. You agree to provide accurate information and to update it as necessary. Agencies and agents must complete ABN verification via the Australian Business Register before listing on the Platform.",
-    },
-    {
-        id: "plans",
-        number: "04",
-        title: "Subscription Plans",
-        content:
-            "Paid plans are billed monthly via Stripe. You may cancel at any time, with access continuing until the end of the billing period. Brisky reserves the right to change pricing with 30 days notice. Refunds are assessed on a case-by-case basis.",
-    },
-    {
-        id: "verification",
-        number: "05",
-        title: "Verification & Listings",
-        content:
-            "All listings and professional profiles must pass our multi-stage verification process before going live. Brisky reserves the right to reject, suspend, or remove any listing or profile that violates our guidelines or appears fraudulent.",
-    },
-    {
-        id: "conduct",
-        number: "06",
-        title: "Prohibited Conduct",
-        content:
-            "You agree not to misrepresent your identity or qualifications, submit false or misleading listings, attempt to circumvent our verification process, harass other users, or use the Platform for any unlawful purpose.",
-    },
-    {
-        id: "liability",
-        number: "07",
-        title: "Limitation of Liability",
-        content:
-            "To the maximum extent permitted by Australian law, Brisky is not liable for any indirect, incidental, or consequential damages arising from your use of the Platform. Our total liability shall not exceed the amount you paid us in the preceding 12 months.",
-    },
-    {
-        id: "law",
-        number: "08",
-        title: "Governing Law",
-        content:
-            "These Terms are governed by the laws of New South Wales, Australia. Any disputes shall be resolved in the courts of New South Wales. If any provision is found invalid, the remaining provisions continue in full force.",
-    },
+// ── Data — swap/add sections from here ───────────────────────────────────────
+const LAST_UPDATED = 'April 2026';
+
+const SECTIONS = [
+  {
+    id: 'about',
+    title: 'About BRIKSY',
+    body: 'BRIKSY is a digital platform designed to connect people involved in the property journey.',
+    bullets: [
+      'Buy — Discover and enquire about properties.',
+      'Build — Find builders, trades, and property professionals.',
+      'Connect — Connect with businesses, agents and independent professionals.',
+      'Sell — Promote properties and connect with potential buyers.',
+      'Find Professionals — Discover property-related services and specialists.',
+      'Commercial — Explore commercial property and related services.',
+      'Questions — Access property-related information and resources.',
+      'Blogs — Read educational and industry-related content.',
+    ],
+    footer:
+      'BRIKSY acts primarily as a platform that facilitates connections between users and property-related businesses or professionals.',
+  },
+  {
+    id: 'accounts',
+    title: 'User Accounts',
+    body: 'Certain BRIKSY features require you to create an account.',
+    bullets: [
+      'Provide accurate and up-to-date information about your properties.',
+      'Keep your login credentials secure and confidential.',
+      'Do not share your account with anyone else.',
+      'Update your personal information promptly when it changes.',
+      'Notify BRIKSY immediately if you suspect any unauthorised access to your account.',
+    ],
+    footer: 'You are responsible for activity carried out through your account.',
+  },
+  {
+    id: 'listings',
+    title: 'Listings & Content',
+    body: 'All content submitted to BRIKSY must be accurate, lawful, and not misleading.',
+    bullets: [
+      'Listings must reflect genuine properties or services.',
+      'Images and descriptions must be owned or licensed by you.',
+      'BRIKSY reserves the right to remove any content that violates our guidelines.',
+      'Fraudulent or misleading listings may result in account suspension.',
+    ],
+    footer: null,
+  },
+  {
+    id: 'subscriptions',
+    title: 'Subscriptions & Payments',
+    body: 'Paid plans are billed monthly. You may cancel at any time with access continuing until the end of the billing period.',
+    bullets: [
+      'BRIKSY reserves the right to change pricing with 30 days notice.',
+      'Refunds are assessed on a case-by-case basis.',
+      'Downgrading may remove access to certain features immediately.',
+    ],
+    footer: null,
+  },
+  {
+    id: 'liability',
+    title: 'Limitation of Liability',
+    body: 'To the maximum extent permitted by Australian law, BRIKSY is not liable for any indirect, incidental, or consequential damages arising from your use of the platform.',
+    bullets: [
+      'Our total liability shall not exceed amounts paid in the preceding 12 months.',
+      'We do not guarantee the accuracy of third-party listings.',
+      'BRIKSY is not a party to any transaction between users.',
+    ],
+    footer: null,
+  },
+  {
+    id: 'law',
+    title: 'Governing Law',
+    body: 'These Terms are governed by the laws of New South Wales, Australia.',
+    bullets: [
+      'Disputes shall be resolved in the courts of New South Wales.',
+      'If any provision is found invalid, the remaining provisions continue in full force.',
+    ],
+    footer: null,
+  },
 ];
 
+const LEGAL_LINKS = [
+  {
+    category: 'Legal terms',
+    title: 'Privacy Policy',
+    description: 'Please review our Privacy Policy.',
+  },
+  {
+    category: 'Legal terms',
+    title: 'Outside the United States Privacy Supplement',
+    description: 'Please review this information which supplements our Privacy Policy.',
+  },
+  {
+    category: 'Community policy',
+    title: 'Protecting your privacy',
+    description:
+      "BRIKSY's commitment to protecting your privacy applies both when you use BRIKSY online and when you engage with professionals. Find out more about our privacy policies and principles.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const Terms = () => {
-    const container = useRef<HTMLDivElement>(null);
+  const container = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-    const scrollToSection = (id: string) => {
-        gsap.to(window, {
-            duration: 1.2,
-            scrollTo: `#${id}`,
-            ease: "power3.inOut",
+  useGSAP(
+    () => {
+      const els = gsap.utils.toArray<Element>('.term-section');
+      els.forEach((section) => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top center',
+          onEnter: () => highlight(section.getAttribute('id') ?? ''),
+          onEnterBack: () => highlight(section.getAttribute('id') ?? ''),
         });
-    };
+      });
 
-    useGSAP(
-        () => {
-            const sectionsEl = gsap.utils.toArray(".term-section");
+      function highlight(id: string) {
+        gsap.to('.nav-item', { opacity: 0.4, duration: 0.25 });
+        gsap.to(`.nav-${id}`, { opacity: 1, duration: 0.25 });
+      }
+    },
+    { scope: container },
+  );
 
-            sectionsEl.forEach((section: any) => {
-                ScrollTrigger.create({
-                    trigger: section,
-                    start: "top center",
+  return (
+    <main ref={container} className="min-h-screen md:mt-20 font-helvetica  text-primary-brown">
 
-                    onEnter: () => {
-                        gsap.to(".nav-item", {
-                            opacity: 0.4,
-                            duration: 0.3,
-                        });
+      {/* ── Last updated bar ── */}
+      <div className="px-[3%] py-3 border-b border-white-100">
+        <p className="text-[0.75rem] text-primary-light-brown">
+          Last Updated: {LAST_UPDATED}
+        </p>
+      </div>
 
-                        const id = section.getAttribute("id");
+      {/* ── Body: left content + right sidebar ── */}
+      <div className="flex gap-12 px-[5%] pt-8 pb-20">
 
-                        gsap.to(`.nav-${id}`, {
-                            opacity: 1,
-                            duration: 0.3,
-                        });
-                    },
+        {/* ── Main content ── */}
+        <div className="flex-1 min-w-0">
 
-                    onEnterBack: () => {
-                        gsap.to(".nav-item", {
-                            opacity: 0.4,
-                            duration: 0.3,
-                        });
+          {/* Title */}
+          <h1 className="text-[1.75rem] md:text-[2.25rem] font-medium leading-tight mb-6">
+            BRIKSY — Terms & Conditions
+          </h1>
 
-                        const id = section.getAttribute("id");
+          {/* Intro */}
+          <p className="text-[0.9rem] text-primary-light-brown leading-relaxed mb-2">
+            Welcome to BRIKSY. These Terms & Conditions govern your access to and use of the BRIKSY website, application, marketplace, and related services.
+          </p>
+          <p className="text-[0.9rem] text-primary-light-brown leading-relaxed mb-8">
+            By accessing or using BRIKSY, you agree to these Terms. If you do not agree with these Terms, please do not use the platform.
+          </p>
 
-                        gsap.to(`.nav-${id}`, {
-                            opacity: 1,
-                            duration: 0.3,
-                        });
-                    },
-                });
-            });
-        },
-        { scope: container },
-    );
+          {/* Sections */}
+          {SECTIONS.map((section, i) => (
+            <div
+              key={section.id}
+              id={section.id}
+              className="term-section border-b border-white-100 py-8"
+            >
+              <h2 className="text-[1.125rem] font-semibold mb-3">{`${i + 1}. ${section.title}`}</h2>
 
-    return (
-        <section
-            ref={container}
-            className="w-full  font-helvetica pt-48  py-[4rem]"
-        >
-            
-            <div className="flex justify-between  px-[4%]  pb-[2rem]">
-                <h1 className="text-8xl font-inter  leading-[6rem] text-[#24391F]">
-                    <span className="flex"> <p>TERMS</p> <p className="font-instrument ">&</p></span>
+              {section.body && (
+                <p className="text-[0.9rem] text-primary-light-brown leading-relaxed mb-3">{section.body}</p>
+              )}
 
-                    <p>CONDITIONS</p>
-                </h1>
-
-                <p className="w-[30%] text-[#777] leading-[1.7rem]">
-                    These terms govern your use of the Brisky platform. Please read them
-                    carefully before registering.{" "}
+              {section.bullets && (
+                <p className="text-[0.9rem] font-medium text-primary-brown mb-2">
+                  {section.id === 'about'
+                    ? 'Depending on your needs, BRIKSY allows you to:'
+                    : section.id === 'accounts'
+                    ? 'When creating an account, you agree to:'
+                    : null}
                 </p>
+              )}
+
+              {section.bullets && (
+                <ul className="space-y-1.5 mb-3">
+                  {section.bullets.map((b, bi) => (
+                    <li key={bi} className="flex items-start gap-2 text-[0.875rem] text-primary-light-brown">
+                      <span className="mt-1.5 w-1 h-1 rounded-full bg-primary-light-brown shrink-0" />
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {section.footer && (
+                <p className="text-[0.875rem] text-primary-light-brown leading-relaxed">{section.footer}</p>
+              )}
             </div>
-            <div className="py-8 bg-[#F5F4EE]">
-                <p className="text-[0.9rem] px-[4%] text-[#8A8A84] tracking-[0.01rem]">
-                    Last updated: April 2026
-                    <span className="mx-[0.8rem]">·</span>
-                    Effective: April 2026
-                    <span className="mx-[0.8rem]">·</span>
-                    Version 1.0
-                </p>
-            </div>
-            <div className="flex gap-[5rem]  px-[4%] pt-[4rem]">
-                <div className="w-[22%] sticky top-[8rem] py-10 h-fit border-r-[1px] border-r-[#E5E3D8]">
-                    <div className="flex flex-col gap-6">
-                        {sections.map((item) => (
-                            <button
-                                key={item.id}
-                                onClick={() => scrollToSection(item.id)}
-                                className={` nav-item nav-${item.id} text-left font-medium space-x-2 bg-transparent 
-                                    transition-all duration-300 opacity-40 flex hover:bg-[#E8E8E1]
-                `}
-                            >
-                                <span className="text-[#2C3F24] text-xl block">
-                                    {item.number}
-                                </span>
+          ))}
 
-                                <span className="text-[#2C3F24] text-xl">{item.title}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+          {/* ── Legal links ── */}
+          <div className="mt-8 space-y-0">
+            {LEGAL_LINKS.map((link, i) => (
+              <div key={i} className="py-5 border-b border-white-100">
+                <p className="text-[0.7rem] text-primary-light-brown uppercase tracking-wider mb-1">{link.category}</p>
+                <button type="button" className="text-[0.9375rem] font-medium text-primary-brown hover:underline text-left">
+                  {link.title}
+                </button>
+                <p className="mt-1 text-[0.8125rem] text-primary-light-brown leading-relaxed">{link.description}</p>
+              </div>
+            ))}
+          </div>
 
-                
-                <div className="w-[78%] ">
-                    {sections.map((item) => (
-                        <div
-                            key={item.id}
-                            id={item.id}
-                            className=" term-section border-b pt-10 pb-20  font-medium border-[#e4e4dd]
-              "
-                        >
-                            <div className="flex flex-col ">
-                                <span className="text-[1.5rem]    flex ">
-                                    <p className="mr-2">{item.number}</p>
-                                    <h2 className="text-[1.6rem] ">{item.title}</h2>
-                                </span>
+          {/* ── Fraud banner ── */}
+          <div className="mt-10  w-full flex items-center justify-center ">
+            <FraudBanner />
+          </div>
+        </div>
 
-                                <div>
+        {/* ── Sidebar ── */}
+        <aside className="hidden lg:block w-[280px] shrink-0">
 
-                                    <p className="mt-4 text-xl text-[#666] leading-[2rem]">
-                                        {item.content}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+          {/* Help card */}
+          <div className="sticky top-[6rem] border border-white-100 rounded-xl p-4 bg-white shadow-sm mb-6">
+            <p className="text-[0.9rem] font-medium text-primary-brown mb-0.5">
+              Get help with your reservations, account, and more.
+            </p>
+            {!isAuthenticated && (
+              <button
+                type="button"
+                onClick={() => navigate('/login')}
+                className="mt-3 w-full bg-primary-brown text-white rounded-xl py-2.5 text-[0.875rem] font-medium hover:opacity-90 transition"
+              >
+                Login or Sign up
+              </button>
+            )}
+          </div>
+
+
+        </aside>
+      </div>
+    </main>
+  );
 };
 
 export default Terms;

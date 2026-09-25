@@ -51,10 +51,13 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
         password: "",
       });
 
-      const payload = { email: email.trim(), password };
-      const response = await login(payload);
+      const response = await login({
+        email: email.trim(),
+        password,
+      });
+
       if (response.abilities.includes('seeker')) {
-        navigate("/profile", { replace: true });
+        navigate("/", { replace: true });
       } else {
         window.localStorage.setItem('kt-auth-react-v', JSON.stringify({
           api_token: response.token,

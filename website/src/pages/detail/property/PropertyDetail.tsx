@@ -5,7 +5,7 @@ import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, Pro
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { ShieldCheck, Share, ChevronLeft } from "lucide-react";
+import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -17,6 +17,9 @@ import TraderGridCard from '../../../components/cards/trader/TraderGridCard';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules"
+import MobileStickyAction from "../../../components/custom/MobileStickyAction";
+import FraudBanner from "../../../components/custom/FraudBanner";
+import CollectionModal from "../../../components/collections/CollectionModal";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +30,7 @@ const PropertyDetail = () => {
   const [enquirySubmitting, setEnquirySubmitting] = useState(false);
   const [enquiryError, setEnquiryError] = useState<string | null>(null);
   const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
+  const [collectionOpen, setCollectionOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -55,7 +59,7 @@ const PropertyDetail = () => {
       let formattedMedia = media
         .filter((item, index, all) => item.url && all.findIndex((candidate) => candidate.id ? candidate.id === item.id : candidate.url === item.url) === index)
         .map((item) => ({ id: item.id, src: item.url ?? undefined, type: item.type, videoSrc: item.type === 'video' ? item.url ?? undefined : undefined }));
-      
+
       return formattedMedia;
     })(),
     agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: propertyData.organization?.logo_url || "" },
@@ -98,7 +102,7 @@ const PropertyDetail = () => {
     setEnquirySuccess(null);
 
     try {
-      await createInquiry({
+      const result = await createInquiry({
         organization_id: propertyData.organization.id,
         property_listing_id: propertyData.id,
         lead_source: "property_listing",
@@ -108,7 +112,9 @@ const PropertyDetail = () => {
         seeker_email: values.seeker_email,
         seeker_phone: values.seeker_phone || null,
       });
-      setEnquirySuccess("Your enquiry has been sent successfully.");
+      setEnquirySuccess(result.data?.email_delivery?.status !== "sent"
+        ? `${result.message} Our team can still view it.`
+        : "Your enquiry has been sent successfully.");
     } catch (reason: any) {
       setEnquiryError(reason?.response?.data?.message || "Unable to send enquiry. Please try again.");
     } finally {
@@ -130,7 +136,7 @@ const PropertyDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen md:mt-20 font-helvetica flex flex-col ">
+    <div className="min-h-screen md:mt-20 font-helvetica flex pb-6 md:pb-0 flex-col ">
       <main className="flex-1 w-full  px-[5%] pb-6 md:pb-0  md:py-6">
 
         {/* Desktop Header */}
@@ -150,19 +156,21 @@ const PropertyDetail = () => {
               targetType="property"
               initialIsFavourite={Boolean(propertyData.is_favourite)}
             />
+            <button type="button" onClick={() => setCollectionOpen(true)} className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown"><FolderPlus size={18} /> Add to Collection</button>
           </div>
         </div>
+        {collectionOpen && <CollectionModal propertyId={property.id} onClose={() => setCollectionOpen(false)} />}
 
         <div className="mb-10 w-full relative">
           {/* Mobile Overlay Header */}
           <div className="md:hidden absolute top-4 left-0  right-0 z-10 flex justify-between items-center pointer-events-none">
-            <button 
-              onClick={() => window.history.back()} 
+            <button
+              onClick={() => window.history.back()}
               className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown pointer-events-auto hover:bg-gray-50"
             >
               <ChevronLeft size={20} />
             </button>
-            
+
             <div className="flex items-center gap-3 pointer-events-auto">
               <button className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown hover:bg-gray-50">
                 <Share size={18} />
@@ -185,8 +193,8 @@ const PropertyDetail = () => {
         <div className="flex flex-col lg:flex-row gap-10 items-start relative">
           <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
 
-            <PropertyTitle 
-              title={property.title} 
+            <PropertyTitle
+              title={property.title}
               beds={propertyData.bedroom_option}
               baths={propertyData.bathroom_option}
               car={propertyData.car_space_option}
@@ -196,6 +204,11 @@ const PropertyDetail = () => {
               reviewsCount={property.company.reviews}
               organizationName={property.company.name}
             />
+            {propertyData.property_category === "commercial" && propertyData.transaction_status ? (
+              <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
+                {propertyData.transaction_status}
+              </span>
+            ) : null}
             <PropertyAgentCard agent={property.agent} />
 
             <div className="flex flex-col gap-12 pb-8">
@@ -251,12 +264,6 @@ const PropertyDetail = () => {
                 </Swiper>
               </div>
 
-              <div className="w-full flex justify-center py-4">
-                <div className="bg-white border border-[#EBE5D9] rounded-xl py-4 px-6 flex items-center gap-3 w-full max-w-[800px] shadow-sm">
-                  <ShieldCheck className="text-[#B98A44]" size={24} />
-                  <span className="text-[0.875rem] text-primary-brown">To protect yourself from fraud, only use the contact details provided and verified by BRIKSY.</span>
-                </div>
-              </div>
 
               <div id="reviews">
                 <Reviews data={property.reviews} name={property.agent.name} />
@@ -269,6 +276,15 @@ const PropertyDetail = () => {
           </aside>
         </div>
       </main>
+      <div className="mt-10  w-full flex items-center justify-center ">
+        <FraudBanner />
+      </div>
+      <MobileStickyAction
+        price={property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
+        priceLabel={property.sidebar.price ? "fixed price" : undefined}
+        onEnquiry={() => setIsEnquiryOpen(true)}
+      />
+
       <EnquiryModal
         open={isEnquiryOpen}
         companyName={propertyData.organization?.name || undefined}

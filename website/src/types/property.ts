@@ -13,6 +13,8 @@ export interface Property {
   posterAvatar: string;
   badge: string;
   purpose?: "SELL" | "RENT" | "BOTH" | null;
+  transactionStatus?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  propertyCategory?: string | null;
   propertyType?: string | null;
   lat: number;
   lng: number;

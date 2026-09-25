@@ -3,8 +3,9 @@ import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 import type { Property, PropertyFormValues, PropertyImage, PropertyVideo } from "../property.types";
 import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
 import { LocationMapPreview } from "../../maps/LocationMapPreview";
-import { useRoleAccess } from "../../../../modules/auth";
-import { deletePropertyMediaApi, fetchPropertyFeaturesApi } from "../property.api";
+import { useAuth, useRoleAccess } from "../../../../modules/auth";
+import { mediaAllowance } from "../../../../modules/subscription/mediaEntitlements";
+import { deletePropertyMediaApi, fetchPropertyFeaturesApi, fetchPropertyTypesApi, type PropertyTypeOption } from "../property.api";
 import { fetchOrganizationApi, fetchOrganizationByIdApi } from "../../organization/organization.api";
 import { mapOrganization } from "../../organization/organization.mapper";
 import type { Organization } from "../../organization/organization.types";
@@ -26,11 +27,17 @@ const PropertyModal = ({
     const MAX_VIDEO_SIZE = 1024 * 1024 * 1024;
     const ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/webm"]);
     const { isSuperAdmin } = useRoleAccess();
+    const { entitlements } = useAuth();
+    const allowance = mediaAllowance(entitlements);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [organizationSearch, setOrganizationSearch] = useState("");
     const [organizationsLoading, setOrganizationsLoading] = useState(false);
     const [organizationsError, setOrganizationsError] = useState<string | null>(null);
     const [featureGroups, setFeatureGroups] = useState<PropertyFeatureGroup[]>([]);
+    const [propertyTypes, setPropertyTypes] = useState<PropertyTypeOption[]>([]);
+    const [propertyCategory, setPropertyCategory] = useState<"residential" | "commercial">(
+        (initialValues?.property_category ?? initialValues?.property_type?.category) === "commercial" ? "commercial" : "residential",
+    );
     const [featuresLoading, setFeaturesLoading] = useState(true);
     const [form, setForm] = useState<PropertyFormValues>({
         title: initialValues?.title ?? "",
@@ -38,6 +45,7 @@ const PropertyModal = ({
         description: initialValues?.description ?? "",
         status: initialValues?.status ?? "Draft",
         listing_purpose: initialValues?.listing_purpose ?? "SELL",
+        transaction_status: initialValues?.transaction_status ?? undefined,
         price: initialValues?.price ?? "",
         address: initialValues?.address ?? "",
         address_line_1: initialValues?.address_line_1 ?? initialValues?.address ?? "",
@@ -76,9 +84,23 @@ const PropertyModal = ({
             setVideos([]);
             return;
         }
+        const nextImages = files.filter((file) => file.type.startsWith("image/"));
+        const nextVideos = files.filter((file) => file.type.startsWith("video/"));
+        if (allowance.imagesConfigured && allowance.images !== null && existingImages.length + nextImages.length > allowance.images) {
+            setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.images} images. Remove an image or upgrade your plan.`);
+            return;
+        }
+        if (nextVideos.length > 0 && !allowance.videoIncluded) {
+            setMediaError("Video uploads are not included in your current plan.");
+            return;
+        }
+        if (allowance.videosConfigured && allowance.videos !== null && existingVideos.length + nextVideos.length > allowance.videos) {
+            setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.videos} videos. Remove a video or upgrade your plan.`);
+            return;
+        }
         setMediaError(null);
-        setImages(files.filter((file) => file.type.startsWith("image/")));
-        setVideos(files.filter((file) => file.type.startsWith("video/")));
+        setImages(nextImages);
+        setVideos(nextVideos);
     };
 
     useEffect(() => {
@@ -92,6 +114,14 @@ const PropertyModal = ({
     }, []);
 
     useEffect(() => {
+        let active = true;
+        void fetchPropertyTypesApi()
+            .then((types) => { if (active) setPropertyTypes(types); })
+            .catch(() => { if (active) setPropertyTypes([]); });
+        return () => { active = false; };
+    }, []);
+
+    useEffect(() => {
         if (!initialValues) {
             setForm({
                 title: "",
@@ -99,6 +129,7 @@ const PropertyModal = ({
                 description: "",
                 status: "Draft",
                 listing_purpose: "SELL",
+                transaction_status: undefined,
                 price: "",
                 address: "",
                 address_line_1: "",
@@ -122,6 +153,7 @@ const PropertyModal = ({
             setVideos([]);
             setExistingImages([]);
             setExistingVideos([]);
+            setPropertyCategory("residential");
             return;
         }
 
@@ -131,6 +163,7 @@ const PropertyModal = ({
             description: initialValues.description ?? "",
             status: initialValues.status ?? "Draft",
             listing_purpose: initialValues.listing_purpose ?? "SELL",
+            transaction_status: initialValues.transaction_status ?? undefined,
             price: initialValues.price ?? "",
             address: initialValues.address ?? "",
             address_line_1: initialValues.address_line_1 ?? initialValues.address ?? "",
@@ -154,6 +187,9 @@ const PropertyModal = ({
         setVideos([]);
         setExistingImages(initialValues.images ?? []);
         setExistingVideos(initialValues.videos ?? []);
+        setPropertyCategory(
+            (initialValues.property_category ?? initialValues.property_type?.category) === "commercial" ? "commercial" : "residential",
+        );
     }, [initialValues]);
 
     useEffect(() => {
@@ -219,6 +255,10 @@ const PropertyModal = ({
         onSubmit({
             ...form,
             country: form.country || "Australia",
+            listing_purpose: propertyCategory === "commercial"
+                ? (["LEASE", "LEASED"].includes(form.transaction_status ?? "") ? "RENT" : "SELL")
+                : form.listing_purpose,
+            transaction_status: propertyCategory === "commercial" ? form.transaction_status : undefined,
             status: isSuperAdmin ? form.status : "Pending Review",
             // Location verification is controlled by the dedicated review
             // endpoint and is intentionally not part of CRUD payloads.
@@ -299,7 +339,13 @@ const PropertyModal = ({
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             submitLabel={initialValues ? "Update Property" : "Create Property"}
-            isValid={!!form.title && (!isSuperAdmin || !!form.organization_id)}
+            isValid={
+                !!form.title
+                && !!form.property_type_id
+                && !!propertyCategory
+                && (propertyCategory !== "commercial" || !!form.transaction_status)
+                && (!isSuperAdmin || !!form.organization_id)
+            }
         >
             <div className="fv-row mb-7">
                 {isSuperAdmin ? (
@@ -329,6 +375,37 @@ const PropertyModal = ({
                         {!organizationsLoading && !organizationsError && organizations.length === 0 ? <div className="text-muted mt-2">No organizations found.</div> : null}
                     </>
                 ) : null}
+            </div>
+            <div className="fv-row mb-7">
+                <label className="required form-label">Property Type</label>
+                <div className="d-flex gap-3 mb-3">
+                    {(["residential", "commercial"] as const).map((category) => (
+                        <button
+                            type="button"
+                            key={category}
+                            className={"btn " + (propertyCategory === category ? "btn-primary" : "btn-light") + " text-capitalize"}
+                            onClick={() => {
+                                if (initialValues && category !== propertyCategory && !window.confirm("Changing property category may require selecting a new property type. Continue?")) return;
+                                setPropertyCategory(category);
+                                setForm((prev) => ({ ...prev, property_type_id: "", transaction_status: undefined }));
+                            }}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+                <select
+                    className="form-select form-select-solid"
+                    value={form.property_type_id ?? ""}
+                    onChange={(e) => setForm((prev) => ({ ...prev, property_type_id: e.target.value }))}
+                    required
+                >
+                    <option value="">Select {propertyCategory} property type</option>
+                    {propertyTypes
+                        .filter((type) => (type.category ?? "residential") === propertyCategory)
+                        .map((type) => <option value={type.id} key={type.id}>{type.name}</option>)}
+                </select>
+                {propertyTypes.length === 0 ? <div className="text-muted fs-7 mt-2">Property types are loading or unavailable.</div> : null}
             </div>
             <div className="fv-row mb-7">
                 <label className="required form-label">Property Name</label>
@@ -363,13 +440,24 @@ const PropertyModal = ({
 
             <div className="row">
                 <div className="col-md-6 fv-row mb-7">
-                    <label className="form-label">Listing Purpose</label>
-                    <select className="form-select form-select-solid" value={form.listing_purpose ?? "SELL"}
-                        onChange={(e) => setForm((prev) => ({ ...prev, listing_purpose: e.target.value as PropertyFormValues["listing_purpose"] }))}>
-                        <option value="SELL">Sell</option>
-                        <option value="RENT">Rent</option>
-                        <option value="BOTH">Both</option>
-                    </select>
+                    <label className="required form-label">{propertyCategory === "commercial" ? "Transaction / Listing Status" : "Listing Purpose"}</label>
+                    {propertyCategory === "commercial" ? (
+                        <select className="form-select form-select-solid" value={form.transaction_status ?? ""}
+                            onChange={(e) => setForm((prev) => ({ ...prev, transaction_status: e.target.value as PropertyFormValues["transaction_status"] }))}>
+                            <option value="">Select status</option>
+                            <option value="BUY">BUY</option>
+                            <option value="LEASE">LEASE</option>
+                            <option value="SOLD">SOLD</option>
+                            <option value="LEASED">LEASED</option>
+                        </select>
+                    ) : (
+                        <select className="form-select form-select-solid" value={form.listing_purpose ?? "SELL"}
+                            onChange={(e) => setForm((prev) => ({ ...prev, listing_purpose: e.target.value as PropertyFormValues["listing_purpose"] }))}>
+                            <option value="SELL">Sell</option>
+                            <option value="RENT">Rent</option>
+                            <option value="BOTH">Both</option>
+                        </select>
+                    )}
                 </div>
                 <div className="col-md-6 fv-row mb-7">
                     <label className="form-label">Price</label>
@@ -635,23 +723,6 @@ const PropertyModal = ({
             <div className="row">
                 <div className="col-md-6">
                     <div className="fv-row mb-7">
-                        <label className="form-label">Property Type ID</label>
-
-                        <input
-                            className="form-control form-control-solid"
-                            value={form.property_type_id}
-                            onChange={(e) =>
-                                setForm((prev) => ({
-                                    ...prev,
-                                    property_type_id: e.target.value,
-                                }))
-                            }
-                        />
-                    </div>
-                </div>
-
-                <div className="col-md-6">
-                    <div className="fv-row mb-7">
                         <label className="form-label">Location Verified</label>
 
                         {isSuperAdmin ? (
@@ -720,6 +791,8 @@ const PropertyModal = ({
             {/* Upload Images */}
             <div className="fv-row mb-7">
                 <label className="form-label">Property Media</label>
+
+                <div className="alert alert-light-info py-2 fs-7">Plan media allowance<br />• {allowance.imagesConfigured ? `Up to ${allowance.images ?? 0} images` : "Image limit is not configured"}<br />• {allowance.videosConfigured ? `Up to ${allowance.videos ?? 0} videos` : "Video limit is not configured"}<br />• Only media within your current plan allowance will be displayed publicly.</div>
 
                 <div className="border border-dashed border-gray-300 rounded p-5">
                     <input

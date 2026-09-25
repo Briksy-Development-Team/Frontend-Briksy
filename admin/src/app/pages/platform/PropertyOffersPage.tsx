@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import { Route, Routes } from "react-router-dom";
 import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
+import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
+import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
+import { offersConfig } from "../../services/features/offers/offers.config";
 import type { PropertyList, PropertyOffer } from "../../services/features/properties/property.types";
 import { fetchPropertyListApi } from "../../services/features/properties/property.api";
 import {
@@ -10,6 +16,7 @@ import {
   savePropertyOfferApi,
   togglePropertyOfferApi,
 } from "../../services/features/offers/offers.api";
+import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 
 type OfferForm = Partial<PropertyOffer> & {
   highlights_text?: string;
@@ -17,7 +24,7 @@ type OfferForm = Partial<PropertyOffer> & {
 
 const emptyOffer: OfferForm = {
   title: "",
-  tag_label: "BRIKSY EXCLUSIVE",
+  tag_label: "",
   summary: "",
   description: "",
   highlights_text: "",
@@ -26,7 +33,74 @@ const emptyOffer: OfferForm = {
   sort_order: 0,
 };
 
-const FIXED_TAG_LABEL = "BRIKSY EXCLUSIVE";
+function PropertyOffersList({
+  items,
+  loading,
+  error,
+  rowActions,
+  onNewOffer,
+}: {
+  items: PropertyOffer[];
+  loading: boolean;
+  error: string | null;
+  rowActions: any[];
+  onNewOffer: () => void;
+}) {
+  const { isSuperAdmin } = useRoleAccess();
+  const portalBase = getRolePortalBaseRoute(
+    isSuperAdmin ? ["super_admin"] : ["admin"]
+  );
+
+  const { params, handleParamsChange } = useEntityTable(() => undefined);
+
+  const filteredItems = useMemo(() => {
+    let result = [...items];
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      result = result.filter(
+        (item) =>
+          item.title?.toLowerCase().includes(q) ||
+          item.property_listing?.title?.toLowerCase().includes(q) ||
+          item.tag_label?.toLowerCase().includes(q)
+      );
+    }
+    if (params.filters?.is_active) {
+      const isActiveBool = params.filters.is_active === "1";
+      result = result.filter((item) => item.is_active === isActiveBool);
+    }
+    return result;
+  }, [items, params.search, params.filters]);
+
+  return (
+    <Content>
+      <PageHeader
+        title="Property Offers"
+        subtitle="Create promotional offers for listings"
+      />
+      {loading ? <div className="text-muted mb-4">Loading offers...</div> : null}
+      {error ? <div className="alert alert-danger mb-5">{error}</div> : null}
+
+      <EntityList
+        data={filteredItems}
+        total={filteredItems.length}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={offersConfig.columns}
+        filtersConfig={offersConfig.filters}
+        getRowLink={(row) => `${portalBase}/property-offers/${row.id}`}
+        enableRowClick
+        storageKey="propertyOfferColumns"
+        headerActions={[
+          {
+            label: "New Offer",
+            onClick: onNewOffer,
+          },
+        ]}
+        rowActions={rowActions}
+      />
+    </Content>
+  );
+}
 
 export default function PropertyOffersPage() {
   const [items, setItems] = useState<PropertyOffer[]>([]);
@@ -35,6 +109,8 @@ export default function PropertyOffersPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<OfferForm | null>(null);
+  const [deletingOffer, setDeletingOffer] = useState<PropertyOffer | null>(null);
+  const [savedOffer, setSavedOffer] = useState<PropertyOffer | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -59,11 +135,12 @@ export default function PropertyOffersPage() {
   }, []);
 
   const propertyOptions = useMemo(
-    () => properties.map((property) => ({
-      id: property.id,
-      label: `${property.display_id ?? property.generated_id ?? property.id} - ${property.title}`,
-    })),
-    [properties],
+    () =>
+      properties.map((property) => ({
+        id: property.id,
+        label: `${property.display_id ?? property.generated_id ?? property.id} - ${property.title}`,
+      })),
+    [properties]
   );
 
   const submit = async () => {
@@ -73,20 +150,28 @@ export default function PropertyOffersPage() {
 
     setSaving(true);
     try {
-      await savePropertyOfferApi(
+      const res = await savePropertyOfferApi(
         {
           ...editing,
           property_listing_id: editing.property_listing_id,
           title: editing.title,
-          tag_label: FIXED_TAG_LABEL,
+          tag_label: editing.tag_label?.trim() || null,
           highlights: editing.highlights_text
             ? editing.highlights_text.split("\n").map((line) => line.trim()).filter(Boolean)
             : editing.highlights ?? [],
         },
-        editing.id,
+        editing.id
       );
+      if (res) {
+        setSavedOffer(res);
+      }
       setEditing(null);
       await load();
+    } catch (error: any) {
+      const responseMessage = error?.response?.data?.message;
+      const message = responseMessage ?? error?.message ?? "Unable to save property offer.";
+      setError(message);
+      window.alert(message);
     } finally {
       setSaving(false);
     }
@@ -94,85 +179,51 @@ export default function PropertyOffersPage() {
 
   const selectedProperty = properties.find((property) => property.id === editing?.property_listing_id);
 
+  const rowActions = [
+    {
+      label: "Edit",
+      onClick: (row: PropertyOffer) =>
+        setEditing({
+          ...row,
+          highlights_text: Array.isArray(row.highlights) ? row.highlights.join("\n") : "",
+        }),
+    },
+    {
+      label: "Toggle Active",
+      onClick: async (row: PropertyOffer) => {
+        const updated = await togglePropertyOfferApi(row.id, !row.is_active);
+        setSavedOffer(updated);
+        await load();
+        return updated;
+      },
+    },
+    {
+      label: "Delete",
+      className: "text-danger",
+      onClick: (row: PropertyOffer) => setDeletingOffer(row),
+    },
+  ];
+
   return (
-    <Content>
-      <PageHeader title="Property Offers" subtitle="Create Briksy Exclusive offers for listings" />
-      <div className="card">
-        <div className="card-header d-flex align-items-center justify-content-between">
-          <div className="fw-semibold">Offers</div>
-          <button className="btn btn-primary" onClick={() => setEditing(emptyOffer)}>New Offer</button>
-        </div>
-        <div className="card-body">
-          {loading ? <div className="text-muted">Loading...</div> : null}
-          {error ? <div className="alert alert-danger">{error}</div> : null}
-          <div className="table-responsive">
-            <table className="table align-middle table-row-bordered">
-              <thead>
-                <tr className="text-muted fs-7 text-uppercase">
-                  <th>Title</th>
-                  <th>Property</th>
-                  <th>Tag</th>
-                  <th>Order</th>
-                  <th>Status</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((offer) => (
-                  <tr key={offer.id}>
-                    <td className="fw-semibold">{offer.title}</td>
-                    <td>{offer.property_listing?.title ?? offer.property_listing_id}</td>
-                    <td>{offer.tag_label ?? "BRIKSY EXCLUSIVE"}</td>
-                    <td>{offer.sort_order}</td>
-                    <td>{offer.is_active ? "Active" : "Inactive"}</td>
-                    <td className="text-end">
-                      <div className="dropdown dropup position-static">
-                        <button type="button" className="btn btn-sm btn-light btn-active-light-primary" data-bs-toggle="dropdown" data-bs-display="static">
-                          Actions
-                        </button>
-                        <ul className="dropdown-menu dropdown-menu-end shadow">
-                          <li>
-                            <button type="button" className="dropdown-item" onClick={() => setEditing({
-                              ...offer,
-                              highlights_text: Array.isArray(offer.highlights) ? offer.highlights.join("\n") : "",
-                            })}>
-                              Edit
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item"
-                              onClick={async () => {
-                                await togglePropertyOfferApi(offer.id, !offer.is_active);
-                                await load();
-                              }}
-                            >
-                              Toggle
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item text-danger"
-                              onClick={async () => {
-                                await deletePropertyOfferApi(offer.id);
-                                await load();
-                              }}
-                            >
-                              Delete
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <>
+      <Routes>
+        <Route
+          index
+          element={
+            <PropertyOffersList
+              items={items}
+              loading={loading}
+              error={error}
+              rowActions={rowActions}
+              onNewOffer={() => setEditing(emptyOffer)}
+            />
+          }
+        />
+        <Route
+          path=":id"
+          element={<GenericDetailPage rowActions={rowActions} dataPatch={savedOffer} />}
+        />
+      </Routes>
 
       {editing ? (
         <ModalShell
@@ -213,7 +264,12 @@ export default function PropertyOffersPage() {
             </div>
             <div className="col-md-6">
               <label className="form-label">Tag Label</label>
-              <input className="form-control form-control-solid" value={FIXED_TAG_LABEL} readOnly />
+              <input
+                className="form-control form-control-solid"
+                value={editing.tag_label ?? ""}
+                onChange={(e) => setEditing((current) => ({ ...current, tag_label: e.target.value }))}
+                placeholder="Optional"
+              />
             </div>
             <div className="col-md-3">
               <label className="form-label">Sort Order</label>
@@ -274,6 +330,20 @@ export default function PropertyOffersPage() {
           </div>
         </ModalShell>
       ) : null}
-    </Content>
+
+      {deletingOffer ? (
+        <DeleteConfirmModal
+          title="Delete Offer"
+          message={`Are you sure you want to delete offer "${deletingOffer.title}"?`}
+          onClose={() => setDeletingOffer(null)}
+          onConfirm={async () => {
+            await deletePropertyOfferApi(deletingOffer.id);
+            setDeletingOffer(null);
+            await load();
+          }}
+          isSubmitting={saving}
+        />
+      ) : null}
+    </>
   );
 }

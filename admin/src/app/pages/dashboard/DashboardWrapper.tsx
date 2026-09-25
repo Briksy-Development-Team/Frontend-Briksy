@@ -331,10 +331,10 @@ const DashboardPage: FC = () => {
                                 color: "#F8F4EE",
                               }}
                             >
-                              Briksy Exclusive{" "}
+                              Promotional Add-on{" "}
                             </div>
                             <div className=" fs-6" style={{ color: "#F8F4EE" }}>
-                              Organisations with the Briksy Exclusive add-on
+                              Organisations with an active promotional add-on
                             </div>
                           </div>
                         </div>
@@ -1140,14 +1140,14 @@ const DashboardPage: FC = () => {
                                   color: "#F8F4EE",
                                 }}
                               >
-                                Briksy Exclusive
+                                Promotional Add-on
                               </div>
                               <div
                                 className=" fs-6"
                                 style={{ color: "#F8F4EE" }}
                               >
-                                Your organisation has the Briksy Exclusive
-                                add-on active
+                                Your organisation has the promotional add-on
+                                active
                               </div>
                             </div>
                           </div>

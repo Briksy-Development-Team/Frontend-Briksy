@@ -3,7 +3,7 @@ import { useAuth } from "../auth";
 import { fetchBillingPlansApi, createBillingCheckoutApi } from "../../services/features/billing/billing.api";
 
 const SubscriptionGate = () => {
-  const { auth, currentUser } = useAuth();
+  const { auth, currentUser, entitlements } = useAuth();
   const [required, setRequired] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -12,14 +12,16 @@ const SubscriptionGate = () => {
   const roles = currentUser?.roles ?? [];
   const isSuperAdmin = roles.includes("super_admin") || roles.includes("super_admin_employee");
   const subscription = currentUser?.subscription ?? auth?.user?.subscription;
-  const expired = subscription?.status === "expired" || subscription?.status === "inactive";
+  const expired = entitlements
+    ? !entitlements.active
+    : subscription?.status === "expired" || subscription?.status === "inactive";
   const shouldShow = !isSuperAdmin && (required || expired) && !window.location.pathname.startsWith("/admin/billing/");
 
   useEffect(() => {
-    if (subscription?.status === "active" || subscription?.status === "trialing" || subscription?.is_trial_active) {
+    if (entitlements?.active || subscription?.status === "active" || subscription?.status === "trialing" || subscription?.is_trial_active) {
       setRequired(false);
     }
-  }, [subscription?.status, subscription?.is_trial_active]);
+  }, [entitlements?.active, subscription?.status, subscription?.is_trial_active]);
 
   useEffect(() => {
     const onSubscriptionRequired = () => setRequired(true);

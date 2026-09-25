@@ -1,13 +1,12 @@
 import { Star, Share } from "lucide-react";
 import FavoriteButton from "../../../../components/custom/FavoriteButton";
 import { DetailSidebar } from "../../shared/DetailSidebar";
+import { SafeImage } from "../../../../components/custom/SafeImage";
 
 export function ServiceSidebar({
-  contact,
   service,
   onEnquiry,
 }: {
-  contact: { price: number; rateType?: string };
   service: {
     id?: string;
     favoriteType?: "service" | "organization";
@@ -29,13 +28,11 @@ export function ServiceSidebar({
           className="w-full h-[180px] rounded-xl overflow-hidden"
           style={{ background: "#E2CBB3" }}
         >
-          {service.bannerImage && (
-            <img
+          <SafeImage
               src={service.bannerImage}
               alt="Banner"
               className="w-full h-full object-cover"
             />
-          )}
         </div>
 
         {/* Avatar — absolute overlapping */}
@@ -50,7 +47,7 @@ export function ServiceSidebar({
                 "0px 13px 39px 0px rgba(0,0,0,0.10), 0px 0px 0px 1.6px rgba(0,0,0,0.02)",
             }}
           >
-            <img
+            <SafeImage
               src={service.avatar}
               alt={service.name}
               className="w-full h-full object-cover"
@@ -62,7 +59,7 @@ export function ServiceSidebar({
       {/* Name / info — centered below avatar */}
       <div className="flex flex-col items-center gap-3 text-center px-4">
         <div className="flex flex-col gap-[0.8125rem]">
-          <h1 className="text-[1.25rem] font-medium text-primary-brown leading-tight">
+          <h1 className="text-[1.25rem] font-medium text-primary-brown mt-8 leading-tight">
             {service.name}
           </h1>
           <p className="text-[0.875rem] text-primary-brown">
@@ -94,8 +91,6 @@ export function ServiceSidebar({
       </div>
 
       <DetailSidebar
-        price={`$${contact.price}`}
-        priceLabel="/hour"
         buttonText={`Contact ${service.name.split(" ")[0]}`}
         onEnquiry={onEnquiry}
       />

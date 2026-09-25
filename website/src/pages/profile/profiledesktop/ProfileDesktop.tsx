@@ -3,8 +3,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 
 import Notification from "../../../assets/icons/profile/notification.svg?react";
 import Placeholder from "../../../assets/icons/profile/placeholder.svg?react";
-import Save from "../../../assets/icons/profile/save.svg?react";
 import Privacy from "../../../assets/icons/profile/privacy.svg?react";
+import Save from "../../../assets/icons/profile/save.svg?react";
 
 const ProfileDesktop = () => {
     const location = useLocation();
@@ -17,7 +17,7 @@ const ProfileDesktop = () => {
 
     const profileData = [
         { id: "personal-info", label: "My profile", icon: Placeholder },
-        { id: "saved-search", label: "Saved searches", icon: Save },
+        { id: "collections", label: "Collections", icon: Save },
         { id: "notifications", label: "Notifications", icon: Notification },
         { id: "privacy", label: "Privacy", icon: Privacy },
     ];

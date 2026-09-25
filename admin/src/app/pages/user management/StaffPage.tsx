@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { Route, Routes } from "react-router-dom"
 import { useEffect } from "react"
+import { useMemo } from "react"
 
 import {
   fetchStaff,
@@ -22,12 +23,13 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { Content } from "../../../_metronic/layout/components/content"
 import { StaffModal } from "../../services/features/staff/component/StaffModal"
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage"
-import { useRoleAccess } from "../../modules/auth"
+import { useAuth, useRoleAccess } from "../../modules/auth"
 import { getRolePortalBaseRoute } from "../../modules/auth/core/roleRoutes"
 
 const StaffList = ({ rowActions }: { rowActions: any[] }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { isSuperAdmin } = useRoleAccess()
+  const { entitlements } = useAuth()
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ['super_admin'] : ['admin'])
   const resolveStaffId = (row: { id: string; generated_id?: string | null; display_id?: string | null }) =>
     row.display_id ?? row.generated_id ?? row.id
@@ -51,6 +53,17 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
     }
   }, [isModalOpen, saving, params, dispatch])
 
+  const staffLimit = entitlements?.limits?.staff_members ?? null;
+  const limitReached = !isSuperAdmin && staffLimit !== null && total >= staffLimit;
+  const filtersConfig = useMemo(
+    () => staffConfig.filters.map((filter) =>
+      filter.key === "roles" && filter.type === "select" && !isSuperAdmin
+        ? { ...filter, options: ["admin", "admin_staff"] }
+        : filter
+    ),
+    [isSuperAdmin]
+  );
+
   if (error) return (
     <Content>
       <PageHeader
@@ -68,13 +81,18 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         subtitle={isSuperAdmin ? "Manage platform staff access and permissions" : "Manage company users"}
       />
 
+      {!isSuperAdmin && staffLimit !== null ? (
+        <div className={`alert ${limitReached ? "alert-warning" : "alert-light-info"} mb-5`}>
+          {total} / {staffLimit} staff seats used{limitReached ? ". Upgrade your plan to add more staff." : ""}
+        </div>
+      ) : null}
       <EntityList
         data={data}
         total={total}
         params={params}
         onParamsChange={handleParamsChange}
         columns={staffConfig.columns}
-        filtersConfig={staffConfig.filters}
+        filtersConfig={filtersConfig}
         enableRowClick
         getRowLink={(row) =>
           isSuperAdmin ? `${portalBase}/staff/${resolveStaffId(row)}` : `${portalBase}/users/${resolveStaffId(row)}`
@@ -83,7 +101,13 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         headerActions={[{
           label: "Add Staff",
           permission: "user.create",
-          onClick: () => dispatch(openStaffModal(null)),
+          onClick: () => {
+            if (limitReached) {
+              window.alert(`Your current plan allows up to ${staffLimit} staff members. Upgrade your plan to add more staff.`);
+              return;
+            }
+            dispatch(openStaffModal(null));
+          },
         }]}
         rowActions={rowActions}
       />

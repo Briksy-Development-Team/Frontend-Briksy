@@ -27,7 +27,7 @@ const ServiceList = () => {
       <div className="lg:w-full  pl-[5%] lg:px-0  lg:ml-10">
         <div className="relative mb-10 lg:mr-14  flex flex-col text-primary-brown items-stat justify-end lg:justify-center">
           <h2 className="text-[30px] font-medium  lg:text-[44px]">
-            Top Professionals
+            Trades & Professionals
           </h2>
           <p className="text-[0.875rem] lg:text-[1rem]">Verified solo traders and specialists</p>
 

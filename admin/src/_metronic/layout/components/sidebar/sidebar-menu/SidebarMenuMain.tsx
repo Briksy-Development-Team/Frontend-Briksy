@@ -3,6 +3,7 @@ import {
   usePermissionAccess,
   useRoleAccess,
   useModuleAccess,
+  useAuth,
 } from "../../../../../app/modules/auth";
 import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
@@ -15,6 +16,8 @@ const SidebarMenuMain = () => {
   const { isSuperAdmin, isAdmin } = useRoleAccess();
   const { hasPermission } = usePermissionAccess();
   const { hasModule } = useModuleAccess();
+  const { entitlements } = useAuth();
+  const promoOffersEnabled = !isSuperAdmin && Boolean(entitlements?.features?.promo_offers?.enabled);
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : isAdmin ? ["admin"] : [],
   );
@@ -125,7 +128,7 @@ const SidebarMenuMain = () => {
                 {hasPermission("addon.view") && (
                   <SidebarMenuItem
                     to={`${portalBase}/addons`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
                     title="Add-ons"
                     fontIcon="bi-layers"
                   />
@@ -134,7 +137,7 @@ const SidebarMenuMain = () => {
                 {hasPermission("plan.view") && (
                   <SidebarMenuItem
                     to={`${portalBase}/plans`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
                     title="Plans"
                     fontIcon="bi-layers"
                   />
@@ -143,7 +146,7 @@ const SidebarMenuMain = () => {
                 {hasPermission("subscription.view") && (
                   <SidebarMenuItem
                     to={`${portalBase}/subscriptions`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
                     title="Subscriptions"
                     fontIcon="bi-layers"
                   />
@@ -151,7 +154,7 @@ const SidebarMenuMain = () => {
 
                 <SidebarMenuItem
                   to={`${portalBase}/invoices`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
                   title="Invoices"
                   fontIcon="bi-layers"
                 />
@@ -178,7 +181,7 @@ const SidebarMenuMain = () => {
               {hasPermission("email_template.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/email-templates`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
 
                   title="Email Templates"
                   fontIcon="bi-layers"
@@ -188,7 +191,7 @@ const SidebarMenuMain = () => {
               {hasPermission("activity_logs.view") && (
                 <SidebarMenuItem
                   to={`${portalBase}/activity-logs`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
                   title="Activity Logs"
                   fontIcon="bi-layers"
                 />
@@ -224,12 +227,22 @@ const SidebarMenuMain = () => {
           )}
 
           {hasModule("service_management") && hasPermission("service.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/services`}
-              title="Services Management"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/service.svg"
-            />
+            <>
+              <SidebarMenuItem
+                to={`${portalBase}/services`}
+                title="Services Management"
+                fontIcon="bi-archive"
+                icon="/media/icons/duotune/iconsnew/service.svg"
+              />
+              {promoOffersEnabled && (
+                <SidebarMenuItem
+                  to={`${portalBase}/service-offers`}
+                  title="Service Offers"
+                  fontIcon="bi-archive"
+                  icon="/media/icons/duotune/iconsnew/proo.svg"
+                />
+              )}
+            </>
           )}
 
           {hasPermission("permission.view") && (
@@ -250,7 +263,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/inquiry`}
               title={hasModule("builder_management") ? "Enquiries" : hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
               fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/proe.svg"
             />
           )}
 
@@ -263,30 +276,40 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("property_management") && hasPermission("property.view") && (
+          {(hasModule("property_management") || hasModule("builder_management")) && hasPermission("property.view") && (
             <>
               <SidebarMenuItem
                 to={`${portalBase}/property-management`}
                 title="Property Management"
                 fontIcon="bi-archive"
-                icon="/media/icons/duotune/iconsnew/"
+                icon="/media/icons/duotune/iconsnew/prom.svg"
               />
               <SidebarMenuItem
                 to={`${portalBase}/property-offers`}
                 title="Property Offers"
                 fontIcon="bi-archive"
-                icon="/media/icons/duotune/iconsnew/"
+                icon="/media/icons/duotune/iconsnew/proo.svg"
               />
             </>
           )}
 
           {hasModule("service_management") && hasPermission("service.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/services`}
-              title="Services Management"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/service.svg"
-            />
+            <>
+              <SidebarMenuItem
+                to={`${portalBase}/services`}
+                title="Services Management"
+                fontIcon="bi-archive"
+                icon="/media/icons/duotune/iconsnew/service.svg"
+              />
+              {promoOffersEnabled && (
+                <SidebarMenuItem
+                  to={`${portalBase}/service-offers`}
+                  title="Service Offers"
+                  fontIcon="bi-archive"
+                  icon="/media/icons/duotune/iconsnew/proo.svg"
+                />
+              )}
+            </>
           )}
 
           <SidebarMenuItem
@@ -310,7 +333,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/builder-projects`}
               title="Builder Projects"
               fontIcon="bi-building"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/builder.svg"
             />
           )}
 
@@ -319,7 +342,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/users`}
               title="Staff Management"
               fontIcon="bi-archive"
-            icon="/media/icons/duotune/iconsnew/user.svg"
+              icon="/media/icons/duotune/iconsnew/user.svg"
             />
           )}
 
@@ -337,7 +360,7 @@ const SidebarMenuMain = () => {
               to={`${portalBase}/activity-logs`}
               title="Activity Logs"
               fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/"
+              icon="/media/icons/duotune/iconsnew/act.svg"
             />
           )}
         </>

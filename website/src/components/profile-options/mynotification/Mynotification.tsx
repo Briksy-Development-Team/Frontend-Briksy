@@ -48,7 +48,7 @@ const SECTIONS: SectionConfig[] = [
   },
   {
     id: "saved-searches",
-    title: "Saved searches and alerts",
+    title: "Like searches and alerts",
     desc: "New matches for the searches you've saved.",
     rows: [
       {

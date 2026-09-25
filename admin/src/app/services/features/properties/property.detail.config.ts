@@ -25,11 +25,6 @@ export const propertyDetailConfig: DetailConfig<any> = {
         label: (data) => (data?.location_verified ? "Location verified" : "Location unverified"),
         color: (data) => (data?.location_verified ? "success" : "warning"),
       },
-      {
-        label: () => "Briksy Exclusive",
-        color: () => "warning",
-        showIf: (data: any) => (data?.organization?.is_briksy_exclusive ?? data?.is_briksy_exclusive ?? true),
-      },
     ],
     metrics: [
       {
@@ -67,7 +62,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
     },
     {
       id: "offers",
-      label: "Briksy Exclusive",
+      label: "Offers",
       sections: ["exclusive_offers"],
       showIf: (data) => Array.isArray(data?.briksy_exclusive_offers) && data.briksy_exclusive_offers.length > 0,
     },
@@ -83,6 +78,8 @@ export const propertyDetailConfig: DetailConfig<any> = {
         { label: "Title", accessor: "title", colSpan: 6 },
         { label: "Status", accessor: "status", colSpan: 6 },
         { label: "Property Type", accessor: (data) => data?.property_type?.name ?? "—", colSpan: 6 },
+        { label: "Property Category", accessor: (data) => data?.property_category ?? data?.property_type?.category ?? "—", colSpan: 6 },
+        { label: "Commercial Status", accessor: (data) => data?.transaction_status ?? "—", colSpan: 6 },
         { label: "Address", accessor: "address", colSpan: 6 },
         { label: "Address Line 1", accessor: "address_line_1", colSpan: 6 },
         { label: "Address Line 2", accessor: "address_line_2", colSpan: 6 },
@@ -166,7 +163,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
     {
       id: "exclusive_offers",
       type: "custom",
-      title: "BRIKSY EXCLUSIVE",
+      title: "Promotional Offers",
       gridColumnSpan: 12,
       showIf: (data) => Array.isArray(data?.briksy_exclusive_offers) && data.briksy_exclusive_offers.length > 0,
       component: (props) => React.createElement(PropertyOffersSection, { data: props.data }),

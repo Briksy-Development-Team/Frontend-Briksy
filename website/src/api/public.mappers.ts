@@ -32,5 +32,7 @@ export const propertyToCard = (p: PublicProperty): Property => ({
   posterAvatar: p.organization?.logo_url || BusinessPlaceholder, badge: p.status || "Verified listing", lat: p.location.latitude || 0,
   lng: p.location.longitude || 0, isFavourite: Boolean(p.is_favourite),
   purpose: p.listing_purpose,
+  transactionStatus: p.transaction_status,
+  propertyCategory: p.property_category ?? p.property_type?.category,
   propertyType: p.property_type?.name,
 });

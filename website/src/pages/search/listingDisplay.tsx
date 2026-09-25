@@ -25,8 +25,8 @@ export const LISTING_DISPLAY: Record<
     Card: BuilderGridCard,
   },
   comercial: {
-    popularTitle: "Popular Commercial Rent",
-    newlyTitle: "Newly Listed Commercial Rent",
+    popularTitle: "Popular Commercial Properties",
+    newlyTitle: "Newly Listed Commercial Properties",
     Card: PropertyGridCard,
   },
   property: {

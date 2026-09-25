@@ -12,24 +12,6 @@ export const serviceDetailConfig: DetailConfig<any> = {
         label: "status",
         color: (data) => (data.status === "active" ? "success" : "warning"),
       },
-      {
-        label: () => "Briksy Exclusive",
-        color: () => "warning",
-        showIf: (data: any) => (data?.organization?.is_briksy_exclusive ?? data?.is_briksy_exclusive ?? true),
-      },
-    ],
-    metrics: [
-      {
-        label: "Price",
-        valueAccessor: (data) => {
-          const from = data.rate_from;
-          const to = data.rate_to;
-
-          if (from == null && to == null) return "N/A";
-          if (from != null && to != null) return `$${from.toLocaleString()} – $${to.toLocaleString()}`;
-          return `$${(from ?? to).toLocaleString()}`;
-        },
-      },
     ],
   },
   tabs: [

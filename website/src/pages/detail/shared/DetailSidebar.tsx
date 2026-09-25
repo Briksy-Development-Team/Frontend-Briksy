@@ -1,7 +1,7 @@
 import Verify from "../../../assets/icons/verify.svg";
 
 type Props = {
-  price: string;
+  price?: string;
   priceLabel?: string;
   description?: string;
   buttonText?: string;
@@ -18,7 +18,7 @@ export function DetailSidebar({
   onEnquiry,
 }: Props) {
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 lg:w-full md:w-[80%] mx-auto">
       <div
         className="w-full bg-white rounded-xl py-3 px-9 flex justify-center items-center gap-2.5"
         style={{ boxShadow: "0px 0px 13px 0px rgba(0, 0, 0, 0.12)" }}
@@ -28,14 +28,16 @@ export function DetailSidebar({
       </div>
 
       <div className="w-full bg-white rounded-2xl border border-[#EDE8E4] flex flex-col gap-3.5 p-[26px]">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-[1.5rem] font-medium leading-8 tracking-[-0.006em] text-primary-brown">
-            From {price}
-          </span>
-          {priceLabel && (
-            <span className="text-[0.75rem] font-normal text-black">{priceLabel}</span>
-          )}
-        </div>
+        {price && (
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[1.5rem] font-medium leading-8 tracking-[-0.006em] text-primary-brown">
+              From {price}
+            </span>
+            {priceLabel && (
+              <span className="text-[0.75rem] font-normal text-black">{priceLabel}</span>
+            )}
+          </div>
+        )}
 
         {description && (
           <p className="text-[0.75rem] text-black leading-snug">{description}</p>
