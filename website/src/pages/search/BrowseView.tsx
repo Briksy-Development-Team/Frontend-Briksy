@@ -154,7 +154,12 @@ export default function BrowseView({
         : getOrganizations({ type: organizationTypeForResult(resultType, tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {
         if (!active) return;
-        if (resultType === "property" || resultType === "comercial") { setProperties(r[0].data); setNewlyProperties(r[1].data); setTotal(r[0].meta?.pagination?.total ?? r[0].data.length); }
+        if (resultType === "property" || resultType === "comercial") {
+          setProperties(r[0].data);
+          if (resultType === "comercial") setNewlyCommercialProperties(r[1].data);
+          else setNewlyProperties(r[1].data);
+          setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
+        }
         else setOrganizations(r.data);
       }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
         .finally(() => { if (active) setLoading(false); });
