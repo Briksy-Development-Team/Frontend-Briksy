@@ -3,6 +3,7 @@ import { MapPin, Star, ArrowRight } from "lucide-react";
 import type { Trader } from "../../../types/trader";
 import FavoriteButton from "../../custom/FavoriteButton";
 import Approves from "../../../assets/logo/apprrove.svg";
+import { SafeImage } from "../../custom/SafeImage";
 
 type Props = {
   item: Trader;
@@ -20,7 +21,7 @@ const TraderGridCard = ({ item }: Props) => {
        mx-auto text-primary-brown bg-white hover:border-primary"
     >
       <div className="relative h-[35%] shrink-0 bg-[#bed6d7] rounded-t-[20px] overflow-hidden mb-[-36px]">
-        <img
+        <SafeImage
           loading="lazy"
           src={item.bannerImage}
           alt={item.name}
@@ -38,7 +39,7 @@ const TraderGridCard = ({ item }: Props) => {
 
       <div className="relative flex shrink-0 items-end justify-between px-4">
         <div className="flex w-fit flex-col items-center">
-          <img
+          <SafeImage
             loading="lazy"
             src={item.avatar}
             alt={item.name}
