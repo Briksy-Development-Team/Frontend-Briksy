@@ -49,7 +49,7 @@ const CATEGORIES: Category[] = [
   },
   {
     id: "professionals",
-    label: "Professionals",
+    label: "Trades & Professionals",
     title: "PROFESSIONALS",
     desc: "Connect with skilled independent experts",
     icon: Trader,

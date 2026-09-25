@@ -46,7 +46,7 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "professionals",
-    label: "Professionals",
+    label: "Trades & Professionals",
     resultType: "trader",
     icon: <TraderIcon className="w-4 h-4" />,
     tabs: SERVICE_CATEGORIES.map((category) => category.label),
