@@ -55,6 +55,7 @@ export function useListingData(
     if (isPropertyType(resultType)) {
       getProperties({
         verified_only: 1,
+        category: resultType === "comercial" ? "commercial" : undefined,
         purpose: resultType === "comercial" ? undefined : purposeFor(tab),
         transaction_status: resultType === "comercial" ? transactionStatusFor(tab) : undefined,
         search: filter || undefined,

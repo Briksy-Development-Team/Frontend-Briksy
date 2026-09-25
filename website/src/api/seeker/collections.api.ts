@@ -1,6 +1,7 @@
 import api from "../clients.api";
 import type { ApiPage } from "../clients.api";
 import type { PublicProperty } from "../property/property.api";
+import type { PublicOrganization } from "./organization.api";
 
 export type SeekerCollection = {
   id: string;
@@ -15,6 +16,13 @@ export type SeekerCollection = {
 };
 
 export type CollectionPropertiesPage = ApiPage<PublicProperty>;
+export type CollectionItem = {
+  id: string;
+  type: "property" | "organization" | "service" | null;
+  target: (PublicProperty | PublicOrganization | { id: string }) | null;
+  created_at?: string;
+};
+export type CollectionItemsPage = ApiPage<CollectionItem>;
 
 export const getCollections = async (propertyId?: string) =>
   (await api.get<{ data: SeekerCollection[] }>("/seeker/collections", {
@@ -40,6 +48,9 @@ export const deleteCollection = async (id: string) => {
 
 export const getCollectionProperties = async (id: string, page = 1) =>
   (await api.get<CollectionPropertiesPage>(`/seeker/collections/${id}/properties`, { params: { page, per_page: 24 } })).data;
+
+export const getCollectionItems = async (id: string, page = 1) =>
+  (await api.get<CollectionItemsPage>(`/seeker/collections/${id}/items`, { params: { page, per_page: 24 } })).data;
 
 export const addPropertyToCollection = async (collectionId: string, propertyId: string) =>
   (await api.post<{ data: SeekerCollection }>(`/seeker/collections/${collectionId}/properties`, { property_id: propertyId })).data;
