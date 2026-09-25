@@ -1,7 +1,7 @@
 import Verify from "../../../assets/icons/verify.svg";
 
 type Props = {
-  price: string;
+  price?: string;
   priceLabel?: string;
   description?: string;
   buttonText?: string;
@@ -28,14 +28,16 @@ export function DetailSidebar({
       </div>
 
       <div className="w-full bg-white rounded-2xl border border-[#EDE8E4] flex flex-col gap-3.5 p-[26px]">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-[1.5rem] font-medium leading-8 tracking-[-0.006em] text-primary-brown">
-            From {price}
-          </span>
-          {priceLabel && (
-            <span className="text-[0.75rem] font-normal text-black">{priceLabel}</span>
-          )}
-        </div>
+        {price && (
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-[1.5rem] font-medium leading-8 tracking-[-0.006em] text-primary-brown">
+              From {price}
+            </span>
+            {priceLabel && (
+              <span className="text-[0.75rem] font-normal text-black">{priceLabel}</span>
+            )}
+          </div>
+        )}
 
         {description && (
           <p className="text-[0.75rem] text-black leading-snug">{description}</p>

@@ -5,7 +5,7 @@ import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, Pro
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { Share, ChevronLeft } from "lucide-react";
+import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -19,6 +19,7 @@ import "swiper/css";
 import { Mousewheel } from "swiper/modules"
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
+import CollectionModal from "../../../components/collections/CollectionModal";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +30,7 @@ const PropertyDetail = () => {
   const [enquirySubmitting, setEnquirySubmitting] = useState(false);
   const [enquiryError, setEnquiryError] = useState<string | null>(null);
   const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
+  const [collectionOpen, setCollectionOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -154,8 +156,10 @@ const PropertyDetail = () => {
               targetType="property"
               initialIsFavourite={Boolean(propertyData.is_favourite)}
             />
+            <button type="button" onClick={() => setCollectionOpen(true)} className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown"><FolderPlus size={18} /> Add to Collection</button>
           </div>
         </div>
+        {collectionOpen && <CollectionModal propertyId={property.id} onClose={() => setCollectionOpen(false)} />}
 
         <div className="mb-10 w-full relative">
           {/* Mobile Overlay Header */}
@@ -200,6 +204,11 @@ const PropertyDetail = () => {
               reviewsCount={property.company.reviews}
               organizationName={property.company.name}
             />
+            {propertyData.property_category === "commercial" && propertyData.transaction_status ? (
+              <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
+                {propertyData.transaction_status}
+              </span>
+            ) : null}
             <PropertyAgentCard agent={property.agent} />
 
             <div className="flex flex-col gap-12 pb-8">

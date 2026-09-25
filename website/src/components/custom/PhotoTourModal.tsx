@@ -94,7 +94,6 @@ export function PhotoTourModal({
   initialIndex = 0,
   onClose,
   title = 'Photo tour',
-  subtitle,
   targetId,
   initialIsFavourite = false,
 }: {

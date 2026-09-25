@@ -105,12 +105,6 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
                 {service.description ||
                   "No description provided for this service."}
               </p>
-              {(service.rate_from != null || service.rate_to != null) && (
-                <p className="mt-4 text-primary-brown">
-                  {service.rate_from != null && `From $${service.rate_from}`}
-                  {service.rate_to != null && ` to $${service.rate_to}`}
-                </p>
-              )}
             </div>
 
             {media.length > 0 && (
@@ -141,9 +135,6 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
       </div>
 
       <MobileStickyAction
-        price={
-          service.rate_from != null ? `$${service.rate_from}` : "Contact"
-        }
         onEnquiry={() => setIsEnquiryOpen(true)}
       />
 

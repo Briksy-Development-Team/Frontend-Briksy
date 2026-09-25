@@ -1,5 +1,5 @@
 interface MobileStickyActionProps {
-  price: string;
+  price?: string;
   priceLabel?: string;
   onEnquiry: () => void;
 }
@@ -11,16 +11,18 @@ export default function MobileStickyAction({
 }: MobileStickyActionProps) {
   return (
     <div className="md:hidden w-full bg-white border-t border-[#EBE5D9] px-[5%] py-4 flex items-center justify-between">
-      <div className="flex flex-col">
-        <span className="text-[1.25rem] font-medium text-primary-brown leading-tight">
-          {price === 'Contact' ? price : `From ${price}`}
-        </span>
-        {priceLabel && (
-          <span className="text-[0.8125rem] text-primary-light-brown">
-            {priceLabel}
+      {price ? (
+        <div className="flex flex-col">
+          <span className="text-[1.25rem] font-medium text-primary-brown leading-tight">
+            {price === 'Contact' ? price : `From ${price}`}
           </span>
-        )}
-      </div>
+          {priceLabel && (
+            <span className="text-[0.8125rem] text-primary-light-brown">
+              {priceLabel}
+            </span>
+          )}
+        </div>
+      ) : <span />}
       <button
         type="button"
         onClick={onEnquiry}

@@ -11,6 +11,7 @@ import BuildIcon from "../../assets/icons/search/build.svg?react";
 import TraderIcon from "../../assets/icons/search/trades.svg?react";
 import ComercialIcon from "../../assets/icons/search/comercial.svg?react";
 import MapIcon from "../../assets/icons/search/map.svg?react";
+import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
 
 type CategoryDef = {
   id: string;
@@ -38,7 +39,7 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
   },
   {
     id: "builders",
-    label: "BUILDERS / Org.",
+    label: "BUILDERS",
     resultType: "builder",
     icon: <BuildIcon className="w-4 h-4" />,
     tabs: ["Builders", "Agents"],
@@ -48,14 +49,14 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
     label: "Professionals",
     resultType: "trader",
     icon: <TraderIcon className="w-4 h-4" />,
-    tabs: ["Traders"],
+    tabs: SERVICE_CATEGORIES.map((category) => category.label),
   },
   {
     id: "commercial",
     label: "Commercial",
     resultType: "comercial",
     icon: <ComercialIcon className="w-4 h-4" />,
-    tabs: ["Rent"],
+    tabs: ["Buy", "Lease", "Sold", "Leased"],
   },
 ];
 
@@ -70,10 +71,18 @@ const SORT_OPTIONS = [
 const TAB_LABELS: Record<FilterTab, string> = {
   Buy: "Buy",
   Rent: "Rent",
+  Lease: "Lease",
   Sold: "Sold",
+  Leased: "Leased",
   Builders: "Builders",
   Agents: "Organizations",
   Traders: "Sole Traders",
+  Landscappers: "Landscappers",
+  Concreter: "Concreter",
+  Fencing: "Fencing",
+  "Mortgage Brokers": "Mortgage Brokers",
+  Conveyancers: "Conveyancers",
+  "Building and Pest": "Building and Pest",
 };
 
 const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
@@ -137,7 +146,7 @@ export default function SearchToolbar({
               className="flex items-center justify-center  gap-2 px-0 md:px-2 h-full    text-[0.875rem]"
             >
               <Sparkles className="w-4 h-4" />
-              <p className="hidden md:flex"> Ask Ai</p>
+              <p className="hidden md:flex"> Ask AI</p>
             </button>
           </div>
         </div>
@@ -196,7 +205,7 @@ export default function SearchToolbar({
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
             initialTab={
-              activeTab || (activeCategory.id === "commercial" ? "Rent" : "Buy")
+              activeTab || "Buy"
             }
           />,
           document.body,

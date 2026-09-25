@@ -49,7 +49,9 @@ const PropertyListCard = ({ item }: Props) => {
         className="h-full w-full object-cover"
       />
       <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {( { SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string> )[item.purpose || ""] || item.badge}
+        {item.propertyCategory === "commercial"
+          ? item.transactionStatus || (item.purpose === "RENT" ? "LEASE" : "BUY")
+          : ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[item.purpose || ""] || item.badge}
       </span>
       <button
         type="button"

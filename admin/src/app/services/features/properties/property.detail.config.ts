@@ -78,6 +78,8 @@ export const propertyDetailConfig: DetailConfig<any> = {
         { label: "Title", accessor: "title", colSpan: 6 },
         { label: "Status", accessor: "status", colSpan: 6 },
         { label: "Property Type", accessor: (data) => data?.property_type?.name ?? "—", colSpan: 6 },
+        { label: "Property Category", accessor: (data) => data?.property_category ?? data?.property_type?.category ?? "—", colSpan: 6 },
+        { label: "Commercial Status", accessor: (data) => data?.transaction_status ?? "—", colSpan: 6 },
         { label: "Address", accessor: "address", colSpan: 6 },
         { label: "Address Line 1", accessor: "address_line_1", colSpan: 6 },
         { label: "Address Line 2", accessor: "address_line_2", colSpan: 6 },

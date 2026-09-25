@@ -18,7 +18,7 @@ const BuilderList = () => {
                     <h2 className="text-[30px] font-medium  lg:text-[44px]">
                         Featured Businesses
                     </h2>
-                    <p className="text-[0.875rem] lg:text-[1rem]">Trusted agencies and builders</p>
+                    <p className="text-[0.875rem] lg:text-[1rem]">Trusted builders</p>
 
                     <button
                         onClick={() => navigate("/builders")}

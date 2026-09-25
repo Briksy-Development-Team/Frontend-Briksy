@@ -276,7 +276,7 @@ const SidebarMenuMain = () => {
             />
           )}
 
-          {hasModule("property_management") && hasPermission("property.view") && (
+          {(hasModule("property_management") || hasModule("builder_management")) && hasPermission("property.view") && (
             <>
               <SidebarMenuItem
                 to={`${portalBase}/property-management`}

@@ -39,7 +39,6 @@ const ServiceCoveragePopup = ({ service, onClose }: Props) => {
       <div className="text-gray-700 fs-7 mb-3">
         <div className="mb-1">Provider: {service.organization?.name ?? "—"}</div>
         <div className="mb-1">Coverage: {service.service_area ?? "Custom region"}</div>
-        <div className="mb-1">Rate: {service.rate_from ?? "—"} - {service.rate_to ?? "—"}</div>
         <div>Status: {service.status ?? (service.is_active ? "Active" : "Inactive")}</div>
       </div>
 

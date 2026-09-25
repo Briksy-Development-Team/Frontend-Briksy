@@ -25,6 +25,7 @@ export default function ProfileMobile() {
     let label = 'Back';
     if (section === 'personal-info') label = 'Personal info';
     else if (section === 'saved-search') label = 'Save Search';
+    else if (section === 'collections') label = 'Collections';
     else if (section === 'notifications') label = 'Notification';
     else if (section === 'privacy') label = 'Privacy';
 
@@ -51,6 +52,7 @@ export default function ProfileMobile() {
   const menuRows1 = [
     { label: "Personal info", view: "personal-info" },
     { label: "Save Search", view: "saved-search" },
+    { label: "Collections", view: "collections" },
     { label: "Notification", view: "notifications" },
     { label: "Privacy", view: "privacy" },
   ];

@@ -70,8 +70,6 @@ const ServiceModal = ({
         category: normaliseCategory(initialValues?.category),
         service_area: initialValues?.service_area ?? "",
         service_area_geometry: initialValues?.service_area_geometry ?? null,
-        rate_from: initialValues?.rate_from ?? "",
-        rate_to: initialValues?.rate_to ?? "",
         is_active: initialValues?.is_active ?? true,
     });
 
@@ -83,8 +81,6 @@ const ServiceModal = ({
             category: normaliseCategory(initialValues?.category),
             service_area: initialValues?.service_area ?? "",
             service_area_geometry: initialValues?.service_area_geometry ?? null,
-            rate_from: initialValues?.rate_from ?? "",
-            rate_to: initialValues?.rate_to ?? "",
             is_active: initialValues?.is_active ?? true,
         });
         setImages([]);
@@ -281,37 +277,6 @@ const ServiceModal = ({
                 ) : (
                     <div className="alert alert-light-warning mb-0">Upgrade your plan to add or change service coverage.</div>
                 )}
-            </div>
-
-            <div className="row mt-6">
-                <div className="col-md-6 fv-row">
-                    <label className="form-label">Price From</label>
-                    <input
-                        type="number"
-                        className="form-control form-control-solid"
-                        value={form.rate_from ?? ""}
-                        onChange={(e) =>
-                            setForm((prev) => ({
-                                ...prev,
-                                rate_from: e.target.value,
-                            }))
-                        }
-                    />
-                </div>
-                <div className="col-md-6 fv-row">
-                    <label className="form-label">Price To</label>
-                    <input
-                        type="number"
-                        className="form-control form-control-solid"
-                        value={form.rate_to ?? ""}
-                        onChange={(e) =>
-                            setForm((prev) => ({
-                                ...prev,
-                                rate_to: e.target.value,
-                            }))
-                        }
-                    />
-                </div>
             </div>
 
             <div className="fv-row mt-6">

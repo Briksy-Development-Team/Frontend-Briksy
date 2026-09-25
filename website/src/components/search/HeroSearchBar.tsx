@@ -41,7 +41,7 @@ const CATEGORIES: Category[] = [
   },
   {
     id: "builders",
-    label: "Builders / Org.",
+    label: "Builders",
     title: "BUILDERS / ORGANISATIONS",
     desc: "Discover trusted property businesses",
     icon: Build,
@@ -150,7 +150,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     "
     >
       <Sparkles size={18} fill="#FBF8F3" />
-      Ask Ai
+      Ask AI
     </button>
   );
 

@@ -110,7 +110,7 @@ export default function BrowseView({
 
   const resetFilters = () => {
     const next = new URLSearchParams(searchParams);
-    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab"].forEach((key) => next.delete(key));
+    ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab", "transaction_status"].forEach((key) => next.delete(key));
     if (resultType !== "comercial") next.delete("category");
     setSearchParams(next);
   };
@@ -174,6 +174,13 @@ export default function BrowseView({
 
   if (loading) return <p className="py-10 text-center text-sm text-[#8B6F54]">Loading results...</p>;
   if (error) return <p className="rounded-2xl bg-white p-8 text-center text-red-700">{error}</p>;
+  if (resultType === "trader" && traders.length === 0) {
+    return (
+      <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown">
+        <p>No services found for the selected filters.</p>
+      </div>
+    );
+  }
   if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) return (
     <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown">
       <p>No properties found for the selected filters.</p>

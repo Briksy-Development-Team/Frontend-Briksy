@@ -4,11 +4,9 @@ import { DetailSidebar } from "../../shared/DetailSidebar";
 import { SafeImage } from "../../../../components/custom/SafeImage";
 
 export function ServiceSidebar({
-  contact,
   service,
   onEnquiry,
 }: {
-  contact: { price: number; rateType?: string };
   service: {
     id?: string;
     favoriteType?: "service" | "organization";
@@ -93,8 +91,6 @@ export function ServiceSidebar({
       </div>
 
       <DetailSidebar
-        price={`$${contact.price}`}
-        priceLabel="/hour"
         buttonText={`Contact ${service.name.split(" ")[0]}`}
         onEnquiry={onEnquiry}
       />

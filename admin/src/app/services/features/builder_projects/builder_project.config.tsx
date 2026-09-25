@@ -31,10 +31,16 @@ export const builderProjectConfig = {
       accessor: "status",
       sortable: true,
       Cell: ({ value }: { value?: string | null }) => {
-        const statusVal = value || "planning";
+        const statusVal = value || "Pending Review";
         const label = statusVal.replace(/_/g, " ");
         const badgeClass =
-          statusVal === "completed"
+            statusVal === "Published"
+            ? "badge-light-success"
+            : statusVal === "Rejected"
+            ? "badge-light-danger"
+            : statusVal === "Pending Review"
+            ? "badge-light-info"
+            : statusVal === "completed"
             ? "badge-light-success"
             : statusVal === "in_delivery"
             ? "badge-light-primary"
@@ -67,6 +73,9 @@ export const builderProjectConfig = {
       label: "Status",
       type: "select",
       options: [
+        { label: "Pending Review", value: "Pending Review" },
+        { label: "Published", value: "Published" },
+        { label: "Rejected", value: "Rejected" },
         { label: "Planning", value: "planning" },
         { label: "In Delivery", value: "in_delivery" },
         { label: "Completed", value: "completed" },

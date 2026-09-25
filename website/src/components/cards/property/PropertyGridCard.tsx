@@ -1,17 +1,21 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FolderPlus } from "lucide-react";
+import { useState } from "react";
 import type { Property } from "../../../types/property";
 import FavoriteButton from "../../custom/FavoriteButton";
 import { SafeImage } from "../../custom/SafeImage";
+import CollectionModal from "../../collections/CollectionModal";
 
 type Props = {
   item: Property
 }
 
 const PropertyGridCard = ({ item }: Props) => {
+  const [collectionOpen, setCollectionOpen] = useState(false);
   const truncateText = (text: string, maxLength = 30) =>
     text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   return (
+    <>
     <Link
       to={`/property/${item.id}`}
       className="flex h-[28rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
@@ -26,7 +30,9 @@ const PropertyGridCard = ({ item }: Props) => {
 
           {(item.purpose || item.badge) && (
             <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium">
-            {( { SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string> )[item.purpose || ""] || item.badge}
+            {item.propertyCategory === "commercial"
+              ? item.transactionStatus || (item.purpose === "RENT" ? "LEASE" : "BUY")
+              : ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[item.purpose || ""] || item.badge}
             </span>
           )}
 
@@ -37,6 +43,9 @@ const PropertyGridCard = ({ item }: Props) => {
           className="absolute right-4 top-3"
           variant="overlay"
         />
+        <button type="button" aria-label="Add to Collection" title="Add to Collection" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setCollectionOpen(true); }} className="absolute right-4 top-12 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-primary-brown">
+          <FolderPlus size={17} />
+        </button>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col p-4">
@@ -74,6 +83,8 @@ const PropertyGridCard = ({ item }: Props) => {
         </div>
       </div>
     </Link>
+      {collectionOpen && <CollectionModal propertyId={String(item.id)} onClose={() => setCollectionOpen(false)} />}
+    </>
   );
 };
 

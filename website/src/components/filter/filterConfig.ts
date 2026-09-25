@@ -77,18 +77,26 @@ const ORG_FIELDS: FilterField[] = [
 ];
 
 
-export type FilterMode = "Buy" | "Rent" | "Sold" | "Builders" | "Agents" | "Traders";
+export type FilterMode = "Buy" | "Rent" | "Lease" | "Sold" | "Leased" | "Builders" | "Agents" | "Traders" | "Landscappers" | "Concreter" | "Fencing" | "Mortgage Brokers" | "Conveyancers" | "Building and Pest";
 
 export const getFieldsForMode = (mode: FilterMode): FilterField[] => {
   switch (mode) {
     case "Buy":
     case "Rent":
+    case "Lease":
+    case "Leased":
       return PROPERTY_FIELDS;
     case "Sold":
       return SOLD_FIELDS;
     case "Builders":
     case "Agents":
     case "Traders":
+    case "Landscappers":
+    case "Concreter":
+    case "Fencing":
+    case "Mortgage Brokers":
+    case "Conveyancers":
+    case "Building and Pest":
       return ORG_FIELDS;
   }
 };

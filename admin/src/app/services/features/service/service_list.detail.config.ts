@@ -13,19 +13,6 @@ export const serviceDetailConfig: DetailConfig<any> = {
         color: (data) => (data.status === "active" ? "success" : "warning"),
       },
     ],
-    metrics: [
-      {
-        label: "Price",
-        valueAccessor: (data) => {
-          const from = data.rate_from;
-          const to = data.rate_to;
-
-          if (from == null && to == null) return "N/A";
-          if (from != null && to != null) return `$${from.toLocaleString()} – $${to.toLocaleString()}`;
-          return `$${(from ?? to).toLocaleString()}`;
-        },
-      },
-    ],
   },
   tabs: [
       {

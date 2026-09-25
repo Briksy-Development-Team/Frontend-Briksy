@@ -16,12 +16,8 @@ export function ServiceList({ servicesData }: { servicesData: any }) {
   return (
     <div className="flex flex-col gap-5">
       <h2 className="text-[1.25rem] font-medium text-primary-brown">
-        Services & Rates
+        Services
       </h2>
-      <p className="text-[0.875rem] text-primary-light-brown">
-        General estimate due to external variables involved
-      </p>
-
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 w-full">
         {servicesData.list.map((s: any) => (
           <div
@@ -42,22 +38,10 @@ export function ServiceList({ servicesData }: { servicesData: any }) {
               <p className="text-[0.875rem] md:text-xs lg:text-sm text-primary-light-brown mt-1 leading-snug">
                 {s.description}
               </p>
-              <div className="flex items-center gap-2 mt-2 text-[0.875rem]">
-                <span className="font-medium text-xs text-primary-brown">
-                  {s.price}
-                </span>
-                <span className="text-gray-300">/</span>
-                <span className="text-primary-light-brown text-xs font-medium">
-                  {s.duration}
-                </span>
-              </div>
             </div>
           </div>
         ))}
       </div>
-      <p className="text-[0.75rem] text-[#6C6C6C] mt-2">
-        *Actual price will change after on-site review changes
-      </p>
     </div>
   );
 }

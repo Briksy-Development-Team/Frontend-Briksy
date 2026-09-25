@@ -15,7 +15,7 @@ import FraudBanner from "../../../../components/custom/FraudBanner";
 export function OrganizationView({ organization, service }: { organization: PublicOrganization, service: PublicService | null }) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
 
-  const selected = service && { ...service, starting_price: service.rate_from };
+  const selected = service;
   const allServices = [
     ...(selected ? [selected] : []),
     ...(organization.services ?? []).filter((s) => s.id !== selected?.id),
@@ -23,14 +23,11 @@ export function OrganizationView({ organization, service }: { organization: Publ
   const focus = allServices[0]; // drives favourite target, price and service area
 
   const mappedServices = allServices.map((s) => {
-    const from = s.starting_price ?? s.rate_from;
     return {
       id: s.id,
       image: s.images?.[0]?.url || ServicePlaceholder,
       title: s.name,
       description: s.description || "No description provided for this service.",
-      price: from != null ? `From $${from}` : "Custom quote",
-      duration: s.service_area || "Contact for estimate",
     };
   });
 
@@ -42,7 +39,6 @@ export function OrganizationView({ organization, service }: { organization: Publ
   const locationText = serviceArea || address;
   const mapSrc = locationText ? `https://www.google.com/maps?q=${encodeURIComponent(locationText)}&output=embed` : "";
   const rating = Number(organization.rating || 0);
-  const price = focus?.starting_price ?? focus?.rate_from ?? 0;
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pb-16 font-helvetica md:pt-20">
@@ -61,7 +57,6 @@ export function OrganizationView({ organization, service }: { organization: Publ
         <div className="mt-4 flex flex-col items-start gap-12 md:mt-8 lg:flex-row">
           <div className="hidden w-full md:block lg:sticky lg:top-28 lg:w-[30%]">
             <ServiceSidebar
-              contact={{ price, rateType: "/hour" }}
               service={{
                 id: focus?.id || organization.id,
                 favoriteType: focus ? "service" : "organization",
@@ -133,13 +128,6 @@ export function OrganizationView({ organization, service }: { organization: Publ
       </div>
 
       <MobileStickyAction
-        price={
-          focus?.starting_price != null
-            ? `$${focus.starting_price}`
-            : focus?.rate_from != null
-              ? `$${focus.rate_from}`
-              : "Contact"
-        }
         onEnquiry={() => setIsEnquiryOpen(true)}
       />
 

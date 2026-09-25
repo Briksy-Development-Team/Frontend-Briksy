@@ -8,11 +8,14 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
     badges: [
       {
         label: (data: any) => {
-          const status = String(data?.status ?? "planning").replace(/_/g, " ");
+          const status = String(data?.status ?? "Pending Review").replace(/_/g, " ");
           return status.charAt(0).toUpperCase() + status.slice(1);
         },
         color: (data: any) => {
           const status = String(data?.status ?? "").toLowerCase();
+          if (status === "published") return "success";
+          if (status === "rejected") return "danger";
+          if (status === "pending review") return "info";
           if (status === "completed") return "success";
           if (status === "in_delivery") return "primary";
           return "warning";
@@ -44,7 +47,7 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
         { label: "ID", accessor: (data: any) => getDisplayId(data), colSpan: 6 },
         { label: "Project Name", accessor: "name", colSpan: 6 },
         { label: "Project Type", accessor: (data: any) => data.project_type || "—", colSpan: 6 },
-        { label: "Status", accessor: (data: any) => (data.status || "planning").replace(/_/g, " "), colSpan: 6 },
+        { label: "Status", accessor: (data: any) => (data.status || "Pending Review").replace(/_/g, " "), colSpan: 6 },
         { label: "Suburb / Location", accessor: (data: any) => data.location || "—", colSpan: 6 },
         { label: "State", accessor: (data: any) => data.state || "—", colSpan: 3 },
         { label: "Postcode", accessor: (data: any) => data.postcode || "—", colSpan: 3 },
