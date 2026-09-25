@@ -7,6 +7,7 @@ import { SafeImage } from '../../custom/SafeImage'
 import { useAuth } from '../../../auth/AuthContext'
 import { storePendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
+import CollectionModal from '../../collections/CollectionModal'
 
 type Props = {
   item: Property
@@ -17,6 +18,7 @@ const PropertyListCard = ({ item }: Props) => {
   const navigate = useNavigate();
   const [isFavourite, setIsFavourite] = useState(item.isFavourite);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
 
   const handleFavouriteClick = async () => {
     if (isProcessing) {
@@ -33,6 +35,9 @@ const PropertyListCard = ({ item }: Props) => {
       setIsProcessing(true)
       const result = await toggleSeekerFavorite(String(item.id), 'property')
       setIsFavourite(result.data.action === 'added')
+      if (result.data.action === 'added' && result.data.collection_selection_required) {
+        setCollectionPromptOpen(true)
+      }
     } catch (error) {
       console.error('Failed to toggle favourite.', error)
     } finally {
@@ -41,6 +46,7 @@ const PropertyListCard = ({ item }: Props) => {
   }
 
   return (
+    <>
     <Link to={`/property/${item.id}`} className="flex items-center gap-3 rounded-[1.25rem] border border-[#E7E7E4] bg-white px-2 py-2 font-helvetica lg:gap-4 hover:border hover:border-primary">
     <div className="relative w-[108px] aspect-4/5 shrink-0 overflow-hidden rounded-2xl">
       <SafeImage loading="lazy"
@@ -110,6 +116,14 @@ const PropertyListCard = ({ item }: Props) => {
       </div>
     </div>
     </Link>
+    {collectionPromptOpen && (
+      <CollectionModal
+        propertyId={String(item.id)}
+        targetType="property"
+        onClose={() => setCollectionPromptOpen(false)}
+      />
+    )}
+    </>
   )
 }
 

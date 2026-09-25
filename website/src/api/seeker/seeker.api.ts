@@ -187,8 +187,8 @@ export const addSeekerFavorite = async (propertyId: string): Promise<void> => {
 export const toggleSeekerFavorite = async (
   targetId: string,
   type: FavoriteType = 'property'
-): Promise<ApiEnvelope<{ favorite: FavoriteItem | null; action: 'added' | 'removed' }>> => {
-  const response = await api.post<ApiEnvelope<{ favorite: FavoriteItem | null; action: 'added' | 'removed' }>>(
+): Promise<ApiEnvelope<{ favorite: FavoriteItem | null; action: 'added' | 'removed'; collection_selection_required?: boolean; collection_id?: string | null }>> => {
+  const response = await api.post<ApiEnvelope<{ favorite: FavoriteItem | null; action: 'added' | 'removed'; collection_selection_required?: boolean; collection_id?: string | null }>>(
     '/seeker/favorites/toggle',
     {
       type,

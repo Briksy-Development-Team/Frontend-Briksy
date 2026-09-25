@@ -1,17 +1,14 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, FolderPlus } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import type { Property } from "../../../types/property";
 import FavoriteButton from "../../custom/FavoriteButton";
 import { SafeImage } from "../../custom/SafeImage";
-import CollectionModal from "../../collections/CollectionModal";
 
 type Props = {
   item: Property
 }
 
 const PropertyGridCard = ({ item }: Props) => {
-  const [collectionOpen, setCollectionOpen] = useState(false);
   const truncateText = (text: string, maxLength = 30) =>
     text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   return (
@@ -43,9 +40,6 @@ const PropertyGridCard = ({ item }: Props) => {
           className="absolute right-4 top-3"
           variant="overlay"
         />
-        <button type="button" aria-label="Add to Collection" title="Add to Collection" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setCollectionOpen(true); }} className="absolute right-4 top-12 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-primary-brown">
-          <FolderPlus size={17} />
-        </button>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col p-4">
@@ -83,7 +77,6 @@ const PropertyGridCard = ({ item }: Props) => {
         </div>
       </div>
     </Link>
-      {collectionOpen && <CollectionModal propertyId={String(item.id)} onClose={() => setCollectionOpen(false)} />}
     </>
   );
 };

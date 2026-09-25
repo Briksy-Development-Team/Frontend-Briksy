@@ -17,7 +17,7 @@ const SavedSection = ({ title, items }: SavedSectionProps) => (
         <div className="bg-white w-full flex flex-col py-[2rem] md:py-[2.5rem] px-[1.5rem] md:px-[2.5rem] space-y-[1rem] rounded-[1rem]">
             {items.length > 0 ? <div className="grid gap-4 md:grid-cols-2">{items.map((item) => <div key={item.id} className="rounded-xl border border-[#eadfd2] p-4"><p className="font-medium text-primary-brown">{(item.target as any)?.title || (item.target as any)?.name || "Saved item"}</p><p className="text-xs text-primary-light-brown mt-1">{(item.target as any)?.description || (item.target as any)?.address || ""}</p></div>)}</div> : <>
             <img src={Placeholderproperty} alt="" />
-            <p>No saved searches yet</p>
+            <p>No liked items yet</p>
             <p className="md:w-[40%] mx-auto text-center text-[0.75rem] md:text-1rem">
                 Run a search, then hit Save. We'll email you when a new verified
                 professional or listing matches what you're after.
@@ -49,11 +49,11 @@ const Mysavedata = () => {
 
             <div className="space-y-1">
                 <h1 className="text-[1.875rem] hidden md:flex font-medium text-primary-brown">
-                    Saved searches
+                    Like searches
                 </h1>
 
                 <p className="text-[0.75rem] text-primary-light-brown">
-                    We'll tell you when something new matches.
+                    Your liked properties, services, and professionals appear here.
                 </p>
             </div>
 
