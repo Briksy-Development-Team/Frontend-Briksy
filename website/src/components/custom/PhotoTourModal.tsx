@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { ChevronLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Thumbs } from 'swiper/modules';
+import { FreeMode, Mousewheel, Thumbs } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
 
 import 'swiper/css';
@@ -88,6 +88,7 @@ export function PhotoTourModal({
   initialIndex = 0,
   onClose,
   title = 'Photo tour',
+  subtitle,
   targetId,
   initialIsFavourite = false,
 }: {
@@ -95,6 +96,7 @@ export function PhotoTourModal({
   initialIndex?: number;
   onClose: () => void;
   title?: string;
+  subtitle?: string;
   targetId?: string | number;
   initialIsFavourite?: boolean;
 }) {
