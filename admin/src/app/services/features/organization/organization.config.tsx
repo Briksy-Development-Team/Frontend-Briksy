@@ -34,6 +34,26 @@ export const organizationConfig = {
       Cell: ({ value }) => (value as Organization["type"])?.name ?? "—",
     },
     {
+      Header: "Pending Projects",
+      accessor: "pending_builder_projects_count",
+      sortable: true,
+      Cell: ({ value }) => (
+        <span className={`badge ${(Number(value) || 0) > 0 ? "badge-light-warning" : "badge-light-secondary"}`}>
+          {Number(value) || 0}
+        </span>
+      ),
+    },
+    {
+      Header: "Pending Properties",
+      accessor: "pending_properties_count",
+      sortable: true,
+      Cell: ({ value }) => (
+        <span className={`badge ${(Number(value) || 0) > 0 ? "badge-light-warning" : "badge-light-secondary"}`}>
+          {Number(value) || 0}
+        </span>
+      ),
+    },
+    {
       Header: "ABN",
       accessor: "abn",
       sortable: true,
@@ -79,6 +99,16 @@ export const organizationConfig = {
       key: "created_at",
       label: "Created Date",
       type: "dateRange",
+    },
+    {
+      key: "review_status",
+      label: "Review Status",
+      type: "select",
+      options: [
+        { label: "Pending properties", value: "pending_properties" },
+        { label: "Pending projects", value: "pending_projects" },
+        { label: "Any pending review", value: "pending_any" },
+      ],
     },
   ],
 

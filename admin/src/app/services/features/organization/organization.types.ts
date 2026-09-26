@@ -22,6 +22,8 @@ export type Organization = {
   plan_id?: string | null;
   ranking_priority?: number;
   pending_properties_count?: number;
+  builder_project_count?: number;
+  pending_builder_projects_count?: number;
   stripe_customer_id?: string | null;
   state?: string;
   postcode?: string;

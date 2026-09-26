@@ -124,6 +124,9 @@ export const BuilderProjectModal = ({
     await onSubmit(form);
   };
 
+  const validLatitude = form.latitude === "" || (Number(form.latitude) >= -90 && Number(form.latitude) <= 90);
+  const validLongitude = form.longitude === "" || (Number(form.longitude) >= -180 && Number(form.longitude) <= 180);
+
   return (
     <ModalShell
       title={initialValues ? "Edit Project" : "Add Builder Project"}
@@ -131,7 +134,7 @@ export const BuilderProjectModal = ({
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       submitLabel={initialValues ? "Update Project" : "Save Project"}
-      isValid={Boolean(form.name.trim())}
+      isValid={Boolean(form.name.trim()) && validLatitude && validLongitude}
       dialogClassName="mw-650px"
     >
       <div className="row g-4">
@@ -179,11 +182,42 @@ export const BuilderProjectModal = ({
             onChange={(value) => updateForm("location", value)}
             onSelect={handleLocationSelect}
           />
+          <div className="row g-4 mt-1">
+            <div className="col-md-6">
+              <label className="form-label">Latitude</label>
+              <input
+                type="number"
+                className={`form-control form-control-solid ${!validLatitude ? "is-invalid" : ""}`}
+                min="-90"
+                max="90"
+                step="any"
+                placeholder="e.g. -32.9283"
+                value={form.latitude}
+                onChange={(e) => updateForm("latitude", e.target.value)}
+              />
+              {!validLatitude && <div className="invalid-feedback">Latitude must be between -90 and 90.</div>}
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Longitude</label>
+              <input
+                type="number"
+                className={`form-control form-control-solid ${!validLongitude ? "is-invalid" : ""}`}
+                min="-180"
+                max="180"
+                step="any"
+                placeholder="e.g. 151.7817"
+                value={form.longitude}
+                onChange={(e) => updateForm("longitude", e.target.value)}
+              />
+              {!validLongitude && <div className="invalid-feedback">Longitude must be between -180 and 180.</div>}
+            </div>
+          </div>
+          <div className="text-muted fs-7 mt-2">Enter the exact coordinates. The map below is a preview only.</div>
           <LocationMapPreview
             latitude={form.latitude}
             longitude={form.longitude}
             address={form.location}
-            onChange={handleLocationSelect}
+            onChange={() => {}}
             height={240}
           />
         </div>

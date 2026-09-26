@@ -7,6 +7,7 @@ import { fetchServiceList } from "../service/service_service_list.slice";
 import { serviceListConfig } from "../service/service_list.config";
 import { store, type RootState } from "../../store";
 import { getDisplayId } from "../../utils/displayId";
+import BuilderProjectsReviewSection from "./BuilderProjectsReviewSection";
 
 const getOrganizationId = (data: any) => String(data?.id ?? data?.organization_id ?? "");
 
@@ -110,6 +111,12 @@ export const organizationDetailConfig: DetailConfig<any> = {
       label: "Properties",
       sections: ["properties_table"],
       showIf: (data) => !isServiceOrganization(data),
+    },
+    {
+      id: "projects",
+      label: "Projects",
+      sections: ["builder_projects_review"],
+      showIf: (data) => data?.type?.slug === "builders",
     },
     {
       id: "services",
@@ -246,6 +253,14 @@ export const organizationDetailConfig: DetailConfig<any> = {
       enableRowClick: true,
       getRowLink: (row) =>
         getPortalBase() === "/super-admin" ? `/super-admin/services/${row.id}` : `/admin/services/${row.id}`,
+    },
+    {
+      id: "builder_projects_review",
+      type: "custom",
+      title: "Builder Projects",
+      gridColumnSpan: 12,
+      showIf: (data) => data?.type?.slug === "builders" && getPortalBase() === "/super-admin",
+      component: BuilderProjectsReviewSection,
     },
   ],
 };

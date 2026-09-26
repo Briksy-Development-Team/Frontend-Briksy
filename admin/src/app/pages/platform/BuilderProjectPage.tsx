@@ -32,9 +32,12 @@ export default function BuilderProjectPage() {
         reviewMode ? "/super-admin/builder-projects" : "/admin/builder-projects",
         { params }
       );
-      const items = response.data.data.data ?? [];
+      const payload: any = response.data.data;
+      const items = Array.isArray(payload)
+        ? payload
+        : payload?.data ?? payload?.items ?? [];
       setData(items);
-      setTotal(response.data.data.total ?? items.length);
+      setTotal(payload?.total ?? items.length);
     } catch {
       setError("Builder projects could not be loaded.");
     }
@@ -45,10 +48,6 @@ export default function BuilderProjectPage() {
   useEffect(() => {
     void fetchProjects(params);
   }, [fetchProjects, params]);
-
-  if (isDetailPage) {
-    return <GenericDetailPage />;
-  }
 
   const saveProject = async (values: ProjectFormValues) => {
     setSavingProject(true);
@@ -117,6 +116,57 @@ export default function BuilderProjectPage() {
       setError(reason?.response?.data?.message ?? "Unable to update this project.");
     }
   };
+
+  if (isDetailPage) {
+    const detailActions = reviewMode ? [
+      {
+        label: "Approve & Publish",
+        className: "text-success",
+        showIf: isPendingReview,
+        onClick: (row: BuilderProject) => void reviewProject(row.id, "approve"),
+      },
+      {
+        label: "Reject",
+        className: "text-danger",
+        showIf: isPendingReview,
+        onClick: (row: BuilderProject) => void reviewProject(row.id, "reject"),
+      },
+    ] : [
+      {
+        label: "Edit",
+        permission: "project.update",
+        onClick: (row: BuilderProject) => {
+          setNotice(null);
+          setEditingProject(row);
+          setShowProjectModal(true);
+        },
+      },
+      {
+        label: "Delete",
+        className: "text-danger",
+        permission: "project.delete",
+        onClick: (row: BuilderProject) => void deleteProject(row.id),
+      },
+    ];
+
+    return (
+      <>
+        <GenericDetailPage rowActions={detailActions} />
+        {showProjectModal && (
+          <BuilderProjectModal
+            initialValues={editingProject}
+            isSubmitting={savingProject}
+            onClose={() => {
+              setShowProjectModal(false);
+              setEditingProject(null);
+            }}
+            onSubmit={saveProject}
+            onDeleteMedia={deleteProjectMedia}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <Content>

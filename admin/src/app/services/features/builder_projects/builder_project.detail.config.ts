@@ -40,7 +40,6 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
       id: "media",
       label: "Media",
       sections: ["project_images", "project_videos"],
-      showIf: (data: any) => (data?.images?.length ?? 0) > 0 || (data?.videos?.length ?? 0) > 0,
     },
   ],
   sections: [
@@ -65,7 +64,6 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
       type: "map",
       title: "Project Location",
       gridColumnSpan: 8,
-      showIf: (data: any) => data?.latitude !== null && data?.latitude !== undefined && data?.longitude !== null && data?.longitude !== undefined,
       latAccessor: "latitude",
       lngAccessor: "longitude",
     },
@@ -74,7 +72,6 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
       type: "gallery",
       title: "Project Images",
       gridColumnSpan: 12,
-      showIf: (data: any) => (data?.images?.length ?? 0) > 0,
       imagesAccessor: (data: any) => (data?.images ?? []).map((image: any) => image.url).filter(Boolean),
     },
     {
@@ -82,7 +79,6 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
       type: "gallery",
       title: "Project Videos",
       gridColumnSpan: 12,
-      showIf: (data: any) => (data?.videos?.length ?? 0) > 0,
       mediaType: "video",
       imagesAccessor: (data: any) => (data?.videos ?? []).map((video: any) => video.url).filter(Boolean),
     },
