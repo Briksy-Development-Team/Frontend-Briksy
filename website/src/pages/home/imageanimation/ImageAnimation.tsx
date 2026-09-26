@@ -63,7 +63,7 @@ const ImageAnimation = () => {
   const navigate = useNavigate();
   return (
     <div className="relative flex flex-col lg:flex-row  h-auto min-h-screen lg:h-screen w-full font-helvetica overflow-hidden">
-      <div className="relative mt-10 md:my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 xl:px-12 pt-8 lg:pt-0">
+      <div className="relative mt-10 md:my-auto mx-auto lg:ml-auto h-[40vh] lg:h-[80vh] w-[90vw] lg:w-[40vw] overflow-hidden px-4 xl:px-12">
         <img
           src={WholeBg}
           alt=""

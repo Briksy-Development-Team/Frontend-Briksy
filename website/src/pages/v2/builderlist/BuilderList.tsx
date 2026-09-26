@@ -12,7 +12,7 @@ const BuilderList = () => {
     const [items, setItems] = useState<PublicOrganization[]>([]);
     useEffect(() => { getOrganizations({ type: "builders", verified_only: 1 }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
-        <section className="pb-20 -mt-10 md:mt-0 md:py-20 font-helvetica">
+        <section className=" -mt-10 md:mt-0  font-helvetica">
             <div className="lg:w-full pl-[5%] lg:px-0 lg:ml-10">
                 <div className="relative mb-10 lg:mr-14  flex flex-col text-primary-brown items-stat justify-end lg:justify-center">
                     <h2 className="text-[30px] font-medium  lg:text-[44px]">
@@ -22,7 +22,7 @@ const BuilderList = () => {
 
                     <button
                         onClick={() => navigate("/builders")}
-                        className="absolute right-0  items-center gap-3 text-lg hidden md:flex font-medium text-[#562F00] transition-all hover:gap-3"
+                        className="absolute right-0 cursor-pointer  items-center gap-3 text-lg hidden md:flex font-medium text-[#562F00] transition-all hover:gap-3"
                     >
                         View All
                         <span>↗</span>
