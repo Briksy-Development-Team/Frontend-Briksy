@@ -50,6 +50,12 @@ export type PublicProperty = {
     banner_url?: string | null;
     is_verified: boolean;
   } | null;
+  creator?: {
+    id: string;
+    name: string;
+    email?: string | null;
+    mobile_number?: string | null;
+  } | null;
 
   media?: {
     id?: string;

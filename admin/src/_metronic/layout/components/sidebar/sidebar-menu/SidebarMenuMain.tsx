@@ -99,6 +99,12 @@ const SidebarMenuMain = () => {
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
+            to={`${portalBase}/builder-projects`}
+            icon="/media/icons/duotune/iconsnew/arrowside.svg"
+            title="Builder Project Reviews"
+            fontIcon="bi-layers"
+          />
+          <SidebarMenuItem
             to={`${portalBase}/companies/organization/trades-professionals`}
             icon="/media/icons/duotune/iconsnew/arrowside.svg"
 
@@ -293,6 +299,15 @@ const SidebarMenuMain = () => {
             </>
           )}
 
+          {hasModule("builder_management") && hasPermission("project.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/builder-projects`}
+              title="Builder Projects"
+              fontIcon="bi-building"
+              icon="/media/icons/duotune/iconsnew/builder.svg"
+            />
+          )}
+
           {hasModule("service_management") && hasPermission("service.view") && (
             <>
               <SidebarMenuItem
@@ -325,15 +340,6 @@ const SidebarMenuMain = () => {
               title="Buyer Briefs"
               fontIcon="bi-people"
               icon="/media/icons/duotune/iconsnew/"
-            />
-          )}
-
-          {hasModule("builder_management") && (
-            <SidebarMenuItem
-              to={`${portalBase}/builder-projects`}
-              title="Builder Projects"
-              fontIcon="bi-building"
-              icon="/media/icons/duotune/iconsnew/builder.svg"
             />
           )}
 

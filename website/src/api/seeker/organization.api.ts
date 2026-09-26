@@ -43,6 +43,10 @@ export type PublicBuilderProject = {
   location?: string | null;
   state?: string | null;
   postcode?: string | null;
+  images?: { id?: string; url: string; is_primary?: boolean }[];
+  videos?: { id?: string; url: string }[];
+  organization?: { id: string; name: string; slug?: string | null; logo_url?: string | null } | null;
+  creator?: { id: string; name: string; email?: string | null; mobile_number?: string | null } | null;
 };
 
 export const getOrganizations = async (params: Record<string, string | number | boolean | undefined> = {}) => {
@@ -58,3 +62,6 @@ export const getOrganization = async (id: string): Promise<{ data: PublicOrganiz
 
 export const getBuilderProjects = async (organizationId: string): Promise<PublicBuilderProject[]> =>
   (await api.get<{ data: PublicBuilderProject[] }>(`/seeker/organizations/${organizationId}/builder-projects`)).data.data;
+
+export const getBuilderProject = async (projectId: string): Promise<{ data: PublicBuilderProject }> =>
+  (await api.get<{ data: PublicBuilderProject }>(`/seeker/builder-projects/${projectId}`)).data;

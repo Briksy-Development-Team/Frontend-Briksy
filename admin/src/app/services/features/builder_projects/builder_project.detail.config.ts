@@ -34,7 +34,13 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
     {
       id: "overview",
       label: "Overview",
-      sections: ["project_info", "recent_activity"],
+      sections: ["project_info", "project_map", "recent_activity"],
+    },
+    {
+      id: "media",
+      label: "Media",
+      sections: ["project_images", "project_videos"],
+      showIf: (data: any) => (data?.images?.length ?? 0) > 0 || (data?.videos?.length ?? 0) > 0,
     },
   ],
   sections: [
@@ -53,6 +59,32 @@ export const builderProjectDetailConfig: DetailConfig<any> = {
         { label: "Postcode", accessor: (data: any) => data.postcode || "—", colSpan: 3 },
         { label: "Description", accessor: (data: any) => data.description || "No description provided.", colSpan: 12 },
       ],
+    },
+    {
+      id: "project_map",
+      type: "map",
+      title: "Project Location",
+      gridColumnSpan: 8,
+      showIf: (data: any) => data?.latitude !== null && data?.latitude !== undefined && data?.longitude !== null && data?.longitude !== undefined,
+      latAccessor: "latitude",
+      lngAccessor: "longitude",
+    },
+    {
+      id: "project_images",
+      type: "gallery",
+      title: "Project Images",
+      gridColumnSpan: 12,
+      showIf: (data: any) => (data?.images?.length ?? 0) > 0,
+      imagesAccessor: (data: any) => (data?.images ?? []).map((image: any) => image.url).filter(Boolean),
+    },
+    {
+      id: "project_videos",
+      type: "gallery",
+      title: "Project Videos",
+      gridColumnSpan: 12,
+      showIf: (data: any) => (data?.videos?.length ?? 0) > 0,
+      mediaType: "video",
+      imagesAccessor: (data: any) => (data?.videos ?? []).map((video: any) => video.url).filter(Boolean),
     },
     {
       id: "recent_activity",

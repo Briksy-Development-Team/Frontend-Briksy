@@ -27,8 +27,11 @@ const StaffModal = ({ initialValues, onClose, onSubmit, isSubmitting }: Props) =
     ? SUPER_ADMIN_PERMISSIONS
     : [
         "dashboard.view",
-        ...(hasModule("property_management")
+        ...(hasModule("property_management") || hasModule("builder_management")
           ? ADMIN_PERMISSIONS.filter((perm) => perm.startsWith("property."))
+          : []),
+        ...(hasModule("builder_management")
+          ? ADMIN_PERMISSIONS.filter((perm) => perm.startsWith("project."))
           : []),
         ...(hasModule("service_management")
           ? ADMIN_PERMISSIONS.filter((perm) => perm.startsWith("service."))

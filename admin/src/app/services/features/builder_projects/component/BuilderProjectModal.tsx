@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
-import type { BuilderProject } from "../builder_project.types";
+import { LocationAutocomplete, type LocationSelection } from "../../maps/LocationAutocomplete";
+import { LocationMapPreview } from "../../maps/LocationMapPreview";
+import { useAuth } from "../../../../modules/auth";
+import { mediaAllowance } from "../../../../modules/subscription/mediaEntitlements";
+import type { BuilderProject, BuilderProjectMedia } from "../builder_project.types";
 
 export type ProjectFormValues = {
   name: string;
@@ -10,6 +14,10 @@ export type ProjectFormValues = {
   state: string;
   postcode: string;
   description: string;
+  latitude: string | number;
+  longitude: string | number;
+  images: File[];
+  videos: File[];
 };
 
 type Props = {
@@ -17,6 +25,7 @@ type Props = {
   isSubmitting?: boolean;
   onClose: () => void;
   onSubmit: (values: ProjectFormValues) => void | Promise<unknown>;
+  onDeleteMedia?: (mediaId: string) => void | Promise<unknown>;
 };
 
 export const BuilderProjectModal = ({
@@ -24,7 +33,13 @@ export const BuilderProjectModal = ({
   isSubmitting = false,
   onClose,
   onSubmit,
+  onDeleteMedia,
 }: Props) => {
+  const [images, setImages] = useState<File[]>([]);
+  const [videos, setVideos] = useState<File[]>([]);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+  const { entitlements } = useAuth();
+  const allowance = mediaAllowance(entitlements);
   const [form, setForm] = useState<ProjectFormValues>({
     name: initialValues?.name ?? "",
     project_type: initialValues?.project_type ?? "",
@@ -33,10 +48,76 @@ export const BuilderProjectModal = ({
     state: initialValues?.state ?? "",
     postcode: initialValues?.postcode ?? "",
     description: initialValues?.description ?? "",
+    latitude: initialValues?.latitude ?? "",
+    longitude: initialValues?.longitude ?? "",
+    images: [],
+    videos: [],
   });
+
+  useEffect(() => {
+    setForm({
+      name: initialValues?.name ?? "",
+      project_type: initialValues?.project_type ?? "",
+      status: initialValues?.status ?? "planning",
+      location: initialValues?.location ?? "",
+      state: initialValues?.state ?? "",
+      postcode: initialValues?.postcode ?? "",
+      description: initialValues?.description ?? "",
+      latitude: initialValues?.latitude ?? "",
+      longitude: initialValues?.longitude ?? "",
+      images: [],
+      videos: [],
+    });
+    setImages([]);
+    setVideos([]);
+    setMediaError(null);
+  }, [initialValues]);
 
   const updateForm = (key: keyof ProjectFormValues, value: string) =>
     setForm((current) => ({ ...current, [key]: value }));
+
+  const handleLocationSelect = (selection: LocationSelection) => {
+    setForm((current) => ({
+      ...current,
+      location: selection.address ?? selection.full_address ?? current.location,
+      state: selection.state ?? current.state,
+      postcode: selection.postcode ?? current.postcode,
+      latitude: selection.latitude ?? current.latitude,
+      longitude: selection.longitude ?? current.longitude,
+    }));
+  };
+
+  const handleImageChange = (files: File[]) => {
+    const nextImages = files.filter((file) => file.type.startsWith("image/"));
+    if (allowance.imagesConfigured && allowance.images !== null && (initialValues?.images?.length ?? 0) + nextImages.length > allowance.images) {
+      setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.images} images for this project.`);
+      return;
+    }
+    setMediaError(null);
+    setImages(nextImages);
+    setForm((current) => ({ ...current, images: nextImages }));
+  };
+
+  const handleVideoChange = (files: File[]) => {
+    const nextVideos = files.filter((file) => file.type.startsWith("video/"));
+    const maxVideoSize = 1024 * 1024 * 1024;
+    const invalidVideo = nextVideos.find((file) => file.size > maxVideoSize);
+    if (invalidVideo) {
+      setMediaError(`${invalidVideo.name} must be smaller than 1 GB.`);
+      return;
+    }
+    if (!allowance.videoIncluded) {
+      setMediaError("Video uploads are not included in your current plan.");
+      return;
+    }
+    if (allowance.videosConfigured && allowance.videos !== null && (initialValues?.videos?.length ?? 0) + nextVideos.length > allowance.videos) {
+      setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.videos} videos for this project.`);
+      return;
+    }
+    setMediaError(null);
+    setVideos(nextVideos);
+    setForm((current) => ({ ...current, videos: nextVideos }));
+  };
 
   const handleSubmit = async () => {
     if (!form.name.trim()) return;
@@ -90,18 +171,24 @@ export const BuilderProjectModal = ({
           </select>
         </div>
 
-        <div className="col-md-4">
-          <label className="form-label">Suburb / Location</label>
-          <input
-            className="form-control form-control-solid"
-            maxLength={150}
-            placeholder="e.g. Newcastle"
+        <div className="col-12">
+          <LocationAutocomplete
             value={form.location}
-            onChange={(e) => updateForm("location", e.target.value)}
+            label="Project Location"
+            placeholder="Search for the project address"
+            onChange={(value) => updateForm("location", value)}
+            onSelect={handleLocationSelect}
+          />
+          <LocationMapPreview
+            latitude={form.latitude}
+            longitude={form.longitude}
+            address={form.location}
+            onChange={handleLocationSelect}
+            height={240}
           />
         </div>
 
-        <div className="col-md-2">
+        <div className="col-md-6">
           <label className="form-label">State</label>
           <input
             className="form-control form-control-solid"
@@ -112,7 +199,7 @@ export const BuilderProjectModal = ({
           />
         </div>
 
-        <div className="col-md-2">
+        <div className="col-md-6">
           <label className="form-label">Postcode</label>
           <input
             className="form-control form-control-solid"
@@ -133,7 +220,90 @@ export const BuilderProjectModal = ({
             onChange={(e) => updateForm("description", e.target.value)}
           />
         </div>
+
+        <div className="col-12">
+          <label className="form-label">Project Images</label>
+          <input
+            type="file"
+            multiple
+            accept="image/jpeg,image/png,image/webp"
+            className="form-control form-control-solid"
+            onChange={(event) => handleImageChange(Array.from(event.target.files ?? []))}
+          />
+          <div className="text-muted fs-7 mt-2">
+            {allowance.imagesConfigured ? `Up to ${allowance.images ?? 0} images per project.` : "Image limit is not configured."} {images.length} selected.
+          </div>
+        </div>
+
+        <div className="col-12">
+          <label className="form-label">Project Videos</label>
+          <input
+            type="file"
+            multiple
+            accept="video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm"
+            className="form-control form-control-solid"
+            onChange={(event) => handleVideoChange(Array.from(event.target.files ?? []))}
+          />
+          <div className="text-muted fs-7 mt-2">
+            {allowance.videosConfigured ? `Up to ${allowance.videos ?? 0} videos per project.` : "Video limit is not configured."} {videos.length} selected.
+          </div>
+          {mediaError ? <div className="text-danger fs-7 mt-2">{mediaError}</div> : null}
+
+          {initialValues?.images?.length ? (
+            <MediaPreviewList
+              label="Existing Images"
+              media={initialValues.images}
+              type="image"
+              onDeleteMedia={onDeleteMedia}
+            />
+          ) : null}
+          {initialValues?.videos?.length ? (
+            <MediaPreviewList
+              label="Existing Videos"
+              media={initialValues.videos}
+              type="video"
+              onDeleteMedia={onDeleteMedia}
+            />
+          ) : null}
+        </div>
       </div>
     </ModalShell>
   );
 };
+
+const MediaPreviewList = ({
+  label,
+  media,
+  type,
+  onDeleteMedia,
+}: {
+  label: string;
+  media: BuilderProjectMedia[];
+  type: "image" | "video";
+  onDeleteMedia?: (mediaId: string) => void | Promise<unknown>;
+}) => (
+  <div className="mt-5">
+    <label className="form-label">{label}</label>
+    <div className="row g-3">
+      {media.map((item) => (
+        <div className="col-md-4 position-relative" key={item.id ?? item.url}>
+          {type === "image" ? (
+            <img src={item.url} alt="Project" className="w-100 rounded border" style={{ height: 130, objectFit: "cover" }} />
+          ) : (
+            <video src={item.url} controls className="w-100 rounded border" style={{ height: 130 }} />
+          )}
+          {item.id && onDeleteMedia ? (
+            <button
+              type="button"
+              className="btn btn-sm btn-light-danger btn-icon position-absolute top-0 end-0 m-2"
+              onClick={() => void onDeleteMedia(item.id as string)}
+              aria-label={`Delete ${type}`}
+            >
+              ×
+            </button>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  </div>
+);

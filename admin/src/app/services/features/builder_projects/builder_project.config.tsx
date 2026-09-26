@@ -30,7 +30,7 @@ export const builderProjectConfig = {
       Header: "Status",
       accessor: "status",
       sortable: true,
-      Cell: ({ value }: { value?: string | null }) => {
+      Cell: ({ value }: { value: any }) => {
         const statusVal = value || "Pending Review";
         const label = statusVal.replace(/_/g, " ");
         const badgeClass =

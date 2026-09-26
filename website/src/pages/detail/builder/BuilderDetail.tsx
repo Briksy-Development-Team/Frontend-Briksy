@@ -46,6 +46,7 @@ const BuilderDetail = () => {
         Promise.all([
           getProperties({
             organization_slug: organizationResponse.data.slug || undefined,
+            organization_id: organizationResponse.data.id,
             per_page: 12,
           }),
           getBuilderProjects(organizationResponse.data.id),
@@ -160,7 +161,7 @@ const BuilderDetail = () => {
                 />
               </div>
               <div id="projects">
-                <BuilderProjects projects={projects} />
+                <BuilderProjects projects={projects} builderName={builder.name} />
               </div>
               <div id="about">
                 <BuilderAbout about={viewModel.about} />

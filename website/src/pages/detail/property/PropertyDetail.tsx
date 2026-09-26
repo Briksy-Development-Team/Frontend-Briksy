@@ -13,13 +13,13 @@ import { getProperty, type PublicProperty } from "../../../api/property/property
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import TraderGridCard from '../../../components/cards/trader/TraderGridCard';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules"
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
+import HostProfileCard from "../shared/HostProfileCard";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +80,7 @@ const PropertyDetail = () => {
       since: undefined,
       logo: propertyData.organization?.logo_url || "",
     },
-    hosts: [] as any[],
+    host: propertyData.creator,
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
     sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price || 0 },
   };
@@ -253,14 +253,20 @@ const PropertyDetail = () => {
                   slidesOffsetAfter={0}
                   className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
                 >
-                  {property.hosts.slice(0, 3).map((item) => (
+                  {property.host ? (
                     <SwiperSlide
-                      key={item.id}
+                      key={property.host.id}
                       className=" !w-[19.4375rem]"
                     >
-                      <TraderGridCard item={item} />
+                      <HostProfileCard
+                        host={property.host}
+                        avatar={property.company.logo}
+                        organizationName={property.company.name}
+                      />
                     </SwiperSlide>
-                  ))}
+                  ) : (
+                    <p className="text-sm text-primary-light-brown">Host details are not available for this listing.</p>
+                  )}
                 </Swiper>
               </div>
 

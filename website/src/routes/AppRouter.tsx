@@ -13,6 +13,7 @@ import Notification from "../components/notification/Notification.tsx";
 import Help from "../components/help/Help.tsx";
 import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
+import BuilderProjectDetail from "../pages/detail/builder/BuilderProjectDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
 import Login from "../pages/auth/login/Login.tsx";
 import ProtectedRoute from './ProtectedRoute.tsx'
@@ -70,6 +71,7 @@ const AppRouter = () => {
         <Route path="/commercials" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
+        <Route path="/builder-project/:id" element={<BuilderProjectDetail />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
 
         <Route path="/blogs" element={<BlogsPage />} />
