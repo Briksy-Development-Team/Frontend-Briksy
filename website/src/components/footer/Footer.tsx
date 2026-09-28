@@ -53,7 +53,7 @@ const socialLinks = [
 
 const Footer = () => {
   return (
-    <footer className="font-helvetica  md:px-[3%] ">
+    <footer className="font-helvetica  md:px-[3%]  mt-10">
       <div className=" border-t border-[#C2B4AA] py-3 md:py-5">
         <div className="flex justify-between px-[5%] md:px-0   items-start">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-16">

@@ -169,17 +169,13 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
             })}
           </div>
 
-          {/* Right Side */}
           <div className="flex shrink-0 items-center justify-end lg:w-[13.75rem] gap-5">
 
-            {/* Search */}
             {pastHero && !isSearchOpen && (
               <>
-                {/* Below md: go straight to /all */}
                 <div className="md:hidden">
                   <NavSearchButton onClick={() => navigate("/result?type=all")} />
                 </div>
-                {/* md and up: open the search overlay */}
                 <div className="hidden md:block">
                   <NavSearchButton onClick={() => setMode("search")} />
                 </div>
