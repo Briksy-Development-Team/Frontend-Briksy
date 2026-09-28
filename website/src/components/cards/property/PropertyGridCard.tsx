@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import type { Property } from "../../../types/property";
 import FavoriteButton from "../../custom/FavoriteButton";
 import { SafeImage } from "../../custom/SafeImage";
+import { propertyStatusLabel } from "../../../utils/propertyStatus";
 
 type Props = {
   item: Property
@@ -27,9 +28,7 @@ const PropertyGridCard = ({ item }: Props) => {
 
           {(item.purpose || item.badge) && (
             <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium">
-            {item.propertyCategory === "commercial"
-              ? item.transactionStatus || (item.purpose === "RENT" ? "LEASE" : "BUY")
-              : ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[item.purpose || ""] || item.badge}
+            {propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
             </span>
           )}
 

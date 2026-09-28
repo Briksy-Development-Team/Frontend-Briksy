@@ -6,6 +6,13 @@ import { fetchInquiries } from "../inquiries/inquiry.slice";
 import { inquiryConfig } from "../inquiries/inquiry.config";
 import { store, type RootState } from "../../store";
 
+const transactionStatusLabels: Record<string, string> = {
+  BUY: "For Sale",
+  LEASE: "For Rent",
+  SOLD: "Sold",
+  LEASED: "Leased",
+};
+
 export const propertyDetailConfig: DetailConfig<any> = {
   header: {
     titleAccessor: "title",
@@ -79,7 +86,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
         { label: "Status", accessor: "status", colSpan: 6 },
         { label: "Property Type", accessor: (data) => data?.property_type?.name ?? "—", colSpan: 6 },
         { label: "Property Category", accessor: (data) => data?.property_category ?? data?.property_type?.category ?? "—", colSpan: 6 },
-        { label: "Commercial Status", accessor: (data) => data?.transaction_status ?? "—", colSpan: 6 },
+        { label: "Transaction / Listing Status", accessor: (data) => transactionStatusLabels[data?.transaction_status] ?? data?.transaction_status ?? "—", colSpan: 6 },
         { label: "Address", accessor: "address", colSpan: 6 },
         { label: "Address Line 1", accessor: "address_line_1", colSpan: 6 },
         { label: "Address Line 2", accessor: "address_line_2", colSpan: 6 },

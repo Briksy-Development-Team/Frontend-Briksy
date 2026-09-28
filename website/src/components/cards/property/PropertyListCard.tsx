@@ -8,6 +8,7 @@ import { useAuth } from '../../../auth/AuthContext'
 import { storePendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
 import CollectionModal from '../../collections/CollectionModal'
+import { propertyStatusLabel } from '../../../utils/propertyStatus'
 
 type Props = {
   item: Property
@@ -55,9 +56,7 @@ const PropertyListCard = ({ item }: Props) => {
         className="h-full w-full object-cover"
       />
       <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {item.propertyCategory === "commercial"
-          ? item.transactionStatus || (item.purpose === "RENT" ? "LEASE" : "BUY")
-          : ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[item.purpose || ""] || item.badge}
+        {propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
       </span>
       <button
         type="button"

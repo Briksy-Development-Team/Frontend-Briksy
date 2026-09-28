@@ -20,6 +20,7 @@ import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
 import HostProfileCard from "../shared/HostProfileCard";
+import { propertyStatusLabel } from "../../../utils/propertyStatus";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -204,9 +205,9 @@ const PropertyDetail = () => {
               reviewsCount={property.company.reviews}
               organizationName={property.company.name}
             />
-            {propertyData.property_category === "commercial" && propertyData.transaction_status ? (
+            {propertyData.transaction_status ? (
               <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
-                {propertyData.transaction_status}
+                {propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status)}
               </span>
             ) : null}
             <PropertyAgentCard agent={property.agent} />

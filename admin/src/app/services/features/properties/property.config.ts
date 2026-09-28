@@ -8,8 +8,8 @@ const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
 
 const transactionStatusLabels: Record<string, string> = {
-  BUY: "Buy",
-  LEASE: "Lease",
+  BUY: "For Sale",
+  LEASE: "For Rent",
   SOLD: "Sold",
   LEASED: "Leased",
 };
