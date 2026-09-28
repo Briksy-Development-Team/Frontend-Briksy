@@ -56,8 +56,10 @@ export const builderProjectConfig = {
       Header: "Location",
       accessor: "location",
       sortable: true,
-      Cell: ({ row }: { row: any }) =>
-        [row.location, row.state].filter(Boolean).join(", ") || "—",
+      Cell: ({ row }: { row: BuilderProject }) => {
+        const project = ((row as any).original ?? row) as BuilderProject;
+        return [project.location, project.state, project.postcode].filter(Boolean).join(", ") || "—";
+      },
     },
     {
       Header: "Created At",

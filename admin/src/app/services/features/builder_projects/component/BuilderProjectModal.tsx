@@ -40,6 +40,16 @@ export const BuilderProjectModal = ({
   const [mediaError, setMediaError] = useState<string | null>(null);
   const { entitlements } = useAuth();
   const allowance = mediaAllowance(entitlements);
+  const existingImageCount = initialValues?.images?.length ?? 0;
+  const existingVideoCount = initialValues?.videos?.length ?? 0;
+  const imageLimitReached = allowance.imagesConfigured
+    && allowance.images !== null
+    && existingImageCount >= allowance.images;
+  const videoLimitReached = allowance.videosConfigured
+    && allowance.videos !== null
+    && existingVideoCount >= allowance.videos;
+  const imagesBlocked = !allowance.imagesIncluded || imageLimitReached;
+  const videosBlocked = !allowance.videoIncluded || videoLimitReached;
   const [form, setForm] = useState<ProjectFormValues>({
     name: initialValues?.name ?? "",
     project_type: initialValues?.project_type ?? "",
@@ -88,8 +98,12 @@ export const BuilderProjectModal = ({
   };
 
   const handleImageChange = (files: File[]) => {
+    if (!allowance.imagesIncluded) {
+      setMediaError("Image uploads are not included in your current plan.");
+      return;
+    }
     const nextImages = files.filter((file) => file.type.startsWith("image/"));
-    if (allowance.imagesConfigured && allowance.images !== null && (initialValues?.images?.length ?? 0) + nextImages.length > allowance.images) {
+    if (allowance.imagesConfigured && allowance.images !== null && existingImageCount + nextImages.length > allowance.images) {
       setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.images} images for this project.`);
       return;
     }
@@ -110,7 +124,7 @@ export const BuilderProjectModal = ({
       setMediaError("Video uploads are not included in your current plan.");
       return;
     }
-    if (allowance.videosConfigured && allowance.videos !== null && (initialValues?.videos?.length ?? 0) + nextVideos.length > allowance.videos) {
+    if (allowance.videosConfigured && allowance.videos !== null && existingVideoCount + nextVideos.length > allowance.videos) {
       setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.videos} videos for this project.`);
       return;
     }
@@ -262,10 +276,15 @@ export const BuilderProjectModal = ({
             multiple
             accept="image/jpeg,image/png,image/webp"
             className="form-control form-control-solid"
+            disabled={imagesBlocked}
             onChange={(event) => handleImageChange(Array.from(event.target.files ?? []))}
           />
           <div className="text-muted fs-7 mt-2">
-            {allowance.imagesConfigured ? `Up to ${allowance.images ?? 0} images per project.` : "Image limit is not configured."} {images.length} selected.
+            {!allowance.imagesIncluded
+              ? "Image uploads are not included in your current plan."
+              : allowance.imagesConfigured && allowance.images !== null
+                ? `Up to ${allowance.images} images per project. ${existingImageCount} already uploaded.`
+                : "Image limit is not configured."} {images.length} selected.
           </div>
         </div>
 
@@ -276,10 +295,15 @@ export const BuilderProjectModal = ({
             multiple
             accept="video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm"
             className="form-control form-control-solid"
+            disabled={videosBlocked}
             onChange={(event) => handleVideoChange(Array.from(event.target.files ?? []))}
           />
           <div className="text-muted fs-7 mt-2">
-            {allowance.videosConfigured ? `Up to ${allowance.videos ?? 0} videos per project.` : "Video limit is not configured."} {videos.length} selected.
+            {!allowance.videoIncluded
+              ? "Video uploads are not included in your current plan."
+              : allowance.videosConfigured && allowance.videos !== null
+                ? `Up to ${allowance.videos} videos per project. ${existingVideoCount} already uploaded.`
+                : "Video limit is not configured."} {videos.length} selected.
           </div>
           {mediaError ? <div className="text-danger fs-7 mt-2">{mediaError}</div> : null}
 

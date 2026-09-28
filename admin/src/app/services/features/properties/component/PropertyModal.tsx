@@ -86,6 +86,10 @@ const PropertyModal = ({
         }
         const nextImages = files.filter((file) => file.type.startsWith("image/"));
         const nextVideos = files.filter((file) => file.type.startsWith("video/"));
+        if (nextImages.length > 0 && !allowance.imagesIncluded) {
+            setMediaError("Image uploads are not included in your current plan.");
+            return;
+        }
         if (allowance.imagesConfigured && allowance.images !== null && existingImages.length + nextImages.length > allowance.images) {
             setMediaError(`Your ${allowance.planName} plan allows a maximum of ${allowance.images} images. Remove an image or upgrade your plan.`);
             return;
@@ -255,10 +259,10 @@ const PropertyModal = ({
         onSubmit({
             ...form,
             country: form.country || "Australia",
-            listing_purpose: propertyCategory === "commercial"
+            listing_purpose: propertyCategory === "commercial" || !!form.transaction_status
                 ? (["LEASE", "LEASED"].includes(form.transaction_status ?? "") ? "RENT" : "SELL")
                 : form.listing_purpose,
-            transaction_status: propertyCategory === "commercial" ? form.transaction_status : undefined,
+            transaction_status: form.transaction_status,
             status: isSuperAdmin ? form.status : "Pending Review",
             // Location verification is controlled by the dedicated review
             // endpoint and is intentionally not part of CRUD payloads.
@@ -440,23 +444,19 @@ const PropertyModal = ({
 
             <div className="row">
                 <div className="col-md-6 fv-row mb-7">
-                    <label className="required form-label">{propertyCategory === "commercial" ? "Transaction / Listing Status" : "Listing Purpose"}</label>
-                    {propertyCategory === "commercial" ? (
-                        <select className="form-select form-select-solid" value={form.transaction_status ?? ""}
-                            onChange={(e) => setForm((prev) => ({ ...prev, transaction_status: e.target.value as PropertyFormValues["transaction_status"] }))}>
-                            <option value="">Select status</option>
-                            <option value="BUY">BUY</option>
-                            <option value="LEASE">LEASE</option>
-                            <option value="SOLD">SOLD</option>
-                            <option value="LEASED">LEASED</option>
-                        </select>
-                    ) : (
-                        <select className="form-select form-select-solid" value={form.listing_purpose ?? "SELL"}
-                            onChange={(e) => setForm((prev) => ({ ...prev, listing_purpose: e.target.value as PropertyFormValues["listing_purpose"] }))}>
-                            <option value="SELL">Sell</option>
-                            <option value="RENT">Rent</option>
-                            <option value="BOTH">Both</option>
-                        </select>
+                    <label className={`${propertyCategory === "commercial" ? "required " : ""}form-label`}>
+                        Transaction / Listing Status
+                    </label>
+                    <select className="form-select form-select-solid" value={form.transaction_status ?? ""}
+                        onChange={(e) => setForm((prev) => ({ ...prev, transaction_status: e.target.value as PropertyFormValues["transaction_status"] }))}>
+                        <option value="">{propertyCategory === "commercial" ? "Select status" : "Use listing purpose"}</option>
+                        <option value="BUY">For Sale</option>
+                        <option value="LEASE">For Rent</option>
+                        <option value="SOLD">Sold</option>
+                        <option value="LEASED">Leased</option>
+                    </select>
+                    {propertyCategory !== "commercial" && (
+                        <div className="text-muted fs-7 mt-2">Use this field to mark a property as Sold or Leased.</div>
                     )}
                 </div>
                 <div className="col-md-6 fv-row mb-7">
@@ -800,6 +800,7 @@ const PropertyModal = ({
                         multiple
                         accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm"
                         className="form-control"
+                        disabled={!allowance.imagesIncluded && !allowance.videoIncluded}
                         onChange={(e) => handleMediaChange(Array.from(e.target.files ?? []))}
                     />
 

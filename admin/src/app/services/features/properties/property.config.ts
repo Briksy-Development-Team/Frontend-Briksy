@@ -44,12 +44,13 @@ export const propertyListConfig = {
     {
       Header: "Transaction / Listing Status",
       accessor: "transaction_status",
-      Cell: ({ row }: { row: PropertyList }) => {
-        const transactionStatus = row.transaction_status?.toUpperCase();
+      Cell: ({ row }: { row: PropertyList | { original: PropertyList } }) => {
+        const property = "original" in row ? row.original : row;
+        const transactionStatus = property.transaction_status?.toUpperCase();
         const label = transactionStatus
           ? transactionStatusLabels[transactionStatus] ?? transactionStatus
-          : row.listing_purpose
-            ? listingPurposeLabels[row.listing_purpose]
+          : property.listing_purpose
+            ? listingPurposeLabels[property.listing_purpose]
             : null;
         return label ? React.createElement("span", { className: "badge badge-light-primary" }, label) : "—";
       },

@@ -96,9 +96,6 @@ export default function BuilderProjectPage() {
     } : current);
   };
 
-  const isPendingReview = (row: BuilderProject) =>
-    String(row.status ?? "").trim().toLowerCase().replace(/_/g, " ") === "pending review";
-
   const reviewProject = async (id: string, action: "approve" | "reject") => {
     const rejection_reason = action === "reject"
       ? window.prompt("Reason for rejecting this project:") ?? ""
@@ -107,11 +104,12 @@ export default function BuilderProjectPage() {
 
     setError(null);
     try {
-      await axiosInstance.patch("/super-admin/builder-projects/" + id + "/" + action, rejection_reason
+      const response = await axiosInstance.patch("/super-admin/builder-projects/" + id + "/" + action, rejection_reason
         ? { rejection_reason }
         : undefined);
       setNotice(action === "approve" ? "Project approved and published." : "Project rejected.");
       await fetchProjects(params);
+      return response.data?.data;
     } catch (reason: any) {
       setError(reason?.response?.data?.message ?? "Unable to update this project.");
     }
@@ -122,14 +120,12 @@ export default function BuilderProjectPage() {
       {
         label: "Approve & Publish",
         className: "text-success",
-        showIf: isPendingReview,
-        onClick: (row: BuilderProject) => void reviewProject(row.id, "approve"),
+        onClick: (row: BuilderProject) => reviewProject(row.id, "approve"),
       },
       {
         label: "Reject",
         className: "text-danger",
-        showIf: isPendingReview,
-        onClick: (row: BuilderProject) => void reviewProject(row.id, "reject"),
+        onClick: (row: BuilderProject) => reviewProject(row.id, "reject"),
       },
     ] : [
       {
@@ -200,13 +196,11 @@ export default function BuilderProjectPage() {
           {
             label: "Approve & Publish",
             className: "text-success",
-            showIf: isPendingReview,
             onClick: (row: BuilderProject) => void reviewProject(row.id, "approve"),
           },
           {
             label: "Reject",
             className: "text-danger",
-            showIf: isPendingReview,
             onClick: (row: BuilderProject) => void reviewProject(row.id, "reject"),
           },
         ] : [
