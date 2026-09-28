@@ -9,6 +9,7 @@ type PlanEnvelope = {
   meta?: {
     pagination?: {
       total?: number;
+      has_more_pages?: boolean;
     };
   };
 };
@@ -23,19 +24,33 @@ export const fetchPlansApi = async (): Promise<{
   plans: Plan[];
   subscription?: PlanSubscriptionSummary;
 }> => {
-  const response = await axiosInstance.get<PlanEnvelope>(
-    `${getPlanBasePath()}/plans`,
-  );
-  const { data } = response.data || {};
+  const basePath = getPlanBasePath();
+  const isSuperAdmin = basePath === "/super-admin";
+  const plans: Plan[] = [];
+  let subscription: PlanSubscriptionSummary | undefined;
+  let page = 1;
+  let hasMorePages = false;
 
-  if (Array.isArray(data)) {
-    return { plans: data };
-  }
+  do {
+    const response = await axiosInstance.get<PlanEnvelope>(
+      `${basePath}/plans`,
+      isSuperAdmin ? { params: { page, per_page: 100 } } : undefined,
+    );
+    const { data } = response.data || {};
 
-  return {
-    plans: data?.plans ?? [],
-    subscription: data?.subscription,
-  };
+    if (Array.isArray(data)) {
+      plans.push(...data);
+      hasMorePages = Boolean(response.data?.meta?.pagination?.has_more_pages);
+      page += 1;
+      continue;
+    }
+
+    plans.push(...(data?.plans ?? []));
+    subscription = data?.subscription;
+    hasMorePages = false;
+  } while (isSuperAdmin && hasMorePages);
+
+  return { plans, subscription };
 };
 
 export const createPlanApi = async (payload: PlanFormValues): Promise<Plan> => {

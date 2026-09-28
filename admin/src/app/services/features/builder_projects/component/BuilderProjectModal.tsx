@@ -226,8 +226,8 @@ export const BuilderProjectModal = ({
           <label className="form-label">State</label>
           <input
             className="form-control form-control-solid"
-            maxLength={10}
-            placeholder="NSW"
+            maxLength={50}
+            placeholder="New South Wales"
             value={form.state}
             onChange={(e) => updateForm("state", e.target.value)}
           />

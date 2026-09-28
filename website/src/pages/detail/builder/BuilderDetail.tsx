@@ -161,7 +161,7 @@ const BuilderDetail = () => {
                 />
               </div>
               <div id="projects">
-                <BuilderProjects projects={projects} builderName={builder.name} />
+                <BuilderProjects projects={projects} builderName={builder.name} builderLogo={builder.logo_url || BusinessPlaceholder} />
               </div>
               <div id="about">
                 <BuilderAbout about={viewModel.about} />
