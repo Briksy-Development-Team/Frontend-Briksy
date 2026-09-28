@@ -138,9 +138,15 @@ const Notification = () => {
       <h1 className="text-center hidden md:flex text-[1.875rem] font-medium text-primary-brown">
         Notifications
       </h1>
-      <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
+      <div className="flex bg-white md:hidden items-center mb-4 gap-3 px-5 py-5 ">
         <button
-          onClick={() => navigate("/profile")}
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate("/profile");
+            }
+          }}
           className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
         >
           <ArrowLeft className=" w-5 h-5" />

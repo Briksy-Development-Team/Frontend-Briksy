@@ -4,6 +4,7 @@ import ServicePlaceholder from "../../../../assets/place holder/serviceholder.sv
 import type { PublicOrganization } from "../../../../api/seeker/organization.api";
 import Verify from "../../../../assets/icons/verify.svg";
 import { SafeImage } from "../../../../components/custom/SafeImage";
+import { useNavigate } from "react-router-dom";
 
 const circleBtn =
   "w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown";
@@ -13,6 +14,7 @@ export function ServiceMobileHeader({
 }: {
   organization: PublicOrganization;
 }) {
+  const navigate = useNavigate();
   return (
     <div className="w-full md:hidden mb-8">
       {/* Banner */}
@@ -26,7 +28,16 @@ export function ServiceMobileHeader({
             className="w-full h-full object-cover"
           />
         <div className="absolute top-4 inset-x-0 px-[3%] flex justify-between">
-          <button onClick={() => window.history.back()} className={circleBtn}>
+          <button 
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/");
+              }
+            }} 
+            className={circleBtn}
+          >
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-3 pointer-events-auto">

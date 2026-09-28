@@ -3,9 +3,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules";
 import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
+import type { Property } from '../../../../types/property';
 import { Link } from 'react-router-dom';
 import type { PublicBuilderProject } from '../../../../api/seeker/organization.api';
-import { SafeImage } from '../../../../components/custom/SafeImage';
 import ProjectPlaceholder from '../../../../assets/place holder/builderbg.svg';
 import BusinessPlaceholder from '../../../../assets/place holder/bussinessholder.svg';
 import { useState } from 'react';
@@ -120,36 +120,26 @@ export function BuilderProjects({ projects, builderName, builderLogo }: { projec
   if (!projects.length) return null;
 
   const visibleProjects = showAllProjects ? projects : projects.slice(0, 3);
-  const renderProjectCard = (project: PublicBuilderProject) => {
-    const image = project.images?.find((item) => item.is_primary)?.url || project.images?.[0]?.url || ProjectPlaceholder;
-    const location = [project.location, project.state, project.postcode].filter(Boolean).join(', ');
+  const builderProjectToProperty = (project: PublicBuilderProject): Property => ({
+    id: project.id,
+    title: project.name,
+    address: [project.location, project.state, project.postcode].filter(Boolean).join(', ') || 'Australia',
+    location: [project.location, project.state].filter(Boolean).join(', ') || 'Australia',
+    image: project.images?.find((item) => item.is_primary)?.url || project.images?.[0]?.url || ProjectPlaceholder,
+    price: 0,
+    beds: 0,
+    baths: 0,
+    sqm: 0,
+    posterName: builderName || 'Builder project',
+    posterAvatar: builderLogo || BusinessPlaceholder,
+    badge: project.status ? project.status.replaceAll('_', ' ') : 'Project',
+    lat: 0,
+    lng: 0,
+    isFavourite: false,
+  });
 
-    return <Link to={`/builder-project/${project.id}`} className="flex h-[28rem] w-full flex-col overflow-hidden rounded-3xl bg-white text-left text-primary-brown">
-      <div className="relative h-[13rem] shrink-0 overflow-hidden">
-        <SafeImage src={image} alt={project.name} className="h-full w-full object-cover" />
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium capitalize">
-          {project.status.replaceAll('_', ' ')}
-        </span>
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">
-        <h3 className="line-clamp-2 text-[0.875rem] leading-[1.3]">{project.name}</h3>
-        {project.project_type && <p className="mt-1 line-clamp-1 text-xs text-primary-light-brown">{project.project_type}</p>}
-        {location && <p className="mt-2 min-h-[2.5rem] line-clamp-2 text-[0.875rem] leading-5">{location}</p>}
-        {project.description && <p className="mt-1 min-h-[2.25rem] line-clamp-3 text-xs leading-4 text-primary-light-brown">{project.description}</p>}
-        <div className="mt-auto shrink-0">
-          <div className="w-full border-t border-primary-light-brown/70" />
-          <div className="mt-3 flex items-center gap-2 text-[0.875rem]">
-            <SafeImage
-              src={builderLogo || BusinessPlaceholder}
-              alt={builderName || 'Builder'}
-              fallback={BusinessPlaceholder}
-              className="h-7 w-7 shrink-0 rounded-full object-cover"
-            />
-            <span className="truncate">{builderName || 'Builder project'}</span>
-          </div>
-        </div>
-      </div>
-    </Link>;
+  const renderProjectCard = (project: PublicBuilderProject) => {
+    return <PropertyGridCard item={builderProjectToProperty(project)} />;
   };
 
   return <section className="flex flex-col gap-6" aria-labelledby="builder-projects-title">

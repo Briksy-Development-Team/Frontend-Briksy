@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Heart, MapPin, Bed, Bath, Square, Phone, Mail } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import Breadcrumb from '../../components/nav/Breadcrumb'
 import { useAuth } from '../../auth/AuthContext'
-import { storePendingFavoriteAction } from '../../auth/auth.intent'
 import { isLocalFavorite } from '../../favorites/localFavorites'
 import { toggleSeekerPropertyFavorite } from '../../seeker/seeker.api'
+import AuthPromptToast from '../../components/custom/AuthPromptToast'
 
 const property = {
   title: '4 Bedroom Family Home with Pool',
@@ -34,9 +33,9 @@ const property = {
 
 const PropertyDetail = () => {
   const { isAuthenticated, isSeeker } = useAuth()
-  const navigate = useNavigate()
   const [isFavourite, setIsFavourite] = useState(() => isLocalFavorite(1))
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showAuthToast, setShowAuthToast] = useState(false)
 
   const addressParts = property.address.split(', ')
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ')
@@ -49,8 +48,7 @@ const PropertyDetail = () => {
     }
 
     if (!isAuthenticated || !isSeeker) {
-      storePendingFavoriteAction('1', window.location.pathname)
-      navigate('/login')
+      setShowAuthToast(true)
       return
     }
 
@@ -160,6 +158,12 @@ const PropertyDetail = () => {
           </div>
         </div>
       </div>
+      <AuthPromptToast
+        isOpen={showAuthToast}
+        onClose={() => setShowAuthToast(false)}
+        targetId="1"
+        targetType="property"
+      />
     </div>
   )
 }

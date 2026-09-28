@@ -8,7 +8,7 @@ import { PropertySidebar } from "./components/PropertySidebar";
 import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getProperty, type PublicProperty } from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
@@ -19,11 +19,16 @@ import { Mousewheel } from "swiper/modules"
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
-import HostProfileCard from "../shared/HostProfileCard";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
+import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
+import { organizationToTrader } from "../../../api/public.mappers";
+import type { Trader } from "../../../types/trader";
+import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
+import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [propertyData, setPropertyData] = useState<PublicProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,10 +86,31 @@ const PropertyDetail = () => {
       since: undefined,
       logo: propertyData.organization?.logo_url || "",
     },
-    host: propertyData.creator,
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
     sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price || 0 },
   };
+
+  const traderHost: Trader | null = propertyData.organization
+    ? organizationToTrader({
+        ...propertyData.organization,
+        address: propertyData.full_address || propertyData.address,
+      } as any)
+    : propertyData.creator
+    ? {
+        id: propertyData.creator.id,
+        name: propertyData.creator.name,
+        tagLine: "Property Host",
+        role: "Host",
+        location: propertyData.full_address || propertyData.address || "Australia",
+        avatar: ServicePlaceholder,
+        bannerImage: BuilderBackground,
+        rating: propertyData.rating || 0,
+        reviews: 0,
+        tags: [],
+        isFavourite: false,
+        favoriteId: propertyData.creator.id,
+      }
+    : null;
 
   const submitEnquiry = async (values: {
     seeker_name: string;
@@ -166,7 +192,13 @@ const PropertyDetail = () => {
           {/* Mobile Overlay Header */}
           <div className="md:hidden absolute top-4 left-0  right-0 z-10 flex justify-between items-center pointer-events-none">
             <button
-              onClick={() => window.history.back()}
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate("/");
+                }
+              }}
               className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown pointer-events-auto hover:bg-gray-50"
             >
               <ChevronLeft size={20} />
@@ -254,16 +286,12 @@ const PropertyDetail = () => {
                   slidesOffsetAfter={0}
                   className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
                 >
-                  {property.host ? (
+                  {traderHost ? (
                     <SwiperSlide
-                      key={property.host.id}
+                      key={traderHost.id}
                       className=" !w-[19.4375rem]"
                     >
-                      <HostProfileCard
-                        host={property.host}
-                        avatar={property.company.logo}
-                        organizationName={property.company.name}
-                      />
+                      <TraderGridCard item={traderHost} />
                     </SwiperSlide>
                   ) : (
                     <p className="text-sm text-primary-light-brown">Host details are not available for this listing.</p>

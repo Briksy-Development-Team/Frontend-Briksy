@@ -82,7 +82,7 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
         alt=""
         className="block lg:hidden h-[4.1925rem] mx-auto w-[3.0556rem]"
       />
-      <AuthHeader title="Log in" subtitle="Welcome back — good to see you." />
+      <AuthHeader title="Log in"  />
 
       <div className="flex flex-col gap-[0.75rem]">
         <Field

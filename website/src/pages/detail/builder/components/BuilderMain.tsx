@@ -1,8 +1,10 @@
 import { ShieldCheck, Star, ChevronLeft, Share } from 'lucide-react';
 import Approves from '../../../../assets/logo/apprrove.svg';
 import FavoriteButton from '../../../../components/custom/FavoriteButton';
+import { useNavigate } from "react-router-dom";
 
 export function BuilderHeader({ builder }: { builder: any }) {
+  const navigate = useNavigate();
   const circleBtn = "w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown hover:bg-gray-50";
 
   return (
@@ -11,7 +13,16 @@ export function BuilderHeader({ builder }: { builder: any }) {
         
         {/* Mobile Overlay Header */}
         <div className="md:hidden absolute top-4 inset-x-0 px-[3%] flex justify-between z-10">
-          <button onClick={() => window.history.back()} className={circleBtn}>
+          <button 
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/");
+              }
+            }} 
+            className={circleBtn}
+          >
             <ChevronLeft size={20} />
           </button>
           <div className="flex items-center gap-3 pointer-events-auto">
