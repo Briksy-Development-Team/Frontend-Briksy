@@ -13,7 +13,6 @@ const Home = () => {
   return (
     <div className="min-h-screen overflow-hidden space-y-10 ">
       <Heroone />
-      <AppPreview />
 
       <ImageAnimation />
 
@@ -23,6 +22,7 @@ const Home = () => {
       <ServiceList />
       <Blogs />
       <Contact />
+      <AppPreview />
     </div>
   );
 };
