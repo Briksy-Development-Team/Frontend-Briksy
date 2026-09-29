@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { ArrowRight, Heart, LoaderCircle } from 'lucide-react'
 import type { Property } from '../../../types/property'
 import Mappin from '../../../assets/icons/location.svg'
 import { SafeImage } from '../../custom/SafeImage'
 import { useAuth } from '../../../auth/AuthContext'
-import { storePendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
 import CollectionModal from '../../collections/CollectionModal'
+import AuthPromptToast from '../../custom/AuthPromptToast'
 import { propertyStatusLabel } from '../../../utils/propertyStatus'
 
 type Props = {
@@ -16,10 +16,10 @@ type Props = {
 
 const PropertyListCard = ({ item }: Props) => {
   const { isAuthenticated, isSeeker } = useAuth();
-  const navigate = useNavigate();
   const [isFavourite, setIsFavourite] = useState(item.isFavourite);
   const [isProcessing, setIsProcessing] = useState(false);
   const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
+  const [showAuthToast, setShowAuthToast] = useState(false);
 
   const handleFavouriteClick = async () => {
     if (isProcessing) {
@@ -27,8 +27,7 @@ const PropertyListCard = ({ item }: Props) => {
     }
 
     if (!isAuthenticated || !isSeeker) {
-      storePendingFavoriteAction(String(item.id), `/property/${item.id}`)
-      navigate('/login')
+      setShowAuthToast(true);
       return
     }
 
@@ -122,6 +121,12 @@ const PropertyListCard = ({ item }: Props) => {
         onClose={() => setCollectionPromptOpen(false)}
       />
     )}
+    <AuthPromptToast
+      isOpen={showAuthToast}
+      onClose={() => setShowAuthToast(false)}
+      targetId={item.id}
+      targetType="property"
+    />
     </>
   )
 }

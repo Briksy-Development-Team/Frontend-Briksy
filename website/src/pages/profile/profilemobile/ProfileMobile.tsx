@@ -33,7 +33,13 @@ export default function ProfileMobile() {
       <div className="min-h-screen  font-helvetica">
         <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/profile");
+              }
+            }}
             className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
           >
             <ArrowLeft className=" w-5 h-5" />

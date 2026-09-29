@@ -45,7 +45,13 @@ const PublicInfoPage = ({ kind }: Props) => {
       <div className="md:hidden">
         <div className="flex  h-14 items-center gap-2 bg-white px-2 pr-4">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              if (window.history.length > 1) {
+                navigate(-1);
+              } else {
+                navigate("/");
+              }
+            }}
             className="flex h-10 w-10 items-center justify-center"
           >
             <ArrowLeft className="h-5 w-5 text-[#342511]" />
