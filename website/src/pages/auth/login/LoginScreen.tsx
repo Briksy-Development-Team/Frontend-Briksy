@@ -82,7 +82,10 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
         alt=""
         className="block lg:hidden h-[4.1925rem] mx-auto w-[3.0556rem]"
       />
-      <AuthHeader title="Log in"  />
+      <AuthHeader
+        title="Log in"
+        subtitle="Sign in to continue to your Briksy account."
+      />
 
       <div className="flex flex-col gap-[0.75rem]">
         <Field
