@@ -129,18 +129,11 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       const pointer = { x: 0, y: 0, active: false };
       const target = { x: 0, y: 0 };
       const current = { x: 0, y: 0 };
+      let tracking = false;
 
-      // Decide the target from the last known pointer position. Anything outside
-      // the section (or no pointer at all) sends the card back to rest.
       const updateTarget = () => {
-        const a = area.getBoundingClientRect();
-        const inside =
-          pointer.active &&
-          pointer.x >= a.left &&
-          pointer.x <= a.right &&
-          pointer.y >= a.top &&
-          pointer.y <= a.bottom;
-        if (!inside) return;
+        if (!tracking || !pointer.active) return;
+
         const s = stage.getBoundingClientRect();
         target.x = clamp((pointer.x - (s.left + s.width / 2)) / (s.width * RANGE_X));
         target.y = clamp((pointer.y - (s.top + s.height / 2)) / (s.height * RANGE_Y));
@@ -148,8 +141,21 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
 
       const onMove = (e: PointerEvent) => {
         if (e.pointerType === "touch") return;
+
         pointer.x = e.clientX;
         pointer.y = e.clientY;
+
+        const a = area.getBoundingClientRect();
+
+        if (
+          e.clientX >= a.left &&
+          e.clientX <= a.right &&
+          e.clientY >= a.top &&
+          e.clientY <= a.bottom
+        ) {
+          tracking = true;
+        }
+
         pointer.active = true;
         updateTarget();
       };
@@ -183,9 +189,8 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
         }
         apply();
       };
-
       window.addEventListener("pointermove", onMove, { passive: true });
-      window.addEventListener("scroll", updateTarget, { passive: true }); // section moved under a still cursor
+      window.addEventListener("scroll", updateTarget, { passive: true });
       // window.addEventListener("blur", onOut);
       // document.documentElement.addEventListener("mouseleave", onOut); // cursor left the browser window
       gsap.ticker.add(tick);
@@ -193,8 +198,6 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       return () => {
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("scroll", updateTarget);
-        window.removeEventListener("blur", onOut);
-        document.documentElement.removeEventListener("mouseleave", onOut);
         gsap.ticker.remove(tick);
         gsap.ticker.remove(orbit);
       };
