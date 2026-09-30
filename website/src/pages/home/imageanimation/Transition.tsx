@@ -2,18 +2,16 @@ import { useEffect, useRef, type RefObject } from "react";
 import gsap from "gsap";
 import { Loader, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import CARD_IMAGE from "../../../assets/about/electrician.svg"
-
-// ───────────────────────── data ─────────────────────────
-
-const unsplash = (id: string, w = 900) =>
-  `https://images.unsplash.com/${id}?w=${w}&q=80&auto=format&fit=crop`;
-
+import ImageBigone from "../../../assets/about/imagebigone.svg"
+import ImageBigTwo from "../../../assets/about/imagebigtwo.svg"
+import ImageSmallOne from "../../../assets/about/imagesmallone.svg"
+import ImageSmallTwo from "../../../assets/about/imagesmalltwo.svg"
 
 const ORBIT_IMAGES = [
-  unsplash("photo-1560518883-ce09059eeffa", 300),
-  unsplash("photo-1486325212027-8081e485255e", 300),
-  unsplash("photo-1521791136064-7986c2920216", 300),
-  unsplash("photo-1600585154340-be6161a56a0c", 300),
+  ImageBigone,
+  ImageBigTwo,
+  ImageSmallOne,
+  ImageSmallTwo,
 ];
 
 type Row = { icon: LucideIcon; iconClass?: string; label: string; meta?: string };
