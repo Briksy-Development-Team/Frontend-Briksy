@@ -17,7 +17,7 @@ const ProfileDesktop = () => {
 
     const profileData = [
         { id: "personal-info", label: "My profile", icon: Placeholder },
-        { id: "collections", label: "Collections", icon: Save },
+        { id: "collections", label: "Saved searches", icon: Save },
         { id: "notifications", label: "Notifications", icon: Notification },
         { id: "privacy", label: "Privacy", icon: Privacy },
     ];

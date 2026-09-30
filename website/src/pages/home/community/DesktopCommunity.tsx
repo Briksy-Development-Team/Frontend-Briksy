@@ -152,7 +152,7 @@ const DesktopCommunity = () => {
             }}
             style={{ willChange: "transform" }}
             className={`absolute z-10 ${card.position} flex w-[15rem] flex-col gap-3 xl:gap-[1.5rem] overflow-hidden rounded-[1.25rem]
-               bg-white p-4 xl:w-[23.3125rem] xl:p-[1.75rem]`}
+               bg-white p-4 xl:w-[25.3125rem] xl:p-[1.75rem]`}
           >
             <div className="flex items-start justify-between gap-[1.25rem]">
               <span className="flex h-[2rem] w-[2rem] xl:h-[3rem] xl:w-[3rem] shrink-0 items-center justify-center">
