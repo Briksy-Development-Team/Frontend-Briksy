@@ -6,6 +6,7 @@ import Register from '../pages/auth/register/Register'
 
 import Terms from "../pages/home/terms/Terms";
 import Pricing from "../pages/home/subscription/Pricing";
+import CheckoutInvitationPage from "../pages/checkout/CheckoutInvitationPage";
 import SearchPage from "../pages/search/SearchPage";
 import Error from "../components/error/Error";
 import Coming from "../components/coming/Coming";
@@ -37,6 +38,7 @@ const AppRouter = () => {
       <Route element={<MainLayout />}>
         <Route path="/terms" element={<Terms />} />
         <Route path="/subs" element={<Pricing />} />
+        <Route path="/checkout/invite/:token" element={<CheckoutInvitationPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="profile" element={<Profile />}>

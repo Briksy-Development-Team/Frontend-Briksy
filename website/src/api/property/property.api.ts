@@ -30,6 +30,7 @@ export type PublicProperty = {
   }[];
 
   rating: number;
+  distance_km?: number | null;
   bedroom_option?: string | null;
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;

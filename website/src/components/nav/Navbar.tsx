@@ -35,7 +35,7 @@ const navItems = [
   { label: "Agents", to: "/agents" },
   { label: "Builders", to: "/builders" },
   { label: "Trades & Professionals", to: "/professionals" },
-  { label: "Blogs", to: "/blogs" },
+  { label: "News", to: "/blogs" },
   { label: "Commercials", to: "/commercials" },
 ];
 
@@ -44,7 +44,7 @@ const mobileMenuItems = [
   { label: "Agents Finder", to: "/agents" },
   { label: "Builders", to: "/builders" },
   { label: "Professionals", to: "/professionals" },
-  { label: "Blogs", to: "/blogs" },
+  { label: "News", to: "/blogs" },
   { label: "Commercials", to: "/commercials" },
 ];
 

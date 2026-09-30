@@ -31,6 +31,9 @@ export type PublicOrganization = {
   address?: string | null;
   state?: string | null;
   postcode?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  distance_km?: number | null;
   description?: string | null;
   website?: string | null;
   social_links?: Record<string, string>;

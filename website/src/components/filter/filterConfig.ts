@@ -77,7 +77,7 @@ const ORG_FIELDS: FilterField[] = [
 ];
 
 
-export type FilterMode = "Buy" | "Rent" | "Lease" | "Sold" | "Leased" | "Builders" | "Agents" | "Traders" | "Landscappers" | "Concreter" | "Fencing" | "Mortgage Brokers" | "Conveyancers" | "Building and Pest";
+export type FilterMode = string;
 
 export const getFieldsForMode = (mode: FilterMode): FilterField[] => {
   switch (mode) {
@@ -97,6 +97,8 @@ export const getFieldsForMode = (mode: FilterMode): FilterField[] => {
     case "Mortgage Brokers":
     case "Conveyancers":
     case "Building and Pest":
+      return ORG_FIELDS;
+    default:
       return ORG_FIELDS;
   }
 };

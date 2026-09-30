@@ -9,6 +9,7 @@ export type Inquiry = {
   seeker_name?: string | null;
   seeker_email?: string | null;
   seeker_phone?: string | null;
+  company_name?: string | null;
   property_listing_id?: string | null;
   property_title?: string | null;
   property_address?: string | null;

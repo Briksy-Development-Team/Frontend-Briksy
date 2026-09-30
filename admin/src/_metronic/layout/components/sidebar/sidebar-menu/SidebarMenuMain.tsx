@@ -208,6 +208,15 @@ const SidebarMenuMain = () => {
             />
           )}
 
+          {isSuperAdmin && hasPermission("plan.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/pricing-inquiries`}
+              title="Pricing Inquiries"
+              fontIcon="bi-chat-left-text"
+              icon="/media/icons/duotune/iconsnew/inquiry.svg"
+            />
+          )}
+
           {hasPermission("referral.view") && (
             <SidebarMenuItem
               to={`${portalBase}/referral-programs`}
@@ -234,6 +243,14 @@ const SidebarMenuMain = () => {
                 fontIcon="bi-archive"
                 icon="/media/icons/duotune/iconsnew/service.svg"
               />
+              {isSuperAdmin && (
+                <SidebarMenuItem
+                  to={`${portalBase}/service-categories`}
+                  title="Service Categories"
+                  fontIcon="bi-tags"
+                  icon="/media/icons/duotune/iconsnew/service.svg"
+                />
+              )}
               {promoOffersEnabled && (
                 <SidebarMenuItem
                   to={`${portalBase}/service-offers`}

@@ -11,7 +11,7 @@ import BuildIcon from "../../assets/icons/search/build.svg?react";
 import TraderIcon from "../../assets/icons/search/trades.svg?react";
 import ComercialIcon from "../../assets/icons/search/comercial.svg?react";
 import MapIcon from "../../assets/icons/search/map.svg?react";
-import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
+import { SERVICE_CATEGORIES, type ServiceCategory } from "../../constants/serviceCategories";
 
 type CategoryDef = {
   id: string;
@@ -60,6 +60,10 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
   },
 ];
 
+export const buildSearchCategories = (categories: readonly ServiceCategory[]): CategoryDef[] => SEARCH_CATEGORIES.map((category) =>
+  category.id === "professionals" ? { ...category, tabs: categories.map((item) => item.label) } : category,
+);
+
 const SORT_OPTIONS = [
   { label: "Recommended", value: "featured" },
   { label: "Newest", value: "newest" },
@@ -104,6 +108,7 @@ export default function SearchToolbar({
   query,
   onQueryChange,
   onAskAi,
+  serviceCategories = SERVICE_CATEGORIES,
 }: {
   activeCategoryId: string;
   activeTab: FilterTab | null;
@@ -115,12 +120,13 @@ export default function SearchToolbar({
   query: string;
   onQueryChange: (value: string) => void;
   onAskAi?: () => void;
+  serviceCategories?: readonly ServiceCategory[];
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const searchCategories = buildSearchCategories(serviceCategories);
 
   const activeCategory =
-    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) ||
-    SEARCH_CATEGORIES[0];
+    searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
 
   return (
     <div className="flex flex-col gap-3">
@@ -216,6 +222,7 @@ export default function SearchToolbar({
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
             initialTab={activeTab || "Buy"}
+            serviceCategories={serviceCategories}
           />,
           document.body,
         )}

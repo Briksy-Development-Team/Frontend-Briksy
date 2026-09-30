@@ -27,6 +27,8 @@ export type Organization = {
   stripe_customer_id?: string | null;
   state?: string;
   postcode?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   type?: {
     id: string;
     name: string;
@@ -45,6 +47,8 @@ export type OrganizationFormValues = {
   contact_email?: string;
   contact_phone?: string;
   address?: string;
+  latitude?: number;
+  longitude?: number;
   business_type?: "organisation" | "company" | "solo_trader";
   business_verification_status?: "pending" | "verified" | "rejected";
   abn?: string;

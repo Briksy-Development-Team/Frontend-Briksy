@@ -71,6 +71,10 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
     config: inquiryDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
   },
+  'pricing-inquiries': {
+    config: inquiryDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
+  },
   'builder-projects': {
     config: builderProjectDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/builder-projects/${id}`,
