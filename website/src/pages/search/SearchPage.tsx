@@ -47,7 +47,8 @@ const SearchPage = () => {
   const activeCategory =
     SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
   const resultType = activeCategory.resultType;
-  const { crumb } = HEADERS[activeCategoryId] || HEADERS.all;
+  const { crumb: defaultCrumb } = HEADERS[activeCategoryId] || HEADERS.all;
+  const crumb = activeTab === "Agents" ? "Find a buyer agent" : defaultCrumb;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

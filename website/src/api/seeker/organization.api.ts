@@ -31,6 +31,12 @@ export type PublicOrganization = {
   address?: string | null;
   state?: string | null;
   postcode?: string | null;
+  description?: string | null;
+  website?: string | null;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string | null;
+  reel_urls?: string[];
 };
 
 export type PublicBuilderProject = {

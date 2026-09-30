@@ -71,6 +71,7 @@ const AppRouter = () => {
         <Route path="/commercials" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
+        <Route path="/agent/:id" element={<BuilderDetail />} />
         <Route path="/builder-project/:id" element={<BuilderProjectDetail />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
 

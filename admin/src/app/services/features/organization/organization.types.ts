@@ -32,6 +32,12 @@ export type Organization = {
     name: string;
     slug: string;
   };
+  description?: string | null;
+  website?: string | null;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string | null;
+  reel_urls?: string[];
 };
 
 export type OrganizationFormValues = {
@@ -46,6 +52,12 @@ export type OrganizationFormValues = {
   is_verified?: boolean;
   profile_image?: File;
   banner_image?: File;
+  description?: string;
+  website?: string;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string;
+  reel_urls?: string[];
 };
 
 export type GetOrganizationParams = {

@@ -8,6 +8,7 @@ export type PublicPlan = {
   monthly_price?: number | null;
   yearly_price?: number | null;
   currency?: string;
+  show_price?: boolean;
   popular?: boolean;
   features: { name: string; enabled: boolean; value: number | null }[];
 };

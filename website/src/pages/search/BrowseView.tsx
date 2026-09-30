@@ -173,7 +173,7 @@ export default function BrowseView({
   const newlyPropertyCards = newlyProperties.map(propertyToCard);
 
   const allTraders = organizations.filter(o => o.type?.slug === "trades-professionals" || (!o.type?.slug && !o.type?.name)).map(organizationToTrader);
-  const allAgenciesAndBuilders = organizations.filter(o => o.type?.slug === "real-estate" || o.type?.slug === "builders").map(organizationToBuilder);
+  const allAgenciesAndBuilders = organizations.filter(o => o.type?.slug === "real-estate" || o.type?.slug === "builders" || o.type?.slug === "buyers-agent").map(organizationToBuilder);
   const allCommercialCards = commercialProperties.map(propertyToCard);
   const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 

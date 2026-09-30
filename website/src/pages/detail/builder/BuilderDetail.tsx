@@ -101,6 +101,7 @@ const BuilderDetail = () => {
   const tags = (builder.services ?? [])
     .slice(0, 5)
     .map((service) => service.name);
+  const isBuyerAgent = builder.type?.slug === "buyers-agent";
   const viewModel = {
     id: builder.id,
     is_favourite: builder.is_favourite,
@@ -118,9 +119,9 @@ const BuilderDetail = () => {
     snapshot: {},
     about: {
       name: builder.name,
-      description: tags.length
+      description: builder.description?.trim() || (tags.length
         ? `Services offered: ${tags.join(", ")}.`
-        : "No description has been provided.",
+        : "No description has been provided."),
     },
   };
 
@@ -131,7 +132,7 @@ const BuilderDetail = () => {
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: "Find a builder", isBack: true },
+              { label: builder.type?.slug === "buyers-agent" ? "Find a buyer agent" : "Find a builder", isBack: true },
               { label: builder.name },
             ]}
           />
@@ -153,13 +154,15 @@ const BuilderDetail = () => {
           <div className="flex-1 min-w-0 flex flex-col  gap-10 w-full">
             <BuilderHeader builder={viewModel} />
             <div className="flex flex-col px-[3%] md:px-0  gap-16">
-              <div id="homes">
-                <BuilderHomes
-                  homes={homes}
-                  propertiesHref={`/result?type=property&organization_slug=${encodeURIComponent(builder.slug || "")}`}
-                  description={`${propertyCount} published propert${propertyCount === 1 ? "y" : "ies"} for ${builder.name}.`}
-                />
-              </div>
+              {!isBuyerAgent && (
+                <div id="homes">
+                  <BuilderHomes
+                    homes={homes}
+                    propertiesHref={`/result?type=property&organization_slug=${encodeURIComponent(builder.slug || "")}`}
+                    description={`${propertyCount} published propert${propertyCount === 1 ? "y" : "ies"} for ${builder.name}.`}
+                  />
+                </div>
+              )}
               <div id="projects">
                 <BuilderProjects projects={projects} builderName={builder.name} builderLogo={builder.logo_url || BusinessPlaceholder} />
               </div>

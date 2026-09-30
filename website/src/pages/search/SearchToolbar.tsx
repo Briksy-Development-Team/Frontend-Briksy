@@ -75,7 +75,7 @@ const TAB_LABELS: Record<FilterTab, string> = {
   Sold: "Sold",
   Leased: "Leased",
   Builders: "Builders",
-  Agents: "Organizations",
+  Agents: "Buyer Agents",
   Traders: "Sole Traders",
   Landscappers: "Landscappers",
   Concreter: "Concreter",

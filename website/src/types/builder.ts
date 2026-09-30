@@ -10,4 +10,5 @@ export interface Builder {
   establishedYear: number;
   isFavourite: boolean;
   favoriteId?: string;
+  profileType?: "builder" | "agent";
 }
