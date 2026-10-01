@@ -129,12 +129,12 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
         className="fixed left-0 right-0 top-20 z-50 w-full overflow-hidden bg-[#F8F4EE]"
         style={{ clipPath: HIDDEN_CLIP, opacity: 0 }}
       >
-        <div className="mx-auto flex justify-between gap-10 px-12 py-12">
-          <div className={`flex flex-col gap-6 w-[50%]`}>
+        <div className="mx-auto flex  gap-10 px-12 py-12">
+          <div className={`flex flex-col justify-start  gap-6 w-[50%] `}>
             <p className="dd-item text-[11px] font-semibold uppercase tracking-[0.1364em] text-black/50">
               {menu.title}
             </p>
-            <div className="flex  w-full justify-around">
+            <div className="grid  grid-cols-2  w-full ">
               {menu.columns.map((links, i) => (
                 <div key={i} className="flex flex-col gap-3">
                   {links.map((l) => (
