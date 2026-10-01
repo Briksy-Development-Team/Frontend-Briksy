@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { SlidersHorizontal, Sparkles } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  SlidersHorizontal,
+  Sparkles,
+  Search,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
-
 import type { ResultType } from "../../types/search";
 
-import All from "../../assets/icons/search/search.svg";
 import Build from "../../assets/icons/search/build.svg";
 import Prop from "../../assets/icons/search/property.svg";
 import Trader from "../../assets/icons/search/trades.svg";
-import Comercial from "../../assets/icons/search/comercial.svg";
+
+type PropType = { id: string; label: string };
 
 type Category = {
   id: string;
@@ -20,17 +25,11 @@ type Category = {
   desc: string;
   icon: string;
   resultType: ResultType;
+  placeholder: string;
+  propTypes: PropType[];
 };
 
 const CATEGORIES: Category[] = [
-  {
-    id: "all",
-    label: "ALL",
-    title: "ALL",
-    desc: "Explore everything BRIKSY offers",
-    icon: All,
-    resultType: "all",
-  },
   {
     id: "properties",
     label: "Properties",
@@ -38,122 +37,133 @@ const CATEGORIES: Category[] = [
     desc: "Find properties to buy or rent",
     icon: Prop,
     resultType: "property",
+    placeholder: "Try '3-bedroom house in Richmond...",
+    propTypes: [
+      { id: "all", label: "All" },
+      { id: "buy", label: "Buy" },
+      { id: "rent", label: "Rent" },
+      { id: "sold", label: "Sold" },
+    ],
+  },
+  {
+    id: "agents",
+    label: "Agents",
+    title: "AGENTS",
+    desc: "Find a buyer, seller or leasing agent",
+    icon: Trader,
+    resultType: "trader",
+    placeholder: "Search your Agent...",
+    propTypes: [
+      { id: "all", label: "All" },
+
+      { id: "real-estate", label: "Real Estate Agents" },
+      { id: "buyer", label: "Buyer Agents" },
+    ],
+  },
+  {
+    id: "address",
+    label: "Address",
+    title: "ADDRESS",
+    desc: "Search by exact address or suburb",
+    icon: Prop,
+    resultType: "all",
+    placeholder: "Search with Address, Suburs, Postcode...",
+    propTypes: [],
+  },
+  {
+    id: "traders",
+    label: "Traders",
+    title: "TRADERS",
+    desc: "Connect with skilled trades professionals",
+    icon: Trader,
+    resultType: "trader",
+    placeholder: "Search with Where ...",
+    propTypes: [
+      { id: "all", label: "All" },
+
+      { id: "landscaper", label: "Landscapers" },
+      { id: "concreter", label: "Concreter" },
+      { id: "fencing", label: "Fencing" },
+      { id: "mortgage", label: "Mortgage Brokers" },
+      { id: "conveyancer", label: "Conveyancers" },
+      { id: "building-pest", label: "Building & Pest" },
+    ],
   },
   {
     id: "builders",
     label: "Builders",
-    title: "BUILDERS / ORGANISATIONS",
-    desc: "Discover trusted property businesses",
+    title: "BUILDERS",
+    desc: "Discover trusted builders and developers",
     icon: Build,
     resultType: "builder",
-  },
-  {
-    id: "professionals",
-    label: "Trades & Professionals",
-    title: "PROFESSIONALS",
-    desc: "Connect with skilled independent experts",
-    icon: Trader,
-    resultType: "trader",
-  },
-  {
-    id: "Commercial",
-    label: "Commercial",
-    title: "Commercial",
-    desc: "Find properties to rent",
-    icon: Comercial,
-    resultType: "comercial",
+    placeholder: "Search your Builder...",
+    propTypes: [
+
+    ],
   },
 ];
 
 type Mode = "collapsed" | "search" | "ai";
-type Props = {
-  mode: Mode;
-  setMode: (m: Mode) => void;
-};
+type Props = { mode: Mode; setMode: (m: Mode) => void };
+
+// 4 rows × 40px + 12px padding
+const LIST_MAX_HEIGHT = 172;
 
 const HeroSearchBar = ({ mode, setMode }: Props) => {
   const [query, setQuery] = useState("");
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selected, setSelected] = useState(CATEGORIES[0]);
+  const [propType, setPropType] = useState<PropType | undefined>(
+    CATEGORIES[0].propTypes[0],
+  );
+  const [typeOpen, setTypeOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // mobile category picker
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const typeRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useScrollFade(rootRef, "out");
 
-  // Close mobile dropdown on outside click / Escape
   useEffect(() => {
     const close = (e: Event) => {
       if (e instanceof KeyboardEvent && e.key !== "Escape") return;
-
       if (
         e instanceof MouseEvent &&
-        dropdownRef.current?.contains(e.target as Node)
-      ) {
+        (typeRef.current?.contains(e.target as Node) ||
+          dropdownRef.current?.contains(e.target as Node))
+      )
         return;
-      }
-
+      setTypeOpen(false);
       setDropdownOpen(false);
     };
-
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", close);
-
     return () => {
       document.removeEventListener("mousedown", close);
       document.removeEventListener("keydown", close);
     };
   }, []);
 
+  // One place to switch category (used by mobile + desktop)
+  const selectCategory = (cat: Category) => {
+    setSelected(cat);
+    setPropType(cat.propTypes[0]); // undefined when the category has no types
+    setDropdownOpen(false);
+    setTypeOpen(false);
+  };
+
   const goToResults = () => {
     if (mode === "ai") return;
-
-    const params = new URLSearchParams({
-      type: selected.resultType,
-    });
-
+    const params = new URLSearchParams({ type: selected.resultType });
     if (query) params.set("q", query);
-
+    if (propType && propType.id !== "any")
+      params.set("propertyType", propType.id);
     navigate(`/result?${params.toString()}`);
   };
 
-  const searchInput = (
-    <input
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && goToResults()}
-      placeholder="Try '3-bedroom house in Richmond' or 'mortgage broker in Sydney'"
-      className="flex-1 min-w-0 bg-transparent outline-none text-gray-700 placeholder:text-gray-500 text-[15px]"
-    />
-  );
-
-  const filterButton = (
-    <button
-      type="button"
-      onClick={() => setFilterOpen(true)}
-      className="text-gray-500 hover:text-gray-800 transition"
-    >
-      <SlidersHorizontal size={20} />
-    </button>
-  );
-
-  const aiButton = (
-    <button
-      type="button"
-      onClick={() => setMode("ai")}
-      className="
-      flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1 md:h-12 md:mt-0 md:px-4 md:py-2 rounded-[0.375rem] border-[3px] border-transparent
-      [background:linear-gradient(110.61deg,#79241D_22.989%,#DF4235_86.442%)_padding-box,linear-gradient(290deg,#DF4235,#79241D)_border-box]
-      text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition
-    "
-    >
-      <Sparkles size={18} fill="#FBF8F3" />
-      Ask AI
-    </button>
-  );
-
+  // ── Mobile category dropdown ─────────────────────────────────────────────────
   const mobileDropdown = (
     <div ref={dropdownRef} className="relative">
       <button
@@ -165,40 +175,102 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       </button>
 
       {dropdownOpen && (
-        <div className="absolute left-0 bottom-full mb-4 w-[70vw] sm:w-[25rem] max-w-[25rem] bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 z-50">
+        <div className="absolute left-0 bottom-full mb-4 w-[70vw] sm:w-[25rem] max-w-[28rem] bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 z-50">
           <h3 className="text-[0.875rem] font-medium text-primary-brown mb-3 px-2">
             Categories options
           </h3>
-
           <div className="flex flex-col gap-1">
-            {CATEGORIES.map((cat) => {
-              const active = selected.id === cat.id;
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => selectCategory(cat)}
+                className={`flex items-center gap-4 p-2 rounded-xl text-left border transition hover:bg-[#F3F4F3] ${selected.id === cat.id
+                    ? "border-primary-brown"
+                    : "border-white"
+                  }`}
+              >
+                <div className="w-14 h-14 shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4]">
+                  <img src={cat.icon} alt="" className="w-7 h-7" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs lg:text-sm font-medium text-primary-brown tracking-wide uppercase">
+                    {cat.title}
+                  </div>
+                  <div className="text-[0.6rem] lg:text-xs text-gray-500 mt-0.5">
+                    {cat.desc}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
+  const desktopTabs = (
+    <div className="flex items-center gap-1 w-full">
+      {CATEGORIES.map((cat) => (
+        <button
+          key={cat.id}
+          type="button"
+          onClick={() => selectCategory(cat)}
+          className={`flex-1 flex items-center justify-center py-2 rounded-xl text-[0.9rem] font-medium whitespace-nowrap transition-all duration-200 ${selected.id === cat.id
+              ? "bg-[#342511] text-white shadow-sm"
+              : "text-[#342511] bg-[#f0ebe4] hover:bg-[#e8e0d8]"
+            }`}
+        >
+          {cat.label}
+        </button>
+      ))}
+    </div>
+  );
+
+  // ── Type dropdown (fixed width, scrolls with wheel, shows 4 rows) ────────────
+  const typeDropdown = propType && (
+    <div ref={typeRef} className="relative shrink-0 w-[180px]">
+      <button
+        type="button"
+        onClick={() => setTypeOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 text-[#6B7280] text-[15px] hover:text-[#342511] transition"
+      >
+        <span className="truncate">
+          {propType.id === "any" ? `${selected.label} Type` : propType.label}
+        </span>
+        <ChevronDown
+          size={15}
+          className={`shrink-0 transition-transform duration-200 ${typeOpen ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {typeOpen && (
+        <div className="absolute right-0 bottom-full mb-4 w-56 bg-white rounded-2xl shadow-xl border border-[#EDE8E4] z-50 overflow-hidden">
+          <div
+            data-lenis-prevent
+            onWheel={(e) => e.stopPropagation()}
+            style={{ maxHeight: LIST_MAX_HEIGHT }}
+            className="overflow-y-auto overscroll-contain p-1.5 [scrollbar-width:thin] [scrollbar-color:#D9CFC5_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#D9CFC5]"
+          >
+            {selected.propTypes.map((pt) => {
+              const active = propType.id === pt.id;
               return (
                 <button
-                  key={cat.id}
+                  key={pt.id}
                   type="button"
                   onClick={() => {
-                    setSelected(cat);
-                    setDropdownOpen(false);
+                    setPropType(pt);
+                    setTypeOpen(false);
                   }}
-                  className={`flex items-center gap-4 p-2 rounded-xl text-left border transition hover:bg-[#F3F4F3] ${
-                    active ? "border-primary-brown" : "border-white"
-                  }`}
+                  className={`flex w-full h-10 items-center justify-between rounded-lg px-3 text-[15px] transition-colors hover:bg-[#F8F4EE] ${active
+                      ? "bg-[#F8F4EE] font-medium text-[#342511]"
+                      : "text-gray-700"
+                    }`}
                 >
-                  <div className="w-14 h-14 shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4]">
-                    <img src={cat.icon} alt="" className="w-7 h-7" />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs lg:text-sm font-medium text-primary-brown tracking-wide uppercase">
-                      {cat.title}
-                    </div>
-
-                    <div className="text-[0.6rem] lg:text-xs text-gray-500 mt-0.5">
-                      {cat.desc}
-                    </div>
-                  </div>
+                  <span className="truncate">{pt.label}</span>
+                  {active && (
+                    <Check size={16} className="shrink-0 text-[#562F00]" />
+                  )}
                 </button>
               );
             })}
@@ -208,59 +280,99 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     </div>
   );
 
-  // ── Desktop tab strip (≥ md) ────────────────────────────────────────────────
-  const desktopTabs = (
-    <div className="flex items-center gap-1 w-full">
-      {CATEGORIES.map((cat) => {
-        const active = selected.id === cat.id;
-        return (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => setSelected(cat)}
-            className={`flex-1 flex items-center justify-center py-[0.5rem] rounded-[0.75rem] text-[0.9rem] font-medium whitespace-nowrap transition-all duration-200 ${
-              active
-                ? "bg-[#342511] text-white shadow-sm"
-                : "text-[#342511] bg-[#f0ebe4] hover:bg-[#e8e0d8]"
-            }`}
-          >
-            {cat.label}
-          </button>
-        );
-      })}
+  // ── Desktop input row ────────────────────────────────────────────────────────
+  const divider = <div className="w-px h-8 bg-[#EDE8E4] shrink-0" />;
+
+  const inputRow = (
+    <div className="flex items-center gap-3">
+      <div className="flex flex-1 items-center bg-white border border-[#EDE8E4] rounded-xl h-16 px-5 gap-3 shadow-sm">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && goToResults()}
+          placeholder={selected.placeholder}
+          className="flex-1 min-w-0 bg-transparent outline-none text-gray-700 placeholder:text-[#6B7280] text-base"
+        />
+
+        {divider}
+        {typeDropdown && (
+          <>
+            {typeDropdown}
+            {divider}
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setFilterOpen(true)}
+          className="text-gray-500 hover:text-[#342511] transition p-1"
+          aria-label="Open filters"
+        >
+          <SlidersHorizontal size={20} />
+        </button>
+
+        <button
+          type="button"
+          onClick={goToResults}
+          aria-label="Search"
+          className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#562F00] text-white hover:bg-[#3d2000] transition shrink-0"
+        >
+          <Search size={20} />
+        </button>
+      </div>
+
+      {/* Ask AI — orange glow button */}
+      <button
+        type="button"
+        onClick={() => setMode("ai")}
+        className="flex shrink-0 items-center gap-2 px-5 py-3 rounded-full bg-white border border-[#F5551A]/40 shadow-[inset_0_0_20px_rgba(245,85,26,0.35)] text-[15px] text-[#F5551A] whitespace-nowrap transition hover:opacity-90"
+      >
+        <Sparkles size={17} />
+        Ask AI
+      </button>
     </div>
   );
 
   return (
-    <div ref={rootRef} className="mx-auto w-full max-w-4xl relative">
+    <div ref={rootRef} className="mx-auto w-full max-w-5xl relative">
       {/* ── Mobile layout (< md) ── */}
-      <div className="md:hidden bg-white border border-[#ede8e4] rounded-[12px] shadow-lg overflow-visible">
+      <div className="md:hidden bg-white border border-[#ede8e4] rounded-xl shadow-lg overflow-visible">
         <div className="flex items-center gap-2 px-4 py-[18px]">
-          {searchInput}
-          {filterButton}
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && goToResults()}
+            placeholder={selected.placeholder}
+            className="flex-1 min-w-0 bg-transparent outline-none text-gray-700 placeholder:text-gray-500 text-[15px]"
+          />
+          <button
+            type="button"
+            onClick={() => setFilterOpen(true)}
+            className="text-gray-500 hover:text-gray-800 transition"
+          >
+            <SlidersHorizontal size={20} />
+          </button>
         </div>
 
         <div className="border-t border-[#ede8e4] w-full px-2 flex justify-between h-[49px]">
           <div className="flex items-center pl-2">{mobileDropdown}</div>
-          {aiButton}
+          <button
+            type="button"
+            onClick={() => setMode("ai")}
+            className="flex shrink-0 items-center justify-center gap-2 h-10 px-2 mt-1 rounded-md border-[3px] border-transparent
+              [background:linear-gradient(110.61deg,#79241D_22.989%,#DF4235_86.442%)_padding-box,linear-gradient(290deg,#DF4235,#79241D)_border-box]
+              text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition"
+          >
+            <Sparkles size={18} fill="#FBF8F3" />
+            Ask AI
+          </button>
         </div>
       </div>
 
       {/* ── Desktop layout (≥ md) ── */}
-      <div className="hidden md:block w-full rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md shadow-lg overflow-hidden">
-        {/* Tab row — full width across the entire card */}
+      <div className="hidden md:block w-full rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md shadow-lg overflow-visible">
         <div className="px-3 pt-3 pb-2">{desktopTabs}</div>
-
-        {/* Search row */}
-        <div className="flex items-center gap-2 px-3 pb-3">
-          <div className="flex flex-1 items-center bg-white rounded-xl h-14 px-5 shadow-sm gap-3">
-            {searchInput}
-            <div className="w-[1px] h-6 bg-gray-200 shrink-0" />
-            {filterButton}
-          </div>
-
-          {aiButton}
-        </div>
+        <div className="px-3 pb-3">{inputRow}</div>
       </div>
 
       <Filter
@@ -270,7 +382,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         initialTab={
           selected.id === "builders"
             ? "Builders"
-            : selected.id === "professionals"
+            : selected.id === "traders"
               ? "Traders"
               : "Buy"
         }
