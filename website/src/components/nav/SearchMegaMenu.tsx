@@ -7,7 +7,7 @@ import { getServices } from "../../api/service/service.api";
 import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
 type CategoryData = { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[];
 
-const MOCK_CATEGORIES: Record<Exclude<ResultType, "comercial" | "all">, CategoryData> = {
+const MOCK_CATEGORIES: Record<Exclude<ResultType, "commercial" | "all">, CategoryData> = {
   builder: [
     {
       id: "building-and-construction",
@@ -168,7 +168,7 @@ export default function SearchMegaMenu({
     }).catch(() => setServiceGroups([]));
   }, [resultType]);
 
-  const baseCategories = MOCK_CATEGORIES[resultType === "comercial" || resultType === "all" ? "property" : resultType];
+  const baseCategories = MOCK_CATEGORIES[resultType === "commercial" || resultType === "all" ? "property" : resultType];
   const cats = (resultType === "trader" ? baseCategories.filter((category) => category.id === "trades-and-repairs") : baseCategories)
     .map((category) => resultType === "trader" && category.id === "trades-and-repairs"
       ? { ...category, groups: serviceGroups }

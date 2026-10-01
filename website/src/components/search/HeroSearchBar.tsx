@@ -10,98 +10,10 @@ import { useNavigate } from "react-router-dom";
 
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
-import type { ResultType } from "../../types/search";
 
-import Build from "../../assets/icons/search/build.svg";
-import Prop from "../../assets/icons/search/property.svg";
-import Trader from "../../assets/icons/search/trades.svg";
+import { SEARCH_CATEGORIES, type Category, type PropType } from "../../constants/searchCategories";
 
-type PropType = { id: string; label: string };
 
-type Category = {
-  id: string;
-  label: string;
-  title: string;
-  desc: string;
-  icon: string;
-  resultType: ResultType;
-  placeholder: string;
-  propTypes: PropType[];
-};
-
-const CATEGORIES: Category[] = [
-  {
-    id: "properties",
-    label: "Properties",
-    title: "PROPERTIES",
-    desc: "Find properties to buy or rent",
-    icon: Prop,
-    resultType: "property",
-    placeholder: "Try '3-bedroom house in Richmond...",
-    propTypes: [
-      { id: "all", label: "All" },
-      { id: "buy", label: "Buy" },
-      { id: "rent", label: "Rent" },
-      { id: "sold", label: "Sold" },
-    ],
-  },
-  {
-    id: "agents",
-    label: "Agents",
-    title: "AGENTS",
-    desc: "Find a buyer, seller or leasing agent",
-    icon: Trader,
-    resultType: "trader",
-    placeholder: "Search your Agent...",
-    propTypes: [
-      { id: "all", label: "All" },
-
-      { id: "real-estate", label: "Real Estate Agents" },
-      { id: "buyer", label: "Buyer Agents" },
-    ],
-  },
-  {
-    id: "address",
-    label: "Address",
-    title: "ADDRESS",
-    desc: "Search by exact address or suburb",
-    icon: Prop,
-    resultType: "all",
-    placeholder: "Search with Address, Suburs, Postcode...",
-    propTypes: [],
-  },
-  {
-    id: "traders",
-    label: "Traders",
-    title: "TRADERS",
-    desc: "Connect with skilled trades professionals",
-    icon: Trader,
-    resultType: "trader",
-    placeholder: "Search with Where ...",
-    propTypes: [
-      { id: "all", label: "All" },
-
-      { id: "landscaper", label: "Landscapers" },
-      { id: "concreter", label: "Concreter" },
-      { id: "fencing", label: "Fencing" },
-      { id: "mortgage", label: "Mortgage Brokers" },
-      { id: "conveyancer", label: "Conveyancers" },
-      { id: "building-pest", label: "Building & Pest" },
-    ],
-  },
-  {
-    id: "builders",
-    label: "Builders",
-    title: "BUILDERS",
-    desc: "Discover trusted builders and developers",
-    icon: Build,
-    resultType: "builder",
-    placeholder: "Search your Builder...",
-    propTypes: [
-
-    ],
-  },
-];
 
 type Mode = "collapsed" | "search" | "ai";
 type Props = { mode: Mode; setMode: (m: Mode) => void };
@@ -111,9 +23,9 @@ const LIST_MAX_HEIGHT = 172;
 
 const HeroSearchBar = ({ mode, setMode }: Props) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(CATEGORIES[0]);
+  const [selected, setSelected] = useState(SEARCH_CATEGORIES[0]);
   const [propType, setPropType] = useState<PropType | undefined>(
-    CATEGORIES[0].propTypes[0],
+    SEARCH_CATEGORIES[0].propTypes[0],
   );
   const [typeOpen, setTypeOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); // mobile category picker
@@ -154,12 +66,26 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     setTypeOpen(false);
   };
 
-  const goToResults = () => {
+  const goToResults = (overridePropType?: PropType) => {
     if (mode === "ai") return;
-    const params = new URLSearchParams({ type: selected.resultType });
-    if (query) params.set("q", query);
-    if (propType && propType.id !== "any")
-      params.set("propertyType", propType.id);
+
+    // Address search requires input
+    if (selected.id === "address" && !query.trim()) return;
+
+    const params = new URLSearchParams({ type: selected.id });
+
+    if (query) {
+      if (selected.id === "address") {
+        params.set("location", query);
+      } else {
+        params.set("q", query);
+      }
+    }
+
+    const activePropType = overridePropType || propType;
+    if (activePropType && activePropType.id !== "all")
+      params.set("tab", activePropType.id);
+
     navigate(`/result?${params.toString()}`);
   };
 
@@ -180,14 +106,14 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
             Categories options
           </h3>
           <div className="flex flex-col gap-1">
-            {CATEGORIES.map((cat) => (
+            {SEARCH_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => selectCategory(cat)}
                 className={`flex items-center gap-4 p-2 rounded-xl text-left border transition hover:bg-[#F3F4F3] ${selected.id === cat.id
-                    ? "border-primary-brown"
-                    : "border-white"
+                  ? "border-primary-brown"
+                  : "border-white"
                   }`}
               >
                 <div className="w-14 h-14 shrink-0 rounded-lg flex items-center justify-center bg-[#EDE8E4]">
@@ -211,14 +137,14 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
 
   const desktopTabs = (
     <div className="flex items-center gap-1 w-full">
-      {CATEGORIES.map((cat) => (
+      {SEARCH_CATEGORIES.map((cat) => (
         <button
           key={cat.id}
           type="button"
           onClick={() => selectCategory(cat)}
           className={`flex-1 flex items-center justify-center py-2 rounded-xl text-[0.9rem] font-medium whitespace-nowrap transition-all duration-200 ${selected.id === cat.id
-              ? "bg-[#342511] text-white shadow-sm"
-              : "text-[#342511] bg-[#f0ebe4] hover:bg-[#e8e0d8]"
+            ? "bg-[#342511] text-white shadow-sm"
+            : "text-[#342511] bg-[#f0ebe4] hover:bg-[#e8e0d8]"
             }`}
         >
           {cat.label}
@@ -236,7 +162,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         className="flex w-full items-center justify-between gap-2 text-[#6B7280] text-[15px] hover:text-[#342511] transition"
       >
         <span className="truncate">
-          {propType.id === "any" ? `${selected.label} Type` : propType.label}
+          {propType.label}
         </span>
         <ChevronDown
           size={15}
@@ -263,8 +189,8 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
                     setTypeOpen(false);
                   }}
                   className={`flex w-full h-10 items-center justify-between rounded-lg px-3 text-[15px] transition-colors hover:bg-[#F8F4EE] ${active
-                      ? "bg-[#F8F4EE] font-medium text-[#342511]"
-                      : "text-gray-700"
+                    ? "bg-[#F8F4EE] font-medium text-[#342511]"
+                    : "text-gray-700"
                     }`}
                 >
                   <span className="truncate">{pt.label}</span>
@@ -313,7 +239,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
 
         <button
           type="button"
-          onClick={goToResults}
+          onClick={() => goToResults()}
           aria-label="Search"
           className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#562F00] text-white hover:bg-[#3d2000] transition shrink-0"
         >
@@ -381,9 +307,9 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         category={selected.id}
         initialTab={
           selected.id === "builders"
-            ? "Builders"
+            ? "All"
             : selected.id === "traders"
-              ? "Traders"
+              ? "All"
               : "Buy"
         }
       />

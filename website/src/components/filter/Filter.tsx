@@ -3,8 +3,10 @@ import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
+import { getFieldsForMode } from "./filterConfig";
 import type { FilterMode } from "./filterConfig";
-import { SERVICE_CATEGORIES, serviceSlugForLabel } from "../../constants/serviceCategories";
+import { serviceSlugForLabel } from "../../constants/serviceCategories";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
 type FilterProps = {
   isOpen: boolean;
@@ -13,32 +15,16 @@ type FilterProps = {
   category?: string;
 };
 
-const ALL_TABS: { label: string; value: FilterMode }[] = [
-  { label: "Buy", value: "Buy" },
-  { label: "Rent", value: "Rent" },
-  { label: "Lease", value: "Lease" },
-  { label: "Sold", value: "Sold" },
-  { label: "Leased", value: "Leased" },
-  { label: "Builders", value: "Builders" },
-  { label: "Organizations", value: "Agents" },
-  { label: "Sole Traders", value: "Traders" },
-  ...SERVICE_CATEGORIES.map((category) => ({ label: category.label, value: category.label as FilterMode })),
-];
-
-const TABS_BY_CATEGORY: Record<string, FilterMode[]> = {
-  all: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
-  properties: ["Buy", "Rent", "Sold"],
-  builders: ["Builders", "Agents"],
-  professionals: ["Traders", ...SERVICE_CATEGORIES.map((category) => category.label as FilterMode)],
-  commercial: ["Buy", "Lease", "Sold", "Leased"],
-};
-
 const getVisibleTabs = (category = "all") => {
-  const allowed = TABS_BY_CATEGORY[category.toLowerCase()] ?? TABS_BY_CATEGORY.all;
+  const cat = SEARCH_CATEGORIES.find((c) => c.id === category.toLowerCase());
+  if (!cat) return [];
+  const allowed = cat.propTypes.map((p) => p.label as FilterMode);
   const seen = new Set<FilterMode>();
-  return ALL_TABS.filter(
-    (t) => allowed.includes(t.value) && !seen.has(t.value) && seen.add(t.value)
-  );
+  return allowed.filter(label => {
+    if (seen.has(label)) return false;
+    seen.add(label);
+    return true;
+  }).map(label => ({ label, value: label }));
 };
 
 const Filter = ({
@@ -116,13 +102,7 @@ const Filter = ({
 
     params.set("tab", activeTab.toLowerCase());
     params.set("page", "1");
-
-    const typeMap: Record<FilterMode, string> = {
-      Buy: "property", Rent: "property", Lease: "comercial", Sold: "property", Leased: "comercial",
-      Builders: "builder", Agents: "builder", Traders: "trader",
-      Landscappers: "trader", Concreter: "trader", Fencing: "trader", "Mortgage Brokers": "trader", Conveyancers: "trader", "Building and Pest": "trader",
-    };
-    params.set("type", typeMap[activeTab]);
+    params.set("type", category);
 
     if (category.toLowerCase() === "commercial") {
       params.set("category", "commercial");
@@ -133,7 +113,7 @@ const Filter = ({
     const serviceSlug = serviceSlugForLabel(activeTab);
     if (serviceSlug) params.set("service_slug", serviceSlug);
     if (category.toLowerCase() === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(activeTab)) {
-      params.set("type", "comercial");
+      params.set("type", "commercial");
       params.set("transaction_status", activeTab.toUpperCase());
     }
 
@@ -163,6 +143,9 @@ const Filter = ({
     e.preventDefault();
   };
 
+  const hasLeftColumn = getFieldsForMode(activeTab).some(f => f.column === "left");
+  const modalWidthClass = hasLeftColumn ? "md:w-[90vw] lg:w-[75vw] xl:w-[65vw] max-w-5xl" : "md:w-[60vw] max-w-3xl";
+
   const panel = (
     <>
       <div
@@ -173,15 +156,15 @@ const Filter = ({
       <div
         className={`fixed z-[99999] flex flex-col overflow-hidden bg-white shadow-2xl transition-all duration-300 ease-out
           bottom-0 left-0 right-0 h-[92vh] rounded-t-3xl
-          md:bottom-auto md:left-1/2 md:right-auto md:top-1/2 md:h-auto md:max-h-[90vh] md:w-[60vw]
+          md:bottom-auto md:left-1/2 md:right-auto md:top-1/2 md:h-[85vh] ${modalWidthClass}
           md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl
           ${isOpen ? "translate-y-0 md:opacity-100 md:scale-100" : "translate-y-full md:opacity-0 md:scale-95 md:pointer-events-none"}`}
       >
-        <div className="flex shrink-0 items-center justify-between px-6 py-5">
-          <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-          <button onClick={onClose} className="rounded-full p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700">
-            <X size={20} />
+        <div className="px-6 pt-5 pb-4">
+          <button onClick={onClose} className="p-1 -ml-1 text-gray-500 transition hover:text-gray-900 mb-2 block">
+            <X size={24} strokeWidth={1.5} />
           </button>
+          <h2 className="text-[22px] font-semibold text-[#333]">Filters</h2>
         </div>
 
         <div
@@ -205,7 +188,7 @@ const Filter = ({
         </div>
 
         <div
-          className="flex-1 overflow-y-auto overscroll-contain px-6 py-6"
+          className="flex-1 overflow-y-auto md:overflow-hidden overscroll-contain px-6 py-6"
           style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
           onWheel={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
@@ -213,11 +196,11 @@ const Filter = ({
           <FilterPanel key={activeTab} mode={activeTab} values={currentValues} onChange={setCurrentValues} />
         </div>
 
-        <div className="flex shrink-0 items-center justify-between border-t border-gray-100 px-6 py-4">
-          <button onClick={handleClear} className="text-sm font-medium text-gray-500 underline underline-offset-2 hover:text-gray-800 transition-colors">
-            Clear filters
+        <div className="flex shrink-0 items-center justify-end gap-3 border-t border-[#EDE8E4] px-6 py-4">
+          <button onClick={handleClear} className="rounded-[20px] border border-[#ccc] px-6 py-2.5 text-[14px] font-medium text-[#333] transition-colors hover:bg-gray-50">
+            Clear filter
           </button>
-          <button onClick={handleApply} className="rounded-xl bg-[#3D2C1D] px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-[#2c1f14]">
+          <button onClick={handleApply} className="rounded-[20px] bg-[#3D2C1D] px-6 py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-[#2c1f14]">
             Show results
           </button>
         </div>

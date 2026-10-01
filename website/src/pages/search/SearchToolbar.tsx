@@ -3,62 +3,12 @@ import { SlidersHorizontal, Search, Sparkles } from "lucide-react";
 import DropdownPill from "../../components/custom/DropdownPill";
 import { createPortal } from "react-dom";
 import Filter from "../../components/filter/Filter";
-import type { ResultType, SortType } from "../../types/search";
+import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
-import AllIcon from "../../assets/icons/search/search.svg?react";
-import PropIcon from "../../assets/icons/search/property.svg?react";
-import BuildIcon from "../../assets/icons/search/build.svg?react";
-import TraderIcon from "../../assets/icons/search/trades.svg?react";
-import ComercialIcon from "../../assets/icons/search/comercial.svg?react";
 import MapIcon from "../../assets/icons/search/map.svg?react";
-import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
-type CategoryDef = {
-  id: string;
-  label: string;
-  resultType: ResultType;
-  icon: React.ReactNode;
-  tabs: FilterTab[];
-};
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const SEARCH_CATEGORIES: CategoryDef[] = [
-  {
-    id: "all",
-    label: "All Categories",
-    resultType: "all",
-    icon: <AllIcon className="w-4 h-4" />,
-    tabs: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
-  },
-  {
-    id: "properties",
-    label: "Properties",
-    resultType: "property",
-    icon: <PropIcon className="w-4 h-4" />,
-    tabs: ["Buy", "Rent", "Sold"],
-  },
-  {
-    id: "builders",
-    label: "BUILDERS",
-    resultType: "builder",
-    icon: <BuildIcon className="w-4 h-4" />,
-    tabs: ["Builders", "Agents"],
-  },
-  {
-    id: "professionals",
-    label: "Trades & Professionals",
-    resultType: "trader",
-    icon: <TraderIcon className="w-4 h-4" />,
-    tabs: SERVICE_CATEGORIES.map((category) => category.label),
-  },
-  {
-    id: "commercial",
-    label: "Commercial",
-    resultType: "comercial",
-    icon: <ComercialIcon className="w-4 h-4" />,
-    tabs: ["Buy", "Lease", "Sold", "Leased"],
-  },
-];
 
 const SORT_OPTIONS = [
   { label: "Recommended", value: "featured" },
@@ -67,23 +17,6 @@ const SORT_OPTIONS = [
   { label: "Price ↑", value: "price-low" },
   { label: "Price ↓", value: "price-high" },
 ];
-
-const TAB_LABELS: Record<FilterTab, string> = {
-  Buy: "Buy",
-  Rent: "Rent",
-  Lease: "Lease",
-  Sold: "Sold",
-  Leased: "Leased",
-  Builders: "Builders",
-  Agents: "Organizations",
-  Traders: "Sole Traders",
-  Landscappers: "Landscappers",
-  Concreter: "Concreter",
-  Fencing: "Fencing",
-  "Mortgage Brokers": "Mortgage Brokers",
-  Conveyancers: "Conveyancers",
-  "Building and Pest": "Building and Pest",
-};
 
 const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
   (acc, option) => {
@@ -185,16 +118,17 @@ export default function SearchToolbar({
         </div>
       </div>
 
-      {activeCategory.tabs.length > 0 && (
+      {activeCategory.propTypes.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 shrink-0">
-          {activeCategory.tabs.map((tab) => {
+          {activeCategory.propTypes.map((propType) => {
+            const tab = propType.label as FilterTab;
             const isSelected = activeTab === tab;
             return (
               <button
                 key={tab}
                 type="button"
                 onClick={() =>
-                  onTabChange(isSelected ? null : (tab as FilterTab))
+                  onTabChange(isSelected ? null : tab)
                 }
                 className={`py-2 px-6 rounded-2xl border text-[0.875rem] transition-colors whitespace-nowrap shrink-0 ${
                   isSelected
@@ -202,7 +136,7 @@ export default function SearchToolbar({
                     : "bg-white text-primary-brown border-[#EDE8E4] hover:bg-[#F8F4EE]"
                 }`}
               >
-                {TAB_LABELS[tab] || tab}
+                {tab}
               </button>
             );
           })}

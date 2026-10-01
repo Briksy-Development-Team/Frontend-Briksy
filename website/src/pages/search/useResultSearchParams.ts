@@ -7,7 +7,7 @@ const CLEAN_ROUTES: Record<string, Record<string, string>> = {
   "/builders": { type: "builder" },
   "/agents": { type: "builder", tab: "agents" },
   "/professionals": { type: "trader" },
-  "/commercials": { type: "comercial" },
+  "/commercials": { type: "commercial" },
 };
 
 const matchesRoute = (params: URLSearchParams, routeParams: Record<string, string>) => {

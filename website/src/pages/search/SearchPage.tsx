@@ -3,18 +3,21 @@ import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import type { BreadcrumbItem } from "../../components/nav/Breadcrumb";
 import Breadcrumb from "../../components/nav/Breadcrumb";
-import SearchToolbar, { SEARCH_CATEGORIES } from "./SearchToolbar";
+import SearchToolbar from "./SearchToolbar";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 import FullListView from "./FullListView";
 import { useResultSearchParams } from "./useResultSearchParams";
-import { SERVICE_CATEGORIES, serviceSlugForLabel } from "../../constants/serviceCategories";
+import { serviceSlugForLabel } from "../../constants/serviceCategories";
 
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
   properties: { title: "Find a property", crumb: "Find a property" },
+  agents: { title: "Find an agent", crumb: "Find an agent" },
+  traders: { title: "Find a professional", crumb: "Find a professional" },
   builders: { title: "Find a builder", crumb: "Find a builder" },
-  professionals: { title: "Find a professional", crumb: "Find a professional" },
+  address: { title: "Search by address", crumb: "Address" },
   commercial: { title: "Find commercial", crumb: "Commercial" },
 };
 
@@ -33,15 +36,28 @@ const SearchPage = () => {
   const showMap = searchParams.get("map") === "1";
 
   const activeCategoryId =
-    SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
+    SEARCH_CATEGORIES.find((c) => c.id === typeParam || c.resultType === typeParam)?.id || "all";
 
   const rawTabParam = searchParams.get("tab");
-  const professionalTab = SERVICE_CATEGORIES.find((category) => category.label.toLowerCase() === rawTabParam)?.label;
-  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "lease" ? "Lease" : rawTabParam === "sold" ? "Sold" : rawTabParam === "leased" ? "Leased" : rawTabParam === "builders" ? "Builders" : rawTabParam === "agents" ? "Agents" : rawTabParam === "traders" ? "Traders" : professionalTab || null;
-  const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
+  const tabMap: Record<string, FilterTab> = {
+    "all": "All",
+    "buy": "Buy",
+    "rent": "Rent",
+    "sold": "Sold",
+    "real-estate": "Real Estate Agents",
+    "buyer": "Buyer Agents",
+    "landscaper": "Landscapers",
+    "concreter": "Concreter",
+    "fencing": "Fencing",
+    "mortgage": "Mortgage Brokers",
+    "conveyancer": "Conveyancers",
+    "building-pest": "Building & Pest"
+  };
+  const tabParam = rawTabParam ? tabMap[rawTabParam] || null : null;
+  const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || "All");
 
   useEffect(() => {
-    setActiveTab((tabParam as FilterTab) || null);
+    setActiveTab((tabParam as FilterTab) || "All");
   }, [tabParam]);
 
   const activeCategory =
@@ -68,24 +84,21 @@ const SearchPage = () => {
       next.delete("purpose");
       next.delete("transaction_status");
       next.delete("service_slug");
+
       if (!tab) {
         next.delete("tab");
-        next.delete("type");
+        next.set("type", activeCategoryId);
         return;
       }
-      next.set("tab", tab.toLowerCase());
-      if (["Buy", "Rent", "Lease", "Sold", "Leased"].includes(tab)) {
-        next.set("type", activeCategoryId === "commercial" ? "comercial" : "property");
-        if (activeCategoryId === "commercial") {
-          next.set("transaction_status", tab.toUpperCase());
-          return;
-        }
-        if (tab === "Buy") next.set("purpose", "sell");
-        if (tab === "Rent") next.set("purpose", "rent");
-        return;
-      }
+
+      const rawTabParam = Object.keys(tabMap).find(key => tabMap[key] === tab) || tab.toLowerCase();
+      next.set("tab", rawTabParam);
+      next.set("type", activeCategoryId);
+
+      if (tab === "Buy") next.set("purpose", "sell");
+      else if (tab === "Rent") next.set("purpose", "rent");
+
       const serviceSlug = serviceSlugForLabel(tab);
-      next.set("type", tab === "Traders" || serviceSlug ? "trader" : "builder");
       if (serviceSlug) next.set("service_slug", serviceSlug);
     });
   };
@@ -114,7 +127,7 @@ const SearchPage = () => {
   };
 
   const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
-  if (activeTab) {
+  if (activeTab && activeTab !== "All") {
     breadcrumbs.push({ label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } });
     if (browseSection !== "all") {
       breadcrumbs.push(
@@ -137,7 +150,7 @@ const SearchPage = () => {
   let content;
   if (browseSection !== "all") {
     content = <FullListView resultType={resultType} section={browseSection} tab={activeTab} />;
-  } else if (activeTab || showMap) {
+  } else if ((activeTab && activeTab !== "All") || showMap) {
     content = <ResultsView resultType={resultType} selectedSub={activeTab || ""} showMap={showMap} onViewMore={setBrowseSection} />;
   } else {
     content = <BrowseView resultType={resultType} onViewMore={setBrowseSection} />;
