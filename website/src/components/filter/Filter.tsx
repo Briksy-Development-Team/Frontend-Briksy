@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
 import type { FilterMode } from "./filterConfig";
 import { SERVICE_CATEGORIES, serviceSlugForLabel, type ServiceCategory } from "../../constants/serviceCategories";
+import type { PublicAgentType } from "../../api/agentTypes.api";
 
 type FilterProps = {
   isOpen: boolean;
@@ -12,6 +13,7 @@ type FilterProps = {
   initialTab?: FilterMode;
   category?: string;
   serviceCategories?: readonly ServiceCategory[];
+  agentTypes?: readonly PublicAgentType[];
 };
 
 const ALL_TABS: { label: string; value: FilterMode }[] = [
@@ -40,15 +42,20 @@ const Filter = ({
   initialTab = "Buy",
   category = "all",
   serviceCategories = SERVICE_CATEGORIES,
+  agentTypes = [],
 }: FilterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const allTabs = [
     ...ALL_TABS.filter((tab) => !SERVICE_CATEGORIES.some((item) => item.label === tab.value)),
     ...serviceCategories.map((item) => ({ label: item.label, value: item.label as FilterMode })),
+    ...agentTypes.map((item) => ({ label: item.label, value: item.label as FilterMode })),
   ];
   const categoryTabs: Record<string, FilterMode[]> = {
-    ...TABS_BY_CATEGORY,
+    ...Object.fromEntries(Object.entries(TABS_BY_CATEGORY).map(([key, values]) => [
+      key,
+      values.flatMap((value) => value === "Agents" ? agentTypes.map((item) => item.label) : [value]),
+    ])),
     professionals: ["Traders", ...serviceCategories.map((item) => item.label)],
   };
   const visibleTabs = (categoryTabs[category.toLowerCase()] ?? categoryTabs.all)
@@ -128,6 +135,8 @@ const Filter = ({
       Builders: "builder", Agents: "builder", Traders: "trader",
     };
     params.set("type", typeMap[activeTab] ?? (serviceSlugForLabel(activeTab, serviceCategories) ? "trader" : "builder"));
+    const agentType = agentTypes.find((item) => item.label.toLowerCase() === activeTab.toLowerCase());
+    if (agentType) params.set("agent_type", agentType.slug);
 
     if (category.toLowerCase() === "commercial") {
       params.set("category", "commercial");

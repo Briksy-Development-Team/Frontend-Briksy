@@ -12,6 +12,7 @@ import TraderIcon from "../../assets/icons/search/trades.svg?react";
 import ComercialIcon from "../../assets/icons/search/comercial.svg?react";
 import MapIcon from "../../assets/icons/search/map.svg?react";
 import { SERVICE_CATEGORIES, type ServiceCategory } from "../../constants/serviceCategories";
+import type { PublicAgentType } from "../../api/agentTypes.api";
 
 type CategoryDef = {
   id: string;
@@ -28,7 +29,7 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
     label: "All Categories",
     resultType: "all",
     icon: <AllIcon className="w-4 h-4" />,
-    tabs: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
+    tabs: ["Buy", "Rent", "Sold", "Builders", "Traders"],
   },
   {
     id: "properties",
@@ -42,7 +43,7 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
     label: "BUILDERS",
     resultType: "builder",
     icon: <BuildIcon className="w-4 h-4" />,
-    tabs: ["Builders", "Agents"],
+    tabs: ["Builders"],
   },
   {
     id: "professionals",
@@ -60,8 +61,10 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
   },
 ];
 
-export const buildSearchCategories = (categories: readonly ServiceCategory[]): CategoryDef[] => SEARCH_CATEGORIES.map((category) =>
-  category.id === "professionals" ? { ...category, tabs: categories.map((item) => item.label) } : category,
+export const buildSearchCategories = (categories: readonly ServiceCategory[], agentTypes: readonly PublicAgentType[] = []): CategoryDef[] => SEARCH_CATEGORIES.map((category) =>
+  category.id === "professionals" ? { ...category, tabs: categories.map((item) => item.label) } :
+  category.id === "builders" ? { ...category, tabs: ["Builders", ...agentTypes.map((item) => item.label)] } :
+  category.id === "all" ? { ...category, tabs: ["Buy", "Rent", "Sold", "Builders", ...agentTypes.map((item) => item.label), "Traders"] } : category,
 );
 
 const SORT_OPTIONS = [
@@ -79,7 +82,6 @@ const TAB_LABELS: Record<FilterTab, string> = {
   Sold: "Sold",
   Leased: "Leased",
   Builders: "Builders",
-  Agents: "Buyer Agents",
   Traders: "Sole Traders",
   Landscappers: "Landscappers",
   Concreter: "Concreter",
@@ -109,6 +111,7 @@ export default function SearchToolbar({
   onQueryChange,
   onAskAi,
   serviceCategories = SERVICE_CATEGORIES,
+  agentTypes = [],
 }: {
   activeCategoryId: string;
   activeTab: FilterTab | null;
@@ -121,12 +124,20 @@ export default function SearchToolbar({
   onQueryChange: (value: string) => void;
   onAskAi?: () => void;
   serviceCategories?: readonly ServiceCategory[];
+  agentTypes?: readonly PublicAgentType[];
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const searchCategories = buildSearchCategories(serviceCategories);
+  const searchCategories = buildSearchCategories(serviceCategories, agentTypes);
 
   const activeCategory =
     searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
+  const isAgentContext = activeCategoryId === "builders" && agentTypes.some((type) =>
+    type.label.toLowerCase() === (activeTab || "").toLowerCase() ||
+    type.name.toLowerCase() === (activeTab || "").toLowerCase(),
+  );
+  const visibleTabs = isAgentContext
+    ? activeCategory.tabs.filter((tab) => tab !== "Builders")
+    : activeCategory.tabs;
 
   return (
     <div className="flex flex-col gap-3">
@@ -191,9 +202,9 @@ export default function SearchToolbar({
         </div>
       </div>
 
-      {activeCategory.tabs.length > 0 && (
+      {visibleTabs.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 shrink-0">
-          {activeCategory.tabs.map((tab) => {
+          {visibleTabs.map((tab) => {
             const isSelected = activeTab === tab;
             return (
               <button
@@ -223,6 +234,7 @@ export default function SearchToolbar({
             category={activeCategory.id}
             initialTab={activeTab || "Buy"}
             serviceCategories={serviceCategories}
+            agentTypes={agentTypes}
           />,
           document.body,
         )}

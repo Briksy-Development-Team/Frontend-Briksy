@@ -1,5 +1,5 @@
 import axiosInstance from "../../api/axiosInstance";
-import type { GetOrganizationParams, OrganizationFormValues } from "./organization.types";
+import type { GetOrganizationParams, OrganizationFormValues, OrganizationType } from "./organization.types";
 import { buildApiParams } from "../../utils/buildApiParams";
 import { getAuth } from "../../../modules/auth/core/AuthHelpers";
 
@@ -57,4 +57,11 @@ export const uploadOrganizationMediaApi = async (
 
   const response = await axiosInstance.post(`/admin/businesses/${id}/media`, formData);
   return response.data.data;
+};
+
+export const fetchOrganizationTypesApi = async (module = "Agents"): Promise<OrganizationType[]> => {
+  const response = await axiosInstance.get("/super-admin/organization-types", {
+    params: { per_page: 100, "filter[module]": module, sort: "sort_order", direction: "asc" },
+  });
+  return response.data?.data ?? [];
 };

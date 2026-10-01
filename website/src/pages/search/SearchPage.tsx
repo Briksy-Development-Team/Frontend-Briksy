@@ -10,6 +10,7 @@ import FullListView from "./FullListView";
 import { useResultSearchParams } from "./useResultSearchParams";
 import { SERVICE_CATEGORIES, serviceSlugForLabel } from "../../constants/serviceCategories";
 import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
+import { agentTypeForLabel, getAgentTypes, type PublicAgentType } from "../../api/agentTypes.api";
 
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
@@ -25,12 +26,14 @@ const SearchPage = () => {
   const [searchParams, setSearchParams] = useResultSearchParams();
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
   const [serviceCategories, setServiceCategories] = useState<PublicServiceCategory[]>([...SERVICE_CATEGORIES]);
+  const [agentTypes, setAgentTypes] = useState<PublicAgentType[]>([]);
 
   useEffect(() => {
     void getServiceCategories().then(setServiceCategories).catch(() => undefined);
+    void getAgentTypes().then(setAgentTypes).catch(() => undefined);
   }, []);
 
-  const searchCategories = buildSearchCategories(serviceCategories);
+  const searchCategories = buildSearchCategories(serviceCategories, agentTypes);
 
   const typeParam = searchParams.get("type");
   const queryParam = searchParams.get("q") || "";
@@ -44,8 +47,22 @@ const SearchPage = () => {
     searchCategories.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
 
   const rawTabParam = searchParams.get("tab");
-  const professionalTab = serviceCategories.find((category) => category.label.toLowerCase() === rawTabParam)?.label;
-  const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "lease" ? "Lease" : rawTabParam === "sold" ? "Sold" : rawTabParam === "leased" ? "Leased" : rawTabParam === "builders" ? "Builders" : rawTabParam === "agents" ? "Agents" : rawTabParam === "traders" ? "Traders" : professionalTab || null;
+  const normalizedTabParam = rawTabParam?.trim().toLowerCase() || "";
+  const intentParam = searchParams.get("intent")?.trim().toLowerCase() || "";
+  const routeIntentTab = !rawTabParam
+    ? intentParam === "buy" ? "Buy"
+      : intentParam === "rent" ? "Rent"
+        : intentParam === "sell" ? "Sold"
+          : null
+    : null;
+  const professionalTab = serviceCategories.find((category) =>
+    category.label.trim().toLowerCase() === normalizedTabParam ||
+    category.slug.trim().toLowerCase() === normalizedTabParam,
+  )?.label;
+  const dynamicAgentTab = agentTypeForLabel(rawTabParam, agentTypes)?.label
+    || (normalizedTabParam === "real-estate" ? agentTypes.find((type) => type.slug === "real-estate-agent")?.label : null);
+  const legacyAgentTab = normalizedTabParam === "agents" ? (agentTypes[0]?.label || "Buyer Agents") : null;
+  const tabParam = normalizedTabParam === "buy" ? "Buy" : normalizedTabParam === "rent" ? "Rent" : normalizedTabParam === "lease" ? "Lease" : normalizedTabParam === "sold" ? "Sold" : normalizedTabParam === "leased" ? "Leased" : normalizedTabParam === "builders" ? "Builders" : normalizedTabParam === "traders" ? "Traders" : dynamicAgentTab || legacyAgentTab || professionalTab || routeIntentTab || null;
   const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
 
   useEffect(() => {
@@ -55,7 +72,7 @@ const SearchPage = () => {
   const activeCategory = searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
   const resultType = activeCategory.resultType;
   const { crumb: defaultCrumb } = HEADERS[activeCategoryId] || HEADERS.all;
-  const crumb = activeTab === "Agents" ? "Find a buyer agent" : defaultCrumb;
+  const crumb = activeTab && agentTypes.some((type) => type.label === activeTab) ? "Find an agent" : defaultCrumb;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -76,6 +93,7 @@ const SearchPage = () => {
       next.delete("purpose");
       next.delete("transaction_status");
       next.delete("service_slug");
+      next.delete("agent_type");
       if (!tab) {
         next.delete("tab");
         next.delete("type");
@@ -93,7 +111,9 @@ const SearchPage = () => {
         return;
       }
       const serviceSlug = serviceSlugForLabel(tab, serviceCategories);
+      const agentType = agentTypeForLabel(tab, agentTypes);
       next.set("type", tab === "Traders" || serviceSlug ? "trader" : "builder");
+      if (agentType) next.set("agent_type", agentType.slug);
       if (serviceSlug) next.set("service_slug", serviceSlug);
     });
   };
@@ -143,12 +163,13 @@ const SearchPage = () => {
   }
 
   let content;
+  const resultViewKey = searchParams.toString();
   if (browseSection !== "all") {
-    content = <FullListView resultType={resultType} section={browseSection} tab={activeTab} />;
+    content = <FullListView key={resultViewKey} resultType={resultType} section={browseSection} tab={activeTab} />;
   } else if (activeTab || showMap) {
-    content = <ResultsView resultType={resultType} selectedSub={activeTab || ""} showMap={showMap} onViewMore={setBrowseSection} />;
+    content = <ResultsView key={resultViewKey} resultType={resultType} selectedSub={activeTab || ""} showMap={showMap} onViewMore={setBrowseSection} />;
   } else {
-    content = <BrowseView resultType={resultType} onViewMore={setBrowseSection} />;
+    content = <BrowseView key={resultViewKey} resultType={resultType} onViewMore={setBrowseSection} />;
   }
 
   return (
@@ -166,6 +187,7 @@ const SearchPage = () => {
           query={queryParam}
           onQueryChange={handleQueryChange}
           serviceCategories={serviceCategories}
+          agentTypes={agentTypes}
         />
         <div className="mt-3 flex flex-col gap-6">{content}</div>
       </div>

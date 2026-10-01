@@ -14,7 +14,7 @@ export type PublicOrganization = {
   is_verified: boolean;
   is_favourite?: boolean;
   contact?: { email: string | null; phone: string | null };
-  type?: { name: string; slug: string } | null;
+  type?: { name: string; label?: string; slug: string; module?: string | null; capability_profile?: string | null } | null;
   services?: {
     id: string;
     name: string;

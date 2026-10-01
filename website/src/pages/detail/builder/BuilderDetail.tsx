@@ -101,7 +101,8 @@ const BuilderDetail = () => {
   const tags = (builder.services ?? [])
     .slice(0, 5)
     .map((service) => service.name);
-  const isBuyerAgent = builder.type?.slug === "buyers-agent";
+  const isAgent = builder.type?.module === "Agents";
+  const isBuyerAgent = builder.type?.capability_profile === "buyers-agent" || builder.type?.slug === "buyers-agent";
   const viewModel = {
     id: builder.id,
     is_favourite: builder.is_favourite,
@@ -132,7 +133,7 @@ const BuilderDetail = () => {
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: builder.type?.slug === "buyers-agent" ? "Find a buyer agent" : "Find a builder", isBack: true },
+              { label: isBuyerAgent ? "Find a buyer agent" : isAgent ? "Find an agent" : "Find a builder", isBack: true },
               { label: builder.name },
             ]}
           />

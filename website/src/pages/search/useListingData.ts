@@ -25,6 +25,8 @@ const organizationTypeFor = (
   tab?: FilterTab | null,
 ) => {
   if (resultType === "builder" && tab === "Agents") return "buyers-agent";
+  if (resultType === "builder" && tab === "real-estate") return "real-estate-agent";
+  if (resultType === "builder" && tab) return tab;
   if (resultType === "builder") return "builders";
   return "trades-professionals";
 };
@@ -69,7 +71,7 @@ export function useListingData(
     }
 
     getOrganizations({
-      type: organizationTypeFor(resultType, tab),
+      type: searchParams.get("agent_type") || organizationTypeFor(resultType, tab),
       service_slug:
         resultType === "trader"
           ? serviceSlugParam || serviceSlugForLabel(tab || "") || (filter ? slugify(filter) : undefined)
@@ -86,7 +88,7 @@ export function useListingData(
         setItems(res.data.map(organizationToTrader));
       })
       .catch(console.error);
-  }, [resultType, filter, tab, section, organizationSlug]);
+  }, [resultType, filter, tab, section, organizationSlug, serviceSlugParam, searchParams.toString()]);
 
   return items;
 }

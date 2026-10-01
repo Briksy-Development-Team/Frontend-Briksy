@@ -56,8 +56,24 @@ export default function CollectionDetailPage() {
   if (!collection) return <p className="text-primary-light-brown">This Collection was not found.</p>;
 
   const properties = items.filter((i) => i.type === "property");
-  const professionals = items.filter((i) => i.type === "organization" || i.type === "service");
-  const builders = items.filter((i) => i.type === "organization");
+  const organizationForItem = (item: CollectionItem): PublicOrganization | null => {
+    if (item.type === "organization") return item.target as PublicOrganization | null;
+    return ((item.target as { organization?: PublicOrganization | null } | null)?.organization) ?? null;
+  };
+
+  const isBuilderOrganization = (item: CollectionItem): boolean => {
+    const organization = organizationForItem(item);
+    return Boolean(
+      item.type === "organization"
+      && organization
+      && (organization.type?.module === "Builders" || organization.type?.slug === "builders"),
+    );
+  };
+
+  const professionals = items.filter((item) =>
+    (item.type === "organization" || item.type === "service") && !isBuilderOrganization(item),
+  );
+  const builders = items.filter(isBuilderOrganization);
 
   // Count summary for header  e.g. "06 properties, 02 traders"
   const parts: string[] = [];
@@ -112,22 +128,24 @@ export default function CollectionDetailPage() {
           items={professionals}
           renderCard={(item) => (
             <div className="relative group">
-              <TraderGridCard item={organizationToTrader(item.target as PublicOrganization)} />
+              {organizationForItem(item) && <TraderGridCard item={organizationToTrader(organizationForItem(item)!)} />}
               <RemoveBtn onClick={() => void remove(item)} />
             </div>
           )}
         />
 
-        <Section
-          title="Builders / Org."
-          items={builders}
-          renderCard={(item) => (
-            <div className="relative group">
-              <TraderGridCard item={organizationToTrader(item.target as PublicOrganization)} />
-              <RemoveBtn onClick={() => void remove(item)} />
-            </div>
-          )}
-        />
+        {builders.length > 0 && (
+          <Section
+            title="Builders / Org."
+            items={builders}
+            renderCard={(item) => (
+              <div className="relative group">
+                <TraderGridCard item={organizationToTrader(item.target as PublicOrganization)} />
+                <RemoveBtn onClick={() => void remove(item)} />
+              </div>
+            )}
+          />
+        )}
       </div>
     </div>
   );

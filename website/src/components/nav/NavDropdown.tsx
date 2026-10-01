@@ -10,6 +10,8 @@ type Card = { label: string; to: string; bg: string };
 type Menu = { title: string; columns: NavLink[][]; cards: Card[] };
 import Randomone from "../../assets/navbar/randomone.svg"
 import Randomtwo from "../../assets/navbar/Randomtwo.svg"
+import { getAgentTypes, type PublicAgentType } from "../../api/agentTypes.api";
+import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
 
 const HIDDEN_CLIP = "inset(0% 0% 100% 0%)";
 const SHOWN_CLIP = "inset(0% 0% 0% 0%)";
@@ -17,41 +19,18 @@ const SHOWN_CLIP = "inset(0% 0% 0% 0%)";
 const MENUS: Record<MenuKey, Menu> = {
   agents: {
     title: "Agents",
-    columns: [
-      [
-        { label: "Buyer Agents", to: "/agents?tab=Agents" },
-        { label: "Seller Agents", to: "/agents?tab=Agents" },
-        { label: "Leasing Agents", to: "/agents?tab=Agents" },
-        { label: "Property Managers", to: "/agents?tab=Agents" },
-        { label: "Commercial Agents", to: "/agents?tab=Agents" },
-      ],
-    ],
+    columns: [[]],
     cards: [
       { label: "Find an Agent", to: "/agents", bg: Randomone },
-      { label: "List Your Business", to: "/register", bg: Randomtwo },
+      { label: "List Your Business", to: "/subs", bg: Randomtwo },
     ],
   },
   trades: {
     title: "Trades & Professionals",
-    columns: [
-      [
-        { label: "Electricians", to: "/professionals?tab=Electricians" },
-        { label: "Plumbers", to: "/professionals?tab=Plumbers" },
-        { label: "Carpenters", to: "/professionals?tab=Carpenters" },
-        { label: "Painters", to: "/professionals?tab=Painters" },
-        { label: "Tilers", to: "/professionals?tab=Tilers" },
-      ],
-      [
-        { label: "Roofers", to: "/professionals?tab=Roofers" },
-        { label: "HVAC Technicians", to: "/professionals?tab=HVAC" },
-        { label: "Handyman Services", to: "/professionals?tab=Handyman" },
-        { label: "Architects", to: "/professionals?tab=Architects" },
-        { label: "Surveyors", to: "/professionals?tab=Surveyors" },
-      ],
-    ],
+    columns: [[]],
     cards: [
       { label: "Find a Professional", to: "/professionals", bg: Randomone },
-      { label: "List Your Business", to: "/register", bg: Randomtwo },
+      { label: "List Your Business", to: "/subs", bg: Randomtwo },
     ],
   },
 };
@@ -77,10 +56,28 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
   const panelRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const lastKey = useRef<MenuKey>("agents");
+  const [agentTypes, setAgentTypes] = useState<PublicAgentType[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<PublicServiceCategory[]>([]);
+
+  useEffect(() => {
+    void getAgentTypes().then(setAgentTypes).catch(() => undefined);
+    void getServiceCategories().then(setServiceCategories).catch(() => undefined);
+  }, []);
 
   // Keep showing the last menu while the close animation plays
   if (open) lastKey.current = open;
-  const menu = MENUS[open ?? lastKey.current];
+  const baseMenu = MENUS[open ?? lastKey.current];
+  const activeMenu = open ?? lastKey.current;
+  const serviceLinks = serviceCategories.map((category) => ({
+    label: category.label,
+    to: `/professionals?tab=${encodeURIComponent(category.slug)}&service_slug=${encodeURIComponent(category.slug)}`,
+  }));
+  const serviceMidpoint = Math.ceil(serviceLinks.length / 2);
+  const menu = activeMenu === "agents"
+    ? { ...baseMenu, columns: [agentTypes.map((type) => ({ label: type.label, to: `/agents?tab=${encodeURIComponent(type.slug)}` }))] }
+    : activeMenu === "trades"
+      ? { ...baseMenu, columns: [serviceLinks.slice(0, serviceMidpoint), serviceLinks.slice(serviceMidpoint)] }
+      : baseMenu;
 
   // Open: mount. Close: animate out, then unmount.
   useEffect(() => {

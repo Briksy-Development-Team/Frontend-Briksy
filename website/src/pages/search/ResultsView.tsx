@@ -9,12 +9,16 @@ import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 import MapSplitView from "./MapSplitView";
+import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import "swiper/css";
 
-const organizationTypeForResult = (resultType: ResultType, tab?: string | null) => {
+const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
+  if (resultType === "builder" && agentType) return agentType;
   if (resultType === "builder" && tab === "agents") return "buyers-agent";
+  if (resultType === "builder" && tab === "real-estate") return "real-estate-agent";
+  if (resultType === "builder" && tab && tab !== "builders") return tab;
   if (resultType === "builder") return "builders";
   return "trades-professionals";
 };
@@ -61,11 +65,11 @@ export default function ResultsView({
   const [properties, setProperties] = useState<PublicProperty[]>([]);
   const [, setNewlyProperties] = useState<PublicProperty[]>([]);
   const [searchParams] = useResultSearchParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
 
-  const isAgents = resultType === "builder" && selectedSub.toLowerCase() === "agents";
+  const isAgents = resultType === "builder" && (Boolean(searchParams.get("agent_type")) || !["", "builders", "agents"].includes(searchParams.get("tab") || ""));
 
   useEffect(() => {
     let active = true;
@@ -79,7 +83,7 @@ export default function ResultsView({
           getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 }),
           getProperties({ ...query, purpose: intent, category: resultType === "comercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
         ])
-      : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase()), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+      : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab")), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "comercial") {
@@ -101,7 +105,10 @@ export default function ResultsView({
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
   const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "comercial" ? "Commercial Properties" : "Properties");
 
-  if (loading) return <p className="text-sm text-[#8B6F54]">Loading results...</p>;
+  const hasLoadedItems = resultType === "property" || resultType === "comercial"
+    ? properties.length > 0
+    : organizations.length > 0;
+  if (loading && !hasLoadedItems) return <ResultsLoadingSkeleton resultType={resultType} />;
   if (error) return <p className="text-sm text-red-700">{error}</p>;
   if (resultType === "trader" && traders.length === 0) {
     return (
@@ -127,8 +134,8 @@ export default function ResultsView({
           )}
           {resultType === "builder" && (
             <>
-              <Section title={isAgents ? "Popular Buyer Agents" : "Popular Builders"} count={builders.length} items={builders.slice(0, 4)} Card={BuilderGridCard} onViewMore={() => onViewMore("popular")} />
-              <Section title={isAgents ? "Newly Listed Buyer Agents" : "Newly Listed Builders"} count={builders.length} items={builders.slice(4)} Card={BuilderGridCard} onViewMore={() => onViewMore("newly")} />
+              <Section title={isAgents ? selectedHeading : "Popular Builders"} count={builders.length} items={builders.slice(0, 4)} Card={BuilderGridCard} onViewMore={() => onViewMore("popular")} />
+              <Section title={isAgents ? `Newly Listed ${selectedHeading}` : "Newly Listed Builders"} count={builders.length} items={builders.slice(4)} Card={BuilderGridCard} onViewMore={() => onViewMore("newly")} />
             </>
           )}
           {(resultType === "property" || resultType === "comercial") && (

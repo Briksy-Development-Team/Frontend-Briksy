@@ -11,6 +11,7 @@ import { getStoredAuth } from '../../../auth/auth.storage';
 const Pricing = () => {
   const [activeTabId, setActiveTabId] = useState(ALL_TABS[0].id);
   const [publicPlans, setPublicPlans] = useState<PublicPlan[]>([]);
+  const [plansLoaded, setPlansLoaded] = useState(false);
   const [contactPlan, setContactPlan] = useState<Plan | null>(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', company_name: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -19,9 +20,13 @@ const Pricing = () => {
   useEffect(() => {
     let active = true;
     void getPublicPlans().then((plans) => {
-      if (active) setPublicPlans(plans);
+      if (active) {
+        setPublicPlans(plans);
+        setPlansLoaded(true);
+      }
     }).catch(() => {
       // Keep the designed fallback content if the public catalogue is unavailable.
+      if (active) setPlansLoaded(true);
     });
     return () => { active = false; };
   }, []);
@@ -70,7 +75,7 @@ const Pricing = () => {
         key={activeTabId}
         className="px-[5%] pb-12 animate-fade-in"
       >
-        <PricingCards plans={activeTab.plans} stats={activeTab.stats} onContact={openContact} />
+        <PricingCards plans={activeTab.plans} stats={activeTab.stats} onContact={openContact} isLoading={!plansLoaded} />
       </section>
 
       <section className="px-[4%] md:px-[5%] pb-20">

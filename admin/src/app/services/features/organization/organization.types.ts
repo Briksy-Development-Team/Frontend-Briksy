@@ -33,6 +33,12 @@ export type Organization = {
     id: string;
     name: string;
     slug: string;
+    label?: string;
+    module?: string | null;
+    display_name?: string | null;
+    capability_profile?: string | null;
+    is_active?: boolean;
+    sort_order?: number;
   };
   description?: string | null;
   website?: string | null;
@@ -40,6 +46,18 @@ export type Organization = {
   service_areas?: string[];
   intro_video_url?: string | null;
   reel_urls?: string[];
+};
+
+export type OrganizationType = {
+  id: string;
+  name: string;
+  label?: string;
+  slug: string;
+  module?: string | null;
+  display_name?: string | null;
+  capability_profile?: string | null;
+  is_active: boolean;
+  sort_order: number;
 };
 
 export type OrganizationFormValues = {

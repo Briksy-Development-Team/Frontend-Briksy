@@ -20,6 +20,8 @@ export default function CollectionModal({
   onDismissWithoutSelection,
   isOpen = true,
   buttonRect,
+  collectionsRequest,
+  defaultCollectionId,
 }: {
   propertyId: string;
   targetType?: CollectionTargetType;
@@ -27,6 +29,8 @@ export default function CollectionModal({
   onDismissWithoutSelection?: () => void;
   isOpen?: boolean;
   buttonRect?: DOMRect | null;
+  collectionsRequest?: Promise<{ data: SeekerCollection[] }> | null;
+  defaultCollectionId?: string | null;
 }) {
   const { isAuthenticated, isSeeker } = useAuth();
   const [collections, setCollections] = useState<SeekerCollection[]>([]);
@@ -35,6 +39,7 @@ export default function CollectionModal({
   const [creatingNew, setCreatingNew] = useState(false);
   const [newName, setNewName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
   const userSelectedRef = useRef(false);
 
   const close = () => {
@@ -50,7 +55,8 @@ export default function CollectionModal({
 
   useEffect(() => {
     if (!isOpen || !isAuthenticated || !isSeeker) return;
-    getCollectionsForTarget(targetType, propertyId)
+    setLoading(true);
+    (collectionsRequest ?? getCollectionsForTarget(targetType, propertyId))
       .then(({ data }) => {
         const list = data ?? [];
         setCollections(list);
@@ -62,8 +68,15 @@ export default function CollectionModal({
           ),
         );
       })
-      .catch(() => setError("Unable to load your Collections."));
-  }, [isOpen, isAuthenticated, isSeeker, propertyId, targetType]);
+      .catch(() => setError("Unable to load your Collections."))
+      .finally(() => setLoading(false));
+  }, [collectionsRequest, isOpen, isAuthenticated, isSeeker, propertyId, targetType]);
+
+  useEffect(() => {
+    if (defaultCollectionId) {
+      setSelected((current) => new Set(current).add(defaultCollectionId));
+    }
+  }, [defaultCollectionId]);
 
   if (!isAuthenticated || !isSeeker) {
     return (
@@ -123,6 +136,19 @@ export default function CollectionModal({
   const position: React.CSSProperties = buttonRect
     ? { top: buttonRect.bottom + 8, right: window.innerWidth - buttonRect.right - 14 }
     : {};
+  const visibleCollections = collections.length > 0
+    ? collections
+    : defaultCollectionId
+      ? [{
+          id: defaultCollectionId,
+          name: "Liked",
+          properties_count: targetType === "property" ? 1 : 0,
+          items_count: 1,
+          is_default: true,
+          contains_property: targetType === "property",
+          contains_item: targetType !== "property",
+        }]
+      : [];
 
   return createPortal(
     <div
@@ -151,13 +177,17 @@ export default function CollectionModal({
         <div className="mb-3 w-full border-b border-[#EDE8E4]" />
 
         <div className="flex max-h-80 flex-col gap-[6px] overflow-y-auto scrollbar-hide">
-          {collections.length === 0 && (
+          {loading && visibleCollections.length === 0 && (
+            <p className="px-3 py-4 text-center text-sm text-[#6B7280]">Loading Collections...</p>
+          )}
+
+          {!loading && visibleCollections.length === 0 && (
             <p className="px-3 py-4 text-center text-sm text-[#6B7280]">
               You haven't created any Collections yet.
             </p>
           )}
 
-          {collections.map((item) => (
+          {visibleCollections.map((item) => (
             <button
               key={item.id}
               type="button"
