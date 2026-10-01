@@ -8,6 +8,8 @@ type MenuKey = NonNullable<DropdownKey>;
 type NavLink = { label: string; to: string };
 type Card = { label: string; to: string; bg: string };
 type Menu = { title: string; columns: NavLink[][]; cards: Card[] };
+import Randomone from "../../assets/navbar/randomone.svg"
+import Randomtwo from "../../assets/navbar/Randomtwo.svg"
 
 const HIDDEN_CLIP = "inset(0% 0% 100% 0%)";
 const SHOWN_CLIP = "inset(0% 0% 0% 0%)";
@@ -25,8 +27,8 @@ const MENUS: Record<MenuKey, Menu> = {
       ],
     ],
     cards: [
-      { label: "Find an Agent", to: "/agents", bg: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80" },
-      { label: "List Your Business", to: "/register", bg: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80" },
+      { label: "Find an Agent", to: "/agents", bg: Randomone },
+      { label: "List Your Business", to: "/register", bg: Randomtwo },
     ],
   },
   trades: {
@@ -48,8 +50,8 @@ const MENUS: Record<MenuKey, Menu> = {
       ],
     ],
     cards: [
-      { label: "Find a Professional", to: "/professionals", bg: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80" },
-      { label: "List Your Business", to: "/register", bg: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800&q=80" },
+      { label: "Find a Professional", to: "/professionals", bg: Randomone },
+      { label: "List Your Business", to: "/register", bg: Randomtwo },
     ],
   },
 };
