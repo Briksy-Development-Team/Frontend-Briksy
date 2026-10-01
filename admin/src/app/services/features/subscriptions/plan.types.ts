@@ -44,6 +44,7 @@ export type Plan = {
   yearly_price?: number | null;
   currency?: string;
   billing_enabled?: boolean;
+  show_price?: boolean;
   trial_days?: number | null;
   popular: boolean;
   features: PlanFeature[];
@@ -79,6 +80,7 @@ export type PlanFormValues = {
   yearly_price?: number | null;
   currency?: string;
   billing_enabled?: boolean;
+  show_price?: boolean;
   trial_days?: number | null;
   propertyLimit: number;
   popular: boolean;

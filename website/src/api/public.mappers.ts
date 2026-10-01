@@ -14,6 +14,7 @@ const tagsOf = (o: PublicOrganization) => (o.services ?? []).slice(0, 5).map((s)
 export const organizationToBuilder = (o: PublicOrganization): Builder => ({
   id: o.slug || o.generated_id || o.id, name: o.name, location: locationOf(o), avatar: o.logo_url || BusinessPlaceholder, bannerImage: o.banner_url || BuilderBackground,
   rating: o.rating || 0, reviews: 0, tags: tagsOf(o), establishedYear: 0, isFavourite: Boolean(o.is_favourite), favoriteId: o.id,
+  profileType: o.type?.slug === "buyers-agent" ? "agent" : "builder",
 });
 
 export const organizationToTrader = (o: PublicOrganization): Trader => ({
