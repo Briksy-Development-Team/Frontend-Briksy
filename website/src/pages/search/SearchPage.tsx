@@ -3,12 +3,13 @@ import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import type { BreadcrumbItem } from "../../components/nav/Breadcrumb";
 import Breadcrumb from "../../components/nav/Breadcrumb";
-import SearchToolbar, { SEARCH_CATEGORIES } from "./SearchToolbar";
+import SearchToolbar, { buildSearchCategories } from "./SearchToolbar";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 import FullListView from "./FullListView";
 import { useResultSearchParams } from "./useResultSearchParams";
 import { SERVICE_CATEGORIES, serviceSlugForLabel } from "../../constants/serviceCategories";
+import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
 
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
@@ -23,6 +24,13 @@ type BrowseSection = "all" | "popular" | "newly";
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useResultSearchParams();
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
+  const [serviceCategories, setServiceCategories] = useState<PublicServiceCategory[]>([...SERVICE_CATEGORIES]);
+
+  useEffect(() => {
+    void getServiceCategories().then(setServiceCategories).catch(() => undefined);
+  }, []);
+
+  const searchCategories = buildSearchCategories(serviceCategories);
 
   const typeParam = searchParams.get("type");
   const queryParam = searchParams.get("q") || "";
@@ -33,10 +41,10 @@ const SearchPage = () => {
   const showMap = searchParams.get("map") === "1";
 
   const activeCategoryId =
-    SEARCH_CATEGORIES.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
+    searchCategories.find((c) => c.resultType === typeParam || c.id === typeParam)?.id || "all";
 
   const rawTabParam = searchParams.get("tab");
-  const professionalTab = SERVICE_CATEGORIES.find((category) => category.label.toLowerCase() === rawTabParam)?.label;
+  const professionalTab = serviceCategories.find((category) => category.label.toLowerCase() === rawTabParam)?.label;
   const tabParam = rawTabParam === "buy" ? "Buy" : rawTabParam === "rent" ? "Rent" : rawTabParam === "lease" ? "Lease" : rawTabParam === "sold" ? "Sold" : rawTabParam === "leased" ? "Leased" : rawTabParam === "builders" ? "Builders" : rawTabParam === "agents" ? "Agents" : rawTabParam === "traders" ? "Traders" : professionalTab || null;
   const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
 
@@ -44,10 +52,10 @@ const SearchPage = () => {
     setActiveTab((tabParam as FilterTab) || null);
   }, [tabParam]);
 
-  const activeCategory =
-    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
+  const activeCategory = searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
   const resultType = activeCategory.resultType;
-  const { crumb } = HEADERS[activeCategoryId] || HEADERS.all;
+  const { crumb: defaultCrumb } = HEADERS[activeCategoryId] || HEADERS.all;
+  const crumb = activeTab === "Agents" ? "Find a buyer agent" : defaultCrumb;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -84,7 +92,7 @@ const SearchPage = () => {
         if (tab === "Rent") next.set("purpose", "rent");
         return;
       }
-      const serviceSlug = serviceSlugForLabel(tab);
+      const serviceSlug = serviceSlugForLabel(tab, serviceCategories);
       next.set("type", tab === "Traders" || serviceSlug ? "trader" : "builder");
       if (serviceSlug) next.set("service_slug", serviceSlug);
     });
@@ -157,6 +165,7 @@ const SearchPage = () => {
           onToggleMap={handleToggleMap}
           query={queryParam}
           onQueryChange={handleQueryChange}
+          serviceCategories={serviceCategories}
         />
         <div className="mt-3 flex flex-col gap-6">{content}</div>
       </div>

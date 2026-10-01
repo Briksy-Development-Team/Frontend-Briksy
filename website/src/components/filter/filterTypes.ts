@@ -1,18 +1,4 @@
-export type FilterTab =
-  | "Buy"
-  | "Rent"
-  | "Lease"
-  | "Sold"
-  | "Leased"
-  | "Builders"
-  | "Agents"
-  | "Traders"
-  | "Landscappers"
-  | "Concreter"
-  | "Fencing"
-  | "Mortgage Brokers"
-  | "Conveyancers"
-  | "Building and Pest";
+export type FilterTab = string;
 
 export type BuyFilters = {
   keyword: string;

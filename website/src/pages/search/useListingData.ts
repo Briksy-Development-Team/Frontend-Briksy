@@ -50,6 +50,7 @@ export function useListingData(
   const [items, setItems] = useState<any[]>([]);
   const [searchParams] = useResultSearchParams();
   const organizationSlug = searchParams.get("organization_slug") || undefined;
+  const serviceSlugParam = searchParams.get("service_slug") || undefined;
 
   useEffect(() => {
     if (isPropertyType(resultType)) {
@@ -71,7 +72,7 @@ export function useListingData(
       type: organizationTypeFor(resultType, tab),
       service_slug:
         resultType === "trader"
-          ? serviceSlugForLabel(tab || "") || (filter ? slugify(filter) : undefined)
+          ? serviceSlugParam || serviceSlugForLabel(tab || "") || (filter ? slugify(filter) : undefined)
           : undefined,
       verified_only: 1,
       ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),

@@ -86,6 +86,7 @@ const PlanModal = ({
     yearly_price: null,
     currency: "AUD",
     billing_enabled: true,
+    show_price: true,
     trial_days: null,
     propertyLimit: 0,
     popular: false,
@@ -121,6 +122,7 @@ const PlanModal = ({
       yearly_price: initialValues.yearly_price ?? null,
       currency: initialValues.currency ?? "AUD",
       billing_enabled: initialValues.billing_enabled ?? true,
+      show_price: initialValues.show_price ?? true,
       trial_days: initialValues.trial_days ?? null,
       propertyLimit: initialValues.propertyLimit ?? 0,
       popular: initialValues.popular,
@@ -461,6 +463,23 @@ const PlanModal = ({
             <span className="fw-bold fs-6">Enable Billing Cycle Pricing</span>
           </label>
         </div>
+      </div>
+
+      <div className="fv-row mb-7">
+        <label className="form-check form-check-custom form-check-solid d-flex align-items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={form.show_price ?? true}
+            onChange={(event) =>
+              setForm((current) => ({ ...current, show_price: event.target.checked }))
+            }
+          />
+          <span>
+            <span className="fw-bold fs-6 d-block">Show price on website</span>
+            <span className="text-muted fs-7">Turn this off to show “Contact us” instead of the plan price on /subs.</span>
+          </span>
+        </label>
       </div>
 
       <div className="fv-row mb-7">

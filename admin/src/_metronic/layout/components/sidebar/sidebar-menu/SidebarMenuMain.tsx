@@ -208,6 +208,15 @@ const SidebarMenuMain = () => {
             />
           )}
 
+          {isSuperAdmin && hasPermission("plan.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/pricing-inquiries`}
+              title="Pricing Inquiries"
+              fontIcon="bi-chat-left-text"
+              icon="/media/icons/duotune/iconsnew/inquiry.svg"
+            />
+          )}
+
           {hasPermission("referral.view") && (
             <SidebarMenuItem
               to={`${portalBase}/referral-programs`}
@@ -234,6 +243,14 @@ const SidebarMenuMain = () => {
                 fontIcon="bi-archive"
                 icon="/media/icons/duotune/iconsnew/service.svg"
               />
+              {isSuperAdmin && (
+                <SidebarMenuItem
+                  to={`${portalBase}/service-categories`}
+                  title="Service Categories"
+                  fontIcon="bi-tags"
+                  icon="/media/icons/duotune/iconsnew/service.svg"
+                />
+              )}
               {promoOffersEnabled && (
                 <SidebarMenuItem
                   to={`${portalBase}/service-offers`}
@@ -261,7 +278,7 @@ const SidebarMenuMain = () => {
           {hasModule("inquiry_management") && (
             <SidebarMenuItem
               to={`${portalBase}/inquiry`}
-              title={hasModule("builder_management") ? "Enquiries" : hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
+              title="Enquiries"
               fontIcon="bi-archive"
               icon="/media/icons/duotune/iconsnew/proe.svg"
             />
@@ -318,22 +335,23 @@ const SidebarMenuMain = () => {
               )}
             </>
           )}
-
+          {hasModule("buyer_management") && (
+            <SidebarMenuItemWithSub
+              to={`${portalBase}/buyer-briefs`}
+              title="Buyer Management"
+              fontIcon="bi-people"
+              icon="/media/icons/duotune/iconsnew/"
+              activePaths={[`${portalBase}/buyer-briefs`]}>
+              <SidebarMenuItem to={`${portalBase}/buyer-briefs`} excludePaths={[`${portalBase}/buyer-briefs/profile`]} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Buyer Briefs" fontIcon="bi-layers" />
+              <SidebarMenuItem exact to={`${portalBase}/buyer-briefs/profile`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Agency Profile" fontIcon="bi-layers" />
+            </SidebarMenuItemWithSub>
+          )}
           <SidebarMenuItem
             to={`${portalBase}/billing`}
             title="Pricing Plans"
             fontIcon="bi-credit-card"
             icon="/media/icons/duotune/finance/fin002.svg"
           />
-
-          {hasModule("buyer_management") && (
-            <SidebarMenuItem
-              to={`${portalBase}/buyer-briefs`}
-              title="Buyer Briefs"
-              fontIcon="bi-people"
-              icon="/media/icons/duotune/iconsnew/"
-            />
-          )}
 
           {hasPermission("user.view") && (
             <SidebarMenuItem

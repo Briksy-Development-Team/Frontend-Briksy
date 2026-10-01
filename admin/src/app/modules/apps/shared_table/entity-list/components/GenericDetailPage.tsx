@@ -16,6 +16,7 @@ import { inquiryDetailConfig } from '../../../../../services/features/inquiries/
 import { builderProjectDetailConfig } from '../../../../../services/features/builder_projects/builder_project.detail.config'
 import { offerDetailConfig } from '../../../../../services/features/offers/offers.detail.config'
 import { serviceOfferDetailConfig } from '../../../../../services/features/service/service_offers.detail.config'
+import { buyerBriefDetailConfig } from '../../../../../services/features/buyer_briefs/buyer_brief.detail.config'
 import type { DetailConfig } from '../../../shared_detail/core/DetailTypes'
 
 type DetailRegistryEntry = {
@@ -70,6 +71,10 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
     config: inquiryDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
   },
+  'pricing-inquiries': {
+    config: inquiryDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
+  },
   'builder-projects': {
     config: builderProjectDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/builder-projects/${id}`,
@@ -81,6 +86,10 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
   'service-offers': {
     config: serviceOfferDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/service-offers/${id}`,
+  },
+  'buyer-briefs': {
+    config: buyerBriefDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/buyer-briefs/${id}`,
   },
 }
 

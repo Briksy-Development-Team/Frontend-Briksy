@@ -4,9 +4,10 @@ import type { Plan } from '../data/subscription.data';
 
 interface PlanCardProps {
   plan: Plan;
+  onContact?: (plan: Plan) => void;
 }
 
-export default function PlanCard({ plan }: PlanCardProps) {
+export default function PlanCard({ plan, onContact }: PlanCardProps) {
   const isPopular = plan.popular;
 
   return (
@@ -41,6 +42,7 @@ export default function PlanCard({ plan }: PlanCardProps) {
 
       <button
         type="button"
+        onClick={() => plan.contactSales && onContact?.(plan)}
         className={`mt-4 w-full py-2.5 rounded-[62.4375rem] text-[0.875rem] font-medium transition-all duration-200 cursor-pointer ${
           isPopular
             ? 'bg-primary-brown text-white hover:opacity-90'

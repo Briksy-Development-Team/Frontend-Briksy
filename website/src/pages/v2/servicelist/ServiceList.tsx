@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { SERVICE_CATEGORIES } from "../../../constants/serviceCategories";
+import { getServiceCategories, type PublicServiceCategory } from "../../../api/serviceCategories.api";
 import { Mousewheel } from "swiper/modules";
 
 import { organizationToTrader } from "../../../api/public.mappers";
@@ -13,14 +14,18 @@ const ServiceList = () => {
   const [activeIdx, setActiveIdx] = useState(0);
   const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
-  const categories = SERVICE_CATEGORIES;
+  const [categories, setCategories] = useState<PublicServiceCategory[]>([...SERVICE_CATEGORIES]);
+
+  useEffect(() => {
+    void getServiceCategories().then(setCategories).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const category = categories[activeIdx];
 
     getOrganizations({ type: "trades-professionals", service_slug: category.slug, verified_only: 1 })
       .then((response) => setItems(response.data)).catch(console.error);
-  }, [activeIdx]);
+  }, [activeIdx, categories]);
 
   return (
     <section className=" font-helvetica">
