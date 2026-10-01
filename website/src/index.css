@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-helvetica: "HelveticaNow", sans-serif;
+  --font-helvetica: "HelveticaNeue", sans-serif;
   --font-instrument: "InstrumentCustom", serif;
   --font-inter: "Inter", sans-serif;
   --color-primary: #562f00;

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Check, Plus, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
+import { Plus, X } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
-import ModalWrapper from "../wrapper/ModalWrapper";
 import AuthPromptToast from "../custom/AuthPromptToast";
+import { SafeImage } from "../custom/SafeImage";
 import {
   addItemToCollection,
   createCollection,
@@ -16,38 +17,48 @@ export default function CollectionModal({
   propertyId,
   targetType = "property",
   onClose,
+  onDismissWithoutSelection,
   isOpen = true,
+  buttonRect,
 }: {
   propertyId: string;
   targetType?: CollectionTargetType;
   onClose: () => void;
+  onDismissWithoutSelection?: () => void;
   isOpen?: boolean;
+  buttonRect?: DOMRect | null;
 }) {
   const { isAuthenticated, isSeeker } = useAuth();
   const [collections, setCollections] = useState<SeekerCollection[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // New collection creation inline state
   const [creatingNew, setCreatingNew] = useState(false);
-  const [newCollectionName, setNewCollectionName] = useState("");
-  const [creating, setCreating] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const userSelectedRef = useRef(false);
+
+  const close = () => {
+    if (!userSelectedRef.current) onDismissWithoutSelection?.();
+    onClose();
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    window.addEventListener("scroll", close, { passive: true, capture: true });
+    return () => window.removeEventListener("scroll", close, { capture: true });
+  });
 
   useEffect(() => {
     if (!isOpen || !isAuthenticated || !isSeeker) return;
-    void getCollectionsForTarget(targetType, propertyId)
-      .then((response) => {
-        setCollections(response.data ?? []);
+    getCollectionsForTarget(targetType, propertyId)
+      .then(({ data }) => {
+        const list = data ?? [];
+        setCollections(list);
         setSelected(
           new Set(
-            (response.data ?? [])
-              .filter(
-                (item) =>
-                  item.contains_item ||
-                  (targetType === "property" && item.contains_property),
-              )
-              .map((item) => item.id),
+            list
+              .filter((c) => c.contains_item || (targetType === "property" && c.contains_property))
+              .map((c) => c.id),
           ),
         );
       })
@@ -65,187 +76,169 @@ export default function CollectionModal({
     );
   }
 
-  const toggle = (id: string) =>
-    setSelected((current) => {
-      const next = new Set(current);
+  if (!isOpen) return null;
+
+  const flip = (id: string) =>
+    setSelected((cur) => {
+      const next = new Set(cur);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
 
-  const handleCreateCollection = async () => {
-    const val = newCollectionName.trim();
-    if (!val) return;
-    setCreating(true);
-    setError(null);
+  const toggle = async (id: string) => {
+    const isChecked = selected.has(id);
+    userSelectedRef.current = true;
+    flip(id);
     try {
-      const res = await createCollection(val);
-      const created = res.data;
-      setCollections((prev) => [...prev, created]);
-      setSelected((prev) => new Set([...prev, created.id]));
-      setNewCollectionName("");
-      setCreatingNew(false);
-    } catch (reason: any) {
-      setError(
-        reason?.response?.data?.message || "Unable to create Collection.",
-      );
-    } finally {
-      setCreating(false);
+      if (isChecked) await removeItemFromCollection(id, targetType, propertyId);
+      else await addItemToCollection(id, targetType, propertyId);
+    } catch {
+      flip(id); // revert
+      setError("Unable to update Collection.");
     }
   };
 
-  const save = async () => {
+  const handleCreate = async () => {
+    const name = newName.trim();
+    if (!name) return;
     setSaving(true);
     setError(null);
     try {
-      const original = new Set(
-        collections
-          .filter(
-            (item) =>
-              item.contains_item ||
-              (targetType === "property" && item.contains_property),
-          )
-          .map((item) => item.id),
-      );
-      await Promise.all([
-        ...collections
-          .filter((item) => selected.has(item.id) && !original.has(item.id))
-          .map((item) => addItemToCollection(item.id, targetType, propertyId)),
-        ...collections
-          .filter((item) => !selected.has(item.id) && original.has(item.id))
-          .map((item) =>
-            removeItemFromCollection(item.id, targetType, propertyId),
-          ),
-      ]);
-      onClose();
-    } catch (reason: any) {
-      setError(
-        reason?.response?.data?.message ||
-          "Unable to update this item's Collections.",
-      );
+      const { data: created } = await createCollection(name);
+      setCollections((prev) => [created, ...prev]);
+      userSelectedRef.current = true;
+      setSelected((prev) => new Set(prev).add(created.id));
+      await addItemToCollection(created.id, targetType, propertyId);
+      setNewName("");
+      setCreatingNew(false);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Unable to create Collection.");
     } finally {
       setSaving(false);
     }
   };
 
-  return (
-    <ModalWrapper isOpen={isOpen}>
+  // Always directly below the fav button, right-aligned with it
+  const position: React.CSSProperties = buttonRect
+    ? { top: buttonRect.bottom + 8, right: window.innerWidth - buttonRect.right - 14 }
+    : {};
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100]"
+      onClick={(e) => {
+        e.stopPropagation();
+        close();
+      }}
+    >
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-        onClick={onClose}
+        className="absolute flex w-[300px] xl:w-[320px] max-w-[calc(100vw-32px)] flex-col rounded-[24px] bg-white p-3 xl:p-4 shadow-[0px_0px_13px_0px_rgba(0,0,0,0.12)]"
+        style={position}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="w-full max-w-md rounded-3xl bg-[#F8F4EE] p-6 shadow-2xl transition-all"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-medium text-primary-brown">
-              Add to Collection
-            </h2>
-            <button
-              onClick={onClose}
-              aria-label="Close"
-              className="p-1 rounded-full text-primary-brown/60 hover:text-primary-brown hover:bg-black/5 transition-colors"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          <div className="mt-5 max-h-64 space-y-2.5 overflow-y-auto pr-1 scrollbar-hide">
-            {collections.length === 0 && !creatingNew && (
-              <p className="text-sm text-primary-light-brown py-2">
-                You haven't created any Collections yet.
-              </p>
-            )}
-
-            {collections.map((item) => {
-              const isChecked = selected.has(item.id);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => toggle(item.id)}
-                  className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-primary-brown transition-all ${
-                    isChecked
-                      ? "border-primary-brown bg-white shadow-sm font-medium"
-                      : "border-transparent bg-white/80 hover:bg-white hover:border-[#E2CBB3]"
-                  }`}
-                >
-                  <span className="text-sm truncate pr-2">{item.name}</span>
-                  <div
-                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
-                      isChecked
-                        ? "bg-primary-brown border-primary-brown text-white"
-                        : "border-[#C8C5BD] bg-white"
-                    }`}
-                  >
-                    {isChecked && <Check size={13} strokeWidth={3} />}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Inline Create New Collection Form */}
-          <div className="mt-4">
-            {!creatingNew ? (
-              <button
-                type="button"
-                onClick={() => setCreatingNew(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-[#C8C5BD] bg-white/60 py-3 text-sm font-medium text-primary-brown hover:bg-white hover:border-primary-brown transition-all"
-              >
-                <Plus size={16} /> Create New Collection
-              </button>
-            ) : (
-              <div className="flex items-center gap-2 rounded-2xl bg-white p-2 border border-[#E2CBB3] shadow-sm">
-                <input
-                  type="text"
-                  autoFocus
-                  value={newCollectionName}
-                  onChange={(e) => setNewCollectionName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      void handleCreateCollection();
-                    }
-                  }}
-                  placeholder="Collection name..."
-                  className="flex-1 bg-transparent px-3 py-1.5 text-sm outline-none text-primary-brown placeholder:text-primary-light-brown"
-                />
-                <button
-                  type="button"
-                  disabled={creating || !newCollectionName.trim()}
-                  onClick={() => void handleCreateCollection()}
-                  className="rounded-xl bg-primary-brown px-4 py-2 text-xs font-medium text-white hover:bg-primary-brown/90 disabled:opacity-50 transition-colors"
-                >
-                  {creating ? "Creating..." : "Create"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCreatingNew(false);
-                    setNewCollectionName("");
-                  }}
-                  className="px-2 text-xs text-primary-light-brown hover:text-primary-brown transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
-
-          {error && <p className="mt-3 text-xs text-red-700 font-medium">{error}</p>}
-
+        <div className="flex items-center justify-between pb-3">
+          <h2 className="text-[14px] font-medium text-[#342511]">Collections</h2>
           <button
-            type="button"
-            disabled={saving}
-            onClick={() => void save()}
-            className="mt-6 w-full rounded-full bg-primary-brown py-3.5 text-sm font-medium text-white shadow-md hover:bg-primary-brown/90 disabled:opacity-50 transition-all active:scale-[0.99]"
+            onClick={() => setCreatingNew(true)}
+            aria-label="Create new collection"
+            className="rounded-full p-1 text-[#342511] transition-colors hover:bg-black/5"
           >
-            {saving ? "Saving..." : "Save"}
+            <Plus size={20} strokeWidth={2.5} />
           </button>
         </div>
+
+        <div className="mb-3 w-full border-b border-[#EDE8E4]" />
+
+        <div className="flex max-h-80 flex-col gap-[6px] overflow-y-auto scrollbar-hide">
+          {collections.length === 0 && (
+            <p className="px-3 py-4 text-center text-sm text-[#6B7280]">
+              You haven't created any Collections yet.
+            </p>
+          )}
+
+          {collections.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => toggle(item.id)}
+              className={`flex items-center gap-3 rounded-[10px] p-1 pr-3 text-left transition-colors ${selected.has(item.id) ? "bg-[#F3F4F3]" : "hover:bg-black/5"
+                }`}
+            >
+              <div className="h-[56px] w-[57px] shrink-0 overflow-hidden rounded-[8px] bg-[#F5F4F2]">
+                <SafeImage src="" alt={item.name} className="h-full w-full object-cover" />
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-[14px] font-medium text-[#342511]">{item.name}</span>
+                <span className="mt-1 truncate text-[12px] text-[#6B7280]">
+                  {String(item.properties_count || 0).padStart(2, "0")} properties,{" "}
+                  {String(item.items_count || 0).padStart(2, "0")} items
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {error && <p className="pt-3 text-center text-xs font-medium text-red-600">{error}</p>}
       </div>
-    </ModalWrapper>
+
+      {creatingNew && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/20 p-4 backdrop-blur-[2px]"
+          onClick={(e) => {
+            e.stopPropagation();
+            setCreatingNew(false);
+          }}
+        >
+          <div
+            className="flex w-full max-w-[598px] flex-col gap-3 rounded-[24px] bg-white p-6 shadow-[0px_0px_14px_0px_rgba(0,0,0,0.25)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-2 flex flex-col items-start">
+              <button
+                onClick={() => setCreatingNew(false)}
+                className="rounded-full p-1 text-black transition-colors hover:bg-black/5"
+                aria-label="Close new collection modal"
+              >
+                <X size={28} strokeWidth={2} />
+              </button>
+              <h2 className="text-[20px] font-medium text-[#222222]">New Collections</h2>
+            </div>
+
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-[152px] w-[155px] shrink-0 overflow-hidden rounded-[8px] bg-[#F5F4F2]">
+                <SafeImage src="" alt="Cover" className="h-full w-full object-cover" />
+              </div>
+              <input
+                type="text"
+                autoFocus
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void handleCreate();
+                  }
+                }}
+                placeholder="Collection Name"
+                className="mt-2 w-full rounded-[8px] border border-[#C7C5BA] p-[13px] text-[16px] text-black outline-none transition-colors placeholder:text-black/40 focus:border-[#342511]"
+              />
+            </div>
+
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                disabled={saving || !newName.trim()}
+                onClick={() => void handleCreate()}
+                className="h-[50px] min-w-[98px] rounded-[900px] bg-primary-brown px-6 text-[14px] font-medium text-white disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>,
+    document.body,
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Heart } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
 import { getSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
@@ -16,81 +16,112 @@ type FavoriteButtonProps = {
 };
 
 export default function FavoriteButton({
-  initialIsFavourite = false, className = "", iconSize = 24, variant = "overlay", showText = false,
-  targetId, targetType = "property",
+  initialIsFavourite = false,
+  className = "",
+  iconSize = 24,
+  variant = "overlay",
+  showText = false,
+  targetId,
+  targetType = "property",
 }: FavoriteButtonProps) {
-  const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
-  const [saving, setSaving] = useState(false);
-  const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
-  const [showAuthToast, setShowAuthToast] = useState(false);
   const { isAuthenticated } = useAuth();
+  const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
+  const [showCollections, setShowCollections] = useState(false);
+  const [showAuthToast, setShowAuthToast] = useState(false);
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const inFlight = useRef(false);
 
   useEffect(() => {
-    let active = true;
-
     if (!isAuthenticated || !targetId) {
       setIsFavourite(initialIsFavourite);
-      return () => { active = false; };
+      return;
+    }
+    let active = true;
+    getSeekerFavorites(targetType)
+      .then((res) => {
+        if (active) {
+          setIsFavourite((res.data ?? []).some((i) => String(i.target?.id ?? "") === String(targetId)));
+        }
+      })
+      .catch(() => { });
+    return () => {
+      active = false;
+    };
+  }, [initialIsFavourite, isAuthenticated, targetId, targetType]);
+
+  const handleClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!targetId || inFlight.current) return;
+    if (!isAuthenticated) {
+      setShowAuthToast(true);
+      return;
     }
 
-    void getSeekerFavorites(targetType).then((response) => {
-      if (!active) return;
-      setIsFavourite((response.data ?? []).some((item) => String(item.target?.id ?? "") === String(targetId)));
-    }).catch(() => {
-      // Keep the button usable even if the initial favourites request fails.
-    });
+    // Optimistic update; open the collections popover only when adding
+    const wasLiked = isFavourite;
+    setIsFavourite(!wasLiked);
+    if (!wasLiked) setButtonRect(buttonRef.current?.getBoundingClientRect() ?? null);
+    setShowCollections(!wasLiked);
 
-    return () => { active = false; };
-  }, [initialIsFavourite, isAuthenticated, targetId, targetType]);
+    inFlight.current = true;
+    try {
+      const res = await toggleSeekerFavorite(String(targetId), targetType);
+      setIsFavourite(res.data.action === "added");
+    } catch (error) {
+      setIsFavourite(wasLiked);
+      setShowCollections(false);
+      console.error("Unable to update favourite.", error);
+    } finally {
+      inFlight.current = false;
+    }
+  };
+
+  const iconColor = isFavourite
+    ? "fill-red-500 text-red-500"
+    : variant === "overlay"
+      ? "fill-transparent text-white"
+      : "fill-transparent text-current";
 
   return (
     <>
-    <button
-      type="button"
-      aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-      title={isFavourite ? "Remove from favourites" : "Add to favourites"}
-      disabled={saving}
-      onClick={async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!targetId) return;
-        if (!isAuthenticated) {
-          setShowAuthToast(true);
-          return;
-        }
-        setSaving(true);
-        try {
-          const response = await toggleSeekerFavorite(String(targetId), targetType);
-          setIsFavourite(response.data.action === "added");
-          setCollectionPromptOpen(true);
-        } catch (error) {
-          console.error("Unable to update favourite.", error);
-        } finally {
-          setSaving(false);
-        }
-      }}
-      className={`flex items-center justify-center active:scale-125 transition-transform duration-200 ${className}`}
-    >
-      <Heart
-        size={iconSize}
-        strokeWidth={variant === "overlay" ? 2.5 : 2}
-        className={`transition-colors duration-200 ${isFavourite ? "fill-red-500 text-red-500" : (variant === "overlay" ? "fill-transparent text-white" : "fill-transparent text-current")}`}
-      />
-      {showText && <span className="ml-2 font-medium">{isFavourite ? "Liked" : "Like"}</span>}
-    </button>
-    {collectionPromptOpen && targetId && (
-      <CollectionModal
-        propertyId={String(targetId)}
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+        title={isFavourite ? "Remove from favourites" : "Add to favourites"}
+        onClick={(e) => void handleClick(e)}
+        className={`flex items-center justify-center transition-transform duration-200 active:scale-125 ${className}`}
+      >
+        <Heart
+          size={iconSize}
+          strokeWidth={variant === "overlay" ? 2.5 : 2}
+          className={`transition-colors duration-200 ${iconColor}`}
+        />
+        {showText && <span className="ml-2 font-medium">{isFavourite ? "Liked" : "Like"}</span>}
+      </button>
+
+      {showCollections && targetId && (
+        <CollectionModal
+          propertyId={String(targetId)}
+          targetType={targetType}
+          buttonRect={buttonRect}
+          onClose={() => setShowCollections(false)}
+          onDismissWithoutSelection={() => {
+            // Dismissed without picking a collection: undo the like
+            setIsFavourite(false);
+            void toggleSeekerFavorite(String(targetId), targetType).catch(() => { });
+          }}
+        />
+      )}
+
+      <AuthPromptToast
+        isOpen={showAuthToast}
+        onClose={() => setShowAuthToast(false)}
+        targetId={targetId}
         targetType={targetType}
-        onClose={() => setCollectionPromptOpen(false)}
       />
-    )}
-    <AuthPromptToast
-      isOpen={showAuthToast}
-      onClose={() => setShowAuthToast(false)}
-      targetId={targetId}
-      targetType={targetType}
-    />
     </>
   );
 }

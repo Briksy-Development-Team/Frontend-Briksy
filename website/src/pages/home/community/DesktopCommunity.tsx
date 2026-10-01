@@ -73,7 +73,7 @@ const DesktopCommunity = () => {
 
     const updateCards = (progress: number) => {
       const hiddenDistance = window.innerHeight + 100;
-      const overlaps = [0, 0.12, 0, 0.12];
+      const overlaps = [0, 0.12, 0, 0.12,0];
 
       cards.forEach((card, i) => {
         if (!card) return;
@@ -134,13 +134,13 @@ const DesktopCommunity = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-screen w-full items-center justify-center overflow-hidden"
+      className="relative flex  h-screen  w-full items-center justify-center overflow-hidden"
     >
-      <div className="relative mx-auto h-full w-full max-w-[100rem]">
-        <div className="absolute inset-0 mt-10 flex items-center justify-center mix-blend-darken">
+      <div className="relative mx-auto h-full w-full">
+        <div className="absolute inset-0 flex items-center justify-center mix-blend-darken">
           <canvas
             ref={canvasRef}
-            className="h-[32.5625rem] w-[54.75rem]"
+            className="aspect-[56.75/37.5625] w-[max(54.75rem,60vw)] max-h-[90vh] shrink-0"
           />
         </div>
 
@@ -152,7 +152,7 @@ const DesktopCommunity = () => {
             }}
             style={{ willChange: "transform" }}
             className={`absolute z-10 ${card.position} flex w-[15rem] flex-col gap-3 xl:gap-[1.5rem] overflow-hidden rounded-[1.25rem]
-               bg-white p-4 xl:w-[23.3125rem] xl:p-[1.75rem]`}
+               bg-white p-4 xl:w-[25.3125rem] xl:p-[1.75rem]`}
           >
             <div className="flex items-start justify-between gap-[1.25rem]">
               <span className="flex h-[2rem] w-[2rem] xl:h-[3rem] xl:w-[3rem] shrink-0 items-center justify-center">

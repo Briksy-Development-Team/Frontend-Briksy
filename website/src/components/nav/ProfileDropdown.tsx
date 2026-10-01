@@ -103,19 +103,8 @@ const ProfileDropdown = () => {
 
               <div className="border-t border-gray-200 mx-6 my-2" />
 
-              <div
-                className="px-6 py-3 hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() => closeAndNav("/coming-soon")}
-              >
-                <div className="text-sm font-semibold text-gray-900">
-                  Become a Agent/Agency
-                </div>
-                <div className="text-sm text-gray-400 mt-1">
-                  Open Agent/ Agency Panel
-                </div>
-              </div>
+          
 
-              <div className="border-t border-gray-200 mx-6 my-2" />
 
               <button
                 onClick={async () => {
