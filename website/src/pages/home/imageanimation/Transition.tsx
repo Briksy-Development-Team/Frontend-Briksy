@@ -159,7 +159,9 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       };
       const onOut = () => {
         pointer.active = false;
-        updateTarget();
+        tracking = false;
+        target.x = 0;
+        target.y = 0;
       };
 
       const apply = () => {
@@ -189,13 +191,15 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       };
       window.addEventListener("pointermove", onMove, { passive: true });
       window.addEventListener("scroll", updateTarget, { passive: true });
-      // window.addEventListener("blur", onOut);
-      // document.documentElement.addEventListener("mouseleave", onOut); // cursor left the browser window
+      window.addEventListener("blur", onOut);
+      document.documentElement.addEventListener("mouseleave", onOut);
       gsap.ticker.add(tick);
 
       return () => {
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("scroll", updateTarget);
+        window.removeEventListener("blur", onOut);
+        document.documentElement.removeEventListener("mouseleave", onOut);
         gsap.ticker.remove(tick);
         gsap.ticker.remove(orbit);
       };
