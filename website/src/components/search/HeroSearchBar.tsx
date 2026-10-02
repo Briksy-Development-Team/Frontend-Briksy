@@ -220,22 +220,25 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
           className="flex-1 min-w-0 bg-transparent outline-none text-gray-700 placeholder:text-[#6B7280] text-base"
         />
 
-        {divider}
-        {typeDropdown && (
+        {selected.id !== "address" && (
           <>
-            {typeDropdown}
             {divider}
+            {typeDropdown && (
+              <>
+                {typeDropdown}
+                {divider}
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => setFilterOpen(true)}
+              className="text-gray-500 hover:text-[#342511] transition p-1"
+              aria-label="Open filters"
+            >
+              <SlidersHorizontal size={20} />
+            </button>
           </>
         )}
-
-        <button
-          type="button"
-          onClick={() => setFilterOpen(true)}
-          className="text-gray-500 hover:text-[#342511] transition p-1"
-          aria-label="Open filters"
-        >
-          <SlidersHorizontal size={20} />
-        </button>
 
         <button
           type="button"
@@ -271,13 +274,15 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
             placeholder={selected.placeholder}
             className="flex-1 min-w-0 bg-transparent outline-none text-gray-700 placeholder:text-gray-500 text-[15px]"
           />
-          <button
-            type="button"
-            onClick={() => setFilterOpen(true)}
-            className="text-gray-500 hover:text-gray-800 transition"
-          >
-            <SlidersHorizontal size={20} />
-          </button>
+          {selected.id !== "address" && (
+            <button
+              type="button"
+              onClick={() => setFilterOpen(true)}
+              className="text-gray-500 hover:text-gray-800 transition"
+            >
+              <SlidersHorizontal size={20} />
+            </button>
+          )}
         </div>
 
         <div className="border-t border-[#ede8e4] w-full px-2 flex justify-between h-[49px]">
@@ -305,13 +310,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         isOpen={filterOpen}
         onClose={() => setFilterOpen(false)}
         category={selected.id}
-        initialTab={
-          selected.id === "builders"
-            ? "All"
-            : selected.id === "traders"
-              ? "All"
-              : "Buy"
-        }
+        initialTab={propType?.label || "All"}
       />
     </div>
   );

@@ -77,7 +77,7 @@ export function BuilderHomes({ homes, description, propertiesHref }: { homes: an
       <div className="flex flex-col gap-2">
         <h2 className="text-[1.25rem] font-medium text-primary-brown">Our homes</h2>
         <p className="text-[0.875rem] text-primary-light-brown">
-          {description || "Properties currently published by this organisation."}
+          {description || "Real Estate currently published by this organisation."}
         </p>
       </div>
 
@@ -107,7 +107,7 @@ export function BuilderHomes({ homes, description, propertiesHref }: { homes: an
       </Swiper>
       <div>
         <Link to={propertiesHref || '/search?tab=properties'} className="inline-block bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
-          Show all Properties
+          Show all Real Estate
         </Link>
       </div>
     </div>

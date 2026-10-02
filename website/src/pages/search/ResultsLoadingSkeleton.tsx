@@ -6,8 +6,8 @@ export default function ResultsLoadingSkeleton({ resultType }: { resultType: Res
     : resultType === "builder"
       ? "Popular Builders"
       : resultType === "comercial"
-        ? "Commercial Properties"
-        : "Popular Properties";
+        ? "Commercial Real Estate"
+        : "Popular Real Estate";
 
   return (
     <section aria-label="Loading results" aria-live="polite" className="space-y-3">

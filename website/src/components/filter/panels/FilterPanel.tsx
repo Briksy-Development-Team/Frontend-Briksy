@@ -1,7 +1,7 @@
 import PriceRange from "../primitives/PriceRange";
 import { Divider } from "../primitives/Section";
 import { getFieldsForMode } from "../filterConfig";
-import type { 
+import type {
   FilterMode, FilterField, RangeField, MinMaxField, InputField,
   GridSelectField, PillSelectField, SingleCheckboxField, ToggleField
 } from "../filterConfig";
@@ -39,14 +39,13 @@ function GridSelectSection({ field, values, set }: { field: GridSelectField; val
           <button
             key={opt.id}
             onClick={() => toggle(opt.id)}
-            className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-colors ${
-              isSelected 
-                ? "bg-[#3D2C1D] border-[#3D2C1D] text-white" 
+            className={`flex flex-col items-center justify-center p-2 rounded-xl border transition-colors ${isSelected
+                ? "bg-[#3D2C1D] border-[#3D2C1D] text-white"
                 : "bg-white border-[#EDE8E4] text-[#3D2C1D] hover:bg-[#F8F4EE]"
-            }`}
+              }`}
           >
-            <Icon className="w-6 h-6 mb-2" strokeWidth={1.5} />
-            <span className="text-[12px] font-medium text-center leading-tight">{opt.label}</span>
+            <Icon className=" w-4 h-4 xl:w-5 xl:h-5 mb-2" strokeWidth={1.5} />
+            <span className="text-xs lg:text-[0.875rem] font-medium text-center leading-tight">{opt.label}</span>
           </button>
         );
       })}
@@ -77,11 +76,10 @@ function PillSelectSection({ field, values, set }: { field: PillSelectField; val
           <button
             key={opt.id}
             onClick={() => toggle(opt.id)}
-            className={`px-4 py-2 min-w-[3.5rem] rounded-lg border transition-colors text-[13px] ${
-              isSelected
+            className={`px-4 py-2 min-w-[3.5rem] rounded-lg border transition-colors text-[13px] ${isSelected
                 ? "bg-[#3D2C1D] border-[#3D2C1D] text-white"
                 : "bg-white border-[#EDE8E4] text-[#3D2C1D] hover:bg-[#F8F4EE]"
-            }`}
+              }`}
           >
             {opt.label}
           </button>
@@ -130,9 +128,8 @@ function ToggleSection({ field, values, set }: { field: ToggleField; values: Val
           onChange={(e) => set(field.key, e.target.checked)}
         />
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-            isChecked ? "translate-x-6" : "translate-x-1"
-          }`}
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isChecked ? "translate-x-6" : "translate-x-1"
+            }`}
         />
       </div>
     </label>
@@ -221,7 +218,8 @@ function renderField(field: FilterField, values: Values, set: (k: string, v: unk
 
 
 export default function FilterPanel({ mode, values, onChange }: FilterPanelProps) {
-  const fields = getFieldsForMode(mode);
+  const selectedSub = (values.propertyFor as string) || "all";
+  const fields = getFieldsForMode(mode, selectedSub);
 
   const set = (key: string, value: unknown) => {
     onChange({ ...values, [key]: value });
@@ -247,8 +245,10 @@ export default function FilterPanel({ mode, values, onChange }: FilterPanelProps
     );
   };
 
-  const leftFields = fields.filter(f => f.column === "left");
-  const rightFields = fields.filter(f => f.column !== "left");
+  const validFields = fields.filter(f => !("options" in f) || ((f as any).options && (f as any).options.length > 0));
+  
+  const leftFields = validFields.filter(f => f.column === "left");
+  const rightFields = validFields.filter(f => f.column !== "left");
 
   if (leftFields.length === 0) {
     return (
@@ -260,7 +260,7 @@ export default function FilterPanel({ mode, values, onChange }: FilterPanelProps
 
   return (
     <div className="flex flex-col md:flex-row gap-8 md:h-full">
-      <div className="w-full md:w-[320px] lg:w-[380px] shrink-0 border-b md:border-b-0 md:border-r border-[#EDE8E4] pb-8 md:pb-0 md:pr-8">
+      <div className="w-full md:w-[250px] overflow-y-auto lg:w-[300px] xl:w-[380px] shrink-0 border-b md:border-b-0 md:border-r border-[#EDE8E4] pb-8 md:pb-0 md:pr-8">
         {leftFields.map(renderFieldWithLabel)}
       </div>
       <div className="flex-1 space-y-8 md:overflow-y-auto md:pr-4 md:pb-8 scrollbar-hide">

@@ -5,64 +5,33 @@ import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
 import { getFieldsForMode } from "./filterConfig";
 import type { FilterMode } from "./filterConfig";
-import { SERVICE_CATEGORIES, serviceSlugForLabel, type ServiceCategory } from "../../constants/serviceCategories";
-import type { PublicAgentType } from "../../api/agentTypes.api";
+import { serviceSlugForLabel } from "../../constants/serviceCategories";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
 type FilterProps = {
   isOpen: boolean;
   onClose: () => void;
   initialTab?: FilterMode;
   category?: string;
-  serviceCategories?: readonly ServiceCategory[];
-  agentTypes?: readonly PublicAgentType[];
 };
 
-const ALL_TABS: { label: string; value: FilterMode }[] = [
-  { label: "Buy", value: "Buy" },
-  { label: "Rent", value: "Rent" },
-  { label: "Lease", value: "Lease" },
-  { label: "Sold", value: "Sold" },
-  { label: "Leased", value: "Leased" },
-  { label: "Builders", value: "Builders" },
-  { label: "Organizations", value: "Agents" },
-  { label: "Sole Traders", value: "Traders" },
-  ...SERVICE_CATEGORIES.map((category) => ({ label: category.label, value: category.label as FilterMode })),
-];
-
-const TABS_BY_CATEGORY: Record<string, FilterMode[]> = {
-  all: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
-  properties: ["Buy", "Rent", "Sold"],
-  builders: ["Builders", "Agents"],
-  professionals: ["Traders", ...SERVICE_CATEGORIES.map((category) => category.label as FilterMode)],
-  commercial: ["Buy", "Lease", "Sold", "Leased"],
+const getVisibleTabs = () => {
+  return SEARCH_CATEGORIES.filter(c => c.id !== "address").map(c => ({
+    label: c.label,
+    value: c.id
+  }));
 };
 
 const Filter = ({
   isOpen,
   onClose,
-  initialTab = "Buy",
-  category = "all",
-  serviceCategories = SERVICE_CATEGORIES,
-  agentTypes = [],
+  initialTab,
+  category = "real-estate",
 }: FilterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const allTabs = [
-    ...ALL_TABS.filter((tab) => !SERVICE_CATEGORIES.some((item) => item.label === tab.value)),
-    ...serviceCategories.map((item) => ({ label: item.label, value: item.label as FilterMode })),
-    ...agentTypes.map((item) => ({ label: item.label, value: item.label as FilterMode })),
-  ];
-  const categoryTabs: Record<string, FilterMode[]> = {
-    ...Object.fromEntries(Object.entries(TABS_BY_CATEGORY).map(([key, values]) => [
-      key,
-      values.flatMap((value) => value === "Agents" ? agentTypes.map((item) => item.label) : [value]),
-    ])),
-    professionals: ["Traders", ...serviceCategories.map((item) => item.label)],
-  };
-  const visibleTabs = (categoryTabs[category.toLowerCase()] ?? categoryTabs.all)
-    .map((value) => allTabs.find((tab) => tab.value === value))
-    .filter((tab): tab is { label: string; value: FilterMode } => Boolean(tab));
-  const [activeTab, setActiveTab] = useState<FilterMode>(initialTab);
+  const visibleTabs = getVisibleTabs();
+  const [activeTab, setActiveTab] = useState<string>(category);
   const tabsScrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -82,12 +51,8 @@ const Filter = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    const tabs = (categoryTabs[category.toLowerCase()] ?? categoryTabs.all)
-      .map((value) => allTabs.find((tab) => tab.value === value))
-      .filter((tab): tab is { label: string; value: FilterMode } => Boolean(tab));
-    const values = tabs.map((t) => t.value);
-    setActiveTab(values.includes(initialTab) ? initialTab : tabs[0]?.value ?? "Buy");
-  }, [isOpen, initialTab, category]);
+    setActiveTab(category !== "all" && category !== "address" ? category : "real-estate");
+  }, [isOpen, category]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -105,8 +70,18 @@ const Filter = ({
       }
     });
 
+    // Handle initializing propertyFor from URL tab param or initialTab prop
+    const tabParam = params.get("tab");
+    if (tabParam) {
+      const catConfig = SEARCH_CATEGORIES.find(c => c.id === activeTab);
+      const match = catConfig?.propTypes.find(p => p.id.toLowerCase() === tabParam.toLowerCase() || p.label.toLowerCase() === tabParam.toLowerCase());
+      if (match) initial.propertyFor = match.id;
+    } else if (initialTab) {
+      initial.propertyFor = initialTab.toLowerCase();
+    }
+
     setCurrentValues(initial);
-  }, [isOpen, location.search]);
+  }, [isOpen, location.search, activeTab, initialTab]);
 
   // Handle locking body scroll when modal is open
   useEffect(() => {
@@ -128,32 +103,31 @@ const Filter = ({
   const handleApply = () => {
     const params = new URLSearchParams();
 
-    params.set("tab", activeTab.toLowerCase());
     params.set("page", "1");
+    params.set("type", activeTab);
 
-    const typeMap: Record<string, string> = {
-      Buy: "property", Rent: "property", Lease: "comercial", Sold: "property", Leased: "comercial",
-      Builders: "builder", Agents: "builder", Traders: "trader",
-    };
-    params.set("type", typeMap[activeTab] ?? (serviceSlugForLabel(activeTab, serviceCategories) ? "trader" : "builder"));
-    const agentType = agentTypes.find((item) => item.label.toLowerCase() === activeTab.toLowerCase());
-    if (agentType) params.set("agent_type", agentType.slug);
+    // Extract propertyFor from currentValues if it's there
+    const categoryConfig = SEARCH_CATEGORIES.find(c => c.id === activeTab);
+    const selectedPropType = currentValues.propertyFor;
 
-    if (category.toLowerCase() === "commercial") {
-      params.set("category", "commercial");
-    }
+    if (selectedPropType && selectedPropType !== "all" && selectedPropType.length > 0) {
+      const propTypeValue = String(Array.isArray(selectedPropType) ? selectedPropType[0] : selectedPropType);
+      params.set("tab", propTypeValue.toLowerCase());
+      if (propTypeValue.toLowerCase() === "buy") params.set("purpose", "sell");
+      if (propTypeValue.toLowerCase() === "rent") params.set("purpose", "rent");
 
-    if (activeTab === "Buy") params.set("purpose", "sell");
-    if (activeTab === "Rent") params.set("purpose", "rent");
-    const serviceSlug = serviceSlugForLabel(activeTab, serviceCategories);
-    if (serviceSlug) params.set("service_slug", serviceSlug);
-    if (category.toLowerCase() === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(activeTab)) {
-      params.set("type", "commercial");
-      params.set("transaction_status", activeTab.toUpperCase());
+      const serviceSlug = serviceSlugForLabel(propTypeValue);
+      if (serviceSlug) params.set("service_slug", serviceSlug);
+
+      if (activeTab === "commercial" && ["buy", "lease", "sold", "leased"].includes(propTypeValue.toLowerCase())) {
+        params.set("transaction_status", propTypeValue.toUpperCase());
+      }
+    } else {
+      params.set("tab", "all");
     }
 
     Object.entries(currentValues).forEach(([key, value]) => {
-      if (value === undefined || value === null || value === "") return;
+      if (value === undefined || value === null || value === "" || key === "propertyFor") return;
       if (Array.isArray(value)) {
         if (value.length > 0) {
           value.forEach(v => params.append(`${key}[]`, String(v)));
@@ -178,8 +152,18 @@ const Filter = ({
     e.preventDefault();
   };
 
-  const hasLeftColumn = getFieldsForMode(activeTab).some(f => f.column === "left");
-  const modalWidthClass = hasLeftColumn ? "md:w-[90vw] lg:w-[75vw] xl:w-[65vw] max-w-5xl" : "md:w-[60vw] max-w-3xl";
+  const handleTabChange = (newTab: string) => {
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+      setCurrentValues(prev => {
+        const next = { ...prev };
+        delete next.propertyFor;
+        return next;
+      });
+    }
+  };
+
+  const modalWidthClass = "md:w-[90vw] lg:w-[75vw] xl:w-[65vw] max-w-6xl";
 
   const panel = (
     <>
@@ -213,7 +197,7 @@ const Filter = ({
               key={tab.value}
               ref={(el) => { tabRefs.current[tab.value] = el; }}
               type="button"
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => handleTabChange(tab.value)}
               className={`shrink-0 border-2 rounded-xl cursor-pointer px-6 sm:px-8 md:px-8 xl:px-14 py-2 text-sm font-medium transition-all ${activeTab === tab.value ? "bg-[#3D2C1D] text-white border-[#3D2C1D]" : "border-[#DBDAD3] hover:text-gray-700"
                 }`}
             >

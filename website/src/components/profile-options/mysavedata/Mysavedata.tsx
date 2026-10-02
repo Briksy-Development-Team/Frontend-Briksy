@@ -58,7 +58,7 @@ const Mysavedata = () => {
             </div>
 
             <div className="space-y-[2.5rem]">
-                <SavedSection title="Properties" items={favorites.property} />
+                <SavedSection title="Real Estate" items={favorites.property} />
                 <SavedSection title="Services" items={favorites.service} />
                 <SavedSection title="Professionals / Builders" items={favorites.organization} />
             </div>
