@@ -3,24 +3,12 @@ import { SlidersHorizontal, Search, Sparkles } from "lucide-react";
 import DropdownPill from "../../components/custom/DropdownPill";
 import { createPortal } from "react-dom";
 import Filter from "../../components/filter/Filter";
-import type { ResultType, SortType } from "../../types/search";
+import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
-import AllIcon from "../../assets/icons/search/search.svg?react";
-import PropIcon from "../../assets/icons/search/property.svg?react";
-import BuildIcon from "../../assets/icons/search/build.svg?react";
-import TraderIcon from "../../assets/icons/search/trades.svg?react";
-import ComercialIcon from "../../assets/icons/search/comercial.svg?react";
 import MapIcon from "../../assets/icons/search/map.svg?react";
 import { SERVICE_CATEGORIES, type ServiceCategory } from "../../constants/serviceCategories";
 import type { PublicAgentType } from "../../api/agentTypes.api";
 
-type CategoryDef = {
-  id: string;
-  label: string;
-  resultType: ResultType;
-  icon: React.ReactNode;
-  tabs: FilterTab[];
-};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const SEARCH_CATEGORIES: CategoryDef[] = [
@@ -211,7 +199,7 @@ export default function SearchToolbar({
                 key={tab}
                 type="button"
                 onClick={() =>
-                  onTabChange(isSelected ? null : (tab as FilterTab))
+                  onTabChange(isSelected ? null : tab)
                 }
                 className={`py-2 px-6 rounded-2xl border text-[0.875rem] transition-colors whitespace-nowrap shrink-0 ${
                   isSelected
@@ -219,7 +207,7 @@ export default function SearchToolbar({
                     : "bg-white text-primary-brown border-[#EDE8E4] hover:bg-[#F8F4EE]"
                 }`}
               >
-                {TAB_LABELS[tab] || tab}
+                {tab}
               </button>
             );
           })}

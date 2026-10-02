@@ -16,6 +16,26 @@
   --color-white-100: #eeece0;
 }
 
+/* Custom Scrollbar for Dropdowns */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
 @font-face {
   font-family: "HelveticaNow";
   src: url("./assets/font/HelveticaNeueLight.otf") format("opentype");

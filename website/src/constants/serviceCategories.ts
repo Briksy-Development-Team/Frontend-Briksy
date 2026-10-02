@@ -4,7 +4,7 @@ export const SERVICE_CATEGORIES = [
   { slug: "fencing", label: "Fencing" },
   { slug: "mortgage-brokers", label: "Mortgage Brokers" },
   { slug: "conveyancers", label: "Conveyancers" },
-  { slug: "building-and-pest", label: "Building and Pest" },
+  { slug: "building-and-pest", label: "Building & Pest" },
 ] as const;
 
 export type ServiceCategory = { slug: string; label: string; name?: string };

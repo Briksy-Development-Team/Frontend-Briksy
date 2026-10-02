@@ -115,7 +115,7 @@ export default function BrowseView({
   const resetFilters = () => {
     const next = new URLSearchParams(searchParams);
     ["q", "search", "min_price", "max_price", "bedrooms", "bathrooms", "car_spaces", "min_land_size", "max_land_size", "features[]", "features", "suburb", "postcode", "page", "tab", "transaction_status"].forEach((key) => next.delete(key));
-    if (resultType !== "comercial") next.delete("category");
+    if (resultType !== "commercial") next.delete("category");
     setSearchParams(next);
   };
 
@@ -150,17 +150,17 @@ export default function BrowseView({
           if (active) setLoading(false);
         });
     } else {
-      const request = resultType === "property" || resultType === "comercial"
+      const request = resultType === "property" || resultType === "commercial"
         ? Promise.all([
-            getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, verified_only: 1 }),
-            getProperties({ ...query, purpose: query.purpose, category: resultType === "comercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
           ])
         : getOrganizations({ type: organizationTypeForResult(resultType, tab, searchParams.get("agent_type") || tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {
         if (!active) return;
-        if (resultType === "property" || resultType === "comercial") {
+        if (resultType === "property" || resultType === "commercial") {
           setProperties(r[0].data);
-          if (resultType === "comercial") setNewlyCommercialProperties(r[1].data);
+          if (resultType === "commercial") setNewlyCommercialProperties(r[1].data);
           else setNewlyProperties(r[1].data);
           setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
         }
@@ -193,7 +193,7 @@ export default function BrowseView({
       </div>
     );
   }
-  if ((resultType === "property" || resultType === "comercial") && propertyCards.length === 0) return (
+  if ((resultType === "property" || resultType === "commercial") && propertyCards.length === 0) return (
     <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown">
       <p>No properties found for the selected filters.</p>
       <button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button>
@@ -242,7 +242,7 @@ export default function BrowseView({
           <Section title="Newly Listed Properties" count={newlyPropertyCards.length} items={newlyPropertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
-      {resultType === "comercial" && (
+      {resultType === "commercial" && (
         <>
           <Section title="Popular Commercial" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
           <Section title="Newly Listed Commercial" count={newlyCommercialCards.length} items={newlyCommercialCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />

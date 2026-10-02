@@ -15,8 +15,10 @@ import { agentTypeForLabel, getAgentTypes, type PublicAgentType } from "../../ap
 const HEADERS: Record<string, { title: string; crumb: string }> = {
   all: { title: "Find anything", crumb: "Search" },
   properties: { title: "Find a property", crumb: "Find a property" },
+  agents: { title: "Find an agent", crumb: "Find an agent" },
+  traders: { title: "Find a professional", crumb: "Find a professional" },
   builders: { title: "Find a builder", crumb: "Find a builder" },
-  professionals: { title: "Find a professional", crumb: "Find a professional" },
+  address: { title: "Search by address", crumb: "Address" },
   commercial: { title: "Find commercial", crumb: "Commercial" },
 };
 
@@ -66,7 +68,7 @@ const SearchPage = () => {
   const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || null);
 
   useEffect(() => {
-    setActiveTab((tabParam as FilterTab) || null);
+    setActiveTab((tabParam as FilterTab) || "All");
   }, [tabParam]);
 
   const activeCategory = searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
@@ -96,18 +98,7 @@ const SearchPage = () => {
       next.delete("agent_type");
       if (!tab) {
         next.delete("tab");
-        next.delete("type");
-        return;
-      }
-      next.set("tab", tab.toLowerCase());
-      if (["Buy", "Rent", "Lease", "Sold", "Leased"].includes(tab)) {
-        next.set("type", activeCategoryId === "commercial" ? "comercial" : "property");
-        if (activeCategoryId === "commercial") {
-          next.set("transaction_status", tab.toUpperCase());
-          return;
-        }
-        if (tab === "Buy") next.set("purpose", "sell");
-        if (tab === "Rent") next.set("purpose", "rent");
+        next.set("type", activeCategoryId);
         return;
       }
       const serviceSlug = serviceSlugForLabel(tab, serviceCategories);
@@ -142,7 +133,7 @@ const SearchPage = () => {
   };
 
   const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
-  if (activeTab) {
+  if (activeTab && activeTab !== "All") {
     breadcrumbs.push({ label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } });
     if (browseSection !== "all") {
       breadcrumbs.push(

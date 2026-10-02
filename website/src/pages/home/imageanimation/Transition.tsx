@@ -35,15 +35,15 @@ const STAGE_H = 720;
 
 
 const PERSPECTIVE = 1000; // Slightly higher than 900 to flatten the distortion just a bit
-const MAX_TILT_Y = 15;    // Down from 22 (a gentle reduction in left/right tilt)
-const MAX_TILT_X = 8;    // Down from 14 (a gentle reduction in up/down tilt)
-const MAX_TILT_Z = 1.8;   // Down from 2.5
+const MAX_TILT_Y = 13;    // Down from 22 (a gentle reduction in left/right tilt)
+const MAX_TILT_X = 6;    // Down from 14 (a gentle reduction in up/down tilt)
+const MAX_TILT_Z = 1.6;   // Down from 2.5
 const RANGE_X = 0.6;
-const RANGE_Y = 0.55;
-const SMOOTHING_MS = 150;
-const PARALLAX = 0.10;    // Down from 0.08 (keeps the floating tags closer to their anchors)
-const INFO_CARD_Z = 170;  // Down from 150
-const ASK_BUTTON_Z = 120;  // Down from 110
+const RANGE_Y = 0.50;
+const SMOOTHING_MS = 120;
+const PARALLAX = 0.08;    // Down from 0.08 (keeps the floating tags closer to their anchors)
+const INFO_CARD_Z = 150;  // Down from 150
+const ASK_BUTTON_Z = 100;  // Down from 110
 
 const RINGS = [
   { rx: 360, ry: 380, seconds: 24, tiles: [{ w: 150, phase: 0 }, { w: 150, phase: Math.PI }] },
