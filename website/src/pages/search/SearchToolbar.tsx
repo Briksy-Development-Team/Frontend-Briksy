@@ -1,13 +1,22 @@
-import { useState } from "react";
-import { SlidersHorizontal, Search, Sparkles } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { BriefcaseBusiness, Building2, Grid2X2, House, SlidersHorizontal, Search, Sparkles, Wrench } from "lucide-react";
 import DropdownPill from "../../components/custom/DropdownPill";
 import { createPortal } from "react-dom";
 import Filter from "../../components/filter/Filter";
 import type { SortType } from "../../types/search";
+import type { ResultType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import MapIcon from "../../assets/icons/search/map.svg?react";
 import { SERVICE_CATEGORIES, type ServiceCategory } from "../../constants/serviceCategories";
 import type { PublicAgentType } from "../../api/agentTypes.api";
+
+type CategoryDef = {
+  id: string;
+  label: string;
+  resultType: ResultType;
+  icon: ReactNode;
+  tabs: string[];
+};
 
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -16,35 +25,35 @@ export const SEARCH_CATEGORIES: CategoryDef[] = [
     id: "all",
     label: "All Categories",
     resultType: "all",
-    icon: <AllIcon className="w-4 h-4" />,
+    icon: <Grid2X2 className="w-4 h-4" />,
     tabs: ["Buy", "Rent", "Sold", "Builders", "Traders"],
   },
   {
     id: "properties",
     label: "Properties",
     resultType: "property",
-    icon: <PropIcon className="w-4 h-4" />,
+    icon: <House className="w-4 h-4" />,
     tabs: ["Buy", "Rent", "Sold"],
   },
   {
     id: "builders",
     label: "BUILDERS",
     resultType: "builder",
-    icon: <BuildIcon className="w-4 h-4" />,
+    icon: <Building2 className="w-4 h-4" />,
     tabs: ["Builders"],
   },
   {
     id: "professionals",
     label: "Trades & Professionals",
     resultType: "trader",
-    icon: <TraderIcon className="w-4 h-4" />,
+    icon: <Wrench className="w-4 h-4" />,
     tabs: SERVICE_CATEGORIES.map((category) => category.label),
   },
   {
     id: "commercial",
     label: "Commercial",
-    resultType: "comercial",
-    icon: <ComercialIcon className="w-4 h-4" />,
+    resultType: "commercial",
+    icon: <BriefcaseBusiness className="w-4 h-4" />,
     tabs: ["Buy", "Lease", "Sold", "Leased"],
   },
 ];
@@ -62,22 +71,6 @@ const SORT_OPTIONS = [
   { label: "Price ↑", value: "price-low" },
   { label: "Price ↓", value: "price-high" },
 ];
-
-const TAB_LABELS: Record<FilterTab, string> = {
-  Buy: "Buy",
-  Rent: "Rent",
-  Lease: "Lease",
-  Sold: "Sold",
-  Leased: "Leased",
-  Builders: "Builders",
-  Traders: "Sole Traders",
-  Landscappers: "Landscappers",
-  Concreter: "Concreter",
-  Fencing: "Fencing",
-  "Mortgage Brokers": "Mortgage Brokers",
-  Conveyancers: "Conveyancers",
-  "Building and Pest": "Building and Pest",
-};
 
 const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
   (acc, option) => {
