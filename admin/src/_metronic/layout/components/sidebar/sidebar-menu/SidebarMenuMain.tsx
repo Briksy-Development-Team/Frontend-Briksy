@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import {
   usePermissionAccess,
@@ -8,10 +9,12 @@ import {
 import { SidebarMenuItemWithSub } from "./SidebarMenuItemWithSub";
 import { SidebarMenuItem } from "./SidebarMenuItem";
 import { getRolePortalBaseRoute } from "../../../../../app/modules/auth/core/roleRoutes";
+import axiosInstance from "../../../../../app/services/api/axiosInstance";
 
 
 
 const SidebarMenuMain = () => {
+  const [agentTypes, setAgentTypes] = useState<Array<{ slug: string; label?: string; name: string }>>([]);
   const intl = useIntl();
   const { isSuperAdmin, isAdmin } = useRoleAccess();
   const { hasPermission } = usePermissionAccess();
@@ -21,6 +24,13 @@ const SidebarMenuMain = () => {
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : isAdmin ? ["admin"] : [],
   );
+
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+    void axiosInstance.get<{ data: Array<{ slug: string; label?: string; name: string }> }>("/super-admin/organization-types", {
+      params: { per_page: 100, "filter[module]": "Agents", "filter[is_active]": 1, sort: "sort_order", direction: "asc" },
+    }).then((response) => setAgentTypes(response.data.data ?? [])).catch(() => undefined);
+  }, [isSuperAdmin]);
 
   return (
     <>
@@ -74,22 +84,24 @@ const SidebarMenuMain = () => {
           fontIcon="bi-archive"
           icon="/media/icons/duotune/iconsnew/org.svg"
           activePaths={[
+            ...agentTypes.map((type) => `${portalBase}/companies/organization/${type.slug}`),
             `${portalBase}/companies/organization/real-estate`,
-            `${portalBase}/companies/organization/buyers-agent`,
             `${portalBase}/companies/organization/builders`,
             `${portalBase}/companies/organization/trades-professionals`,
           ]}
         >
+          <SidebarMenuItemWithSub
+            to={`${portalBase}/companies/organization/${agentTypes[0]?.slug ?? "buyers-agent"}`}
+            title="Agents"
+            fontIcon="bi-layers"
+            activePaths={agentTypes.map((type) => `${portalBase}/companies/organization/${type.slug}`)}
+          >
+            {agentTypes.map((type) => <SidebarMenuItem key={type.slug} to={`${portalBase}/companies/organization/${type.slug}`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title={type.label || type.name} fontIcon="bi-layers" />)}
+          </SidebarMenuItemWithSub>
           <SidebarMenuItem
             to={`${portalBase}/companies/organization/real-estate`}
             icon="/media/icons/duotune/iconsnew/arrowside.svg"
             title="Real Estate"
-            fontIcon="bi-layers"
-          />
-          <SidebarMenuItem
-            to={`${portalBase}/companies/organization/buyers-agent`}
-            icon="/media/icons/duotune/iconsnew/arrowside.svg"
-            title="Buyers Agent"
             fontIcon="bi-layers"
           />
           <SidebarMenuItem
@@ -208,6 +220,15 @@ const SidebarMenuMain = () => {
             />
           )}
 
+          {isSuperAdmin && hasPermission("plan.view") && (
+            <SidebarMenuItem
+              to={`${portalBase}/pricing-inquiries`}
+              title="Pricing Inquiries"
+              fontIcon="bi-chat-left-text"
+              icon="/media/icons/duotune/iconsnew/inquiry.svg"
+            />
+          )}
+
           {hasPermission("referral.view") && (
             <SidebarMenuItem
               to={`${portalBase}/referral-programs`}
@@ -234,6 +255,22 @@ const SidebarMenuMain = () => {
                 fontIcon="bi-archive"
                 icon="/media/icons/duotune/iconsnew/service.svg"
               />
+              {isSuperAdmin && (
+                <SidebarMenuItem
+                  to={`${portalBase}/service-categories`}
+                  title="Service Categories"
+                  fontIcon="bi-tags"
+                  icon="/media/icons/duotune/iconsnew/service.svg"
+                />
+              )}
+              {isSuperAdmin && (
+                <SidebarMenuItem
+                  to={`${portalBase}/agent-types`}
+                  title="Agent Types"
+                  fontIcon="bi-tags"
+                  icon="/media/icons/duotune/iconsnew/service.svg"
+                />
+              )}
               {promoOffersEnabled && (
                 <SidebarMenuItem
                   to={`${portalBase}/service-offers`}
@@ -261,7 +298,7 @@ const SidebarMenuMain = () => {
           {hasModule("inquiry_management") && (
             <SidebarMenuItem
               to={`${portalBase}/inquiry`}
-              title={hasModule("builder_management") ? "Enquiries" : hasModule("service_management") ? "Service Enquiries" : "Property Enquiries"}
+              title="Enquiries"
               fontIcon="bi-archive"
               icon="/media/icons/duotune/iconsnew/proe.svg"
             />
@@ -318,22 +355,23 @@ const SidebarMenuMain = () => {
               )}
             </>
           )}
-
+          {hasModule("buyer_management") && (
+            <SidebarMenuItemWithSub
+              to={`${portalBase}/buyer-briefs`}
+              title="Buyer Management"
+              fontIcon="bi-people"
+              icon="/media/icons/duotune/iconsnew/"
+              activePaths={[`${portalBase}/buyer-briefs`]}>
+              <SidebarMenuItem to={`${portalBase}/buyer-briefs`} excludePaths={[`${portalBase}/buyer-briefs/profile`]} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Buyer Briefs" fontIcon="bi-layers" />
+              <SidebarMenuItem exact to={`${portalBase}/buyer-briefs/profile`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Agency Profile" fontIcon="bi-layers" />
+            </SidebarMenuItemWithSub>
+          )}
           <SidebarMenuItem
             to={`${portalBase}/billing`}
             title="Pricing Plans"
             fontIcon="bi-credit-card"
             icon="/media/icons/duotune/finance/fin002.svg"
           />
-
-          {hasModule("buyer_management") && (
-            <SidebarMenuItem
-              to={`${portalBase}/buyer-briefs`}
-              title="Buyer Briefs"
-              fontIcon="bi-people"
-              icon="/media/icons/duotune/iconsnew/"
-            />
-          )}
 
           {hasPermission("user.view") && (
             <SidebarMenuItem

@@ -30,6 +30,8 @@ const PropertyMapPage = lazy(() => import("../pages/platform/PropertyMapPage"));
 const PropertyOffersPage = lazy(() => import("../pages/platform/PropertyOffersPage"));
 const ServiceOffersPage = lazy(() => import("../pages/platform/ServiceOffersPage"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
+const ServiceCategoryPage = lazy(() => import("../pages/platform/ServiceCategoryPage"));
+const AgentTypePage = lazy(() => import("../pages/platform/AgentTypePage"));
 const BuyerBriefPage = lazy(() => import("../pages/platform/BuyerBriefPage"));
 const BuilderProjectPage = lazy(() => import("../pages/platform/BuilderProjectPage"));
 const InquiryPage = lazy(() => import("../pages/platform/InquiryPage"));
@@ -387,6 +389,19 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/super-admin/pricing-inquiries/*"
+          element={
+            <RoleGuard allow={["super_admin", "super_admin_employee"]}>
+              <PermissionGuard anyOf={["plan.view"]}>
+                <SuspensedView>
+                  <InquiryPage />
+                </SuspensedView>
+              </PermissionGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/super-admin/activity-logs/*"
           element={
             <RoleGuard allow={["super_admin"]}>
@@ -409,6 +424,18 @@ const PrivateRoutes = () => {
             </RoleGuard>
           }
         />
+
+        <Route
+          path="/super-admin/service-categories/*"
+          element={
+            <RoleGuard allow={["super_admin", "super_admin_employee"]}>
+              <SuspensedView>
+                <ServiceCategoryPage />
+              </SuspensedView>
+            </RoleGuard>
+          }
+        />
+        <Route path="/super-admin/agent-types/*" element={<RoleGuard allow={["super_admin", "super_admin_employee"]}><SuspensedView><AgentTypePage /></SuspensedView></RoleGuard>} />
 
         <Route
           path="/admin/services/*"

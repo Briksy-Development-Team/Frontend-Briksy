@@ -6,9 +6,54 @@ import Filter from "../../components/filter/Filter";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import MapIcon from "../../assets/icons/search/map.svg?react";
-import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
+import { SERVICE_CATEGORIES, type ServiceCategory } from "../../constants/serviceCategories";
+import type { PublicAgentType } from "../../api/agentTypes.api";
 
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const SEARCH_CATEGORIES: CategoryDef[] = [
+  {
+    id: "all",
+    label: "All Categories",
+    resultType: "all",
+    icon: <AllIcon className="w-4 h-4" />,
+    tabs: ["Buy", "Rent", "Sold", "Builders", "Traders"],
+  },
+  {
+    id: "properties",
+    label: "Properties",
+    resultType: "property",
+    icon: <PropIcon className="w-4 h-4" />,
+    tabs: ["Buy", "Rent", "Sold"],
+  },
+  {
+    id: "builders",
+    label: "BUILDERS",
+    resultType: "builder",
+    icon: <BuildIcon className="w-4 h-4" />,
+    tabs: ["Builders"],
+  },
+  {
+    id: "professionals",
+    label: "Trades & Professionals",
+    resultType: "trader",
+    icon: <TraderIcon className="w-4 h-4" />,
+    tabs: SERVICE_CATEGORIES.map((category) => category.label),
+  },
+  {
+    id: "commercial",
+    label: "Commercial",
+    resultType: "comercial",
+    icon: <ComercialIcon className="w-4 h-4" />,
+    tabs: ["Buy", "Lease", "Sold", "Leased"],
+  },
+];
+
+export const buildSearchCategories = (categories: readonly ServiceCategory[], agentTypes: readonly PublicAgentType[] = []): CategoryDef[] => SEARCH_CATEGORIES.map((category) =>
+  category.id === "professionals" ? { ...category, tabs: categories.map((item) => item.label) } :
+  category.id === "builders" ? { ...category, tabs: ["Builders", ...agentTypes.map((item) => item.label)] } :
+  category.id === "all" ? { ...category, tabs: ["Buy", "Rent", "Sold", "Builders", ...agentTypes.map((item) => item.label), "Traders"] } : category,
+);
 
 const SORT_OPTIONS = [
   { label: "Recommended", value: "featured" },
@@ -17,6 +62,22 @@ const SORT_OPTIONS = [
   { label: "Price ↑", value: "price-low" },
   { label: "Price ↓", value: "price-high" },
 ];
+
+const TAB_LABELS: Record<FilterTab, string> = {
+  Buy: "Buy",
+  Rent: "Rent",
+  Lease: "Lease",
+  Sold: "Sold",
+  Leased: "Leased",
+  Builders: "Builders",
+  Traders: "Sole Traders",
+  Landscappers: "Landscappers",
+  Concreter: "Concreter",
+  Fencing: "Fencing",
+  "Mortgage Brokers": "Mortgage Brokers",
+  Conveyancers: "Conveyancers",
+  "Building and Pest": "Building and Pest",
+};
 
 const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
   (acc, option) => {
@@ -37,6 +98,8 @@ export default function SearchToolbar({
   query,
   onQueryChange,
   onAskAi,
+  serviceCategories = SERVICE_CATEGORIES,
+  agentTypes = [],
 }: {
   activeCategoryId: string;
   activeTab: FilterTab | null;
@@ -48,12 +111,21 @@ export default function SearchToolbar({
   query: string;
   onQueryChange: (value: string) => void;
   onAskAi?: () => void;
+  serviceCategories?: readonly ServiceCategory[];
+  agentTypes?: readonly PublicAgentType[];
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const searchCategories = buildSearchCategories(serviceCategories, agentTypes);
 
   const activeCategory =
-    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) ||
-    SEARCH_CATEGORIES[0];
+    searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
+  const isAgentContext = activeCategoryId === "builders" && agentTypes.some((type) =>
+    type.label.toLowerCase() === (activeTab || "").toLowerCase() ||
+    type.name.toLowerCase() === (activeTab || "").toLowerCase(),
+  );
+  const visibleTabs = isAgentContext
+    ? activeCategory.tabs.filter((tab) => tab !== "Builders")
+    : activeCategory.tabs;
 
   return (
     <div className="flex flex-col gap-3">
@@ -118,10 +190,9 @@ export default function SearchToolbar({
         </div>
       </div>
 
-      {activeCategory.propTypes.length > 0 && (
+      {visibleTabs.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 shrink-0">
-          {activeCategory.propTypes.map((propType) => {
-            const tab = propType.label as FilterTab;
+          {visibleTabs.map((tab) => {
             const isSelected = activeTab === tab;
             return (
               <button
@@ -150,6 +221,8 @@ export default function SearchToolbar({
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
             initialTab={activeTab || "Buy"}
+            serviceCategories={serviceCategories}
+            agentTypes={agentTypes}
           />,
           document.body,
         )}

@@ -11,9 +11,13 @@ import { propertyQueryToParams } from "../../api/property/propertySearch";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
 import "swiper/css";
+import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
 
-const organizationTypeForResult = (resultType: ResultType, tab?: string | null) => {
+const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
+  if (resultType === "builder" && agentType) return agentType;
   if (resultType === "builder" && tab === "agents") return "buyers-agent";
+  if (resultType === "builder" && tab === "real-estate") return "real-estate-agent";
+  if (resultType === "builder" && tab && tab !== "builders") return tab;
   if (resultType === "builder") return "builders";
   return "trades-professionals";
 };
@@ -101,12 +105,12 @@ export default function BrowseView({
   const [commercialProperties, setCommercialProperties] = useState<PublicProperty[]>([]);
   const [newlyCommercialProperties, setNewlyCommercialProperties] = useState<PublicProperty[]>([]);
   const [searchParams, setSearchParams] = useResultSearchParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
 
   const tab = searchParams.get("tab");
-  const isAgents = resultType === "builder" && tab === "agents";
+  const isAgents = resultType === "builder" && (Boolean(searchParams.get("agent_type")) || !["", "builders", "agents"].includes(tab || ""));
 
   const resetFilters = () => {
     const next = new URLSearchParams(searchParams);
@@ -151,7 +155,7 @@ export default function BrowseView({
             getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, verified_only: 1 }),
             getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
           ])
-        : getOrganizations({ type: organizationTypeForResult(resultType, tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+        : getOrganizations({ type: organizationTypeForResult(resultType, tab, searchParams.get("agent_type") || tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {
         if (!active) return;
         if (resultType === "property" || resultType === "commercial") {
@@ -173,11 +177,14 @@ export default function BrowseView({
   const newlyPropertyCards = newlyProperties.map(propertyToCard);
 
   const allTraders = organizations.filter(o => o.type?.slug === "trades-professionals" || (!o.type?.slug && !o.type?.name)).map(organizationToTrader);
-  const allAgenciesAndBuilders = organizations.filter(o => o.type?.slug === "real-estate" || o.type?.slug === "builders").map(organizationToBuilder);
+  const allAgenciesAndBuilders = organizations.filter(o => o.type?.module === "Agents" || o.type?.slug === "builders").map(organizationToBuilder);
   const allCommercialCards = commercialProperties.map(propertyToCard);
   const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 
-  if (loading) return <p className="py-10 text-center text-sm text-[#8B6F54]">Loading results...</p>;
+  const hasLoadedItems = resultType === "property" || resultType === "comercial"
+    ? properties.length > 0 || commercialProperties.length > 0
+    : organizations.length > 0;
+  if (loading && !hasLoadedItems) return <ResultsLoadingSkeleton resultType={resultType} />;
   if (error) return <p className="rounded-2xl bg-white p-8 text-center text-red-700">{error}</p>;
   if (resultType === "trader" && traders.length === 0) {
     return (
@@ -214,14 +221,14 @@ export default function BrowseView({
       {resultType === "builder" && (
         <>
           <Section
-            title={isAgents ? "Popular Buyer Agents" : "Popular Builders"}
+            title={isAgents ? (tab || "Agents") : "Popular Builders"}
             count={builders.length}
             items={builders.slice(0, 4)}
             Card={BuilderGridCard}
             onViewMore={() => onViewMore("popular")}
           />
           <Section
-            title={isAgents ? "Newly Listed Buyer Agents" : "Newly Listed Builders"}
+            title={isAgents ? `Newly Listed ${tab || "Agents"}` : "Newly Listed Builders"}
             count={builders.length}
             items={builders.slice(4)}
             Card={BuilderGridCard}

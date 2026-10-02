@@ -14,7 +14,7 @@ export type PublicOrganization = {
   is_verified: boolean;
   is_favourite?: boolean;
   contact?: { email: string | null; phone: string | null };
-  type?: { name: string; slug: string } | null;
+  type?: { name: string; label?: string; slug: string; module?: string | null; capability_profile?: string | null } | null;
   services?: {
     id: string;
     name: string;
@@ -31,6 +31,15 @@ export type PublicOrganization = {
   address?: string | null;
   state?: string | null;
   postcode?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  distance_km?: number | null;
+  description?: string | null;
+  website?: string | null;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string | null;
+  reel_urls?: string[];
 };
 
 export type PublicBuilderProject = {

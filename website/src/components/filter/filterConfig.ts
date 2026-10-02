@@ -141,7 +141,8 @@ const ORG_FIELDS: FilterField[] = [
   { key: "accepting", label: "Currently accepting new listings", type: "toggle", column: "right" },
 ];
 
-export type FilterMode = "All" | "Buy" | "Rent" | "Sold" | "Real Estate Agents" | "Buyer Agents" | "Landscapers" | "Concreter" | "Fencing" | "Mortgage Brokers" | "Conveyancers" | "Building & Pest";
+
+export type FilterMode = string;
 
 export const getFieldsForMode = (mode: FilterMode): FilterField[] => {
   switch (mode) {
@@ -159,6 +160,8 @@ export const getFieldsForMode = (mode: FilterMode): FilterField[] => {
     case "Mortgage Brokers":
     case "Conveyancers":
     case "Building & Pest":
+      return ORG_FIELDS;
+    default:
       return ORG_FIELDS;
   }
 };

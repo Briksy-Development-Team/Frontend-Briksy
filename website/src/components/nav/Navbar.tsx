@@ -32,8 +32,8 @@ const mobileMenuItems = [
   { label: "Buy / Sell", to: "/buy" },
   { label: "Agents Finder", to: "/agents" },
   { label: "Builders", to: "/builders" },
-  { label: "Professionals", to: "/professionals" },
-  { label: "Blogs", to: "/blogs" },
+  { label: "Trades & Professionals", to: "/professionals" },
+//   { label: "News", to: "/blogs" },
   { label: "Commercials", to: "/commercials" },
 ];
 

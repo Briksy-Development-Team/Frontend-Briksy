@@ -4,9 +4,11 @@ import type { Plan } from '../data/subscription.data';
 
 interface PlanCardProps {
   plan: Plan;
+  onContact?: (plan: Plan) => void;
+  isLoading?: boolean;
 }
 
-export default function PlanCard({ plan }: PlanCardProps) {
+export default function PlanCard({ plan, onContact, isLoading = false }: PlanCardProps) {
   const isPopular = plan.popular;
 
   return (
@@ -28,19 +30,24 @@ export default function PlanCard({ plan }: PlanCardProps) {
       <h2 className="text-[1.25rem] font-medium text-primary-brown">{plan.name}</h2>
       <p className="mt-1 text-xs text-primary-light-brown min-h-[32px] leading-relaxed">{plan.description}</p>
 
-      <div className="mt-4 flex items-end gap-1">
-        {plan.price !== null ? (
-          <>
-            <span className="text-[1.875rem] font-semibold text-primary-brown leading-none">${plan.price}</span>
-            <span className="text-xs text-primary-light-brown mb-0.5">/month</span>
-          </>
-        ) : (
-          <span className="text-[1.5rem] font-semibold text-primary-brown">Contact us</span>
-        )}
-      </div>
+      {isLoading ? (
+        <div className="mt-4 h-[1.875rem]" aria-hidden="true" />
+      ) : (
+        <div className="mt-4 flex items-end gap-1">
+          {plan.price !== null ? (
+            <>
+              <span className="text-[1.875rem] font-semibold text-primary-brown leading-none">${plan.price}</span>
+              <span className="text-xs text-primary-light-brown mb-0.5">/month</span>
+            </>
+          ) : (
+            <span className="text-[1.5rem] font-semibold text-primary-brown">Contact us</span>
+          )}
+        </div>
+      )}
 
       <button
         type="button"
+        onClick={() => onContact?.(plan)}
         className={`mt-4 w-full py-2.5 rounded-[62.4375rem] text-[0.875rem] font-medium transition-all duration-200 cursor-pointer ${
           isPopular
             ? 'bg-primary-brown text-white hover:opacity-90'

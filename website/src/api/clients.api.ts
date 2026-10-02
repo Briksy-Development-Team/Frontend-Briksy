@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getStoredAuth } from "../auth/auth.storage";
+import { getStoredLocation } from "../utils/location";
 
 export type ApiPage<T> = {
   success: boolean;
@@ -55,6 +56,14 @@ api.interceptors.request.use((config) => {
     const tokenType = auth.tokenType || "Bearer";
     (config.headers as Record<string, string>).Authorization =
       `${tokenType} ${auth.token}`;
+  }
+
+  const requestUrl = String(config.url ?? "");
+  const location = getStoredLocation();
+  if ((requestUrl === "/seeker/properties" || requestUrl === "/seeker/organizations") && location) {
+    config.params = config.params ?? {};
+    if (config.params.latitude == null) config.params.latitude = location.latitude;
+    if (config.params.longitude == null) config.params.longitude = location.longitude;
   }
 
   return config;

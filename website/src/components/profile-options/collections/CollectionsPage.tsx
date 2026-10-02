@@ -243,36 +243,38 @@ function CollectionCard({
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
 
       {/* Action buttons — top-right, visible on hover */}
-      <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <button
-          type="button"
-          aria-label="Rename Collection"
-          onClick={(e) => { e.preventDefault(); onEdit(); }}
-          className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
-        >
-          <Pencil size={14} />
-        </button>
-        {deletingId === collection.id ? (
+      {!collection.is_default && (
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
           <button
             type="button"
-            aria-label="Confirm Delete"
-            disabled={isDeleting}
-            onClick={(e) => { e.preventDefault(); onDeleteConfirm(); }}
-            className="flex items-center gap-1 rounded-full bg-red-500/90 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 transition-colors"
+            aria-label="Rename Collection"
+            onClick={(e) => { e.preventDefault(); onEdit(); }}
+            className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/60 transition-colors"
           >
-            {isDeleting ? "..." : <Check size={12} />} Confirm
+            <Pencil size={14} />
           </button>
-        ) : (
-          <button
-            type="button"
-            aria-label="Delete Collection"
-            onClick={(e) => { e.preventDefault(); onDeleteStart(); }}
-            className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-red-500/80 transition-colors"
-          >
-            <Trash2 size={14} />
-          </button>
-        )}
-      </div>
+          {deletingId === collection.id ? (
+            <button
+              type="button"
+              aria-label="Confirm Delete"
+              disabled={isDeleting}
+              onClick={(e) => { e.preventDefault(); onDeleteConfirm(); }}
+              className="flex items-center gap-1 rounded-full bg-red-500/90 backdrop-blur-sm px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 transition-colors"
+            >
+              {isDeleting ? "..." : <Check size={12} />} Confirm
+            </button>
+          ) : (
+            <button
+              type="button"
+              aria-label="Delete Collection"
+              onClick={(e) => { e.preventDefault(); onDeleteStart(); }}
+              className="p-2 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-red-500/80 transition-colors"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Bottom overlay — name + count + arrow */}
       <Link

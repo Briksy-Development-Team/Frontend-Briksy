@@ -6,15 +6,17 @@ import PlanCard from "./PlanCard";
 interface PricingCardsProps {
   plans: Plan[];
   stats: Stat[];
+  onContact?: (plan: Plan) => void;
+  isLoading?: boolean;
 }
 
-export default function PricingCards({ plans, stats }: PricingCardsProps) {
+export default function PricingCards({ plans, stats, onContact, isLoading = false }: PricingCardsProps) {
   return (
     <div className="space-y-8">
       {/* Cards grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
         {plans.map((plan) => (
-          <PlanCard key={plan.id} plan={plan} />
+          <PlanCard key={plan.id} plan={plan} onContact={onContact} isLoading={isLoading} />
         ))}
       </div>
 

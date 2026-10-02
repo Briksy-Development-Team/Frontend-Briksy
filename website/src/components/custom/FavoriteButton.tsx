@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Heart } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
-import { getSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
+import { getSeekerFavorites, invalidateSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
+import { getCollectionsForTarget, type SeekerCollection } from "../../api/seeker/collections.api";
 import CollectionModal from "../collections/CollectionModal";
 import AuthPromptToast from "./AuthPromptToast";
 
@@ -29,6 +30,8 @@ export default function FavoriteButton({
   const [showCollections, setShowCollections] = useState(false);
   const [showAuthToast, setShowAuthToast] = useState(false);
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
+  const [collectionsRequest, setCollectionsRequest] = useState<Promise<{ data: SeekerCollection[] }> | null>(null);
+  const [defaultCollectionId, setDefaultCollectionId] = useState<string | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const inFlight = useRef(false);
 
@@ -61,14 +64,23 @@ export default function FavoriteButton({
 
     // Optimistic update; open the collections popover only when adding
     const wasLiked = isFavourite;
+    invalidateSeekerFavorites(targetType);
     setIsFavourite(!wasLiked);
-    if (!wasLiked) setButtonRect(buttonRef.current?.getBoundingClientRect() ?? null);
+    if (!wasLiked) {
+      setButtonRect(buttonRef.current?.getBoundingClientRect() ?? null);
+      setCollectionsRequest(getCollectionsForTarget(targetType, String(targetId)));
+    } else {
+      setCollectionsRequest(null);
+      setDefaultCollectionId(null);
+    }
     setShowCollections(!wasLiked);
 
     inFlight.current = true;
     try {
       const res = await toggleSeekerFavorite(String(targetId), targetType);
+      invalidateSeekerFavorites(targetType);
       setIsFavourite(res.data.action === "added");
+      setDefaultCollectionId(res.data.action === "added" ? (res.data.collection_id ?? null) : null);
     } catch (error) {
       setIsFavourite(wasLiked);
       setShowCollections(false);
@@ -107,12 +119,9 @@ export default function FavoriteButton({
           propertyId={String(targetId)}
           targetType={targetType}
           buttonRect={buttonRect}
+          collectionsRequest={collectionsRequest}
+          defaultCollectionId={defaultCollectionId}
           onClose={() => setShowCollections(false)}
-          onDismissWithoutSelection={() => {
-            // Dismissed without picking a collection: undo the like
-            setIsFavourite(false);
-            void toggleSeekerFavorite(String(targetId), targetType).catch(() => { });
-          }}
         />
       )}
 

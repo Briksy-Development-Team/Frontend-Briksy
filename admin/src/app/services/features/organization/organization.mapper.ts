@@ -33,6 +33,12 @@ type OrganizationApi = {
     name: string;
     slug: string;
   };
+  description?: string | null;
+  website?: string | null;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string | null;
+  reel_urls?: string[];
 };
 
 export const mapOrganization = (item: OrganizationApi): Organization => ({
@@ -64,4 +70,10 @@ export const mapOrganization = (item: OrganizationApi): Organization => ({
   state: item.state ?? undefined,
   postcode: item.postcode ?? undefined,
   type: item.type ?? undefined, // ← was missing entirely
+  description: item.description ?? null,
+  website: item.website ?? null,
+  social_links: item.social_links ?? {},
+  service_areas: item.service_areas ?? [],
+  intro_video_url: item.intro_video_url ?? null,
+  reel_urls: item.reel_urls ?? [],
 });

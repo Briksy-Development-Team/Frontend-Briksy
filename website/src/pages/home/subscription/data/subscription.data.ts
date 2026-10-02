@@ -18,6 +18,8 @@ export interface Plan {
   ctaLabel: string;
   popular?: boolean;
   highlights: string[];    // bullet list on the card
+  contactSales?: boolean;
+  addons?: { id: string; name: string }[];
 }
 
 export interface FeatureRow {
@@ -44,10 +46,10 @@ export interface TabData {
   sections: FeatureSection[];
 }
 
-// ─── Properties Tab ──────────────────────────────────────────────────────────
+// ─── Real Estate Tab ─────────────────────────────────────────────────────────
 const propertiesTab: TabData = {
   id: 'properties',
-  label: 'Properties',
+  label: 'Real Estate',
   plans: [
     {
       id: 'starter',

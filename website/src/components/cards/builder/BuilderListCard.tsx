@@ -10,7 +10,7 @@ type Props = {
 };
 
 const BuilderListCard = ({ item }: Props) => (
-  <Link to={`/builder/${item.id}`} className="flex items-center gap-3 relative px-4 py-4 lg:gap-4 hover:border hover:border-primary text-primary-brown bg-white border border-[#E7E7E4] rounded-[1.25rem]">
+  <Link to={`/${item.profileType === "agent" ? "agent" : "builder"}/${item.id}`} className="flex items-center gap-3 relative px-4 py-4 lg:gap-4 hover:border hover:border-primary text-primary-brown bg-white border border-[#E7E7E4] rounded-[1.25rem]">
     <div className="relative shrink-0">
       <SafeImage loading="lazy"
         src={item.avatar}

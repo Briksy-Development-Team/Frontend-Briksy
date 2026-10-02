@@ -5,26 +5,36 @@ import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
 import { getFieldsForMode } from "./filterConfig";
 import type { FilterMode } from "./filterConfig";
-import { serviceSlugForLabel } from "../../constants/serviceCategories";
-import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
+import { SERVICE_CATEGORIES, serviceSlugForLabel, type ServiceCategory } from "../../constants/serviceCategories";
+import type { PublicAgentType } from "../../api/agentTypes.api";
 
 type FilterProps = {
   isOpen: boolean;
   onClose: () => void;
   initialTab?: FilterMode;
   category?: string;
+  serviceCategories?: readonly ServiceCategory[];
+  agentTypes?: readonly PublicAgentType[];
 };
 
-const getVisibleTabs = (category = "all") => {
-  const cat = SEARCH_CATEGORIES.find((c) => c.id === category.toLowerCase());
-  if (!cat) return [];
-  const allowed = cat.propTypes.map((p) => p.label as FilterMode);
-  const seen = new Set<FilterMode>();
-  return allowed.filter(label => {
-    if (seen.has(label)) return false;
-    seen.add(label);
-    return true;
-  }).map(label => ({ label, value: label }));
+const ALL_TABS: { label: string; value: FilterMode }[] = [
+  { label: "Buy", value: "Buy" },
+  { label: "Rent", value: "Rent" },
+  { label: "Lease", value: "Lease" },
+  { label: "Sold", value: "Sold" },
+  { label: "Leased", value: "Leased" },
+  { label: "Builders", value: "Builders" },
+  { label: "Organizations", value: "Agents" },
+  { label: "Sole Traders", value: "Traders" },
+  ...SERVICE_CATEGORIES.map((category) => ({ label: category.label, value: category.label as FilterMode })),
+];
+
+const TABS_BY_CATEGORY: Record<string, FilterMode[]> = {
+  all: ["Buy", "Rent", "Sold", "Builders", "Agents", "Traders"],
+  properties: ["Buy", "Rent", "Sold"],
+  builders: ["Builders", "Agents"],
+  professionals: ["Traders", ...SERVICE_CATEGORIES.map((category) => category.label as FilterMode)],
+  commercial: ["Buy", "Lease", "Sold", "Leased"],
 };
 
 const Filter = ({
@@ -32,10 +42,26 @@ const Filter = ({
   onClose,
   initialTab = "Buy",
   category = "all",
+  serviceCategories = SERVICE_CATEGORIES,
+  agentTypes = [],
 }: FilterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const visibleTabs = getVisibleTabs(category);
+  const allTabs = [
+    ...ALL_TABS.filter((tab) => !SERVICE_CATEGORIES.some((item) => item.label === tab.value)),
+    ...serviceCategories.map((item) => ({ label: item.label, value: item.label as FilterMode })),
+    ...agentTypes.map((item) => ({ label: item.label, value: item.label as FilterMode })),
+  ];
+  const categoryTabs: Record<string, FilterMode[]> = {
+    ...Object.fromEntries(Object.entries(TABS_BY_CATEGORY).map(([key, values]) => [
+      key,
+      values.flatMap((value) => value === "Agents" ? agentTypes.map((item) => item.label) : [value]),
+    ])),
+    professionals: ["Traders", ...serviceCategories.map((item) => item.label)],
+  };
+  const visibleTabs = (categoryTabs[category.toLowerCase()] ?? categoryTabs.all)
+    .map((value) => allTabs.find((tab) => tab.value === value))
+    .filter((tab): tab is { label: string; value: FilterMode } => Boolean(tab));
   const [activeTab, setActiveTab] = useState<FilterMode>(initialTab);
   const tabsScrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -56,7 +82,9 @@ const Filter = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    const tabs = getVisibleTabs(category);
+    const tabs = (categoryTabs[category.toLowerCase()] ?? categoryTabs.all)
+      .map((value) => allTabs.find((tab) => tab.value === value))
+      .filter((tab): tab is { label: string; value: FilterMode } => Boolean(tab));
     const values = tabs.map((t) => t.value);
     setActiveTab(values.includes(initialTab) ? initialTab : tabs[0]?.value ?? "Buy");
   }, [isOpen, initialTab, category]);
@@ -102,7 +130,14 @@ const Filter = ({
 
     params.set("tab", activeTab.toLowerCase());
     params.set("page", "1");
-    params.set("type", category);
+
+    const typeMap: Record<string, string> = {
+      Buy: "property", Rent: "property", Lease: "comercial", Sold: "property", Leased: "comercial",
+      Builders: "builder", Agents: "builder", Traders: "trader",
+    };
+    params.set("type", typeMap[activeTab] ?? (serviceSlugForLabel(activeTab, serviceCategories) ? "trader" : "builder"));
+    const agentType = agentTypes.find((item) => item.label.toLowerCase() === activeTab.toLowerCase());
+    if (agentType) params.set("agent_type", agentType.slug);
 
     if (category.toLowerCase() === "commercial") {
       params.set("category", "commercial");
@@ -110,7 +145,7 @@ const Filter = ({
 
     if (activeTab === "Buy") params.set("purpose", "sell");
     if (activeTab === "Rent") params.set("purpose", "rent");
-    const serviceSlug = serviceSlugForLabel(activeTab);
+    const serviceSlug = serviceSlugForLabel(activeTab, serviceCategories);
     if (serviceSlug) params.set("service_slug", serviceSlug);
     if (category.toLowerCase() === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(activeTab)) {
       params.set("type", "commercial");

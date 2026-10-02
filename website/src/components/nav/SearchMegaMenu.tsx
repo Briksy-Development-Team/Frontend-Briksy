@@ -5,6 +5,7 @@ import type { ResultType } from "../../types/search";
 import Category from "../../assets/hero/category.svg"
 import { getServices } from "../../api/service/service.api";
 import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
+import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
 type CategoryData = { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[];
 
 const MOCK_CATEGORIES: Record<Exclude<ResultType, "commercial" | "all">, CategoryData> = {
@@ -145,8 +146,12 @@ export default function SearchMegaMenu({
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [serviceGroups, setServiceGroups] = useState<{ title: string; items: string[] }[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<PublicServiceCategory[]>([...SERVICE_CATEGORIES]);
   // ponytail: simple timer ref for hover-close delay | upgrade: @floating-ui if positioning complexity grows
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    void getServiceCategories().then(setServiceCategories).catch(() => undefined);
+  }, []);
   const openMenu = (tabId?: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setIsOpen(true);
@@ -159,14 +164,14 @@ export default function SearchMegaMenu({
     if (resultType !== "trader") return;
     void getServices({ per_page: 100 }).then((response) => {
       const grouped = response.data.reduce<Record<string, string[]>>((groups, service) => {
-        const category = SERVICE_CATEGORIES.find((item) => item.label.toLowerCase() === (service.category || "").toLowerCase());
+        const category = serviceCategories.find((item) => item.label.toLowerCase() === (service.category || "").toLowerCase());
         if (!category) return groups;
         (groups[category.label] ??= []).push(service.name);
         return groups;
       }, {});
-      setServiceGroups(SERVICE_CATEGORIES.map(({ label }) => ({ title: label, items: [...new Set(grouped[label] ?? [])] })));
+      setServiceGroups(serviceCategories.map(({ label }) => ({ title: label, items: [...new Set(grouped[label] ?? [])] })));
     }).catch(() => setServiceGroups([]));
-  }, [resultType]);
+  }, [resultType, serviceCategories]);
 
   const baseCategories = MOCK_CATEGORIES[resultType === "commercial" || resultType === "all" ? "property" : resultType];
   const cats = (resultType === "trader" ? baseCategories.filter((category) => category.id === "trades-and-repairs") : baseCategories)

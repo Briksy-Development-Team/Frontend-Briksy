@@ -175,6 +175,12 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
         pointer.active = true;
         updateTarget();
       };
+      const onOut = () => {
+        pointer.active = false;
+        tracking = false;
+        target.x = 0;
+        target.y = 0;
+      };
 
       const applyTilt = () => {
         gsap.set(tilt, {
@@ -204,11 +210,15 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
 
       window.addEventListener("pointermove", onMove, { passive: true });
       window.addEventListener("scroll", updateTarget, { passive: true });
+      window.addEventListener("blur", onOut);
+      document.documentElement.addEventListener("mouseleave", onOut);
       gsap.ticker.add(tick);
 
       return () => {
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("scroll", updateTarget);
+        window.removeEventListener("blur", onOut);
+        document.documentElement.removeEventListener("mouseleave", onOut);
         gsap.ticker.remove(tick);
         gsap.ticker.remove(orbit);
       };
