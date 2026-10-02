@@ -7,6 +7,7 @@ import PricingCards from './components/PricingCards';
 import FeatureTable from './components/FeatureTable';
 import { createPricingInquiry } from '../../../api/subscription/plan.api';
 import { getStoredAuth } from '../../../auth/auth.storage';
+import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
   const [activeTabId, setActiveTabId] = useState(ALL_TABS[0].id);
@@ -16,6 +17,7 @@ const Pricing = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', company_name: '', message: '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
@@ -32,6 +34,7 @@ const Pricing = () => {
   }, []);
 
   const openContact = (plan: Plan) => {
+    navigate(`/checkout?plan=${encodeURIComponent(plan.id)}`);
     const auth = getStoredAuth();
     setContactPlan(plan);
     setSubmitted(false);
@@ -144,6 +147,7 @@ const buildLiveTab = (tab: TabData, plans: PublicPlan[]): TabData => {
     popular: Boolean(plan.popular),
     badge: plan.popular ? 'Most Popular' : undefined,
     highlights: plan.features.filter((feature) => feature.enabled).slice(0, 5).map((feature) => feature.value ? `${feature.name}: up to ${feature.value}` : feature.name),
+    addons: plan.addons,
   }));
 
   return { ...tab, plans: mappedPlans, sections };

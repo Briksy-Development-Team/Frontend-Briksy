@@ -47,7 +47,7 @@ export default function PlanCard({ plan, onContact, isLoading = false }: PlanCar
 
       <button
         type="button"
-        onClick={() => plan.contactSales && onContact?.(plan)}
+        onClick={() => onContact?.(plan)}
         className={`mt-4 w-full py-2.5 rounded-[62.4375rem] text-[0.875rem] font-medium transition-all duration-200 cursor-pointer ${
           isPopular
             ? 'bg-primary-brown text-white hover:opacity-90'

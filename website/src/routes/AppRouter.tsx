@@ -39,6 +39,7 @@ const AppRouter = () => {
         <Route path="/terms" element={<Terms />} />
         <Route path="/subs" element={<Pricing />} />
         <Route path="/checkout/invite/:token" element={<CheckoutInvitationPage />} />
+        <Route path="/checkout" element={<CheckoutInvitationPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="profile" element={<Profile />}>

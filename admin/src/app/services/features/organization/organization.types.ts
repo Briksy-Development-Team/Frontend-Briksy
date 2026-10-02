@@ -56,6 +56,7 @@ export type OrganizationType = {
   module?: string | null;
   display_name?: string | null;
   capability_profile?: string | null;
+  plan_family?: "property_owner" | "trades_professional" | "buyers_agent" | "builders" | null;
   is_active: boolean;
   sort_order: number;
 };

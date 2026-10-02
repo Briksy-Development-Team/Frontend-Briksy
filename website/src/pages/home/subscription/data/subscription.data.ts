@@ -19,6 +19,7 @@ export interface Plan {
   popular?: boolean;
   highlights: string[];    // bullet list on the card
   contactSales?: boolean;
+  addons?: { id: string; name: string }[];
 }
 
 export interface FeatureRow {
