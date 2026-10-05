@@ -113,7 +113,7 @@ export default function CollectionDetailPage() {
       {/* Sections */}
       <div className="space-y-8">
         <Section
-          title="Properties"
+          title="Real Estate"
           items={properties}
           renderCard={(item) => (
             <div className="relative group">

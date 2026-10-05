@@ -1,15 +1,8 @@
 import { useRef } from "react";
-
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-
-import {
-  CARDS,
-  FRAME_COUNT,
-  SCROLL_PER_CARD,
-  getFrame,
-} from "./communityData";
+import { CARDS, FRAME_COUNT, SCROLL_PER_CARD, getFrame } from "./communityData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +11,7 @@ const DesktopCommunity = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const currentFrameRef = useRef(0);
+  const currentStepRef = useRef(0);
 
   useGSAP(() => {
     const canvas = canvasRef.current;
@@ -68,59 +62,128 @@ const DesktopCommunity = () => {
       y: getHiddenDistance(),
     });
 
-    const totalScroll = SCROLL_PER_CARD * cards.length;
-    const CARD_DURATION = 1 / cards.length;
+    const animateCards = (step: number) => {
+      if (step === currentStepRef.current) return;
 
-    const updateCards = (progress: number) => {
-      const hiddenDistance = window.innerHeight + 100;
-      const overlaps = [0, 0.12, 0, 0.12,0];
+      const previousStep = currentStepRef.current;
+      currentStepRef.current = step;
 
-      cards.forEach((card, i) => {
+      const distance = getHiddenDistance();
+
+      gsap.killTweensOf(cards);
+
+      if (previousStep === 0 && step === 1) {
+        const card = cards[0];
+
         if (!card) return;
 
-        const start = i === 0 ? 0 : i * CARD_DURATION - overlaps[i];
-        const end = (i + 1) * CARD_DURATION;
-        const t = gsap.utils.clamp(
-          0,
-          1,
-          (progress - start) / (end - start),
-        );
+        gsap.set(card, {
+          y: distance,
+        });
 
-        const y =
-          t < 0.5
-            ? gsap.utils.interpolate(hiddenDistance, 0, t / 0.5)
-            : gsap.utils.interpolate(0, -hiddenDistance, (t - 0.5) / 0.5);
+        gsap.to(card, {
+          y: 0,
+          duration: 0.45,
+          ease: "power3.out",
+        });
 
-        gsap.set(card, { y });
-      });
+        return;
+      }
+
+      if (step > previousStep) {
+        const leavingIndex = step - 2;
+        const enteringIndex = step - 1;
+
+        const leavingCard = cards[leavingIndex];
+        const enteringCard = cards[enteringIndex];
+
+        if (!leavingCard || !enteringCard) return;
+
+        gsap.set(enteringCard, {
+          y: distance,
+        });
+
+        gsap.to(leavingCard, {
+          y: -distance,
+          duration: 0.45,
+          ease: "power3.out",
+        });
+
+        gsap.to(enteringCard, {
+          y: 0,
+          duration: 0.45,
+          ease: "power3.out",
+        });
+
+        return;
+      }
+      if (step < previousStep) {
+        const leavingIndex = previousStep - 1;
+        const enteringIndex = step - 1;
+
+        const leavingCard = cards[leavingIndex];
+        const enteringCard = cards[enteringIndex];
+
+        if (!leavingCard) return;
+
+        gsap.to(leavingCard, {
+          y: distance,
+          duration: 0.45,
+          ease: "power3.out",
+        });
+
+        if (enteringCard) {
+          gsap.set(enteringCard, {
+            y: -distance,
+          });
+
+          gsap.to(enteringCard, {
+            y: 0,
+            duration: 0.45,
+            ease: "power3.out",
+          });
+        }
+      }
     };
+
+    const totalScroll = SCROLL_PER_CARD * cards.length;
 
     const trigger = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
       end: `+=${totalScroll}`,
       pin: true,
+
       scrub: 0.15,
 
+      snap: {
+        snapTo: 1 / cards.length,
+        duration: {
+          min: 0.25,
+          max: 0.45,
+        },
+        ease: "power2.out",
+      },
+
       onUpdate: (self) => {
-        const frame = Math.round(
-          self.progress * (FRAME_COUNT - 1),
-        );
+        const frame = Math.round(self.progress * (FRAME_COUNT - 1));
 
         if (frame !== currentFrameRef.current) {
           currentFrameRef.current = frame;
           draw(frame);
         }
 
-        updateCards(self.progress);
+        const step = Math.min(
+          cards.length,
+          Math.round(self.progress * cards.length),
+        );
+
+        animateCards(step);
       },
     });
 
-    updateCards(0);
-
     const handleResize = () => {
       resize();
-      updateCards(trigger.progress);
     };
 
     window.addEventListener("resize", handleResize);
@@ -128,13 +191,14 @@ const DesktopCommunity = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       trigger.kill();
+      gsap.killTweensOf(cards);
     };
   }, []);
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex  h-screen  w-full items-center justify-center overflow-hidden"
+      className="relative flex h-screen w-full items-center justify-center overflow-hidden"
     >
       <div className="relative mx-auto h-full w-full">
         <div className="absolute inset-0 flex items-center justify-center mix-blend-darken">
@@ -146,33 +210,28 @@ const DesktopCommunity = () => {
 
         {CARDS.map((card, index) => (
           <div
-            key={card.title}
+            key={`${card.title}-${index}`}
             ref={(el) => {
               cardRefs.current[index] = el;
             }}
             style={{ willChange: "transform" }}
-            className={`absolute z-10 ${card.position} flex w-[15rem] flex-col gap-3 xl:gap-[1.5rem] overflow-hidden rounded-[1.25rem]
-               bg-white p-4 xl:w-[25.3125rem] xl:p-[1.75rem]`}
+            className={`absolute z-10 ${card.position} flex w-[15rem] flex-col gap-3 overflow-hidden rounded-[1.25rem] bg-white p-4 xl:w-[25.3125rem] xl:gap-[1.5rem] xl:p-[1.75rem]`}
           >
             <div className="flex items-start justify-between gap-[1.25rem]">
-              <span className="flex h-[2rem] w-[2rem] xl:h-[3rem] xl:w-[3rem] shrink-0 items-center justify-center">
-                <img
-                  src={card.icon}
-                  alt=""
-                  className="h-full w-full"
-                />
+              <span className="flex h-[2rem] w-[2rem] shrink-0 items-center justify-center xl:h-[3rem] xl:w-[3rem]">
+                <img src={card.icon} alt="" className="h-full w-full" />
               </span>
 
               <img
                 src={card.img}
                 alt=""
-                className="xl:h-[9.25rem] xl:w-[12.75rem] h-[6rem] w-[8rem] shrink-0 rounded-[0.375rem] object-cover"
+                className="h-[6rem] w-[8rem] shrink-0 rounded-[0.375rem] object-cover xl:h-[9.25rem] xl:w-[12.75rem]"
               />
             </div>
 
             <div className="flex flex-col items-start">
               <p
-                className="whitespace-nowrap text-sm xl:text-[1rem] leading-6 text-primary-brown"
+                className="whitespace-nowrap text-sm leading-6 text-primary-brown xl:text-[1rem]"
                 style={{
                   fontFamily: "'Helvetica Neue', sans-serif",
                   fontWeight: 700,
@@ -182,7 +241,7 @@ const DesktopCommunity = () => {
               </p>
 
               <p
-                className="mt-[0.375rem] text-xs xl:text-[0.875rem] text-primary-light-brown"
+                className="mt-[0.375rem] text-xs text-primary-light-brown xl:text-[0.875rem]"
                 style={{
                   fontFamily: "'Helvetica Neue', sans-serif",
                   fontWeight: 400,

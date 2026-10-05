@@ -25,13 +25,13 @@ export const LISTING_DISPLAY: Record<
     Card: BuilderGridCard,
   },
   commercial: {
-    popularTitle: "Popular Commercial Properties",
-    newlyTitle: "Newly Listed Commercial Properties",
+    popularTitle: "Popular Commercial",
+    newlyTitle: "Newly Listed Commercial",
     Card: PropertyGridCard,
   },
   property: {
-    popularTitle: "Popular Properties",
-    newlyTitle: "Newly Listed Properties",
+    popularTitle: "Popular Real Estate",
+    newlyTitle: "Newly Listed Real Estate",
     Card: PropertyGridCard,
   },
 };

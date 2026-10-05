@@ -1,4 +1,5 @@
 import type { PriceRangeTab } from "./primitives/PriceRange";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
 import { Building2, Home, Landmark, Factory, Warehouse, Trees, Castle, Tent } from "lucide-react";
 
@@ -111,6 +112,11 @@ const PRICE_RANGE_TABS: PriceRangeTab[] = [
   { id: "all", label: "All", prices: MOCK_PRICES, min: 0, max: 2_500_000 },
 ];
 
+const WEEKLY_PRICE_RANGE_TABS: PriceRangeTab[] = [
+  { id: "all", label: "All", prices: Array.from({ length: 100 }, () => Math.round(200 + Math.random() * 1800)), min: 0, max: 2000 },
+];
+
+
 const PROPERTY_FIELDS: FilterField[] = [
   { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
   { key: "price", label: "Price", type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
@@ -144,24 +150,105 @@ const ORG_FIELDS: FilterField[] = [
 
 export type FilterMode = string;
 
-export const getFieldsForMode = (mode: FilterMode): FilterField[] => {
+export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"): FilterField[] => {
+  const category = SEARCH_CATEGORIES.find(c => c.id === mode);
+  const typeOptions = category?.propTypes.map(p => ({ id: p.id, label: p.label })) || [];
+
+  const typeLabel = mode === "real-estate" ? "Real Estate For" :
+                    mode === "commercial" ? "Commercial For" :
+                    mode === "builders" ? "Builder Type" :
+                    mode === "traders" ? "Trade Type" : "Professional Type";
+
+  const typeField: PillSelectField = { 
+    key: "propertyFor", 
+    label: typeLabel, 
+    type: "pillSelect", 
+    options: typeOptions, 
+    column: "right" 
+  };
+
   switch (mode) {
-    case "All":
-    case "Buy":
-    case "Rent":
-      return PROPERTY_FIELDS;
-    case "Sold":
-      return SOLD_FIELDS;
-    case "Real Estate Agents":
-    case "Buyer Agents":
-    case "Landscapers":
-    case "Concreter":
-    case "Fencing":
-    case "Mortgage Brokers":
-    case "Conveyancers":
-    case "Building & Pest":
-      return ORG_FIELDS;
+    case "real-estate": {
+      const isRent = subCategory === "rent";
+      const isSold = subCategory === "sold";
+      const priceLabel = isSold ? "Sold Price" : isRent ? "Weekly Rent" : "Price";
+      const priceTabs = isRent ? WEEKLY_PRICE_RANGE_TABS : PRICE_RANGE_TABS;
+      const priceStep = isRent ? 10 : 50;
+
+      const fields: FilterField[] = [
+        { key: "propertyTypes", label: "Real Estate Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        typeField,
+        { key: "price", label: priceLabel, type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: priceTabs, step: priceStep, bucketCount: 42, column: "right" },
+        { key: "showPriceOnly", label: "Only show real estate with price", type: "singleCheckbox", column: "right" },
+        { key: "bedrooms", label: "Bedroom", type: "pillSelect", options: BEDROOM_OPTIONS, column: "right" },
+        { key: "bathrooms", label: "Bathrooms", type: "pillSelect", options: BATHROOM_OPTIONS, column: "right" },
+        { key: "carSpaces", label: "Car spaces", type: "pillSelect", options: CAR_SPACE_OPTIONS, column: "right" },
+        { key: "landSize", label: "Land Size *(m²)*", type: "minMax", minKey: "landSizeMin", maxKey: "landSizeMax", column: "right" },
+        { key: "keyword", label: "Keywords", type: "input", placeholder: "Air con, pool, solar, etc.", column: "right" },
+      ];
+      
+      if (isSold) {
+        fields.splice(3, 0, { key: "soldWithin", label: "Sold within", type: "pillSelect", options: SOLD_WITHIN_OPTIONS, column: "right" });
+      }
+      return fields;
+    }
+    
+    case "commercial": {
+      const isLease = subCategory === "lease" || subCategory === "leased";
+      const isSold = subCategory === "sold" || subCategory === "leased";
+      const priceLabel = isSold ? "Sold/Leased Price" : isLease ? "Lease Price" : "Price";
+      const priceTabs = isLease ? WEEKLY_PRICE_RANGE_TABS : PRICE_RANGE_TABS;
+      const priceStep = isLease ? 10 : 50;
+
+      const fields: FilterField[] = [
+        { key: "propertyTypes", label: "Commercial Type", type: "gridSelect", options: PROPERTY_TYPES_GRID.filter(t => ["office", "warehouse", "industrial", "land", "studio"].includes(t.id)), multiSelect: true, column: "left" },
+        typeField,
+        { key: "price", label: priceLabel, type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: priceTabs, step: priceStep, bucketCount: 42, column: "right" },
+        { key: "showPriceOnly", label: "Only show commercial with price", type: "singleCheckbox", column: "right" },
+        { key: "carSpaces", label: "Car spaces", type: "pillSelect", options: CAR_SPACE_OPTIONS, column: "right" },
+        { key: "landSize", label: "Land Size *(m²)*", type: "minMax", minKey: "landSizeMin", maxKey: "landSizeMax", column: "right" },
+        { key: "keyword", label: "Keywords", type: "input", placeholder: "Retail, high clearance, etc.", column: "right" },
+      ];
+
+      if (isSold) {
+        fields.splice(3, 0, { key: "soldWithin", label: "Sold/Leased within", type: "pillSelect", options: SOLD_WITHIN_OPTIONS, column: "right" });
+      }
+      return fields;
+    }
+
+    case "builders":
+      return [
+        { key: "propertyTypes", label: "Specializes In", type: "gridSelect", options: PROPERTY_TYPES_GRID.filter(t => ["apartment", "villa", "duplex", "townhouse", "penthouse", "studio"].includes(t.id)), multiSelect: true, column: "left" },
+        typeField,
+        { key: "price", label: "Project Budget", type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
+        { key: "keyword", label: "Keywords", type: "input", placeholder: "Search by builder name or location", column: "right" },
+        { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
+        { key: "verified", label: "Verified Builder", type: "toggle", column: "right" },
+        { key: "accepting", label: "Currently accepting new projects", type: "toggle", column: "right" },
+      ];
+
+    case "traders":
+      return [
+        { key: "propertyTypes", label: "Works On", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        typeField,
+        { key: "keyword", label: "Keywords", type: "input", placeholder: "Search by trade name, service, or location", column: "right" },
+        { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
+        { key: "emergency", label: "24/7 Emergency Service", type: "toggle", column: "right" },
+        { key: "freeQuote", label: "Offers Free Quotes", type: "toggle", column: "right" },
+        { key: "verified", label: "Verified Professional", type: "toggle", column: "right" },
+      ];
+
+    case "agents":
+      return [
+        { key: "propertyTypes", label: "Specializes In", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        typeField,
+        { key: "keyword", label: "Keywords", type: "input", placeholder: "Search by agent name, agency, or location", column: "right" },
+        { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
+        { key: "verified", label: "Verified Agent", type: "toggle", column: "right" },
+        { key: "accepting", label: "Currently taking new listings", type: "toggle", column: "right" },
+      ];
+
     default:
-      return ORG_FIELDS;
+      return [];
   }
 };

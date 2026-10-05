@@ -7,8 +7,7 @@ import type { SortType } from "../../types/search";
 import type { ResultType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import MapIcon from "../../assets/icons/search/map.svg?react";
-import { SERVICE_CATEGORIES, type ServiceCategory } from "../../constants/serviceCategories";
-import type { PublicAgentType } from "../../api/agentTypes.api";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
 type CategoryDef = {
   id: string;
@@ -91,8 +90,6 @@ export default function SearchToolbar({
   query,
   onQueryChange,
   onAskAi,
-  serviceCategories = SERVICE_CATEGORIES,
-  agentTypes = [],
 }: {
   activeCategoryId: string;
   activeTab: FilterTab | null;
@@ -104,21 +101,12 @@ export default function SearchToolbar({
   query: string;
   onQueryChange: (value: string) => void;
   onAskAi?: () => void;
-  serviceCategories?: readonly ServiceCategory[];
-  agentTypes?: readonly PublicAgentType[];
 }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const searchCategories = buildSearchCategories(serviceCategories, agentTypes);
 
   const activeCategory =
-    searchCategories.find((c) => c.id === activeCategoryId) || searchCategories[0];
-  const isAgentContext = activeCategoryId === "builders" && agentTypes.some((type) =>
-    type.label.toLowerCase() === (activeTab || "").toLowerCase() ||
-    type.name.toLowerCase() === (activeTab || "").toLowerCase(),
-  );
-  const visibleTabs = isAgentContext
-    ? activeCategory.tabs.filter((tab) => tab !== "Builders")
-    : activeCategory.tabs;
+    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) ||
+    SEARCH_CATEGORIES[0];
 
   return (
     <div className="flex flex-col gap-3">
@@ -134,7 +122,7 @@ export default function SearchToolbar({
               type="text"
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
-              placeholder="Search for properties, builders, professionals..."
+              placeholder="Search for real estate, builders, professionals..."
               className="md:text-[0.875rem] text-[0.750rem] h-full text-black tracking-[0.03em] truncate outline-none w-full placeholder:text-black/60"
             />
           </div>
@@ -169,11 +157,10 @@ export default function SearchToolbar({
           />
           <button
             onClick={onToggleMap}
-            className={`py-2 px-3 rounded-full hidden border md:flex items-center gap-2 transition-colors shrink-0 ${
-              showMap
+            className={`py-2 px-3 rounded-full hidden border md:flex items-center gap-2 transition-colors shrink-0 ${showMap
                 ? "bg-[#342511] text-white border-[#342511]"
                 : "bg-white text-[#342511] border-[#EDE8E4]"
-            }`}
+              }`}
           >
             <MapIcon
               className={`w-5 h-5 ${showMap ? "invert brightness-0" : ""}`}
@@ -183,9 +170,10 @@ export default function SearchToolbar({
         </div>
       </div>
 
-      {visibleTabs.length > 0 && (
+      {activeCategory.propTypes.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 shrink-0">
-          {visibleTabs.map((tab) => {
+          {activeCategory.propTypes.map((propType) => {
+            const tab = propType.label as FilterTab;
             const isSelected = activeTab === tab;
             return (
               <button
@@ -194,11 +182,10 @@ export default function SearchToolbar({
                 onClick={() =>
                   onTabChange(isSelected ? null : tab)
                 }
-                className={`py-2 px-6 rounded-2xl border text-[0.875rem] transition-colors whitespace-nowrap shrink-0 ${
-                  isSelected
+                className={`py-2 px-6 rounded-2xl border text-[0.875rem] transition-colors whitespace-nowrap shrink-0 ${isSelected
                     ? "bg-primary-brown text-white border-primary-brown"
                     : "bg-white text-primary-brown border-[#EDE8E4] hover:bg-[#F8F4EE]"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -213,9 +200,7 @@ export default function SearchToolbar({
             isOpen={isFilterOpen}
             onClose={() => setIsFilterOpen(false)}
             category={activeCategory.id}
-            initialTab={activeTab || "Buy"}
-            serviceCategories={serviceCategories}
-            agentTypes={agentTypes}
+            initialTab={activeTab || (activeCategory.propTypes[0]?.label as FilterTab) || "All"}
           />,
           document.body,
         )}

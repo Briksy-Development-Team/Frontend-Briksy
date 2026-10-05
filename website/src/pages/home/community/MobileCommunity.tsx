@@ -69,7 +69,7 @@ const MobileCommunity = () => {
     <section
       ref={container}
       // Changed h-[100vh] to h-[70vh] (or h-[75vh] if you need slightly more breathing room)
-      className="relative w-full h-[100vh] overflow-hidden flex flex-col justify-center items-center font-helvetica"
+      className="relative w-full h-[100vh] mt-28  overflow-hidden flex flex-col justify-center items-center font-helvetica"
     >
       {CARDS.map((card, index) => (
         <div
@@ -77,10 +77,10 @@ const MobileCommunity = () => {
           ref={(el) => {
             cardRefs.current[index] = el;
           }}
-          className="absolute inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-[26rem] flex flex-col gap-6 rounded-[1.25rem] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 will-change-transform"
+          className="absolute inset-0 m-auto h-fit w-[calc(100%-2rem)] max-w-[26rem] flex flex-col gap-6 rounded-[1.25rem] bg-white p-5 shadow-[0_8px_30px_rgba(0,0,0,0.12)] will-change-transform"
         >
           <div className="flex items-start justify-between">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center md:h-12 md:w-12">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center md:h-12 md:w-12">
               <img src={card.icon} alt="" className="h-full w-full" />
             </span>
 

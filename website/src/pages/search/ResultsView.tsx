@@ -103,7 +103,7 @@ export default function ResultsView({
   const builders = organizations.map(organizationToBuilder);
   const propertyCards = properties.map(propertyToCard);
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
-  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Properties" : "Properties");
+  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : "Real Estate");
 
   const hasLoadedItems = resultType === "property" || resultType === "commercial"
     ? properties.length > 0

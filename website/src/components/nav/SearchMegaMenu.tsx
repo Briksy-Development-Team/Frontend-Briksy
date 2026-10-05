@@ -95,7 +95,7 @@ const MOCK_CATEGORIES: Record<Exclude<ResultType, "commercial" | "all">, Categor
   property: [
     {
       id: "residential",
-      label: "Residential Properties",
+      label: "Residential Real Estate",
       groups: [
         { title: "HOUSES", items: ["Detached House", "Townhouse", "Villa", "Semi-detached"] },
         { title: "APARTMENTS", items: ["Unit", "Studio", "Penthouse", "Serviced apartment"] },
@@ -105,7 +105,7 @@ const MOCK_CATEGORIES: Record<Exclude<ResultType, "commercial" | "all">, Categor
     },
     {
       id: "commercial",
-      label: "Commercial Properties",
+      label: "Commercial Real Estate",
       groups: [
         { title: "OFFICE", items: ["Office Space", "Coworking", "Medical suites", "Virtual office"] },
         { title: "RETAIL", items: ["Shop", "Showroom", "Warehouse", "Industrial unit"] },
@@ -115,7 +115,7 @@ const MOCK_CATEGORIES: Record<Exclude<ResultType, "commercial" | "all">, Categor
     },
     {
       id: "investment",
-      label: "Investment Properties",
+      label: "Investment Real Estate",
       groups: [
         { title: "RENTAL YIELD", items: ["High yield properties", "Positive cashflow", "Student accommodation", "Holiday rentals"] },
         { title: "DEVELOPMENT", items: ["Development sites", "DA approved", "Subdividable land", "Duplex sites"] },

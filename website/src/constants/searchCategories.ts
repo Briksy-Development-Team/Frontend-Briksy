@@ -1,11 +1,8 @@
 import type { ResultType } from "../types/search";
-
 import Build from "../assets/icons/search/build.svg";
 import Prop from "../assets/icons/search/property.svg";
 import Trader from "../assets/icons/search/trades.svg";
-
 export type PropType = { id: string; label: string };
-
 export type Category = {
   id: string;
   label: string;
@@ -16,13 +13,12 @@ export type Category = {
   placeholder: string;
   propTypes: PropType[];
 };
-
 export const SEARCH_CATEGORIES: Category[] = [
   {
-    id: "properties",
-    label: "Properties",
-    title: "PROPERTIES",
-    desc: "Find properties to buy or rent",
+    id: "real-estate",
+    label: "Real Estate",
+    title: "REAL ESTATE",
+    desc: "Find real estate to buy or rent",
     icon: Prop,
     resultType: "property",
     placeholder: "Try '3-bedroom house in Richmond...",
@@ -89,7 +85,7 @@ export const SEARCH_CATEGORIES: Category[] = [
     id: "commercial",
     label: "Commercial",
     title: "Commercial",
-    desc: "Find properties to buy or rent",
+    desc: "Find commercial properties to buy or rent",
     icon: Prop,
     resultType: "commercial",
     placeholder: "Try '3-bedroom house in Richmond...",

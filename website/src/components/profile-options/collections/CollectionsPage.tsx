@@ -105,7 +105,7 @@ export default function CollectionsPage() {
               autoFocus maxLength={100} value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void submit(); } }}
-              placeholder="e.g. Dream Homes, Renovations, Investment Properties"
+              placeholder="e.g. Dream Homes, Renovations, Investment Real Estate"
               className="min-w-0 flex-1 rounded-2xl border border-[#E2CBB3] bg-[#F8F4EE]/50 px-4 py-3 text-sm outline-none text-primary-brown placeholder:text-primary-light-brown focus:border-primary-brown focus:bg-white transition-all"
             />
             <button type="button" onClick={() => void submit()} className="rounded-2xl bg-primary-brown px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-primary-brown/90 transition-colors shrink-0">
