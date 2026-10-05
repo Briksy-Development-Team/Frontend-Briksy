@@ -128,7 +128,7 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
         className="fixed left-0 right-0 top-20 z-50 w-full overflow-hidden bg-[#F8F4EE]"
         style={{ clipPath: HIDDEN_CLIP, opacity: 0 }}
       >
-        <div className="mx-auto flex  gap-10 px-12 py-12">
+        <div className="mx-auto flex  gap-10 px-40 py-12">
           <div className={`flex flex-col justify-start  gap-6 w-[50%] `}>
             <p className="dd-item text-[11px] font-semibold uppercase tracking-[0.1364em] text-black/50">
               {menu.title}
