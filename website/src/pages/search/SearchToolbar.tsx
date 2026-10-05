@@ -1,14 +1,67 @@
-import { useState } from "react";
-import { SlidersHorizontal, Search, Sparkles } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { BriefcaseBusiness, Building2, Grid2X2, House, SlidersHorizontal, Search, Sparkles, Wrench } from "lucide-react";
 import DropdownPill from "../../components/custom/DropdownPill";
 import { createPortal } from "react-dom";
 import Filter from "../../components/filter/Filter";
 import type { SortType } from "../../types/search";
+import type { ResultType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import MapIcon from "../../assets/icons/search/map.svg?react";
 import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
+type CategoryDef = {
+  id: string;
+  label: string;
+  resultType: ResultType;
+  icon: ReactNode;
+  tabs: string[];
+};
 
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const SEARCH_CATEGORIES: CategoryDef[] = [
+  {
+    id: "all",
+    label: "All Categories",
+    resultType: "all",
+    icon: <Grid2X2 className="w-4 h-4" />,
+    tabs: ["Buy", "Rent", "Sold", "Builders", "Traders"],
+  },
+  {
+    id: "properties",
+    label: "Properties",
+    resultType: "property",
+    icon: <House className="w-4 h-4" />,
+    tabs: ["Buy", "Rent", "Sold"],
+  },
+  {
+    id: "builders",
+    label: "BUILDERS",
+    resultType: "builder",
+    icon: <Building2 className="w-4 h-4" />,
+    tabs: ["Builders"],
+  },
+  {
+    id: "professionals",
+    label: "Trades & Professionals",
+    resultType: "trader",
+    icon: <Wrench className="w-4 h-4" />,
+    tabs: SERVICE_CATEGORIES.map((category) => category.label),
+  },
+  {
+    id: "commercial",
+    label: "Commercial",
+    resultType: "commercial",
+    icon: <BriefcaseBusiness className="w-4 h-4" />,
+    tabs: ["Buy", "Lease", "Sold", "Leased"],
+  },
+];
+
+export const buildSearchCategories = (categories: readonly ServiceCategory[], agentTypes: readonly PublicAgentType[] = []): CategoryDef[] => SEARCH_CATEGORIES.map((category) =>
+  category.id === "professionals" ? { ...category, tabs: categories.map((item) => item.label) } :
+  category.id === "builders" ? { ...category, tabs: ["Builders", ...agentTypes.map((item) => item.label)] } :
+  category.id === "all" ? { ...category, tabs: ["Buy", "Rent", "Sold", "Builders", ...agentTypes.map((item) => item.label), "Traders"] } : category,
+);
 
 const SORT_OPTIONS = [
   { label: "Recommended", value: "featured" },

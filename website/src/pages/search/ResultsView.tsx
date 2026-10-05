@@ -105,7 +105,7 @@ export default function ResultsView({
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
   const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : "Real Estate");
 
-  const hasLoadedItems = resultType === "property" || resultType === "comercial"
+  const hasLoadedItems = resultType === "property" || resultType === "commercial"
     ? properties.length > 0
     : organizations.length > 0;
   if (loading && !hasLoadedItems) return <ResultsLoadingSkeleton resultType={resultType} />;

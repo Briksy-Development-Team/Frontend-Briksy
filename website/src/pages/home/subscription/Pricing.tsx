@@ -34,7 +34,11 @@ const Pricing = () => {
   }, []);
 
   const openContact = (plan: Plan) => {
-    navigate(`/checkout?plan=${encodeURIComponent(plan.id)}`);
+    if (!plan.contactSales) {
+      navigate(`/checkout?plan=${encodeURIComponent(plan.id)}`);
+      return;
+    }
+
     const auth = getStoredAuth();
     setContactPlan(plan);
     setSubmitted(false);
