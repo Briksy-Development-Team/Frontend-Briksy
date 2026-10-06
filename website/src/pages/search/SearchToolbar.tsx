@@ -70,7 +70,7 @@ export default function SearchToolbar({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search for real estate, builders, professionals..."
-              className="md:text-[0.875rem] text-[0.750rem] h-full text-black tracking-[0.03em] truncate outline-none w-full placeholder:text-black/60"
+              className="md:text-[0.875rem] text-[0.750rem] h-full text-black tracking-[0.03em] py-3 truncate outline-none w-full placeholder:text-black/60"
             />
           </div>
 
@@ -93,7 +93,7 @@ export default function SearchToolbar({
             className="py-2 px-3 bg-white rounded-full border border-[#EDE8E4] flex items-center justify-center gap-2 transition-colors shrink-0"
           >
             <SlidersHorizontal className="w-4 h-4 text-primary-brown" />
-            <span className="text-[0.875rem] mt-1 text-[#342511]">Filters</span>
+            <span className="text-[0.875rem] mt-1 text-primary-brown">Filters</span>
           </button>
           <DropdownPill
             label={SORT_LABELS[sort] || "Sort by"}
