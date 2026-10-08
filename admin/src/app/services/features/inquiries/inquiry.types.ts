@@ -5,6 +5,7 @@ export type Inquiry = {
   lead_source?: string | null;
   status: string;
   subject?: string | null;
+  interested_in?: string[] | null;
   message?: string | null;
   seeker_name?: string | null;
   seeker_email?: string | null;

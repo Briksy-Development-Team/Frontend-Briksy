@@ -4,6 +4,7 @@ import type { Property } from "../../../types/property";
 import FavoriteButton from "../../custom/FavoriteButton";
 import { SafeImage } from "../../custom/SafeImage";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
+import { formatPropertyPrice } from "../../../utils/propertyPrice";
 
 type Props = {
   item: Property
@@ -26,9 +27,9 @@ const PropertyGridCard = ({ item }: Props) => {
           className="h-full w-full object-cover"
         />
 
-          {(item.purpose || item.badge) && (
+          {(item.purpose || item.badge || item.isAuction) && (
             <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium">
-            {propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
+            {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
             </span>
           )}
 
@@ -49,7 +50,7 @@ const PropertyGridCard = ({ item }: Props) => {
         {item.propertyType && <p className="mt-1 text-xs text-primary-light-brown">{item.propertyType}</p>}
 
         <p className="mt-2 text-[1rem] ">
-          {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
+          {formatPropertyPrice({ pricing_type: item.pricingType, price: item.price, price_min: item.priceMin, price_max: item.priceMax })}
         </p>
 
         <p className="mt-1 truncate text-[0.875rem] text-primary-brown">

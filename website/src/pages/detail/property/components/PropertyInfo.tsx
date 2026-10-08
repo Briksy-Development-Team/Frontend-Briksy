@@ -110,22 +110,28 @@ export const PropertyAbout = ({ about }: { about: string }) => (
   </div>
 );
 
-export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => (
+export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => {
+  const groups = amenities.reduce<Record<string, any[]>>((result, item) => {
+    const key = item.category || "Other features";
+    (result[key] ??= []).push(item);
+    return result;
+  }, {});
+  return (
   <div className="flex flex-col gap-6">
     <h2 className="text-[1.25rem] font-medium text-primary-brown">
       What this place offers
     </h2>
     {amenities.length > 0 ? (
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4  md:gap-x-8">
-        {amenities.map((item, idx) => (
+      <div className="flex flex-col gap-5">
+        {Object.entries(groups).map(([category, items]) => <div key={category}><h3 className="mb-3 text-sm font-medium text-primary-brown">{category}</h3><div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 md:gap-x-8">{items.map((item, idx) => (
           <div
-            key={idx}
+            key={`${category}-${idx}`}
             className="flex items-center gap-3 text-primary-brown text-[1rem]"
           >
             <List size={16} className="text-primary-light-brown" />
             <span className="text-[0.750rem] ">{item.name}</span>
           </div>
-        ))}
+        ))}</div></div>)}
       </div>
     ) : (
       <p className="text-[0.875rem] text-primary-light-brown">
@@ -133,7 +139,8 @@ export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => (
       </p>
     )}
   </div>
-);
+  );
+};
 
 export const PropertyMap = ({ mapSrc }: { mapSrc: string }) => (
   <div className="flex flex-col gap-6">

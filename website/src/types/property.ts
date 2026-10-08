@@ -5,6 +5,9 @@ export interface Property {
   location: string;
   image: string;
   price?: number;
+  pricingType?: "fixed" | "estimated" | null;
+  priceMin?: number | null;
+  priceMax?: number | null;
   beds?: number;
   baths?: number;
   sqm?: number;
@@ -14,6 +17,7 @@ export interface Property {
   badge: string;
   purpose?: "SELL" | "RENT" | "BOTH" | null;
   transactionStatus?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  isAuction?: boolean;
   propertyCategory?: string | null;
   propertyType?: string | null;
   lat: number;

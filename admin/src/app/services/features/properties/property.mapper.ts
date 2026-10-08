@@ -6,8 +6,19 @@ type PropertyApi = {
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  is_auction?: boolean;
+  auction_date?: string | null;
+  auction_time?: string | null;
+  auction_venue?: string | null;
+  auctioneer?: string | null;
+  auction_contact?: string | null;
+  auction_description?: string | null;
   property_category?: string | null;
   price?: number | null;
+  pricing_type?: "fixed" | "estimated" | null;
+  price_min?: number | null;
+  price_max?: number | null;
+  floorplan?: { id?: string; url: string } | null;
   description?: string | null;
   address?: string | null;
   address_line_1?: string | null;
@@ -106,8 +117,19 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   status: item.status,
   listing_purpose: item.listing_purpose ?? null,
   transaction_status: item.transaction_status ?? null,
+  is_auction: Boolean(item.is_auction),
+  auction_date: item.auction_date ?? null,
+  auction_time: item.auction_time ?? null,
+  auction_venue: item.auction_venue ?? null,
+  auctioneer: item.auctioneer ?? null,
+  auction_contact: item.auction_contact ?? null,
+  auction_description: item.auction_description ?? null,
   property_category: item.property_category ?? item.property_type?.category ?? null,
   price: item.price ?? null,
+  pricing_type: item.pricing_type ?? "fixed",
+  price_min: item.price_min ?? null,
+  price_max: item.price_max ?? null,
+  floorplan: item.floorplan ?? null,
   description: item.description ?? null,
   rating: item.rating ?? undefined,
   address: item.address ?? null,
@@ -154,8 +176,19 @@ export const mapProperty = (item: PropertyApi): Property => ({
   status: item.status,
   listing_purpose: item.listing_purpose ?? null,
   transaction_status: item.transaction_status ?? null,
+  is_auction: Boolean(item.is_auction),
+  auction_date: item.auction_date ?? null,
+  auction_time: item.auction_time ?? null,
+  auction_venue: item.auction_venue ?? null,
+  auctioneer: item.auctioneer ?? null,
+  auction_contact: item.auction_contact ?? null,
+  auction_description: item.auction_description ?? null,
   property_category: item.property_category ?? item.property_type?.category ?? null,
   price: item.price ?? null,
+  pricing_type: item.pricing_type ?? "fixed",
+  price_min: item.price_min ?? null,
+  price_max: item.price_max ?? null,
+  floorplan: item.floorplan ?? null,
   description: item.description ?? null,
   address: item.address ?? null,
   address_line_1: item.address_line_1 ?? null,

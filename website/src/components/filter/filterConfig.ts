@@ -117,37 +117,6 @@ const WEEKLY_PRICE_RANGE_TABS: PriceRangeTab[] = [
 ];
 
 
-const PROPERTY_FIELDS: FilterField[] = [
-  { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
-  { key: "price", label: "Price", type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
-  { key: "showPriceOnly", label: "Only show properties with price", type: "singleCheckbox", column: "right" },
-  { key: "bedrooms", label: "Bedroom", type: "pillSelect", options: BEDROOM_OPTIONS, column: "right" },
-  { key: "bathrooms", label: "Bathrooms", type: "pillSelect", options: BATHROOM_OPTIONS, column: "right" },
-  { key: "carSpaces", label: "Car spaces", type: "pillSelect", options: CAR_SPACE_OPTIONS, column: "right" },
-  { key: "landSize", label: "Land Size *(m²)*", type: "minMax", minKey: "landSizeMin", maxKey: "landSizeMax", column: "right" },
-  { key: "keyword", label: "Keywords", type: "input", placeholder: "Air con, pool, solar, etc.", hint: "Add specific property features to your search", column: "right" },
-];
-
-const SOLD_FIELDS: FilterField[] = [
-  { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
-  { key: "price", label: "Sold Price", type: "range", minKey: "soldPriceMin", maxKey: "soldPriceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
-  { key: "soldWithin", label: "Sold within", type: "pillSelect", options: SOLD_WITHIN_OPTIONS, column: "right" },
-  { key: "bedrooms", label: "Bedroom", type: "pillSelect", options: BEDROOM_OPTIONS, column: "right" },
-  { key: "bathrooms", label: "Bathrooms", type: "pillSelect", options: BATHROOM_OPTIONS, column: "right" },
-  { key: "carSpaces", label: "Car spaces", type: "pillSelect", options: CAR_SPACE_OPTIONS, column: "right" },
-  { key: "landSize", label: "Land Size *(m²)*", type: "minMax", minKey: "landSizeMin", maxKey: "landSizeMax", column: "right" },
-  { key: "keyword", label: "Keywords", type: "input", placeholder: "Air con, pool, solar, etc.", hint: "Add specific property features to your search", column: "right" },
-];
-
-const ORG_FIELDS: FilterField[] = [
-  { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
-  { key: "keyword", label: "Keywords", type: "input", placeholder: "Search builders, agents, traders...", hint: "Search by name, service, or location", column: "right" },
-  { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
-  { key: "verified", label: "Verified only", type: "toggle", column: "right" },
-  { key: "accepting", label: "Currently accepting new listings", type: "toggle", column: "right" },
-];
-
-
 export type FilterMode = string;
 
 export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"): FilterField[] => {

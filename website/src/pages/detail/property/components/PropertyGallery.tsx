@@ -19,8 +19,9 @@ const Thumb = ({ m, size = 48 }: { m: Media; size?: number }) => (
   </>
 );
 
-export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
+export const PropertyGallery = ({ images = [], floorplan }: { images?: ImageInput[]; floorplan?: string | null }) => {
   const [tour, setTour] = useState<number | null>(null);
+  const [view, setView] = useState<"gallery" | "floorplan">("gallery");
 
 
   const media = useMemo(() => {
@@ -38,7 +39,12 @@ export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
 
   const tiles = [1, 2, 3, 4].map((i) => media[i]);
 
+  const showingFloorplan = view === "floorplan" && !!floorplan;
+  const displayMedia: Media[] = showingFloorplan ? [{ src: floorplan as string }] : media;
+
   return <>
+    {floorplan && <div className="mb-4 inline-flex rounded-full border border-[#E7E1D8] bg-white p-1 text-sm"><button type="button" onClick={() => { setView("gallery"); setTour(null); }} className={`rounded-full px-4 py-2 ${view === "gallery" ? "bg-primary-brown text-white" : "text-primary-brown"}`}>Gallery</button><button type="button" onClick={() => { setView("floorplan"); setTour(null); }} className={`rounded-full px-4 py-2 ${view === "floorplan" ? "bg-primary-brown text-white" : "text-primary-brown"}`}>Floorplan</button></div>}
+    {showingFloorplan ? <div className="h-[300px] md:h-[480px] w-full overflow-hidden rounded-2xl bg-[#F8F4EE]"><button type="button" className="h-full w-full" onClick={() => setTour(0)} aria-label="Open floorplan"><img src={floorplan as string} alt="Property floorplan" className="h-full w-full object-contain" /></button></div> : <>
     <div className="flex gap-2 h-[300px] md:h-[300px]  xl:h-[480px] -mx-[5%] md:mx-0 md:rounded-2xl overflow-hidden md:overflow-visible">
       {/* Hero: the only box on mobile */}
       <div className="relative flex-1 min-w-0 h-full md:rounded-xl overflow-hidden" style={{ backgroundColor: COLORS[0] }}>
@@ -78,7 +84,8 @@ export const PropertyGallery = ({ images = [] }: { images?: ImageInput[] }) => {
         })}
       </div>
     </div>
+    </>}
 
-    {tour !== null && <PhotoTourModal media={media} initialIndex={tour} onClose={() => setTour(null)} />}
+    {tour !== null && <PhotoTourModal media={displayMedia} initialIndex={tour} onClose={() => setTour(null)} />}
   </>;
 };

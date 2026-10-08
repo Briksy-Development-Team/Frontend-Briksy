@@ -3,7 +3,6 @@ import { X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
-import { getFieldsForMode } from "./filterConfig";
 import type { FilterMode } from "./filterConfig";
 import { serviceSlugForLabel } from "../../constants/serviceCategories";
 import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
@@ -107,7 +106,6 @@ const Filter = ({
     params.set("type", activeTab);
 
     // Extract propertyFor from currentValues if it's there
-    const categoryConfig = SEARCH_CATEGORIES.find(c => c.id === activeTab);
     const selectedPropType = currentValues.propertyFor;
 
     if (selectedPropType && selectedPropType !== "all" && selectedPropType.length > 0) {

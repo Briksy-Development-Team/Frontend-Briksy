@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { X } from "lucide-react";
 
 type EnquiryValues = {
@@ -7,13 +7,24 @@ type EnquiryValues = {
   seeker_phone: string;
   subject: string;
   message: string;
+  interested_in: string[];
 };
+
+const INTEREST_OPTIONS = [
+  ["inspection", "Booking an inspection"],
+  ["property_information", "Property information"],
+  ["price_sale_information", "Price / sale information"],
+  ["contract_section_32", "Contract / Section 32"],
+  ["making_an_offer", "Making an offer"],
+  ["other", "Other"],
+] as const;
 
 type Props = {
   open: boolean;
   title?: string;
   companyName?: string;
   initialSubject?: string;
+  initialInterestedIn?: string[];
   submitting?: boolean;
   error?: string | null;
   success?: string | null;
@@ -26,6 +37,7 @@ export function EnquiryModal({
   title = "Send an Enquiry",
   companyName,
   initialSubject = "Property enquiry",
+  initialInterestedIn = [],
   submitting = false,
   error,
   success,
@@ -38,12 +50,32 @@ export function EnquiryModal({
     seeker_phone: "",
     subject: initialSubject,
     message: "",
+    interested_in: initialInterestedIn,
   });
+
+  useEffect(() => {
+    if (open) {
+      setValues((current) => ({
+        ...current,
+        subject: initialSubject,
+        interested_in: initialInterestedIn,
+      }));
+    }
+  }, [open, initialSubject, initialInterestedIn]);
 
   if (!open) return null;
 
   const update = (key: keyof EnquiryValues, value: string) => {
     setValues((current) => ({ ...current, [key]: value }));
+  };
+
+  const toggleInterest = (value: string) => {
+    setValues((current) => ({
+      ...current,
+      interested_in: current.interested_in.includes(value)
+        ? current.interested_in.filter((item) => item !== value)
+        : [...current.interested_in, value],
+    }));
   };
 
   const submit = async (event: FormEvent) => {
@@ -55,6 +87,19 @@ export function EnquiryModal({
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-[520px] rounded-3xl bg-white p-6 shadow-2xl">
         <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <label className="mb-2 block text-sm text-primary-brown">I am interested in: <span aria-hidden="true">*</span></label>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {INTEREST_OPTIONS.map(([value, label]) => (
+                <label key={value} className="flex items-center gap-2 text-sm text-primary-brown">
+                  <input type="checkbox" checked={values.interested_in.includes(value)} onChange={() => toggleInterest(value)} />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {values.interested_in.length === 0 && <p className="mt-1 text-xs text-red-700">Select at least one option.</p>}
+          </div>
+
           <div>
             <h2 className="text-[1.5rem] font-medium text-primary-brown">{title}</h2>
             {companyName && (
@@ -123,7 +168,6 @@ export function EnquiryModal({
           <div>
             <label className="mb-1 block text-sm text-primary-brown">Message</label>
             <textarea
-              required
               rows={5}
               value={values.message}
               onChange={(event) => update("message", event.target.value)}
@@ -137,7 +181,7 @@ export function EnquiryModal({
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || values.interested_in.length === 0}
             className="h-12 w-full rounded-full bg-primary-brown text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? "Sending..." : "Send an Enquiry"}

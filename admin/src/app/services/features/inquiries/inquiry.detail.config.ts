@@ -43,6 +43,7 @@ export const inquiryDetailConfig: DetailConfig<any> = {
         { label: "Company", accessor: "company_name", colSpan: 6 },
         { label: "Requested Plan", accessor: "plan_name", colSpan: 6 },
         { label: "Status", accessor: "status", colSpan: 6 },
+        { label: "Interested In", accessor: (data) => (data?.interested_in ?? []).join(", ") || "—", colSpan: 12 },
       ],
     },
     {

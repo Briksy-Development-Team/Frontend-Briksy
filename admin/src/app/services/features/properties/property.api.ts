@@ -17,7 +17,19 @@ const toFormData = (payload: PropertyFormValues) => {
   formData.append("status", payload.status);
   if (payload.listing_purpose) formData.append("listing_purpose", payload.listing_purpose);
   if (payload.transaction_status) formData.append("transaction_status", payload.transaction_status);
+  formData.append("is_auction", payload.is_auction ? "1" : "0");
+  if (payload.is_auction && payload.auction_date) formData.append("auction_date", payload.auction_date);
+  if (payload.is_auction && payload.auction_time) formData.append("auction_time", payload.auction_time);
+  if (payload.is_auction && payload.auction_venue) formData.append("auction_venue", payload.auction_venue);
+  if (payload.is_auction && payload.auctioneer) formData.append("auctioneer", payload.auctioneer);
+  if (payload.is_auction && payload.auction_contact) formData.append("auction_contact", payload.auction_contact);
+  if (payload.is_auction && payload.auction_description) formData.append("auction_description", payload.auction_description);
   if (payload.price !== undefined && payload.price !== null && payload.price !== "") formData.append("price", String(payload.price));
+  if (payload.pricing_type) formData.append("pricing_type", payload.pricing_type);
+  if (payload.pricing_type === "estimated") {
+    if (payload.price_min !== undefined && payload.price_min !== null && payload.price_min !== "") formData.append("price_min", String(payload.price_min));
+    if (payload.price_max !== undefined && payload.price_max !== null && payload.price_max !== "") formData.append("price_max", String(payload.price_max));
+  }
 
   if (payload.description) {
     formData.append("description", payload.description);
@@ -92,6 +104,7 @@ const toFormData = (payload: PropertyFormValues) => {
       formData.append("videos[]", file);
     }
   });
+  if (payload.floorplan instanceof File) formData.append("floorplan", payload.floorplan);
 
   return formData;
 };
@@ -178,12 +191,12 @@ export const updatePropertyApi = async (
   id: string,
   payload: PropertyFormValues,
 ) => {
-  const hasFiles = [...(payload.images ?? []), ...(payload.videos ?? [])].some(
+  const hasFiles = [...(payload.images ?? []), ...(payload.videos ?? []), payload.floorplan].some(
     (item) => item instanceof File,
   );
 
   if (!hasFiles) {
-    const { images: _images, videos: _videos, ...jsonPayload } = payload;
+    const { images: _images, videos: _videos, floorplan: _floorplan, ...jsonPayload } = payload;
     const res = await axiosInstance.put<ApiResponse<Property>>(
       `${getBasePath()}/${id}`,
       jsonPayload,
