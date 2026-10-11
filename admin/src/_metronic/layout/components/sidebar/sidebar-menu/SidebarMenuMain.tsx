@@ -336,6 +336,9 @@ const SidebarMenuMain = () => {
               />
             </>
           )}
+          {isSuperAdmin && hasPermission("property.view") && (
+            <SidebarMenuItem to={`${portalBase}/property-amenities`} title="Property Amenities" fontIcon="bi-tags" icon="/media/icons/duotune/iconsnew/prom.svg" />
+          )}
 
           {hasModule("service_management") && hasPermission("service.view") && (
             <>

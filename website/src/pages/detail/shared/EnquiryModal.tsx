@@ -26,11 +26,21 @@ export type EnquiryValues = {
   send_copy: boolean;
 };
 
+const INTEREST_OPTIONS = [
+  ["inspection", "Booking an inspection"],
+  ["property_information", "Property information"],
+  ["price_sale_information", "Price / sale information"],
+  ["contract_section_32", "Contract / Section 32"],
+  ["making_an_offer", "Making an offer"],
+  ["other", "Other"],
+] as const;
+
 type Props = {
   open: boolean;
   title?: string;
   companyName?: string;
   initialSubject?: string;
+  initialInterestedIn?: string[];
   submitting?: boolean;
   error?: string | null;
   success?: string | null;
@@ -52,6 +62,7 @@ export function EnquiryModal({
   title = "Send an Enquiry",
   companyName,
   initialSubject = "Property enquiry",
+  initialInterestedIn = [],
   submitting = false,
   error,
   success,
@@ -89,6 +100,15 @@ export function EnquiryModal({
       return setFormError("Screenshot must be under 10MB.");
     setFormError(null);
     update("screenshot", file ?? null);
+  };
+
+  const toggleInterest = (value: string) => {
+    setValues((current) => ({
+      ...current,
+      interested_in: current.interested_in.includes(value)
+        ? current.interested_in.filter((item) => item !== value)
+        : [...current.interested_in, value],
+    }));
   };
 
   const submit = async (event: FormEvent) => {

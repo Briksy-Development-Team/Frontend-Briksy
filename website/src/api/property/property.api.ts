@@ -12,8 +12,20 @@ export type PublicProperty = {
   is_favourite?: boolean;
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  is_auction?: boolean;
+  auction_details?: {
+    date?: string;
+    time?: string;
+    venue?: string;
+    auctioneer?: string;
+    contact?: string;
+    description?: string;
+  } | null;
   property_category?: string | null;
   price?: number | null;
+  pricing_type?: "fixed" | "estimated" | null;
+  price_min?: number | null;
+  price_max?: number | null;
 
   property_type?: {
     name: string;
@@ -27,6 +39,8 @@ export type PublicProperty = {
   features?: {
     name: string;
     slug: string;
+    category?: string | null;
+    category_slug?: string | null;
   }[];
 
   rating: number;
@@ -74,6 +88,7 @@ export type PublicProperty = {
     url: string | null;
     is_primary: boolean;
   }[];
+  floorplan?: { id?: string; url: string | null } | null;
 };
 
 export const getProperties = async (

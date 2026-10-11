@@ -46,7 +46,17 @@ const PropertyModal = ({
         status: initialValues?.status ?? "Draft",
         listing_purpose: initialValues?.listing_purpose ?? "SELL",
         transaction_status: initialValues?.transaction_status ?? undefined,
+        is_auction: initialValues?.is_auction ?? false,
+        auction_date: initialValues?.auction_date ?? "",
+        auction_time: initialValues?.auction_time ?? "",
+        auction_venue: initialValues?.auction_venue ?? "",
+        auctioneer: initialValues?.auctioneer ?? "",
+        auction_contact: initialValues?.auction_contact ?? "",
+        auction_description: initialValues?.auction_description ?? "",
         price: initialValues?.price ?? "",
+        pricing_type: initialValues?.pricing_type ?? "fixed",
+        price_min: initialValues?.price_min ?? "",
+        price_max: initialValues?.price_max ?? "",
         address: initialValues?.address ?? "",
         address_line_1: initialValues?.address_line_1 ?? initialValues?.address ?? "",
         address_line_2: initialValues?.address_line_2 ?? "",
@@ -70,6 +80,8 @@ const PropertyModal = ({
     const [videos, setVideos] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState<PropertyImage[]>(initialValues?.images ?? []);
     const [existingVideos, setExistingVideos] = useState<PropertyVideo[]>(initialValues?.videos ?? []);
+    const [existingFloorplan, setExistingFloorplan] = useState<PropertyImage | null>(initialValues?.floorplan ?? null);
+    const [floorplan, setFloorplan] = useState<File | null>(null);
     const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
 
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -134,7 +146,17 @@ const PropertyModal = ({
                 status: "Draft",
                 listing_purpose: "SELL",
                 transaction_status: undefined,
+                is_auction: false,
+                auction_date: "",
+                auction_time: "",
+                auction_venue: "",
+                auctioneer: "",
+                auction_contact: "",
+                auction_description: "",
                 price: "",
+                pricing_type: "fixed",
+                price_min: "",
+                price_max: "",
                 address: "",
                 address_line_1: "",
                 address_line_2: "",
@@ -157,6 +179,8 @@ const PropertyModal = ({
             setVideos([]);
             setExistingImages([]);
             setExistingVideos([]);
+            setExistingFloorplan(null);
+            setFloorplan(null);
             setPropertyCategory("residential");
             return;
         }
@@ -168,7 +192,17 @@ const PropertyModal = ({
             status: initialValues.status ?? "Draft",
             listing_purpose: initialValues.listing_purpose ?? "SELL",
             transaction_status: initialValues.transaction_status ?? undefined,
+            is_auction: initialValues.is_auction ?? false,
+            auction_date: initialValues.auction_date ?? "",
+            auction_time: initialValues.auction_time ?? "",
+            auction_venue: initialValues.auction_venue ?? "",
+            auctioneer: initialValues.auctioneer ?? "",
+            auction_contact: initialValues.auction_contact ?? "",
+            auction_description: initialValues.auction_description ?? "",
             price: initialValues.price ?? "",
+            pricing_type: initialValues.pricing_type ?? "fixed",
+            price_min: initialValues.price_min ?? "",
+            price_max: initialValues.price_max ?? "",
             address: initialValues.address ?? "",
             address_line_1: initialValues.address_line_1 ?? initialValues.address ?? "",
             address_line_2: initialValues.address_line_2 ?? "",
@@ -191,6 +225,8 @@ const PropertyModal = ({
         setVideos([]);
         setExistingImages(initialValues.images ?? []);
         setExistingVideos(initialValues.videos ?? []);
+        setExistingFloorplan(initialValues.floorplan ?? null);
+        setFloorplan(null);
         setPropertyCategory(
             (initialValues.property_category ?? initialValues.property_type?.category) === "commercial" ? "commercial" : "residential",
         );
@@ -269,6 +305,7 @@ const PropertyModal = ({
             location_verified: undefined,
             images,
             videos,
+            floorplan: floorplan ?? undefined,
         });
     };
 
@@ -327,6 +364,13 @@ const PropertyModal = ({
         }
     };
 
+    const handleDeleteFloorplan = async () => {
+        if (!existingFloorplan?.id) return;
+        if (!window.confirm("Remove this floorplan?")) return;
+        await deletePropertyMediaApi(existingFloorplan.id);
+        setExistingFloorplan(null);
+    };
+
     const toggleFeature = (featureId: string) => {
         setForm((prev) => ({
             ...prev,
@@ -348,6 +392,9 @@ const PropertyModal = ({
                 && !!form.property_type_id
                 && !!propertyCategory
                 && (propertyCategory !== "commercial" || !!form.transaction_status)
+                && (!form.is_auction || !!form.auction_date)
+                && (form.pricing_type !== "fixed" || (form.price !== undefined && form.price !== null && form.price !== ""))
+                && (form.pricing_type !== "estimated" || (form.price_min !== undefined && form.price_min !== null && form.price_min !== "" && form.price_max !== undefined && form.price_max !== null && form.price_max !== "" && Number(form.price_min) <= Number(form.price_max)))
                 && (!isSuperAdmin || !!form.organization_id)
             }
         >
@@ -459,11 +506,67 @@ const PropertyModal = ({
                         <div className="text-muted fs-7 mt-2">Use this field to mark a property as Sold or Leased.</div>
                     )}
                 </div>
-                <div className="col-md-6 fv-row mb-7">
-                    <label className="form-label">Price</label>
-                    <input type="number" min="0" step="0.01" className="form-control form-control-solid" value={form.price ?? ""}
-                        onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))} />
+                <div className="col-md-6 fv-row mb-7" />
+            </div>
+
+            <div className="fv-row mb-7">
+                <label className="required form-label">Pricing Type</label>
+                <select className="form-select form-select-solid" value={form.pricing_type ?? "fixed"} onChange={(e) => setForm((prev) => ({ ...prev, pricing_type: e.target.value as "fixed" | "estimated" }))}>
+                    <option value="fixed">Fixed Price</option>
+                    <option value="estimated">Estimated Price</option>
+                </select>
+                {form.pricing_type === "estimated" ? <div className="row mt-3"><div className="col-md-6"><label className="required form-label">Minimum Price</label><input type="number" min="0" step="0.01" className="form-control form-control-solid" value={form.price_min ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, price_min: e.target.value }))} /></div><div className="col-md-6"><label className="required form-label">Maximum Price</label><input type="number" min="0" step="0.01" className="form-control form-control-solid" value={form.price_max ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, price_max: e.target.value }))} /></div></div> : <div className="mt-3"><label className="required form-label">Price</label><input type="number" min="0" step="0.01" className="form-control form-control-solid" value={form.price ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))} /></div>}
+            </div>
+
+            <div className="fv-row mb-7">
+                <label className="form-check form-check-custom form-check-solid">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={form.is_auction ?? false}
+                        onChange={(e) => setForm((prev) => ({ ...prev, is_auction: e.target.checked }))}
+                    />
+                    <span className="form-check-label fw-semibold">Auction property</span>
+                </label>
+            </div>
+
+            {form.is_auction ? (
+                <div className="mb-7 rounded border p-5">
+                    <h4 className="mb-4">Auction Details</h4>
+                    <div className="row">
+                        <div className="col-md-6 fv-row mb-4">
+                            <label className="required form-label">Auction date</label>
+                            <input type="date" className="form-control form-control-solid" value={form.auction_date ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, auction_date: e.target.value }))} required />
+                        </div>
+                        <div className="col-md-6 fv-row mb-4">
+                            <label className="form-label">Auction time</label>
+                            <input type="time" className="form-control form-control-solid" value={form.auction_time ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, auction_time: e.target.value }))} />
+                        </div>
+                        <div className="col-md-6 fv-row mb-4">
+                            <label className="form-label">Location / venue</label>
+                            <input className="form-control form-control-solid" value={form.auction_venue ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, auction_venue: e.target.value }))} />
+                        </div>
+                        <div className="col-md-6 fv-row mb-4">
+                            <label className="form-label">Auctioneer</label>
+                            <input className="form-control form-control-solid" value={form.auctioneer ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, auctioneer: e.target.value }))} />
+                        </div>
+                        <div className="col-md-6 fv-row mb-4">
+                            <label className="form-label">Auction contact</label>
+                            <input className="form-control form-control-solid" value={form.auction_contact ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, auction_contact: e.target.value }))} />
+                        </div>
+                        <div className="col-12 fv-row">
+                            <label className="form-label">Additional information</label>
+                            <textarea rows={3} className="form-control form-control-solid" value={form.auction_description ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, auction_description: e.target.value }))} />
+                        </div>
+                    </div>
                 </div>
+            ) : null}
+
+            <div className="fv-row mb-7">
+                <label className="form-label">Floorplan</label>
+                {existingFloorplan ? <div className="mb-3 d-flex align-items-center gap-3"><img src={existingFloorplan.url} alt="Current floorplan" style={{ width: 120, height: 80, objectFit: "contain" }} className="rounded border" /><button type="button" className="btn btn-sm btn-light-danger" onClick={() => void handleDeleteFloorplan()}>Remove</button></div> : null}
+                <input type="file" accept="image/*" className="form-control form-control-solid" onChange={(e) => setFloorplan(e.target.files?.[0] ?? null)} />
+                <div className="text-muted fs-7 mt-2">Upload an image separately from the property gallery.</div>
             </div>
 
             <div className="fv-row mb-7">

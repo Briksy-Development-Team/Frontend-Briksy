@@ -31,6 +31,7 @@ const PropertyOffersPage = lazy(() => import("../pages/platform/PropertyOffersPa
 const ServiceOffersPage = lazy(() => import("../pages/platform/ServiceOffersPage"));
 const ServiceListPage = lazy(() => import("../pages/user management/ServiceList"));
 const ServiceCategoryPage = lazy(() => import("../pages/platform/ServiceCategoryPage"));
+const PropertyAmenitiesPage = lazy(() => import("../pages/platform/PropertyAmenitiesPage"));
 const AgentTypePage = lazy(() => import("../pages/platform/AgentTypePage"));
 const BuyerBriefPage = lazy(() => import("../pages/platform/BuyerBriefPage"));
 const BuilderProjectPage = lazy(() => import("../pages/platform/BuilderProjectPage"));
@@ -436,6 +437,7 @@ const PrivateRoutes = () => {
           }
         />
         <Route path="/super-admin/agent-types/*" element={<RoleGuard allow={["super_admin", "super_admin_employee"]}><SuspensedView><AgentTypePage /></SuspensedView></RoleGuard>} />
+        <Route path="/super-admin/property-amenities/*" element={<RoleGuard allow={["super_admin", "super_admin_employee"]}><SuspensedView><PropertyAmenitiesPage /></SuspensedView></RoleGuard>} />
 
         <Route
           path="/admin/services/*"

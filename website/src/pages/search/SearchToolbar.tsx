@@ -8,8 +8,6 @@ import type { FilterTab } from "../../components/filter/filterTypes";
 import MapIcon from "../../assets/icons/search/map.svg?react";
 import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
-
-
 const SORT_OPTIONS = [
   { label: "Recommended", value: "featured" },
   { label: "Newest", value: "newest" },

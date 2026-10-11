@@ -216,6 +216,7 @@ const BuilderDetail = () => {
               organization_id: builder.id,
               lead_source: "builder_profile",
               subject: values.subject,
+              interested_in: ["property_information"],
               message: values.message,
               seeker_name: values.seeker_name,
               seeker_email: values.seeker_email,

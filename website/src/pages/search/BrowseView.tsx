@@ -181,7 +181,7 @@ export default function BrowseView({
   const allCommercialCards = commercialProperties.map(propertyToCard);
   const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 
-  const hasLoadedItems = resultType === "property" || resultType === "comercial"
+  const hasLoadedItems = resultType === "property" || resultType === "commercial"
     ? properties.length > 0 || commercialProperties.length > 0
     : organizations.length > 0;
   if (loading && !hasLoadedItems) return <ResultsLoadingSkeleton resultType={resultType} />;

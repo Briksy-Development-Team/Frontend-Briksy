@@ -32,6 +32,12 @@ export const inquiryConfig = {
       sortable: true,
     },
     {
+      Header: "Interested In",
+      accessor: "interested_in",
+      sortable: false,
+      Cell: ({ value }: { value: string | string[] | null | undefined }) => (Array.isArray(value) ? value : value ? [value] : []).join(", ") || "—",
+    },
+    {
       Header: "Status",
       accessor: "status",
       sortable: true,
@@ -75,6 +81,12 @@ export const inquiryConfig = {
       Header: "Subject",
       accessor: "subject",
       sortable: true,
+    },
+    {
+      Header: "Interested In",
+      accessor: "interested_in",
+      sortable: false,
+      Cell: ({ value }: { value: string | string[] | null | undefined }) => (Array.isArray(value) ? value : value ? [value] : []).join(", ") || "—",
     },
     {
       Header: "Status",

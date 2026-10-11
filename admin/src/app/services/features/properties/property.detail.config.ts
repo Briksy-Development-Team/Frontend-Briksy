@@ -86,6 +86,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
         { label: "Status", accessor: "status", colSpan: 6 },
         { label: "Property Type", accessor: (data) => data?.property_type?.name ?? "—", colSpan: 6 },
         { label: "Property Category", accessor: (data) => data?.property_category ?? data?.property_type?.category ?? "—", colSpan: 6 },
+        { label: "Price", accessor: (data) => data?.pricing_type === "estimated" && data?.price_min != null && data?.price_max != null ? `$${Number(data.price_min).toLocaleString()} – $${Number(data.price_max).toLocaleString()}` : data?.price != null ? `$${Number(data.price).toLocaleString()}` : "—", colSpan: 6 },
         { label: "Transaction / Listing Status", accessor: (data) => transactionStatusLabels[data?.transaction_status] ?? data?.transaction_status ?? "—", colSpan: 6 },
         { label: "Address", accessor: "address", colSpan: 6 },
         { label: "Address Line 1", accessor: "address_line_1", colSpan: 6 },
