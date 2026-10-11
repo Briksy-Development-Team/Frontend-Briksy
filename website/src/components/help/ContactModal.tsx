@@ -31,7 +31,7 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
     return (
         <ModalWrapper isOpen={isOpen}>
             <div className="fixed inset-0 z-50 flex items-center justify-center  p-3 md:p-4 font-helvetica">
-                <div className=" flex w-full max-w-[55rem] max-h-[95vh] flex-col rounded-[1.5rem] md:rounded-[2rem] bg-white shadow-xl">
+                <div className=" flex w-full max-w-[55rem]  max-h-[95vh] flex-col rounded-[1.5rem] md:rounded-[2rem] bg-white shadow-xl">
                     <div className=" w-full h-[5rem] px-5 pt-5  rounded-[1.5rem] md:rounded-[2rem]  ">
                         <button
                             onClick={onClose}
@@ -165,7 +165,7 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                                 </div>
 
                                 
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 pt-2 md:pt-4">
+                                <div className="flex flex-col  sm:flex-row sm:items-center gap-3 sm:gap-6 py-2 md:py-4">
                                     <button
                                         type="submit"
                                         className="rounded-full w-full sm:w-auto bg-[#3D2C1E] px-6 py-2.5 md:px-8 md:py-3.5 text-[0.75rem] md:text-[0.875rem] font-medium text-white transition-opacity hover:opacity-90"
