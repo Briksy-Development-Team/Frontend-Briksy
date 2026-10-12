@@ -7,10 +7,15 @@ import PricingCards from './components/PricingCards';
 import FeatureTable from './components/FeatureTable';
 import { createPricingInquiry } from '../../../api/subscription/plan.api';
 import { getStoredAuth } from '../../../auth/auth.storage';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Pricing = () => {
-  const [activeTabId, setActiveTabId] = useState(ALL_TABS[0].id);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawTab = searchParams.get('tab') || searchParams.get('family');
+  const normalizedTab = rawTab === 'builders' ? 'builder' : rawTab === 'property_owner' || rawTab === 'real-estate' ? 'properties' : rawTab;
+  const initialTab = ALL_TABS.find((t) => t.id === normalizedTab)?.id ?? ALL_TABS[0].id;
+
+  const [activeTabId, setActiveTabId] = useState(initialTab);
   const [publicPlans, setPublicPlans] = useState<PublicPlan[]>([]);
   const [plansLoaded, setPlansLoaded] = useState(false);
   const [contactPlan, setContactPlan] = useState<Plan | null>(null);
@@ -18,6 +23,17 @@ const Pricing = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (normalizedTab && ALL_TABS.some((t) => t.id === normalizedTab)) {
+      setActiveTabId(normalizedTab);
+    }
+  }, [normalizedTab]);
+
+  const handleTabChange = (nextTabId: string) => {
+    setActiveTabId(nextTabId);
+    setSearchParams({ tab: nextTabId }, { replace: true });
+  };
 
   useEffect(() => {
     let active = true;
@@ -34,15 +50,25 @@ const Pricing = () => {
   }, []);
 
   const openContact = (plan: Plan) => {
-    if (!plan.contactSales) {
-      navigate(`/checkout?plan=${encodeURIComponent(plan.id)}`);
+    const isContactPlan =
+      plan.contactSales ||
+      plan.price === null ||
+      plan.price === undefined ||
+      plan.ctaLabel?.toLowerCase().includes('contact');
+
+    if (isContactPlan) {
+      const auth = getStoredAuth();
+      setContactPlan(plan);
+      setSubmitted(false);
+      setForm((current) => ({
+        ...current,
+        name: auth?.user?.name ?? current.name,
+        email: auth?.user?.email ?? current.email,
+      }));
       return;
     }
 
-    const auth = getStoredAuth();
-    setContactPlan(plan);
-    setSubmitted(false);
-    setForm((current) => ({ ...current, name: auth?.user?.name ?? current.name, email: auth?.user?.email ?? current.email }));
+    navigate(`/checkout?plan=${encodeURIComponent(plan.id)}&from_tab=${encodeURIComponent(activeTabId)}`);
   };
 
   const submitInquiry = async (event: React.FormEvent) => {
@@ -74,7 +100,7 @@ const Pricing = () => {
         <SubscriptionTabs
           tabs={tabs}
           activeId={activeTabId}
-          onChange={setActiveTabId}
+          onChange={handleTabChange}
         />
       </section>
 

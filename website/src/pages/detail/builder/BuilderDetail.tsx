@@ -133,7 +133,11 @@ const BuilderDetail = () => {
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: isBuyerAgent ? "Find a buyer agent" : isAgent ? "Find an agent" : "Find a builder", isBack: true },
+              {
+                label: isBuyerAgent ? "Find a buyer agent" : isAgent ? "Find an agent" : "Find a builder",
+                href: isBuyerAgent ? "/agents?tab=buyer" : isAgent ? "/agents" : "/builders",
+                isBack: true,
+              },
               { label: builder.name },
             ]}
           />
