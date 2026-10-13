@@ -1,21 +1,12 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Plus, X } from "lucide-react";
 import ModalWrapper from "../../../components/wrapper/ModalWrapper";
-
-const INTERESTS = [
-  "Booking an inspection",
-  "Property information",
-  "Price / sale information",
-  "Contract / Section 32",
-  "Making an offer",
-  "Other",
-];
 
 const inputClass =
   "w-full rounded-xl border border-[#E7E7E4] bg-white px-4 py-3 text-sm text-primary-brown outline-none placeholder:text-primary-light-brown focus:border-primary-brown";
 
 export type EnquiryValues = {
-  interests: string[];
+  interested_in: string[];
   other_interest: string;
   seeker_name: string;
   seeker_email: string;
@@ -27,12 +18,12 @@ export type EnquiryValues = {
 };
 
 const INTEREST_OPTIONS = [
-  ["inspection", "Booking an inspection"],
-  ["property_information", "Property information"],
-  ["price_sale_information", "Price / sale information"],
-  ["contract_section_32", "Contract / Section 32"],
-  ["making_an_offer", "Making an offer"],
-  ["other", "Other"],
+  { value: "inspection", label: "Booking an inspection" },
+  { value: "property_information", label: "Property information" },
+  { value: "price_sale_information", label: "Price / sale information" },
+  { value: "contract_section_32", label: "Contract / Section 32" },
+  { value: "making_an_offer", label: "Making an offer" },
+  { value: "other", label: "Other" },
 ] as const;
 
 type Props = {
@@ -70,7 +61,7 @@ export function EnquiryModal({
   onSubmit,
 }: Props) {
   const [values, setValues] = useState<EnquiryValues>({
-    interests: [],
+    interested_in: initialInterestedIn,
     other_interest: "",
     seeker_name: "",
     seeker_email: "",
@@ -82,17 +73,26 @@ export function EnquiryModal({
   });
   const [formError, setFormError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (open) {
+      setValues((current) => ({
+        ...current,
+        interested_in: initialInterestedIn,
+      }));
+    }
+  }, [initialInterestedIn, open]);
+
   const update = <K extends keyof EnquiryValues>(
     key: K,
     value: EnquiryValues[K],
   ) => setValues((current) => ({ ...current, [key]: value }));
 
-  const toggleInterest = (item: string) =>
+  const toggleInterest = (value: string) =>
     update(
-      "interests",
-      values.interests.includes(item)
-        ? values.interests.filter((i) => i !== item)
-        : [...values.interests, item],
+      "interested_in",
+      values.interested_in.includes(value)
+        ? values.interested_in.filter((item) => item !== value)
+        : [...values.interested_in, value],
     );
 
   const pickScreenshot = (file?: File) => {
@@ -102,18 +102,9 @@ export function EnquiryModal({
     update("screenshot", file ?? null);
   };
 
-  const toggleInterest = (value: string) => {
-    setValues((current) => ({
-      ...current,
-      interested_in: current.interested_in.includes(value)
-        ? current.interested_in.filter((item) => item !== value)
-        : [...current.interested_in, value],
-    }));
-  };
-
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!values.interests.length)
+    if (!values.interested_in.length)
       return setFormError("Please select at least one option.");
     setFormError(null);
     await onSubmit(values);
@@ -155,23 +146,23 @@ export function EnquiryModal({
                   I am interested in: *
                 </legend>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
-                  {INTERESTS.map((item) => (
+                  {INTEREST_OPTIONS.map(({ value, label }) => (
                     <label
-                      key={item}
+                      key={value}
                       className="flex items-center gap-2 text-sm text-primary-brown"
                     >
                       <input
                         type="checkbox"
-                        checked={values.interests.includes(item)}
-                        onChange={() => toggleInterest(item)}
+                        checked={values.interested_in.includes(value)}
+                        onChange={() => toggleInterest(value)}
                         className="h-4 w-4 rounded accent-primary-brown"
                       />
-                      {item}
+                      {label}
                     </label>
                   ))}
                 </div>
                 <input
-                  required={values.interests.includes("Other")}
+                  required={values.interested_in.includes("other")}
                   value={values.other_interest}
                   onChange={(e) => update("other_interest", e.target.value)}
                   className={`${inputClass} mt-3`}
