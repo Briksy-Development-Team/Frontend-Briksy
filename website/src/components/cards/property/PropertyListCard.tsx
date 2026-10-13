@@ -9,6 +9,7 @@ import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
 import CollectionModal from '../../collections/CollectionModal'
 import AuthPromptToast from '../../custom/AuthPromptToast'
 import { propertyStatusLabel } from '../../../utils/propertyStatus'
+import { formatPropertyPrice } from '../../../utils/propertyPrice'
 
 type Props = {
   item: Property
@@ -55,7 +56,7 @@ const PropertyListCard = ({ item }: Props) => {
         className="h-full w-full object-cover"
       />
       <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
+        {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
       </span>
       <button
         type="button"
@@ -89,7 +90,7 @@ const PropertyListCard = ({ item }: Props) => {
       </div>
 
       <p className=" text-[1rem] text-primary-brown font-medium">
-          {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
+          {formatPropertyPrice({ pricing_type: item.pricingType, price: item.price, price_min: item.priceMin, price_max: item.priceMax })}
       </p>
 
       <p className="text-[0.875rem] text-primary-brown">

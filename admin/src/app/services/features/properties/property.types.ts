@@ -65,9 +65,19 @@ export type Property = {
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  is_auction?: boolean;
+  auction_date?: string | null;
+  auction_time?: string | null;
+  auction_venue?: string | null;
+  auctioneer?: string | null;
+  auction_contact?: string | null;
+  auction_description?: string | null;
   property_category?: "residential" | "commercial" | string | null;
   price?: number | null;
-
+  pricing_type?: "fixed" | "estimated" | null;
+  price_min?: number | null;
+  price_max?: number | null;
+  floorplan?: PropertyImage | null;
   address?: string | null;
   address_line_1?: string | null;
   address_line_2?: string | null;
@@ -173,11 +183,22 @@ export type PropertyFormValues = {
   property_type_id?: string;
   listing_purpose?: "SELL" | "RENT" | "BOTH";
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED";
+  is_auction?: boolean;
+  auction_date?: string | null;
+  auction_time?: string | null;
+  auction_venue?: string | null;
+  auctioneer?: string | null;
+  auction_contact?: string | null;
+  auction_description?: string | null;
   price?: string | number | null;
+  pricing_type?: "fixed" | "estimated";
+  price_min?: string | number | null;
+  price_max?: string | number | null;
 
   images?: (File | string)[];
   videos?: (File | string)[];
   features?: string[];
+  floorplan?: File | string | null;
 };
 
 export type PropertyList = {
@@ -190,8 +211,19 @@ export type PropertyList = {
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  is_auction?: boolean;
+  auction_date?: string | null;
+  auction_time?: string | null;
+  auction_venue?: string | null;
+  auctioneer?: string | null;
+  auction_contact?: string | null;
+  auction_description?: string | null;
   property_category?: "residential" | "commercial" | string | null;
   price?: number | null;
+  pricing_type?: "fixed" | "estimated" | null;
+  price_min?: number | null;
+  price_max?: number | null;
+  floorplan?: PropertyImage | null;
 
   description?: string | null;
 

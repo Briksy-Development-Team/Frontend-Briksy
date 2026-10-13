@@ -111,7 +111,6 @@ const Filter = ({
     params.set("type", activeTab);
 
     // Extract propertyFor from currentValues if it's there
-    const categoryConfig = SEARCH_CATEGORIES.find(c => c.id === activeTab);
     const selectedPropType = currentValues.propertyFor;
 
     if (selectedPropType && selectedPropType !== "all" && selectedPropType.length > 0) {
