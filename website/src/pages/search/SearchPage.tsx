@@ -19,6 +19,7 @@ const HEADERS: Record<string, { title: string; crumb: string }> = {
   builders: { title: "Find a builder", crumb: "Find a builder" },
   address: { title: "Search by address", crumb: "Address" },
   commercial: { title: "Find commercial", crumb: "Commercial" },
+  auction: { title: "Find auctions", crumb: "Auctions" },
 };
 
 type BrowseSection = "all" | "popular" | "newly";
@@ -47,6 +48,8 @@ const SearchPage = () => {
     "buy": "Buy",
     "rent": "Rent",
     "sold": "Sold",
+    "lease": "Lease",
+    "leased": "Leased",
     "real-estate": "Real Estate Agents",
     "buyer": "Buyer Agents",
     "landscaper": "Landscapers",
@@ -99,7 +102,11 @@ const SearchPage = () => {
       next.set("type", activeCategoryId);
 
       if (tab === "Buy") next.set("purpose", "sell");
-      else if (tab === "Rent") next.set("purpose", "rent");
+      else if (tab === "Rent" || tab === "Lease") next.set("purpose", "rent");
+
+      if (activeCategoryId === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(tab)) {
+        next.set("transaction_status", tab.toUpperCase());
+      }
 
       const serviceSlug = serviceSlugForLabel(tab);
       if (serviceSlug) next.set("service_slug", serviceSlug);

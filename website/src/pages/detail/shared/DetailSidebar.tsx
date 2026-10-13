@@ -7,6 +7,7 @@ type Props = {
   buttonText?: string;
   footerText?: string;
   onEnquiry?: () => void;
+  showVerifiedBadge?: boolean;
 };
 
 export function DetailSidebar({
@@ -16,16 +17,19 @@ export function DetailSidebar({
   buttonText = "Send an Enquiry",
   footerText,
   onEnquiry,
+  showVerifiedBadge = true,
 }: Props) {
   return (
     <div className="flex flex-col gap-4 lg:w-full md:w-[80%] mx-auto">
-      <div
-        className="w-full bg-white rounded-xl py-3 px-9 flex justify-center items-center gap-2.5"
-        style={{ boxShadow: "0px 0px 13px 0px rgba(0, 0, 0, 0.12)" }}
-      >
-        <img src={Verify} alt="" />
-        <span className="font-medium text-[0.875rem] text-primary-brown">Verified by Briksy</span>
-      </div>
+      {showVerifiedBadge && (
+        <div
+          className="w-full bg-white rounded-xl py-3 px-9 flex justify-center items-center gap-2.5"
+          style={{ boxShadow: "0px 0px 13px 0px rgba(0, 0, 0, 0.12)" }}
+        >
+          <img src={Verify} alt="" />
+          <span className="font-medium text-[0.875rem] text-primary-brown">Verified by Briksy</span>
+        </div>
+      )}
 
       <div className="w-full bg-white rounded-2xl border border-[#EDE8E4] flex flex-col gap-3.5 p-[26px]">
         {price && (

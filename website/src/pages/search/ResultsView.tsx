@@ -77,16 +77,17 @@ export default function ResultsView({
     setError(null);
     const query = propertyQueryToParams(searchParams);
     const serviceSlug = searchParams.get("service_slug") || undefined;
-    const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" ? "rent" : undefined);
-    const request = resultType === "property" || resultType === "commercial"
+    const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" || selectedSub === "Lease" ? "rent" : undefined);
+    const commercialStatus = query.transaction_status || (resultType === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(selectedSub) ? (selectedSub.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED") : undefined);
+    const request = resultType === "property" || resultType === "commercial" || resultType === "auction"
       ? Promise.all([
-          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, verified_only: 1 }),
-          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
+          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, verified_only: 1 }),
+          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, sort: "created_at", direction: "desc", verified_only: 1 }),
         ])
       : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab")), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
-      if (resultType === "property" || resultType === "commercial") {
+      if (resultType === "property" || resultType === "commercial" || resultType === "auction") {
         setProperties(r[0].data);
         setNewlyProperties(r[1].data);
         setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
@@ -103,9 +104,9 @@ export default function ResultsView({
   const builders = organizations.map(organizationToBuilder);
   const propertyCards = properties.map(propertyToCard);
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
-  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : "Real Estate");
+  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : resultType === "auction" ? "Auctions" : "Real Estate");
 
-  const hasLoadedItems = resultType === "property" || resultType === "comercial"
+  const hasLoadedItems = resultType === "property" || resultType === "commercial" || resultType === "auction"
     ? properties.length > 0
     : organizations.length > 0;
   if (loading && !hasLoadedItems) return <ResultsLoadingSkeleton resultType={resultType} />;
@@ -117,7 +118,7 @@ export default function ResultsView({
       </div>
     );
   }
-  if ((resultType === "property" || resultType === "commercial") && propertyCards.length === 0) {
+  if ((resultType === "property" || resultType === "commercial" || resultType === "auction") && propertyCards.length === 0) {
     return <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown"><p>No properties found for the selected filters.</p></div>;
   }
 
@@ -138,7 +139,7 @@ export default function ResultsView({
               <Section title={isAgents ? `Newly Listed ${selectedHeading}` : "Newly Listed Builders"} count={builders.length} items={builders.slice(4)} Card={BuilderGridCard} onViewMore={() => onViewMore("newly")} />
             </>
           )}
-          {(resultType === "property" || resultType === "commercial") && (
+          {(resultType === "property" || resultType === "commercial" || resultType === "auction") && (
             <Section title={selectedHeading} count={total} items={propertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
           )}
         </>

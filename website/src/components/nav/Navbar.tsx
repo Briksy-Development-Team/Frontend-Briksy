@@ -22,14 +22,16 @@ const navItems: { label: string; to: string; dropdown?: DropdownKey }[] = [
   { label: "Buy", to: "/buy" },
   { label: "Sold", to: "/sold" },
   { label: "Rent", to: "/rent" },
+  { label: "Auctions", to: "/auctions" },
   { label: "Agents +", to: "/agents", dropdown: "agents" },
   { label: "Builders", to: "/builders" },
   { label: "Trades & Professionals +", to: "/professionals", dropdown: "trades" },
-  { label: "Commercials", to: "/commercials" },
+  { label: "Commercials +", to: "/commercials", dropdown: "commercial" },
 ];
 
 const mobileMenuItems = [
   { label: "Buy / Sell", to: "/buy" },
+  { label: "Auctions", to: "/auctions" },
   { label: "Agents Finder", to: "/agents" },
   { label: "Builders", to: "/builders" },
   { label: "Trades & Professionals", to: "/professionals" },

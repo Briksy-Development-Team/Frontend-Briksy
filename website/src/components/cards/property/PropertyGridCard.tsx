@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import type { Property } from "../../../types/property";
 import FavoriteButton from "../../custom/FavoriteButton";
@@ -10,12 +10,21 @@ type Props = {
 }
 
 const PropertyGridCard = ({ item }: Props) => {
+  const location = useLocation();
+  const isAuction =
+    location.pathname.includes("/auction") ||
+    new URLSearchParams(location.search).get("type") === "auction" ||
+    item.purpose?.toUpperCase() === "AUCTION" ||
+    item.propertyCategory === "auction";
+
+  const targetUrl = isAuction ? `/auction/${item.id}` : `/property/${item.id}`;
+
   const truncateText = (text: string, maxLength = 30) =>
     text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   return (
     <>
     <Link
-      to={`/property/${item.id}`}
+      to={targetUrl}
       className="flex h-[28rem] w-[19.6667rem] flex-col border border-transparent transition-colors duration-200 overflow-hidden rounded-3xl bg-white text-left text-primary-brown mx-auto hover:border-primary"
     >
       <div className="relative h-[60%] shrink-0 overflow-hidden">

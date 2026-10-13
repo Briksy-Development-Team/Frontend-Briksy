@@ -8,7 +8,7 @@ import { PropertySidebar } from "./components/PropertySidebar";
 import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { getProperty, type PublicProperty } from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
@@ -26,9 +26,15 @@ import type { Trader } from "../../../types/trader";
 import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
 import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 
-const PropertyDetail = () => {
+interface PropertyDetailProps {
+  isAuction?: boolean;
+}
+
+const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [propertyData, setPropertyData] = useState<PublicProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -148,6 +154,15 @@ const PropertyDetail = () => {
       setEnquirySubmitting(false);
     }
   };
+  const isAuction = Boolean(
+    isAuctionProp ||
+    location.pathname.startsWith("/auction") ||
+    searchParams.get("type") === "auction" ||
+    propertyData.listing_purpose?.toUpperCase() === "AUCTION" ||
+    (propertyData.transaction_status as string) === "AUCTION" ||
+    propertyData.property_category === "auction"
+  );
+
   const addressParts = property.address.split(', ');
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
   const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";
@@ -155,8 +170,8 @@ const PropertyDetail = () => {
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: "Buy", isBack: true },
-    { label: "New property" },
+    { label: isAuction ? "Auctions" : "Buy", isBack: true },
+    { label: isAuction ? "Auction property" : "New property" },
     { label: state },
     { label: suburb },
     { label: property.title }
@@ -307,7 +322,19 @@ const PropertyDetail = () => {
           </div>
 
           <aside className="w-full lg:w-[30%] hidden md:flex shrink-0 lg:sticky lg:top-32">
-            <PropertySidebar sidebar={property.sidebar} onEnquiry={() => setIsEnquiryOpen(true)} />
+            <PropertySidebar
+              sidebar={property.sidebar}
+              listingPurpose={propertyData.listing_purpose}
+              isAuction={isAuction}
+              venueAddress={
+                propertyData.full_address ||
+                propertyData.address ||
+                (propertyData.organization?.name
+                  ? `${propertyData.organization.name}, ${property.address || "1234 Elm Street, Richmond, VIC 3121, Australia"}`
+                  : undefined)
+              }
+              onEnquiry={() => setIsEnquiryOpen(true)}
+            />
           </aside>
         </div>
       </main>
@@ -315,8 +342,8 @@ const PropertyDetail = () => {
         <FraudBanner />
       </div>
       <MobileStickyAction
-        price={property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
-        priceLabel={property.sidebar.price ? "fixed price" : undefined}
+        price={isAuction ? "Auction" : property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
+        priceLabel={isAuction ? "Saturday, 17 October 2026" : property.sidebar.price ? "fixed price" : undefined}
         onEnquiry={() => setIsEnquiryOpen(true)}
       />
 

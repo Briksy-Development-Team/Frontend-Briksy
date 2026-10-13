@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 
-export type DropdownKey = "agents" | "trades" | null;
+export type DropdownKey = "agents" | "trades" | "commercial" | null;
 type MenuKey = NonNullable<DropdownKey>;
 
 type NavLink = { label: string; to: string };
@@ -31,6 +31,29 @@ const MENUS: Record<MenuKey, Menu> = {
     cards: [
       { label: "Find a Professional", to: "/professionals", bg: Randomone },
       { label: "List Your Business", to: "/subs", bg: Randomtwo },
+    ],
+  },
+  commercial: {
+    title: "Commercial",
+    columns: [
+      [
+        { label: "All Commercial", to: "/commercials" },
+        { label: "Commercial for Buy", to: "/commercials?tab=buy" },
+        { label: "Commercial for Lease", to: "/commercials?tab=lease" },
+        { label: "Sold Commercial", to: "/commercials?tab=sold" },
+        { label: "Leased Commercial", to: "/commercials?tab=leased" },
+      ],
+      [
+        { label: "Offices", to: "/commercials?property_types[]=office" },
+        { label: "Retail & Shops", to: "/commercials?property_types[]=retail" },
+        { label: "Industrial & Warehouse", to: "/commercials?property_types[]=warehouse" },
+        { label: "Commercial Land", to: "/commercials?property_types[]=land" },
+        { label: "Showrooms", to: "/commercials?property_types[]=showroom" },
+      ],
+    ],
+    cards: [
+      { label: "Browse Commercial", to: "/commercials", bg: Randomone },
+      { label: "List Your Property", to: "/subs", bg: Randomtwo },
     ],
   },
 };

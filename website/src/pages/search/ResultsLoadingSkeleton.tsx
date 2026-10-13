@@ -5,8 +5,10 @@ export default function ResultsLoadingSkeleton({ resultType }: { resultType: Res
     ? "Popular Professionals"
     : resultType === "builder"
       ? "Popular Builders"
-      : resultType === "comercial"
-        ? "Commercial Real Estate"
+    : resultType === "commercial"
+      ? "Commercial Real Estate"
+      : resultType === "auction"
+        ? "Popular Auctions"
         : "Popular Real Estate";
 
   return (
