@@ -12,6 +12,7 @@ import Randomone from "../../assets/navbar/randomone.svg"
 import Randomtwo from "../../assets/navbar/Randomtwo.svg"
 import { getAgentTypes, type PublicAgentType } from "../../api/agentTypes.api";
 import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
 const HIDDEN_CLIP = "inset(0% 0% 100% 0%)";
 const SHOWN_CLIP = "inset(0% 0% 0% 0%)";
@@ -35,24 +36,9 @@ const MENUS: Record<MenuKey, Menu> = {
   },
   commercial: {
     title: "Commercial",
-    columns: [
-      [
-        { label: "All Commercial", to: "/commercials" },
-        { label: "Commercial for Buy", to: "/commercials?tab=buy" },
-        { label: "Commercial for Lease", to: "/commercials?tab=lease" },
-        { label: "Sold Commercial", to: "/commercials?tab=sold" },
-        { label: "Leased Commercial", to: "/commercials?tab=leased" },
-      ],
-      [
-        { label: "Offices", to: "/commercials?property_types[]=office" },
-        { label: "Retail & Shops", to: "/commercials?property_types[]=retail" },
-        { label: "Industrial & Warehouse", to: "/commercials?property_types[]=warehouse" },
-        { label: "Commercial Land", to: "/commercials?property_types[]=land" },
-        { label: "Showrooms", to: "/commercials?property_types[]=showroom" },
-      ],
-    ],
+    columns: [[]],
     cards: [
-      { label: "Browse Commercial", to: "/commercials", bg: Randomone },
+      { label: "Find Commercial Property", to: "/commercials", bg: Randomone },
       { label: "List Your Property", to: "/subs", bg: Randomtwo },
     ],
   },
@@ -96,11 +82,19 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
     to: `/professionals?tab=${encodeURIComponent(category.slug)}&service_slug=${encodeURIComponent(category.slug)}`,
   }));
   const serviceMidpoint = Math.ceil(serviceLinks.length / 2);
+  const commercialCategory = SEARCH_CATEGORIES.find((c) => c.id === "commercial");
+  const commercialLinks = (commercialCategory?.propTypes ?? []).map((p) => ({
+    label: p.label,
+    to: p.id === "all" ? "/commercials" : `/commercials?tab=${encodeURIComponent(p.id)}`,
+  }));
+
   const menu = activeMenu === "agents"
     ? { ...baseMenu, columns: [agentTypes.map((type) => ({ label: type.label, to: `/agents?tab=${encodeURIComponent(type.slug)}` }))] }
     : activeMenu === "trades"
       ? { ...baseMenu, columns: [serviceLinks.slice(0, serviceMidpoint), serviceLinks.slice(serviceMidpoint)] }
-      : baseMenu;
+      : activeMenu === "commercial"
+        ? { ...baseMenu, columns: [commercialLinks] }
+        : baseMenu;
 
   // Open: mount. Close: animate out, then unmount.
   useEffect(() => {
@@ -158,7 +152,7 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
             </p>
             <div className="grid  grid-cols-2  w-full ">
               {menu.columns.map((links, i) => (
-                <div key={i} className="flex flex-col gap-3">
+                <div key={i} className="flex flex-col gap-2">
                   {links.map((l) => (
                     <Link
                       key={l.label}
