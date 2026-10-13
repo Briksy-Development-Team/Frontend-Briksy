@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ModalShell } from "../../../../modules/apps/component/ModalShell";
 
 import type { ServiceList, ServiceFormValues } from "../service_list.types";
-import { deleteServiceMediaApi } from "../service_list.api";
+import { deleteServiceMediaApi, fetchServiceCategoriesApi, type ServiceCategoryOption } from "../service_list.api";
 import { ServiceAreaGeometryEditor } from "./ServiceAreaGeometryEditor";
 import type { ServiceAreaGeometry } from "../serviceAreaGeometry";
 import { fetchAdminDashboardSummary } from "../../dashboard/dashboard.api";
@@ -21,23 +21,9 @@ const SERVICE_AREA_OPTIONS = [
     "Western Australia",
 ];
 
-const SERVICE_CATEGORY_OPTIONS = [
-    { value: "Landscapers", label: "Landscapers" },
-    { value: "Concreter", label: "Concreter" },
-    { value: "Fencing", label: "Fencing" },
-    { value: "Mortgage Brokers", label: "Mortgage Brokers" },
-    { value: "Conveyancers", label: "Conveyancers" },
-    { value: "Building and Pest", label: "Building and Pest" },
-];
-
 const normaliseCategory = (value?: string | null) => {
     if (!value) return "";
-    if (["landscappers", "landscaping"].includes(value.toLowerCase())) return "Landscapers";
-    const match = SERVICE_CATEGORY_OPTIONS.find((category) =>
-        category.value.toLowerCase() === value.toLowerCase() ||
-        category.value.toLowerCase().replace(/\s+/g, "-") === value.toLowerCase()
-    );
-    return match?.value ?? value;
+    return value.toLowerCase() === "landscappers" ? "Landscapers" : value;
 };
 
 type Props = {
@@ -63,6 +49,7 @@ const ServiceModal = ({
     const [serviceAreaEnabled, setServiceAreaEnabled] = useState(isSuperAdmin);
     const [serviceAreaLimit, setServiceAreaLimit] = useState<number | null>(null);
     const [serviceAreasUsed, setServiceAreasUsed] = useState<number | null>(null);
+    const [categories, setCategories] = useState<ServiceCategoryOption[]>([]);
     const [form, setForm] = useState<ServiceFormValues>({
         name: initialValues?.name ?? "",
         slug: initialValues?.slug ?? initialValues?.category ?? "",
@@ -111,6 +98,16 @@ const ServiceModal = ({
             active = false;
         };
     }, [isSuperAdmin]);
+
+    useEffect(() => {
+        let active = true;
+        void fetchServiceCategoriesApi().then((response) => {
+            if (active) setCategories(response.categories);
+        }).catch(() => {
+            if (active) setCategories([]);
+        });
+        return () => { active = false; };
+    }, []);
 
     const handleImagesChange = (files: File[]) => {
         if (allowance.imagesConfigured && allowance.images !== null && existingImages.length + files.length > allowance.images) {
@@ -179,8 +176,8 @@ const ServiceModal = ({
                     }
                 >
                     <option value="">Select a category</option>
-                    {SERVICE_CATEGORY_OPTIONS.map((category) => (
-                        <option value={category.value} key={category.value}>{category.label}</option>
+                    {categories.map((category) => (
+                        <option value={category.label} key={category.slug}>{category.label}</option>
                     ))}
                 </select>
                 <div className="form-text">Select the category that best describes this service.</div>

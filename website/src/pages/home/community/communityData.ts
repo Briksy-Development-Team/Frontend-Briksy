@@ -20,7 +20,7 @@ export type CardData = {
 export const CARDS: CardData[] = [
   {
     position:
-      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[8rem] 2xl:top-[14%]",
+      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[6rem] 2xl:top-[14%]",
     icon: Property,
     img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=240&fit=crop",
     title: "For Professionals & Trades",
@@ -29,7 +29,7 @@ export const CARDS: CardData[] = [
 
   {
     position:
-      "md:left-[1rem] md:bottom-[2rem] lg:left-[4rem] lg:bottom-[2.5rem] xl:left-[6.75rem] xl:bottom-[2rem] 2xl:left-[8rem] 2xl:bottom-[3rem]",
+      "md:left-[1rem] md:bottom-[2rem] lg:left-[4rem] lg:bottom-[2.5rem] xl:left-[6.75rem] xl:bottom-[2rem] 2xl:left-[6rem] 2xl:bottom-[3rem]",
     icon: Stars,
     img: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=240&fit=crop",
     title: "For Mortgage Brokers",
@@ -38,7 +38,7 @@ export const CARDS: CardData[] = [
 
   {
     position:
-      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[8rem] 2xl:top-[14%]",
+      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[6rem] 2xl:top-[14%]",
     icon: Leaf,
     img: "https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=400&h=240&fit=crop",
     title: "For Buyers & Sellers",
@@ -47,7 +47,16 @@ export const CARDS: CardData[] = [
 
   {
     position:
-      "md:left-[1rem] md:bottom-[2rem] lg:left-[4rem] lg:bottom-[2.5rem] xl:left-[6.75rem] xl:bottom-[2rem] 2xl:left-[8rem] 2xl:bottom-[3rem]",
+      "md:left-[1rem] md:bottom-[2rem] lg:left-[4rem] lg:bottom-[2.5rem] xl:left-[6.75rem] xl:bottom-[2rem] 2xl:left-[6rem] 2xl:bottom-[3rem]",
+    icon: Traders,
+    img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=240&fit=crop",
+    title: "For BRIKSY Teams",
+    desc: "Get support throughout your property journey with guidance from the BRIKSY team, from finding the right professional to navigating your next step.",
+  },
+
+  {
+    position:
+      "md:right-[1rem] md:top-[9%] lg:right-[4rem] lg:top-[10%] xl:right-[6.75rem] xl:top-[12%] 2xl:right-[6rem] 2xl:top-[14%]",
     icon: Traders,
     img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=240&fit=crop",
     title: "For BRIKSY Teams",

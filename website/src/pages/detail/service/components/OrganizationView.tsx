@@ -58,8 +58,8 @@ export function OrganizationView({ organization, service }: { organization: Publ
           <div className="hidden w-full md:block lg:sticky lg:top-28 lg:w-[30%]">
             <ServiceSidebar
               service={{
-                id: focus?.id || organization.id,
-                favoriteType: focus ? "service" : "organization",
+                id: organization.id,
+                favoriteType: "organization",
                 bannerImage: organization.banner_url || "",
                 avatar: organization.logo_url || ServicePlaceholder,
                 name: organization.name,

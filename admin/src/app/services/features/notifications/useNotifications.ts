@@ -79,7 +79,7 @@ export const useNotifications = () => {
       return;
     }
     void load();
-    const interval = window.setInterval(() => void fetchUnreadCountApi(scope).then(setUnreadCount).catch(() => undefined), 60000);
+    const interval = window.setInterval(() => void load(), 30000);
     return () => window.clearInterval(interval);
   }, [scope, subscriptionBlocked]);
 

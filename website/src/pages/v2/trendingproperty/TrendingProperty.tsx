@@ -13,7 +13,7 @@ const TrendingProperty = () => {
     const [items, setItems] = useState<PublicProperty[]>([]);
     useEffect(() => { getProperties({ verified_only: 1, sort: "rating" }).then((r) => setItems(r.data)).catch(console.error); }, []);
     return (
-        <section className="py-20 font-helvetica">
+        <section className=" font-helvetica">
             <div className="lg:w-full pl-[5%] lg:px-0  lg:ml-10">
                 <div className="relative mb-10 lg:mr-14  flex flex-col text-primary-brown items-stat justify-end lg:justify-center">
                     <h2 className="text-[30px] font-medium  lg:text-[44px]">
@@ -23,7 +23,7 @@ const TrendingProperty = () => {
 
                     <button
                         onClick={() => navigate("/buy")}
-                        className="absolute right-0 hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
+                        className="absolute right-0 cursor-pointer hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
                     >
                         View All
                         <span>↗</span>

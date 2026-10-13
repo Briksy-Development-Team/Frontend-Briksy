@@ -82,7 +82,7 @@ export default function MapSplitView({
 
       {/* Map Column */}
       <div className="w-full flex-1 rounded-2xl overflow-hidden h-[380px] sm:h-[480px] lg:h-[calc(100vh-160px)] lg:sticky lg:top-28 self-start border border-[#EBE5D9]">
-        {resultType === "property" || resultType === "comercial" ? (
+        {resultType === "property" || resultType === "commercial" ? (
           <PropertyResultsMap properties={items as Property[]} />
         ) : (
           <iframe

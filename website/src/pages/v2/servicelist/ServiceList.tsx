@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { SERVICE_CATEGORIES } from "../../../constants/serviceCategories";
+import { getServiceCategories, type PublicServiceCategory } from "../../../api/serviceCategories.api";
 import { Mousewheel } from "swiper/modules";
 
 import { organizationToTrader } from "../../../api/public.mappers";
@@ -13,17 +14,21 @@ const ServiceList = () => {
   const [activeIdx, setActiveIdx] = useState(0);
   const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
-  const categories = SERVICE_CATEGORIES;
+  const [categories, setCategories] = useState<PublicServiceCategory[]>([...SERVICE_CATEGORIES]);
+
+  useEffect(() => {
+    void getServiceCategories().then(setCategories).catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const category = categories[activeIdx];
 
     getOrganizations({ type: "trades-professionals", service_slug: category.slug, verified_only: 1 })
       .then((response) => setItems(response.data)).catch(console.error);
-  }, [activeIdx]);
+  }, [activeIdx, categories]);
 
   return (
-    <section className="py-20 font-helvetica">
+    <section className=" font-helvetica">
       <div className="lg:w-full  pl-[5%] lg:px-0  lg:ml-10">
         <div className="relative mb-10 lg:mr-14  flex flex-col text-primary-brown items-stat justify-end lg:justify-center">
           <h2 className="text-[30px] font-medium  lg:text-[44px]">
@@ -33,7 +38,7 @@ const ServiceList = () => {
 
           <button
             onClick={() => navigate("/professionals")}
-            className="absolute right-0 hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
+            className="absolute right-0 cursor-pointer hidden md:flex items-center gap-3 text-lg font-medium text-[#562F00] transition-all hover:gap-3"
           >
             View All
             <span>↗</span>

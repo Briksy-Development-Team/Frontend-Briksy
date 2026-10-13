@@ -30,7 +30,7 @@ export const builderProjectConfig = {
       Header: "Status",
       accessor: "status",
       sortable: true,
-      Cell: ({ value }: { value?: string | null }) => {
+      Cell: ({ value }: { value: any }) => {
         const statusVal = value || "Pending Review";
         const label = statusVal.replace(/_/g, " ");
         const badgeClass =
@@ -56,8 +56,10 @@ export const builderProjectConfig = {
       Header: "Location",
       accessor: "location",
       sortable: true,
-      Cell: ({ row }: { row: any }) =>
-        [row.location, row.state].filter(Boolean).join(", ") || "—",
+      Cell: ({ row }: { row: BuilderProject }) => {
+        const project = ((row as any).original ?? row) as BuilderProject;
+        return [project.location, project.state, project.postcode].filter(Boolean).join(", ") || "—";
+      },
     },
     {
       Header: "Created At",

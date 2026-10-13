@@ -164,18 +164,32 @@ export interface FavoriteToggleResult {
   favorite: FavoriteItem | null
 }
 
+const favoriteRequests = new Map<FavoriteType | 'all', { expiresAt: number; promise: Promise<ApiEnvelope<FavoriteItem[]>> }>();
+const FAVORITE_CACHE_TTL = 10_000;
+
 export const getSeekerFavorites = async (type?: FavoriteType): Promise<ApiEnvelope<FavoriteItem[]>> => {
-  const response = await api.get<ApiEnvelope<FavoriteItem[]>>('/seeker/favorites', {
+  const key = type ?? 'all';
+  const cached = favoriteRequests.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.promise;
+
+  const promise = api.get<ApiEnvelope<FavoriteItem[]>>('/seeker/favorites', {
     params: {
       ...(type ? { type } : {}),
       per_page: 100,
       sort: 'created_at',
       direction: 'desc',
     },
-  })
+  }).then((response) => response.data);
 
-  return response.data
+  favoriteRequests.set(key, { expiresAt: Date.now() + FAVORITE_CACHE_TTL, promise });
+  void promise.catch(() => favoriteRequests.delete(key));
+  return promise;
 }
+
+export const invalidateSeekerFavorites = (type?: FavoriteType): void => {
+  if (type) favoriteRequests.delete(type);
+  else favoriteRequests.clear();
+};
 
 export const addSeekerFavorite = async (propertyId: string): Promise<void> => {
   await api.post('/seeker/favorites', {

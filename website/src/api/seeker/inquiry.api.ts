@@ -6,7 +6,8 @@ export type CreateInquiryPayload = {
   staff_id?: string | null;
   lead_source?: string | null;
   subject: string;
-  message: string;
+  interested_in?: string[];
+  message?: string | null;
   seeker_name?: string | null;
   seeker_email?: string | null;
   seeker_phone?: string | null;

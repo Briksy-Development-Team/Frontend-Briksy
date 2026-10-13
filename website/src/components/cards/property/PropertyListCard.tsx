@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { ArrowRight, Heart, LoaderCircle } from 'lucide-react'
 import type { Property } from '../../../types/property'
 import Mappin from '../../../assets/icons/location.svg'
 import { SafeImage } from '../../custom/SafeImage'
 import { useAuth } from '../../../auth/AuthContext'
-import { storePendingFavoriteAction } from '../../../auth/auth.intent'
 import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
 import CollectionModal from '../../collections/CollectionModal'
+import AuthPromptToast from '../../custom/AuthPromptToast'
+import { propertyStatusLabel } from '../../../utils/propertyStatus'
+import { formatPropertyPrice } from '../../../utils/propertyPrice'
 
 type Props = {
   item: Property
@@ -15,10 +17,10 @@ type Props = {
 
 const PropertyListCard = ({ item }: Props) => {
   const { isAuthenticated, isSeeker } = useAuth();
-  const navigate = useNavigate();
   const [isFavourite, setIsFavourite] = useState(item.isFavourite);
   const [isProcessing, setIsProcessing] = useState(false);
   const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
+  const [showAuthToast, setShowAuthToast] = useState(false);
 
   const handleFavouriteClick = async () => {
     if (isProcessing) {
@@ -26,8 +28,7 @@ const PropertyListCard = ({ item }: Props) => {
     }
 
     if (!isAuthenticated || !isSeeker) {
-      storePendingFavoriteAction(String(item.id), `/property/${item.id}`)
-      navigate('/login')
+      setShowAuthToast(true);
       return
     }
 
@@ -55,9 +56,7 @@ const PropertyListCard = ({ item }: Props) => {
         className="h-full w-full object-cover"
       />
       <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {item.propertyCategory === "commercial"
-          ? item.transactionStatus || (item.purpose === "RENT" ? "LEASE" : "BUY")
-          : ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[item.purpose || ""] || item.badge}
+        {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
       </span>
       <button
         type="button"
@@ -91,7 +90,7 @@ const PropertyListCard = ({ item }: Props) => {
       </div>
 
       <p className=" text-[1rem] text-primary-brown font-medium">
-          {item.price ? `$${item.price.toLocaleString()}` : "Contact for pricing"}
+          {formatPropertyPrice({ pricing_type: item.pricingType, price: item.price, price_min: item.priceMin, price_max: item.priceMax })}
       </p>
 
       <p className="text-[0.875rem] text-primary-brown">
@@ -123,6 +122,12 @@ const PropertyListCard = ({ item }: Props) => {
         onClose={() => setCollectionPromptOpen(false)}
       />
     )}
+    <AuthPromptToast
+      isOpen={showAuthToast}
+      onClose={() => setShowAuthToast(false)}
+      targetId={item.id}
+      targetType="property"
+    />
     </>
   )
 }

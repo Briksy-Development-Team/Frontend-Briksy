@@ -68,6 +68,7 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
   const lng = normalizeNumber(longitude);
 
   const coordinates = useMemo(() => (lat !== null && lng !== null ? { lat, lng } : null), [lat, lng]);
+  const mapCenter = coordinates ?? DEFAULT_CENTER;
 
   useEffect(() => {
     onChangeRef.current = onChange;
@@ -75,11 +76,6 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
 
   useEffect(() => {
     let active = true;
-
-    if (!coordinates) {
-      setLoadState("idle");
-      return;
-    }
 
     setLoadState("loading");
     setError(null);
@@ -106,14 +102,14 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
 
           if (!mapRef.current) {
             mapRef.current = new window.google.maps.Map(element, {
-              center: coordinates,
+              center: mapCenter,
               zoom: 15,
               mapTypeControl: false,
               streetViewControl: false,
               fullscreenControl: false,
             });
           } else {
-            mapRef.current.setCenter(coordinates);
+            mapRef.current.setCenter(mapCenter);
           }
 
           if (refreshTimerRef.current) {
@@ -126,18 +122,18 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
             }
 
             window.google.maps.event.trigger(mapRef.current, "resize");
-            mapRef.current.setCenter(coordinates);
+            mapRef.current.setCenter(mapCenter);
           }, 150);
 
           if (!markerRef.current) {
             markerRef.current = new window.google.maps.Marker({
               map: mapRef.current,
-              position: coordinates,
+              position: mapCenter,
               draggable: true,
             });
           } else {
             markerRef.current.setMap(mapRef.current);
-            markerRef.current.setPosition(coordinates);
+            markerRef.current.setPosition(mapCenter);
           }
 
           geocoderRef.current = geocoderRef.current ?? new window.google.maps.Geocoder();
@@ -237,21 +233,18 @@ const LocationMapPreview = ({ latitude, longitude, address, onChange, height = 2
         }
       }
     };
-  }, [address, coordinates]);
-
-  if (!coordinates) {
-    return (
-      <div className="alert alert-light border-dashed">
-        Add latitude and longitude to preview the location on Google Maps.
-      </div>
-    );
-  }
+  }, [address, coordinates, mapCenter]);
 
   return (
     <div className="position-relative rounded-4 overflow-hidden border bg-light">
       {error ? (
         <div className="position-absolute top-0 start-0 w-100 p-3" style={{ zIndex: 2 }}>
           <div className="alert alert-warning mb-0">{error}</div>
+        </div>
+      ) : null}
+      {!coordinates && !error ? (
+        <div className="position-absolute top-0 start-0 w-100 p-3" style={{ zIndex: 2 }}>
+          <div className="alert alert-light mb-0">Select a project address or click the map to set the location.</div>
         </div>
       ) : null}
       {loadState !== "ready" ? (

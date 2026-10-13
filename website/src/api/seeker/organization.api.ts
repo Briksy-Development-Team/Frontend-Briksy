@@ -14,7 +14,7 @@ export type PublicOrganization = {
   is_verified: boolean;
   is_favourite?: boolean;
   contact?: { email: string | null; phone: string | null };
-  type?: { name: string; slug: string } | null;
+  type?: { name: string; label?: string; slug: string; module?: string | null; capability_profile?: string | null } | null;
   services?: {
     id: string;
     name: string;
@@ -31,6 +31,15 @@ export type PublicOrganization = {
   address?: string | null;
   state?: string | null;
   postcode?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  distance_km?: number | null;
+  description?: string | null;
+  website?: string | null;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string | null;
+  reel_urls?: string[];
 };
 
 export type PublicBuilderProject = {
@@ -43,6 +52,10 @@ export type PublicBuilderProject = {
   location?: string | null;
   state?: string | null;
   postcode?: string | null;
+  images?: { id?: string; url: string; is_primary?: boolean }[];
+  videos?: { id?: string; url: string }[];
+  organization?: { id: string; name: string; slug?: string | null; logo_url?: string | null } | null;
+  creator?: { id: string; name: string; email?: string | null; mobile_number?: string | null } | null;
 };
 
 export const getOrganizations = async (params: Record<string, string | number | boolean | undefined> = {}) => {
@@ -58,3 +71,6 @@ export const getOrganization = async (id: string): Promise<{ data: PublicOrganiz
 
 export const getBuilderProjects = async (organizationId: string): Promise<PublicBuilderProject[]> =>
   (await api.get<{ data: PublicBuilderProject[] }>(`/seeker/organizations/${organizationId}/builder-projects`)).data.data;
+
+export const getBuilderProject = async (projectId: string): Promise<{ data: PublicBuilderProject }> =>
+  (await api.get<{ data: PublicBuilderProject }>(`/seeker/builder-projects/${projectId}`)).data;

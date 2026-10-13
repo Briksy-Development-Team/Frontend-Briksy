@@ -17,6 +17,8 @@ const OrganizationModal = ({ initialValues, isSubmitting, enableMediaUpload = fa
     contact_email: initialValues?.contact_email ?? "",
     contact_phone: initialValues?.contact_phone ?? "",
     address: initialValues?.address ?? "",
+    latitude: initialValues?.latitude ?? undefined,
+    longitude: initialValues?.longitude ?? undefined,
     business_type: (initialValues?.business_type as OrganizationFormValues["business_type"]) ?? "company",
     business_verification_status: (initialValues?.business_verification_status as OrganizationFormValues["business_verification_status"]) ?? "pending",
     abn: initialValues?.abn ?? "",
@@ -30,6 +32,8 @@ const OrganizationModal = ({ initialValues, isSubmitting, enableMediaUpload = fa
     setForm((current) => ({
       ...current,
       address: selection.full_address ?? selection.formatted_address ?? selection.address ?? current.address,
+      latitude: selection.latitude ?? current.latitude,
+      longitude: selection.longitude ?? current.longitude,
     }));
   };
 
@@ -39,6 +43,8 @@ const OrganizationModal = ({ initialValues, isSubmitting, enableMediaUpload = fa
       contact_email: initialValues?.contact_email ?? "",
       contact_phone: initialValues?.contact_phone ?? "",
       address: initialValues?.address ?? "",
+      latitude: initialValues?.latitude ?? undefined,
+      longitude: initialValues?.longitude ?? undefined,
       business_type: (initialValues?.business_type as OrganizationFormValues["business_type"]) ?? "company",
       business_verification_status: (initialValues?.business_verification_status as OrganizationFormValues["business_verification_status"]) ?? "pending",
       abn: initialValues?.abn ?? "",

@@ -8,29 +8,42 @@ import { PropertySidebar } from "./components/PropertySidebar";
 import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getProperty, type PublicProperty } from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import TraderGridCard from '../../../components/cards/trader/TraderGridCard';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules"
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
+import { propertyStatusLabel } from "../../../utils/propertyStatus";
+import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
+import { organizationToTrader } from "../../../api/public.mappers";
+import type { Trader } from "../../../types/trader";
+import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
+import BuilderBackground from "../../../assets/place holder/builderbg.svg";
+import { formatPropertyPrice } from "../../../utils/propertyPrice";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [propertyData, setPropertyData] = useState<PublicProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const [initialInterestedIn, setInitialInterestedIn] = useState<string[]>([]);
   const [enquirySubmitting, setEnquirySubmitting] = useState(false);
   const [enquiryError, setEnquiryError] = useState<string | null>(null);
   const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
   const [collectionOpen, setCollectionOpen] = useState(false);
+
+  const openGeneralEnquiry = () => {
+    setInitialInterestedIn([]);
+    setIsEnquiryOpen(true);
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -80,10 +93,31 @@ const PropertyDetail = () => {
       since: undefined,
       logo: propertyData.organization?.logo_url || "",
     },
-    hosts: [] as any[],
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
-    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price || 0 },
+    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: formatPropertyPrice(propertyData) },
   };
+
+  const traderHost: Trader | null = propertyData.organization
+    ? organizationToTrader({
+        ...propertyData.organization,
+        address: propertyData.full_address || propertyData.address,
+      } as any)
+    : propertyData.creator
+    ? {
+        id: propertyData.creator.id,
+        name: propertyData.creator.name,
+        tagLine: "Property Host",
+        role: "Host",
+        location: propertyData.full_address || propertyData.address || "Australia",
+        avatar: ServicePlaceholder,
+        bannerImage: BuilderBackground,
+        rating: propertyData.rating || 0,
+        reviews: 0,
+        tags: [],
+        isFavourite: false,
+        favoriteId: propertyData.creator.id,
+      }
+    : null;
 
   const submitEnquiry = async (values: {
     seeker_name: string;
@@ -91,6 +125,7 @@ const PropertyDetail = () => {
     seeker_phone: string;
     subject: string;
     message: string;
+    interested_in: string[];
   }) => {
     if (!propertyData.organization?.id) {
       setEnquiryError("This property does not have a company attached yet.");
@@ -107,6 +142,7 @@ const PropertyDetail = () => {
         property_listing_id: propertyData.id,
         lead_source: "property_listing",
         subject: values.subject,
+        interested_in: values.interested_in,
         message: values.message,
         seeker_name: values.seeker_name,
         seeker_email: values.seeker_email,
@@ -165,7 +201,13 @@ const PropertyDetail = () => {
           {/* Mobile Overlay Header */}
           <div className="md:hidden absolute top-4 left-0  right-0 z-10 flex justify-between items-center pointer-events-none">
             <button
-              onClick={() => window.history.back()}
+              onClick={() => {
+                if (window.history.length > 1) {
+                  navigate(-1);
+                } else {
+                  navigate("/");
+                }
+              }}
               className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown pointer-events-auto hover:bg-gray-50"
             >
               <ChevronLeft size={20} />
@@ -186,7 +228,7 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          <PropertyGallery images={property.images} />
+          <PropertyGallery images={property.images} floorplan={propertyData.floorplan?.url} />
         </div>
 
 
@@ -204,10 +246,13 @@ const PropertyDetail = () => {
               reviewsCount={property.company.reviews}
               organizationName={property.company.name}
             />
-            {propertyData.property_category === "commercial" && propertyData.transaction_status ? (
+            {propertyData.transaction_status ? (
               <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
-                {propertyData.transaction_status}
+                {propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status)}
               </span>
+            ) : null}
+            {propertyData.is_auction ? (
+              <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">Auction</span>
             ) : null}
             <PropertyAgentCard agent={property.agent} />
 
@@ -215,6 +260,25 @@ const PropertyDetail = () => {
               <div id="about">
                 <PropertyAbout about={property.about} />
               </div>
+
+              {propertyData.is_auction && propertyData.auction_details && Object.keys(propertyData.auction_details).length > 0 ? (
+                <>
+                  <div className="w-full h-[1px] bg-[#EBE5D9]" />
+                  <section aria-labelledby="auction-details">
+                    <h2 id="auction-details" className="mb-4 text-[1.25rem] font-medium text-primary-brown">Auction Details</h2>
+                    <div className="grid gap-4 rounded-2xl bg-[#F8F4EE] p-5 text-sm text-primary-brown sm:grid-cols-2">
+                      {propertyData.auction_details.date && <div><div className="text-xs text-primary-light-brown">Date</div><div>{propertyData.auction_details.date}</div></div>}
+                      {propertyData.auction_details.time && <div><div className="text-xs text-primary-light-brown">Time</div><div>{propertyData.auction_details.time}</div></div>}
+                      {propertyData.auction_details.venue && <div><div className="text-xs text-primary-light-brown">Venue</div><div>{propertyData.auction_details.venue}</div></div>}
+                      {propertyData.auction_details.auctioneer && <div><div className="text-xs text-primary-light-brown">Auctioneer</div><div>{propertyData.auction_details.auctioneer}</div></div>}
+                      {propertyData.auction_details.contact && <div><div className="text-xs text-primary-light-brown">Contact</div><div>{propertyData.auction_details.contact}</div></div>}
+                      {propertyData.auction_details.description && <div className="sm:col-span-2"><div className="text-xs text-primary-light-brown">Additional information</div><div className="whitespace-pre-line">{propertyData.auction_details.description}</div></div>}
+                    </div>
+                  </section>
+                </>
+              ) : null}
+
+              <button type="button" onClick={() => { setInitialInterestedIn(["inspection"]); setIsEnquiryOpen(true); }} className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90">Request an Inspection</button>
 
               <div className="w-full h-[1px] bg-[#EBE5D9]" />
 
@@ -253,14 +317,16 @@ const PropertyDetail = () => {
                   slidesOffsetAfter={0}
                   className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
                 >
-                  {property.hosts.slice(0, 3).map((item) => (
+                  {traderHost ? (
                     <SwiperSlide
-                      key={item.id}
+                      key={traderHost.id}
                       className=" !w-[19.4375rem]"
                     >
-                      <TraderGridCard item={item} />
+                      <TraderGridCard item={traderHost} />
                     </SwiperSlide>
-                  ))}
+                  ) : (
+                    <p className="text-sm text-primary-light-brown">Host details are not available for this listing.</p>
+                  )}
                 </Swiper>
               </div>
 
@@ -272,7 +338,7 @@ const PropertyDetail = () => {
           </div>
 
           <aside className="w-full lg:w-[30%] hidden md:flex shrink-0 lg:sticky lg:top-32">
-            <PropertySidebar sidebar={property.sidebar} onEnquiry={() => setIsEnquiryOpen(true)} />
+            <PropertySidebar sidebar={property.sidebar} onEnquiry={openGeneralEnquiry} />
           </aside>
         </div>
       </main>
@@ -280,9 +346,9 @@ const PropertyDetail = () => {
         <FraudBanner />
       </div>
       <MobileStickyAction
-        price={property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
-        priceLabel={property.sidebar.price ? "fixed price" : undefined}
-        onEnquiry={() => setIsEnquiryOpen(true)}
+        price={property.sidebar.price}
+        priceLabel={undefined}
+        onEnquiry={openGeneralEnquiry}
       />
 
       <EnquiryModal
@@ -294,6 +360,7 @@ const PropertyDetail = () => {
         success={enquirySuccess}
         onClose={() => setIsEnquiryOpen(false)}
         onSubmit={submitEnquiry}
+        initialInterestedIn={initialInterestedIn}
       />
     </div>
   );

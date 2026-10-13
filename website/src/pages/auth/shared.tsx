@@ -12,7 +12,7 @@ export const ScreenWrapper = ({ children, className = '' }: { children: ReactNod
   }, []);
   return (
     <div className={`flex flex-col flex-1 overflow-hidden max-w-[40rem] w-full  mx-auto text-primary-brown ${className}`}>
-      <div className="sticky top-0 lg: z-10 px-8 pt-5 pb-3 lg:border-b lg:border-[#EDE8E4]">{sticky}</div>
+      <div className="sticky top-0 lg: z-10 px-8 pt-5 pb-3 ">{sticky}</div>
       <div ref={ref} className="flex-1 overflow-y-auto px-8 py-5 flex flex-col gap-3">{rest}</div>
     </div>
   );

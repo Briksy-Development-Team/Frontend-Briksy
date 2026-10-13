@@ -16,6 +16,7 @@ import { inquiryDetailConfig } from '../../../../../services/features/inquiries/
 import { builderProjectDetailConfig } from '../../../../../services/features/builder_projects/builder_project.detail.config'
 import { offerDetailConfig } from '../../../../../services/features/offers/offers.detail.config'
 import { serviceOfferDetailConfig } from '../../../../../services/features/service/service_offers.detail.config'
+import { buyerBriefDetailConfig } from '../../../../../services/features/buyer_briefs/buyer_brief.detail.config'
 import type { DetailConfig } from '../../../shared_detail/core/DetailTypes'
 
 type DetailRegistryEntry = {
@@ -70,6 +71,10 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
     config: inquiryDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
   },
+  'pricing-inquiries': {
+    config: inquiryDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/inquiries/${id}`,
+  },
   'builder-projects': {
     config: builderProjectDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/builder-projects/${id}`,
@@ -81,6 +86,10 @@ const detailRegistry: Record<string, DetailRegistryEntry> = {
   'service-offers': {
     config: serviceOfferDetailConfig,
     buildPath: (scopeBase, id) => `${scopeBase}/service-offers/${id}`,
+  },
+  'buyer-briefs': {
+    config: buyerBriefDetailConfig,
+    buildPath: (scopeBase, id) => `${scopeBase}/buyer-briefs/${id}`,
   },
 }
 
@@ -101,10 +110,11 @@ const matchesRouteIdentifier = (data: any, id: string) => {
 
 const GenericDetailPage = ({ rowActions, dataPatch }: { rowActions?: any[]; dataPatch?: any }) => {
   const location = useLocation()
-  const { id } = useParams()
+  const routeParams = useParams()
   const state = location.state as any
 
   const pathParts = location.pathname.split('/').filter(Boolean)
+  const id = routeParams.id ?? pathParts[pathParts.length - 1]
   const segmentIndex = pathParts[pathParts.length - 2] === 'detail' ? pathParts.length - 3 : pathParts.length - 2
   const entitySegment = pathParts[segmentIndex] ?? 'detail'
   const resolvedSegment = routeAliases[entitySegment] ?? entitySegment
@@ -189,9 +199,30 @@ const GenericDetailPage = ({ rowActions, dataPatch }: { rowActions?: any[]; data
 
         setData((response.data as { data?: unknown })?.data ?? response.data)
       })
-      .catch((fetchError: unknown) => {
+      .catch(async (fetchError: unknown) => {
         if (!active) {
           return
+        }
+
+        if (resolvedSegment === 'builder-projects') {
+          try {
+            const fallbackResponse = await axiosInstance.get<any>(`${scopeBase}/builder-projects`, {
+              params: { items_per_page: 100, per_page: 100 },
+            })
+            if (!active) return
+
+            const payload = fallbackResponse.data?.data
+            const items = Array.isArray(payload) ? payload : payload?.data ?? payload?.items ?? []
+            const project = items.find((item: any) => matchesRouteIdentifier(item, String(id)))
+
+            if (project) {
+              setData(project)
+              setError(null)
+              return
+            }
+          } catch {
+            // Fall through to the original API error.
+          }
         }
 
         // If we navigated from the list and have the row data, keep it visible.
@@ -203,7 +234,8 @@ const GenericDetailPage = ({ rowActions, dataPatch }: { rowActions?: any[]; data
         }
 
         setData(null)
-        setError(fetchError instanceof Error ? fetchError.message : 'Failed to load entity data')
+        const responseMessage = (fetchError as { response?: { data?: { message?: string } } })?.response?.data?.message
+        setError(responseMessage || (fetchError instanceof Error ? fetchError.message : 'Failed to load entity data'))
       })
       .finally(() => {
         if (active) {

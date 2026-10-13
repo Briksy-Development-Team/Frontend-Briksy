@@ -3,8 +3,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Mousewheel } from "swiper/modules";
 import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
+import type { Property } from '../../../../types/property';
 import { Link } from 'react-router-dom';
 import type { PublicBuilderProject } from '../../../../api/seeker/organization.api';
+import ProjectPlaceholder from '../../../../assets/place holder/builderbg.svg';
+import BusinessPlaceholder from '../../../../assets/place holder/bussinessholder.svg';
+import { useState } from 'react';
 
 export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
   const formatMoney = (val: number) => `$${val / 1000}k`;
@@ -73,7 +77,7 @@ export function BuilderHomes({ homes, description, propertiesHref }: { homes: an
       <div className="flex flex-col gap-2">
         <h2 className="text-[1.25rem] font-medium text-primary-brown">Our homes</h2>
         <p className="text-[0.875rem] text-primary-light-brown">
-          {description || "Properties currently published by this organisation."}
+          {description || "Real Estate currently published by this organisation."}
         </p>
       </div>
 
@@ -103,47 +107,70 @@ export function BuilderHomes({ homes, description, propertiesHref }: { homes: an
       </Swiper>
       <div>
         <Link to={propertiesHref || '/search?tab=properties'} className="inline-block bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
-          Show all Properties
+          Show all Real Estate
         </Link>
       </div>
     </div>
   );
 }
 
-export function BuilderProjects({ projects }: { projects: PublicBuilderProject[] }) {
+export function BuilderProjects({ projects, builderName, builderLogo }: { projects: PublicBuilderProject[]; builderName?: string; builderLogo?: string | null }) {
+  const [showAllProjects, setShowAllProjects] = useState(false);
+
   if (!projects.length) return null;
 
-  const renderInline = (text: string) => text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, index) => {
-    if (part.startsWith("**") && part.endsWith("**")) return <strong key={index}>{part.slice(2, -2)}</strong>;
-    if (part.startsWith("*") && part.endsWith("*")) return <em key={index}>{part.slice(1, -1)}</em>;
-    return part;
+  const visibleProjects = showAllProjects ? projects : projects.slice(0, 3);
+  const builderProjectToProperty = (project: PublicBuilderProject): Property => ({
+    id: project.id,
+    title: project.name,
+    address: [project.location, project.state, project.postcode].filter(Boolean).join(', ') || 'Australia',
+    location: [project.location, project.state].filter(Boolean).join(', ') || 'Australia',
+    image: project.images?.find((item) => item.is_primary)?.url || project.images?.[0]?.url || ProjectPlaceholder,
+    price: 0,
+    beds: 0,
+    baths: 0,
+    sqm: 0,
+    posterName: builderName || 'Builder project',
+    posterAvatar: builderLogo || BusinessPlaceholder,
+    badge: project.status ? project.status.replaceAll('_', ' ') : 'Project',
+    lat: 0,
+    lng: 0,
+    isFavourite: false,
   });
 
-  const renderDescription = (description: string) => description.split("\n").map((line, index) => {
-    if (line.startsWith("## ")) return <h4 key={index} className="mt-3 font-medium text-primary-brown">{renderInline(line.slice(3))}</h4>;
-    if (line.startsWith("- ")) return <p key={index} className="pl-3 before:mr-2 before:content-['•']">{renderInline(line.slice(2))}</p>;
-    return line ? <p key={index}>{renderInline(line)}</p> : <div key={index} className="h-2" />;
-  });
+  const renderProjectCard = (project: PublicBuilderProject) => {
+    return <PropertyGridCard item={builderProjectToProperty(project)} />;
+  };
 
   return <section className="flex flex-col gap-6" aria-labelledby="builder-projects-title">
     <div className="flex flex-col gap-2">
       <h2 id="builder-projects-title" className="text-[1.25rem] font-medium text-primary-brown">Our projects</h2>
       <p className="text-[0.875rem] text-primary-light-brown">Developments and projects from this builder.</p>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {projects.map((project) => <article key={project.id} className="rounded-2xl border border-[#EADFD2] bg-white p-5 shadow-sm">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-base font-medium text-primary-brown">{project.name}</h3>
-            {project.project_type && <p className="mt-1 text-sm text-primary-light-brown">{project.project_type}</p>}
-          </div>
-          <span className="shrink-0 rounded-full bg-[#F7F1EA] px-3 py-1 text-xs capitalize text-primary-brown">{project.status.replaceAll('_', ' ')}</span>
-        </div>
-        {(project.location || project.state || project.postcode) && <p className="mt-4 text-sm text-primary-light-brown">{[project.location, project.state, project.postcode].filter(Boolean).join(', ')}</p>}
-        {project.features && project.features.length > 0 && <ul className="mt-4 flex flex-wrap gap-2">{project.features.map((feature) => <li key={feature} className="rounded-full bg-[#F7F1EA] px-3 py-1 text-xs text-primary-brown">{feature}</li>)}</ul>}
-        {project.description && <div className="mt-3 space-y-1 text-sm leading-6 text-primary-light-brown">{renderDescription(project.description)}</div>}
-      </article>)}
-    </div>
+    {showAllProjects ? (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {visibleProjects.map((project) => <div key={project.id}>{renderProjectCard(project)}</div>)}
+      </div>
+    ) : (
+      <Swiper
+        modules={[Mousewheel]}
+        spaceBetween={14}
+        slidesPerView="auto"
+        watchOverflow={false}
+        grabCursor
+        mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
+        className="!ml-0 [overscroll-behavior-x:contain] touch-pan-y"
+      >
+        {visibleProjects.map((project) => <SwiperSlide key={project.id} className="!w-[19.4375rem]">{renderProjectCard(project)}</SwiperSlide>)}
+      </Swiper>
+    )}
+    {projects.length > 3 && (
+      <div>
+        <button type="button" onClick={() => setShowAllProjects((current) => !current)} className="mt-2 inline-block rounded-lg border border-white-100 bg-white px-5 py-2 text-[0.875rem] font-medium text-primary-brown transition-colors hover:bg-white-50">
+          {showAllProjects ? 'Show fewer Projects' : 'Show all Projects'}
+        </button>
+      </div>
+    )}
   </section>;
 }
 

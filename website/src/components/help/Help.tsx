@@ -121,7 +121,13 @@ const Help = () => {
         <div className="min-h-screen mx-auto md:w-full font-helvetica pb-10 md:pb-20 relative  md:mt-28  md:px-0">
             <div className="flex bg-white md:hidden items-center mb-4 gap-3 px-5 py-5 ">
                 <button
-                    onClick={() => navigate("/profile")}
+                    onClick={() => {
+                        if (window.history.length > 1) {
+                            navigate(-1);
+                        } else {
+                            navigate("/profile");
+                        }
+                    }}
                     className="flex items-center gap-2  text-[#342511] text-[1.25rem] font-medium"
                 >
                     <ArrowLeft className=" w-5 h-5" />

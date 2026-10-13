@@ -34,6 +34,7 @@ export const ServiceEnquiry = ({ open, onClose, organizationId, companyName, sub
             organization_id: organizationId,
             lead_source: "service_profile",
             subject: values.subject,
+            interested_in: ["property_information"],
             message: values.message,
             seeker_name: values.seeker_name,
             seeker_email: values.seeker_email,

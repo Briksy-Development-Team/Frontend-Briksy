@@ -31,7 +31,7 @@ const Myprivacy = () => {
         if (window.history.length > 1) {
             navigate(-1);
         } else {
-            navigate("/");
+            navigate("/profile");
         }
     };
 

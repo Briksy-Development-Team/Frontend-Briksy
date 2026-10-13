@@ -26,7 +26,7 @@ export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
               </button>
             ) : item.isBack && !isLast ? (
               <button 
-                onClick={() => navigate(-1)} 
+                onClick={() => (item.href ? navigate(item.href) : navigate(-1))} 
                 className="hover:text-primary-brown transition-colors cursor-pointer"
               >
                 {item.label}

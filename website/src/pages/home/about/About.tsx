@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 const stats = [
   { end: 340,  suffix: "+",  decimals: 0, comma: false, label: "Verified builders on platform" },
-  { end: 1200, suffix: "+",  decimals: 0, comma: true,  label: "Properties Listed" },
+  { end: 1200, suffix: "+",  decimals: 0, comma: true,  label: "Real Estate Listed" },
   { end: 15,   suffix: "+",  decimals: 0, comma: false, label: "Property Services Available" },
   { end: 4.8,  suffix: "",   decimals: 1, comma: false, label: "Average Platform Rating" },
 ];

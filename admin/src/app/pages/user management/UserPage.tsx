@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Routes, Route, Outlet, Navigate } from "react-router-dom"
 import OrganizationPage from "./user/OrganizationPage"
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage"
@@ -7,7 +7,7 @@ import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmMo
 import { useRoleAccess } from "../../modules/auth"
 import { useToast } from "../../services/ui/toast/useToast"
 import { getAuth } from "../../modules/auth/core/AuthHelpers"
-import { updateOrganizationApi, deleteOrganizationApi } from "../../services/features/organization/organization.api"
+import { fetchOrganizationTypesApi, updateOrganizationApi, deleteOrganizationApi } from "../../services/features/organization/organization.api"
 import type { Organization } from "../../services/features/organization/organization.types"
 import type { OrganizationFormValues } from "../../services/features/organization/organization.types"
 
@@ -21,6 +21,11 @@ const UserPage = () => {
   const [editingOrganization, setEditingOrganization] = useState<Organization | null>(null)
   const [deletingOrganization, setDeletingOrganization] = useState<Organization | null>(null)
   const [saving, setSaving] = useState(false)
+  const [agentTypes, setAgentTypes] = useState<Array<{ slug: string; label?: string; name: string }>>([])
+
+  useEffect(() => {
+    void fetchOrganizationTypesApi().then(setAgentTypes).catch(() => undefined)
+  }, [])
 
   const organizationRowActions = [
     ...(canUpdate
@@ -73,8 +78,9 @@ const UserPage = () => {
       <Routes>
         <Route element={<Outlet />}>
           <Route path="organization" element={<Navigate to="organization/real-estate" replace />} />
-          <Route path="organization/real-estate" element={<OrganizationPage key="real-estate" rowActions={organizationRowActions} title="Real Estate" subtitle="All registered real estate organisations" typeSlugs={["real-estate"]} businessTypes={["organisation"]} />} />
-          <Route path="organization/buyers-agent" element={<OrganizationPage key="buyers-agent" rowActions={organizationRowActions} title="Buyers Agent" subtitle="All registered buyers agent organisations" typeSlugs={["buyers-agent"]} businessTypes={["organisation"]} />} />
+          {agentTypes.map((type) => <Route key={type.slug} path={`organization/${type.slug}`} element={<OrganizationPage key={type.slug} rowActions={organizationRowActions} title={type.label || type.name} subtitle={`All registered ${type.label || type.name} organisations`} typeSlugs={[type.slug]} businessTypes={["organisation"]} />} />)}
+          <Route path="organization/real-estate" element={<OrganizationPage key="real-estate" rowActions={organizationRowActions} title="Real Estate" subtitle="All registered real estate agencies" typeSlugs={["real-estate"]} businessTypes={["organisation"]} />} />
+          <Route path="organization/buyers-agent" element={<OrganizationPage key="buyers-agent-compat" rowActions={organizationRowActions} title="Buyer Agents" subtitle="All registered buyer agent organisations" typeSlugs={["buyers-agent"]} businessTypes={["organisation"]} />} />
           <Route path="organization/builders" element={<OrganizationPage key="builders" rowActions={organizationRowActions} title="Builders" subtitle="All registered builder companies" typeSlugs={["builders"]} businessTypes={["company"]} />} />
           <Route path="organization/trades-professionals" element={<OrganizationPage key="trades-professionals" rowActions={organizationRowActions} title="Trades & Professionals" subtitle="All registered trade and professional companies" typeSlugs={["trades-professionals"]} businessTypes={["company"]} />} />
           <Route path="organization/:id" element={<GenericDetailPage rowActions={organizationRowActions} />} />

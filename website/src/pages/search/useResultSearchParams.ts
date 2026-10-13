@@ -7,7 +7,7 @@ const CLEAN_ROUTES: Record<string, Record<string, string>> = {
   "/builders": { type: "builder" },
   "/agents": { type: "builder", tab: "agents" },
   "/professionals": { type: "trader" },
-  "/commercials": { type: "comercial" },
+  "/commercials": { type: "commercial" },
 };
 
 const matchesRoute = (params: URLSearchParams, routeParams: Record<string, string>) => {
@@ -21,8 +21,10 @@ export const useResultSearchParams = (): [URLSearchParams, (next: URLSearchParam
   const routeParams = CLEAN_ROUTES[location.pathname];
   const searchParams = new URLSearchParams(location.search);
 
-  if (routeParams && !location.search) {
-    Object.entries(routeParams).forEach(([key, value]) => searchParams.set(key, value));
+  if (routeParams) {
+    Object.entries(routeParams).forEach(([key, value]) => {
+      if (!searchParams.has(key)) searchParams.set(key, value);
+    });
   }
 
   const setSearchParams = (next: URLSearchParams) => {

@@ -84,6 +84,23 @@ const CategoryDashboard = ({ summary }: Props) => {
       link: "/admin/buyer-briefs",
       linkLabel: "Manage Buyer Briefs",
     },
+    "real-estate-agent": {
+      title: "Real Estate Agent Dashboard",
+      description: "Manage your agent brief and enquiry activity.",
+      metrics: [
+        ["Team Members", summary.metrics.team_members],
+        ["Agent Briefs", summary.metrics.buyer_briefs ?? 0],
+        ["New Enquiries", summary.metrics.new_inquiries],
+      ],
+      chartTitle: "Agent Activity",
+      chartSubtitle: "Briefs and enquiries created over the last six months",
+      series: [
+        { name: "Briefs", data: rows.map((row) => row.buyer_briefs), color: "#bf9f7d" },
+        { name: "Enquiries", data: rows.map((row) => row.inquiries), color: "#df4235" },
+      ],
+      link: "/admin/buyer-management",
+      linkLabel: "Manage Agent Briefs",
+    },
     builders: {
       title: "Builders Dashboard",
       description: "Track developments, building projects, and project enquiries.",
@@ -207,7 +224,7 @@ const CategoryDashboard = ({ summary }: Props) => {
             <div className="card-body pt-0">
               <div className="d-flex flex-column gap-4">
                 {category === "real-estate" && <><div className="d-flex justify-content-between"><span>Published listings</span><strong>{summary.metrics.published_properties}</strong></div><div className="d-flex justify-content-between"><span>Pending review</span><strong>{summary.metrics.pending_review_properties ?? 0}</strong></div><div className="d-flex justify-content-between"><span>Archived listings</span><strong>{summary.metrics.archived_properties ?? 0}</strong></div></>}
-                {category === "buyers-agent" && <><div className="d-flex justify-content-between"><span>Buyer briefs</span><strong>{summary.metrics.buyer_briefs ?? 0}</strong></div><div className="d-flex justify-content-between"><span>New enquiries</span><strong>{summary.metrics.new_inquiries}</strong></div><div className="d-flex justify-content-between"><span>Saved-search capability</span><strong>{summary.capabilities?.saved_searches ? "Enabled" : "Not enabled"}</strong></div></>}
+                {(category === "buyers-agent" || category === "real-estate-agent") && <><div className="d-flex justify-content-between"><span>{category === "real-estate-agent" ? "Agent briefs" : "Buyer briefs"}</span><strong>{summary.metrics.buyer_briefs ?? 0}</strong></div><div className="d-flex justify-content-between"><span>New enquiries</span><strong>{summary.metrics.new_inquiries}</strong></div><div className="d-flex justify-content-between"><span>Saved-search capability</span><strong>{summary.capabilities?.saved_searches ? "Enabled" : "Not enabled"}</strong></div></>}
                 {category === "builders" && <><div className="d-flex justify-content-between"><span>Building projects</span><strong>{summary.metrics.builder_projects ?? 0}</strong></div><div className="d-flex justify-content-between"><span>New enquiries</span><strong>{summary.metrics.new_inquiries}</strong></div><div className="d-flex justify-content-between"><span>Project capability</span><strong>{summary.capabilities?.projects ? "Enabled" : "Not enabled"}</strong></div></>}
                 {category === "trades-professionals" && <><div className="d-flex justify-content-between"><span>Services</span><strong>{summary.metrics.services}</strong></div><div className="d-flex justify-content-between"><span>Coverage regions</span><strong>{summary.metrics.service_regions ?? 0}</strong></div><div className="d-flex justify-content-between"><span>Service map</span><strong>{summary.capabilities?.service_map ? "Enabled" : "Not enabled"}</strong></div></>}
               </div>

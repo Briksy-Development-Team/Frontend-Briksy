@@ -12,8 +12,20 @@ export type PublicProperty = {
   is_favourite?: boolean;
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED" | null;
+  is_auction?: boolean;
+  auction_details?: {
+    date?: string;
+    time?: string;
+    venue?: string;
+    auctioneer?: string;
+    contact?: string;
+    description?: string;
+  } | null;
   property_category?: string | null;
   price?: number | null;
+  pricing_type?: "fixed" | "estimated" | null;
+  price_min?: number | null;
+  price_max?: number | null;
 
   property_type?: {
     name: string;
@@ -27,9 +39,12 @@ export type PublicProperty = {
   features?: {
     name: string;
     slug: string;
+    category?: string | null;
+    category_slug?: string | null;
   }[];
 
   rating: number;
+  distance_km?: number | null;
   bedroom_option?: string | null;
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;
@@ -50,6 +65,12 @@ export type PublicProperty = {
     banner_url?: string | null;
     is_verified: boolean;
   } | null;
+  creator?: {
+    id: string;
+    name: string;
+    email?: string | null;
+    mobile_number?: string | null;
+  } | null;
 
   media?: {
     id?: string;
@@ -67,6 +88,7 @@ export type PublicProperty = {
     url: string | null;
     is_primary: boolean;
   }[];
+  floorplan?: { id?: string; url: string | null } | null;
 };
 
 export const getProperties = async (

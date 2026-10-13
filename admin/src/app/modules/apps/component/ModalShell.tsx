@@ -8,6 +8,7 @@ type Props = {
   isSubmitting?: boolean
   submitLabel?: string
   isValid?: boolean
+  closeOnSubmit?: boolean
   dialogClassName?: string
   children: React.ReactNode
 }
@@ -19,6 +20,7 @@ const ModalShell = ({
   isSubmitting = false,
   submitLabel = 'Save',
   isValid = true,
+  closeOnSubmit = true,
   dialogClassName = "mw-650px",
   children,
 }: Props) => {
@@ -29,7 +31,7 @@ const ModalShell = ({
       await result
     }
 
-    onClose()
+    if (closeOnSubmit) onClose()
   }
 
   return (

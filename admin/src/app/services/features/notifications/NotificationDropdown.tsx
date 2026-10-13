@@ -28,12 +28,18 @@ const NotificationDropdown = ({ items, portalBase, onMarkRead, onMarkAllRead }: 
         ) : (
           items.map((item) => (
             <div key={item.id} className="d-flex flex-stack px-5 py-4 border-bottom">
-              <div className="me-3">
+              <Link
+                to={item.action_url || `${portalBase}/notifications`}
+                className="me-3 text-decoration-none flex-grow-1"
+                onClick={() => {
+                  if (!item.read_at) void onMarkRead(item.id);
+                }}
+              >
                 <div className="fw-semibold text-gray-800">{item.title}</div>
                 <div className="text-muted fs-7 text-truncate" style={{ maxWidth: 240 }}>
                   {item.message}
                 </div>
-              </div>
+              </Link>
               <div className="d-flex flex-column align-items-end gap-2">
                 <span className={`badge badge-light-${item.priority === "high" ? "danger" : item.priority === "low" ? "secondary" : "primary"}`}>
                   {item.priority}

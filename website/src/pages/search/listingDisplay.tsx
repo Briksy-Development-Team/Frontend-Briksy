@@ -24,14 +24,14 @@ export const LISTING_DISPLAY: Record<
     newlyTitle: "Newly Listed Builders",
     Card: BuilderGridCard,
   },
-  comercial: {
-    popularTitle: "Popular Commercial Properties",
-    newlyTitle: "Newly Listed Commercial Properties",
+  commercial: {
+    popularTitle: "Popular Commercial",
+    newlyTitle: "Newly Listed Commercial",
     Card: PropertyGridCard,
   },
   property: {
-    popularTitle: "Popular Properties",
-    newlyTitle: "Newly Listed Properties",
+    popularTitle: "Popular Real Estate",
+    newlyTitle: "Newly Listed Real Estate",
     Card: PropertyGridCard,
   },
 };

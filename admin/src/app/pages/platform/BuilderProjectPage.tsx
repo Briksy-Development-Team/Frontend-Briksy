@@ -5,9 +5,6 @@ import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityLi
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
-import PropertyModal from "../../services/features/properties/component/PropertyModal";
-import { createPropertyApi } from "../../services/features/properties/property.api";
-import type { PropertyFormValues } from "../../services/features/properties/property.types";
 import { builderProjectConfig } from "../../services/features/builder_projects/builder_project.config";
 import type { BuilderProject } from "../../services/features/builder_projects/builder_project.types";
 import {
@@ -18,13 +15,13 @@ import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityT
 
 export default function BuilderProjectPage() {
   const location = useLocation();
+  const isDetailPage = location.pathname.split("/").filter(Boolean).length > 2;
   const reviewMode = location.pathname.startsWith("/super-admin/");
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [savingProject, setSavingProject] = useState(false);
-  const [savingProperty, setSavingProperty] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [editingProject, setEditingProject] = useState<BuilderProject | null>(null);
   const [data, setData] = useState<BuilderProject[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -35,9 +32,12 @@ export default function BuilderProjectPage() {
         reviewMode ? "/super-admin/builder-projects" : "/admin/builder-projects",
         { params }
       );
-      const items = response.data.data.data ?? [];
+      const payload: any = response.data.data;
+      const items = Array.isArray(payload)
+        ? payload
+        : payload?.data ?? payload?.items ?? [];
       setData(items);
-      setTotal(response.data.data.total ?? items.length);
+      setTotal(payload?.total ?? items.length);
     } catch {
       setError("Builder projects could not be loaded.");
     }
@@ -54,15 +54,46 @@ export default function BuilderProjectPage() {
     setError(null);
     setNotice(null);
     try {
-      await axiosInstance.post("/admin/builder-projects", values);
+      if (editingProject) {
+        await axiosInstance.post(`/admin/builder-projects/${editingProject.id}`, toProjectFormData(values, true));
+      } else {
+        await axiosInstance.post("/admin/builder-projects", toProjectFormData(values));
+      }
       setShowProjectModal(false);
-      setNotice("Project submitted successfully. It will be published after Super Admin review.");
+      setEditingProject(null);
+      setNotice(editingProject
+        ? "Project updated successfully. It will be reviewed again before publication."
+        : "Project submitted successfully. It will be published after Super Admin review.");
       await fetchProjects(params);
     } catch (reason: any) {
-      setError(reason?.response?.data?.message ?? "Unable to add this project.");
+      setError(reason?.response?.data?.message ?? (editingProject ? "Unable to update this project." : "Unable to add this project."));
     } finally {
       setSavingProject(false);
     }
+  };
+
+  const deleteProject = async (id: string) => {
+    if (!window.confirm("Delete this builder project?")) return;
+
+    setError(null);
+    setNotice(null);
+    try {
+      await axiosInstance.delete(`/admin/builder-projects/${id}`);
+      setNotice("Project deleted successfully.");
+      await fetchProjects(params);
+    } catch (reason: any) {
+      setError(reason?.response?.data?.message ?? "Unable to delete this project.");
+    }
+  };
+
+  const deleteProjectMedia = async (mediaId: string) => {
+    if (!window.confirm("Delete this project media?")) return;
+    await axiosInstance.delete(`/media/${mediaId}`);
+    setEditingProject((current) => current ? {
+      ...current,
+      images: current.images?.filter((media) => media.id !== mediaId),
+      videos: current.videos?.filter((media) => media.id !== mediaId),
+    } : current);
   };
 
   const reviewProject = async (id: string, action: "approve" | "reject") => {
@@ -73,30 +104,65 @@ export default function BuilderProjectPage() {
 
     setError(null);
     try {
-      await axiosInstance.patch("/super-admin/builder-projects/" + id + "/" + action, rejection_reason
+      const response = await axiosInstance.patch("/super-admin/builder-projects/" + id + "/" + action, rejection_reason
         ? { rejection_reason }
         : undefined);
       setNotice(action === "approve" ? "Project approved and published." : "Project rejected.");
       await fetchProjects(params);
+      return response.data?.data;
     } catch (reason: any) {
       setError(reason?.response?.data?.message ?? "Unable to update this project.");
     }
   };
 
-  const saveProperty = async (values: PropertyFormValues) => {
-    setSavingProperty(true);
-    setError(null);
-    setNotice(null);
-    try {
-      await createPropertyApi(values);
-      setShowPropertyModal(false);
-      setNotice("Property submitted successfully. It will be published after Super Admin review.");
-    } catch (reason: any) {
-      setError(reason?.response?.data?.message ?? "Unable to add this property.");
-    } finally {
-      setSavingProperty(false);
-    }
-  };
+  if (isDetailPage) {
+    const detailActions = reviewMode ? [
+      {
+        label: "Approve & Publish",
+        className: "text-success",
+        onClick: (row: BuilderProject) => reviewProject(row.id, "approve"),
+      },
+      {
+        label: "Reject",
+        className: "text-danger",
+        onClick: (row: BuilderProject) => reviewProject(row.id, "reject"),
+      },
+    ] : [
+      {
+        label: "Edit",
+        permission: "project.update",
+        onClick: (row: BuilderProject) => {
+          setNotice(null);
+          setEditingProject(row);
+          setShowProjectModal(true);
+        },
+      },
+      {
+        label: "Delete",
+        className: "text-danger",
+        permission: "project.delete",
+        onClick: (row: BuilderProject) => void deleteProject(row.id),
+      },
+    ];
+
+    return (
+      <>
+        <GenericDetailPage rowActions={detailActions} />
+        {showProjectModal && (
+          <BuilderProjectModal
+            initialValues={editingProject}
+            isSubmitting={savingProject}
+            onClose={() => {
+              setShowProjectModal(false);
+              setEditingProject(null);
+            }}
+            onSubmit={saveProject}
+            onDeleteMedia={deleteProjectMedia}
+          />
+        )}
+      </>
+    );
+  }
 
   return (
     <Content>
@@ -113,20 +179,15 @@ export default function BuilderProjectPage() {
         columns={builderProjectConfig.columns}
         filtersConfig={builderProjectConfig.filters}
         enableRowClick={!reviewMode}
-        getRowLink={(row) => `/admin/builder-projects/${row.id}`}
+        getRowLink={(row) => `${reviewMode ? "/super-admin" : "/admin"}/builder-projects/${row.id}`}
         storageKey="builderProjectsColumns"
         headerActions={reviewMode ? [] : [
           {
-            label: "Add Property",
-            onClick: () => {
-              setNotice(null);
-              setShowPropertyModal(true);
-            },
-          },
-          {
             label: "Add Project",
+            permission: "project.create",
             onClick: () => {
               setNotice(null);
+              setEditingProject(null);
               setShowProjectModal(true);
             },
           },
@@ -135,33 +196,61 @@ export default function BuilderProjectPage() {
           {
             label: "Approve & Publish",
             className: "text-success",
-            showIf: (row: BuilderProject) => row.status === "Pending Review",
             onClick: (row: BuilderProject) => void reviewProject(row.id, "approve"),
           },
           {
             label: "Reject",
             className: "text-danger",
-            showIf: (row: BuilderProject) => row.status === "Pending Review",
             onClick: (row: BuilderProject) => void reviewProject(row.id, "reject"),
           },
-        ] : undefined}
+        ] : [
+          {
+            label: "Edit",
+            permission: "project.update",
+            onClick: (row: BuilderProject) => {
+              setNotice(null);
+              setEditingProject(row);
+              setShowProjectModal(true);
+            },
+          },
+          {
+            label: "Delete",
+            className: "text-danger",
+            permission: "project.delete",
+            onClick: (row: BuilderProject) => void deleteProject(row.id),
+          },
+        ]}
       />
 
       {showProjectModal && (
         <BuilderProjectModal
+          initialValues={editingProject}
           isSubmitting={savingProject}
-          onClose={() => setShowProjectModal(false)}
+          onClose={() => {
+            setShowProjectModal(false);
+            setEditingProject(null);
+          }}
           onSubmit={saveProject}
-        />
-      )}
-
-      {showPropertyModal && (
-        <PropertyModal
-          isSubmitting={savingProperty}
-          onClose={() => setShowPropertyModal(false)}
-          onSubmit={saveProperty}
+          onDeleteMedia={deleteProjectMedia}
         />
       )}
     </Content>
   );
 }
+
+const toProjectFormData = (payload: ProjectFormValues, methodOverride = false) => {
+  const formData = new FormData();
+  formData.append("name", payload.name);
+  formData.append("project_type", payload.project_type);
+  formData.append("status", payload.status);
+  formData.append("location", payload.location);
+  formData.append("state", payload.state);
+  formData.append("postcode", payload.postcode);
+  formData.append("description", payload.description);
+  if (payload.latitude !== "" && payload.latitude !== null && payload.latitude !== undefined) formData.append("latitude", String(payload.latitude));
+  if (payload.longitude !== "" && payload.longitude !== null && payload.longitude !== undefined) formData.append("longitude", String(payload.longitude));
+  payload.images.forEach((file) => formData.append("images[]", file));
+  payload.videos.forEach((file) => formData.append("videos[]", file));
+  if (methodOverride) formData.append("_method", "PUT");
+  return formData;
+};

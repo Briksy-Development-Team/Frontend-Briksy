@@ -7,6 +7,19 @@ import React from "react";
 const safeDate = (value: unknown) =>
   typeof value === "string" ? formatDateTime(value) : "—";
 
+const transactionStatusLabels: Record<string, string> = {
+  BUY: "For Sale",
+  LEASE: "For Rent",
+  SOLD: "Sold",
+  LEASED: "Leased",
+};
+
+const listingPurposeLabels: Record<string, string> = {
+  SELL: "For Sale",
+  RENT: "For Rent",
+  BOTH: "Sale & Rent",
+};
+
 export const propertyListConfig = {
   columns: [
     {
@@ -29,10 +42,16 @@ export const propertyListConfig = {
       Cell: ({ value }: { value: any }) => value || "—",
     },
     {
-      Header: "Purpose",
-      accessor: "listing_purpose",
-      Cell: ({ row, value }: { row: PropertyList; value: any }) => {
-        const label = row.property_category === "commercial" ? row.transaction_status : value ? ({ SELL: "For Sale", RENT: "For Rent", BOTH: "Sale & Rent" } as Record<string, string>)[value] : null;
+      Header: "Transaction / Listing Status",
+      accessor: "transaction_status",
+      Cell: ({ row }: { row: PropertyList | { original: PropertyList } }) => {
+        const property = "original" in row ? row.original : row;
+        const transactionStatus = property.transaction_status?.toUpperCase();
+        const label = transactionStatus
+          ? transactionStatusLabels[transactionStatus] ?? transactionStatus
+          : property.listing_purpose
+            ? listingPurposeLabels[property.listing_purpose]
+            : null;
         return label ? React.createElement("span", { className: "badge badge-light-primary" }, label) : "—";
       },
     },

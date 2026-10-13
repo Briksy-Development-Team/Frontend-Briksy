@@ -15,7 +15,7 @@ const BuilderGridCard = ({ item }: Props) => {
     text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   return (
     <Link
-      to={`/builder/${item.id}`}
+      to={`/${item.profileType === "agent" ? "agent" : "builder"}/${item.id}`}
       className="flex flex-col w-[19.4375rem] h-[28rem] pb-[6px] rounded-[20px] border border-transparent
        transition-colors duration-200 overflow-hidden mx-auto text-primary-brown bg-white hover:border-primary"
     >

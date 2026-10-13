@@ -40,3 +40,4 @@ const ModalWrapper = ({ isOpen, children }: ModalWrapperProps) => {
 };
 
 export default ModalWrapper;
+

@@ -47,8 +47,9 @@ const toFormData = (payload: ServiceFormValues) => {
 export type ServiceCategoryOption = { slug: string; label: string; name: string };
 
 export const fetchServiceCategoriesApi = async () => {
-  const res = await axiosInstance.get<ApiResponse<{ active: boolean; categories: ServiceCategoryOption[]; message?: string | null }>>(`${getBasePath()}/categories`);
-  return res.data.data;
+  const isSuperAdmin = getAuth()?.abilities?.some((ability) => ["super_admin", "super_admin_employee"].includes(ability));
+  const res = await axiosInstance.get<ApiResponse<ServiceCategoryOption[]>>(`${isSuperAdmin ? "/super-admin" : "/admin"}/service-categories`, { params: { active_only: true } });
+  return { active: true, categories: res.data.data ?? [] };
 };
 
 export const fetchServiceGroupApi = async (params: GetServiceListParams, organizationId?: string) => {

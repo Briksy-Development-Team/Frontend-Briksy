@@ -18,6 +18,8 @@ type OrganizationApi = {
   plan_id?: string;
   ranking_priority?: number;
   pending_properties_count?: number;
+  builder_project_count?: number;
+  pending_builder_projects_count?: number;
   slug?: string;
   stripe_customer_id?: string;
   brand_primary_color?: string;
@@ -31,6 +33,12 @@ type OrganizationApi = {
     name: string;
     slug: string;
   };
+  description?: string | null;
+  website?: string | null;
+  social_links?: Record<string, string>;
+  service_areas?: string[];
+  intro_video_url?: string | null;
+  reel_urls?: string[];
 };
 
 export const mapOrganization = (item: OrganizationApi): Organization => ({
@@ -50,6 +58,8 @@ export const mapOrganization = (item: OrganizationApi): Organization => ({
   plan_id: item.plan_id ?? null,
   ranking_priority: item.ranking_priority ?? undefined,
   pending_properties_count: item.pending_properties_count ?? 0,
+  builder_project_count: item.builder_project_count ?? 0,
+  pending_builder_projects_count: item.pending_builder_projects_count ?? 0,
   stripe_customer_id: item.stripe_customer_id ?? null,
   brand_primary_color: item.brand_primary_color ?? undefined,
   brand_secondary_color: item.brand_secondary_color ?? undefined,
@@ -60,4 +70,10 @@ export const mapOrganization = (item: OrganizationApi): Organization => ({
   state: item.state ?? undefined,
   postcode: item.postcode ?? undefined,
   type: item.type ?? undefined, // ← was missing entirely
+  description: item.description ?? null,
+  website: item.website ?? null,
+  social_links: item.social_links ?? {},
+  service_areas: item.service_areas ?? [],
+  intro_video_url: item.intro_video_url ?? null,
+  reel_urls: item.reel_urls ?? [],
 });
