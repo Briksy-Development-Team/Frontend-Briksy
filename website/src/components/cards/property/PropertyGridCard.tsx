@@ -37,7 +37,7 @@ const PropertyGridCard = ({ item }: Props) => {
         />
 
           {(item.purpose || item.badge || item.isAuction) && (
-            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.75rem] font-medium">
+            <span className="absolute left-3 top-3 rounded-full bg-white/60 px-3 py-1 text-[0.75rem] font-medium">
             {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
             </span>
           )}

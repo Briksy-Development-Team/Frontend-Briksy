@@ -10,8 +10,6 @@ import {
   readPendingFavoriteAction,
 } from '../../../auth/auth.intent'
 
-import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
-
 import type { Screen } from '../shared'
 
 import { LoginScreen } from './LoginScreen'
@@ -56,8 +54,6 @@ const Login = () => {
     const finish = async (): Promise<void> => {
       try {
         if (pending?.type === 'favorite' && pending.targetId) {
-          await toggleSeekerFavorite(pending.targetId, pending.favoriteType ?? 'property')
-
           clearPendingFavoriteAction()
 
           navigate(
@@ -99,7 +95,7 @@ const Login = () => {
           shadow-none
           overflow-hidden
           w-full
-          lg:max-w-[55.5rem]
+          lg:max-w-[60rem]
           lg:bg-white
           mx-auto
           origin-center

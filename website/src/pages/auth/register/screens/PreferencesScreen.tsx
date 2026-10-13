@@ -12,7 +12,7 @@ export const PreferencesScreen = ({ go }: { go: (s: RegisterStep) => void }) => 
   const toggle = (p: string) => setSel(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper onBack={() => go('details')} hasSticky>
       <StepIndicator step={2} go={go} />
       <AuthHeader title="What are you here for?" subtitle="So your searches and alerts start out useful. You can change all of this later." />
       <div className="flex flex-col gap-2">

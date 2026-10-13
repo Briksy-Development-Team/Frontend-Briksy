@@ -1,18 +1,10 @@
-import { ArrowLeft } from 'lucide-react';
-
 import { type Screen, ScreenWrapper, Btn, IconBubble, AuthHeader } from '../shared';
 
 export const UpdatedScreen = ({ go }: { go: (s: Screen) => void }) => (
-  <ScreenWrapper className="w-full lg:px-[3rem] py-[2.75rem] flex flex-col gap-[1.125rem] lg:gap-[1.5rem] mx-auto text-[primary-brown] text-center">
-
-    <button
-      type="button"
-      onClick={() => go('new-password')}
-      className="absolute top-[1.5rem] left-[1.5rem] text-primary-brown hover:text-primary-light-brown transition-colors"
-      aria-label="Back to login"
-    >
-      <ArrowLeft className="w-[1.25rem] h-[1.25rem]" />
-    </button>
+  <ScreenWrapper
+    onBack={() => go('login')}
+    className="w-full pb-8 flex flex-col gap-[1.125rem] lg:gap-[1.5rem] mx-auto text-primary-brown text-center"
+  >
 
     <div className="lg:flex hidden  justify-center">
       <IconBubble>

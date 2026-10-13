@@ -5,20 +5,12 @@ import {
   IconBubble,
   AuthHeader,
 } from "../shared";
-import { ArrowLeft } from 'lucide-react';
-
 
 export const LinkSentScreen = ({ go }: { go: (s: Screen) => void }) => (
-  <ScreenWrapper className="w-full lg:px-[3rem] py-[2.75rem] flex flex-col gap-[1.125rem] lg:gap-[1.5rem]  mx-auto text-[primary-brown]">
-
-    <button
-      type="button"
-      onClick={() => go('forgot')}
-      className="absolute top-[1.5rem] left-[1.5rem] text-primary-brown hover:text-primary-light-brown transition-colors"
-      aria-label="Back to login"
-    >
-      <ArrowLeft className="w-[1.25rem] h-[1.25rem]" />
-    </button>
+  <ScreenWrapper
+    onBack={() => go('forgot')}
+    className="w-full pb-8 flex flex-col gap-[1.125rem] lg:gap-[1.5rem] mx-auto text-primary-brown"
+  >
     <span className="hidden lg:flex">
       {" "}
       <IconBubble>

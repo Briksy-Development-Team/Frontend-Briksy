@@ -3,13 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import apple from '../../../assets/login/apple.svg';
 import google from '../../../assets/login/google.svg';
 import LogoM from '../../../assets/logo/logomobile.svg';
-import {
-  type Screen,
-  ScreenWrapper,
-  Field,
-  Btn,
-  AuthHeader,
-} from '../shared';
+import { type Screen, ScreenWrapper, Field } from '../shared';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 
@@ -17,169 +11,145 @@ type LoginScreenProps = {
   go: (s: Screen) => void;
 };
 
+const socials = [
+  { src: apple, name: 'Apple' },
+  { src: google, name: 'Google' },
+];
+
 export const LoginScreen = ({ go }: LoginScreenProps) => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const update = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [key]: '' }));
+  };
+
   const submit = async () => {
-    const validationErrors = {
-      email: !email.trim() ? "Email is required" : "",
-      password: !password ? "Password is required" : "",
+    const newErrors = {
+      email: form.email.trim() ? '' : 'Email is required',
+      password: form.password ? '' : 'Password is required',
     };
+    setErrors(newErrors);
+    if (newErrors.email || newErrors.password) return;
 
-    if (validationErrors.email || validationErrors.password) {
-      setErrors(validationErrors);
-      return;
-    }
-
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
-      setErrors({
-        email: "",
-        password: "",
-      });
-
-      const response = await login({
-        email: email.trim(),
-        password,
-      });
+      const response = await login({ email: form.email.trim(), password: form.password });
 
       if (response.abilities.includes('seeker')) {
-        navigate("/", { replace: true });
-      } else {
-        window.localStorage.setItem('kt-auth-react-v', JSON.stringify({
-          api_token: response.token,
-          token_type: response.token_type,
-          abilities: response.abilities,
-          user: response.user,
-        }));
-        const isSuperAdmin = response.abilities.some((ability) => ability.startsWith('super_admin'));
-        window.location.assign(isSuperAdmin ? '/super-admin/dashboard' : '/admin/dashboard');
+        navigate('/', { replace: true });
+        return;
       }
-    } catch (error) {
-      setErrors({ email: "", password: "We couldn't sign you in with those details." });
+
+      window.localStorage.setItem('kt-auth-react-v', JSON.stringify({
+        api_token: response.token,
+        token_type: response.token_type,
+        abilities: response.abilities,
+        user: response.user,
+      }));
+      const isSuperAdmin = response.abilities.some((a) => a.startsWith('super_admin'));
+      window.location.assign(isSuperAdmin ? '/super-admin/dashboard' : '/admin/dashboard');
+    } catch {
+      setErrors({ email: '', password: "We couldn't sign you in with those details." });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <ScreenWrapper className="w-full lg:px-[3rem] py-[2.75rem] h-screen lg:h-auto flex flex-col   lg:gap-[1.5rem] mx-auto text-[primary-brown]">
-      <img
-        src={LogoM}
-        alt=""
-        className="block lg:hidden h-[4.1925rem] mx-auto w-[3.0556rem]"
-      />
-      <AuthHeader
-        title="Log in"
-        subtitle="Sign in to continue to your Briksy account."
-      />
+    <ScreenWrapper className="w-full pb-8 h-screen lg:h-auto flex flex-col mx-auto text-primary-brown">
+      <img src={LogoM} alt="Briksy" className="block lg:hidden h-[3.5rem] mx-auto w-auto mb-1" />
 
-      <div className="flex flex-col gap-[0.75rem]">
-        <Field
-          label="Email Address"
-          type="email"
-          placeholder="you@example.com"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
+      <div className="flex flex-col gap-[26px] text-[#342511]">
+        <h2 className="text-[1.875rem] font-medium leading-[2.25rem] tracking-[-0.03em]">Log in</h2>
 
-            setErrors((previous) => ({
-              ...previous,
-              email: "",
-            }));
-          }}
-          error={errors.email}
-        />
+        <div className="flex flex-col gap-4">
+          <Field
+            label="Email Address"
+            type="email"
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={update('email')}
+            error={errors.email}
+          />
 
-        <Field
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
+          <Field
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="••••••••"
+            value={form.password}
+            onChange={update('password')}
+            error={errors.password}
+          >
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-light-brown hover:text-primary-brown transition-colors cursor-pointer"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </Field>
+        </div>
 
-            setErrors((previous) => ({
-              ...previous,
-              password: "",
-            }));
-          }}
-          error={errors.password}
-        >
+        <div className="flex items-center justify-between gap-2 text-sm">
+          <div className="flex items-center gap-1.5">
+            <span>Not a member yet?</span>
+            <Link to="/register" className="underline underline-offset-2 hover:text-primary-light-brown transition-colors">
+              Create an account
+            </Link>
+          </div>
+
           <button
             type="button"
-            onClick={() => setShowPassword((previous) => !previous)}
-            className="absolute right-[0.75rem] top-1/2 -translate-y-1/2 text-[#A89F95] hover:text-[primary-brown] transition-colors"
+            onClick={() => go('forgot')}
+            className="text-xs underline underline-offset-2 hover:text-primary-light-brown transition-colors cursor-pointer"
           >
-            {showPassword ? (
-              <EyeOff className="w-[1.25rem] h-[1.25rem]" />
-            ) : (
-              <Eye className="w-[1.25rem] h-[1.25rem]" />
-            )}
+            Forgot your password?
           </button>
-        </Field>
-      </div>
+        </div>
 
-      <div className="flex flex-col-reverse lg:flex-row lg:items-center justify-between mt-[-0.25rem]">
-        <label className="flex items-center gap-[0.5rem]  w-full text-[0.875rem] text-primary-brown cursor-pointer select-none">
-          <input
-            type="checkbox"
-            className="accent-primary-brown rounded  w-[1rem] h-[1rem]"
-          />
-          Keep me signed in
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input type="checkbox" className="peer sr-only" />
+          <div className="w-[22px] h-[22px] rounded-[5px] border border-[#EDE8E4] bg-white hover:border-primary-brown flex items-center justify-center shrink-0 transition-colors peer-checked:bg-[#342511] peer-checked:border-[#342511] peer-checked:[&>svg]:block">
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none" className="hidden">
+              <path d="M1.5 5L4.5 8L10.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <span className="text-base leading-6">Keep me signed in on this device</span>
         </label>
 
         <button
           type="button"
-          onClick={() => go("forgot")}
-          className="text-[0.75rem] text-[primary-light-brown] text-nowrap  text-end hover:text-[#3D2C1E] underline transition-colors"
+          onClick={submit}
+          disabled={isLoading}
+          className="w-full bg-[#342511] hover:bg-[#281c0c] text-white font-medium rounded-full h-[50px] transition-colors text-sm cursor-pointer disabled:opacity-70"
         >
-          Forgot password?
-        </button>
-      </div>
-
-      <Btn onClick={submit}>{isLoading ? "Logging in..." : "Login"}</Btn>
-
-      <p className="text-primary-light-brown text-sm   text-center">
-        Or continue with
-      </p>
-
-      <div className="flex mt-2 gap-[0.75rem]">
-        <button
-          type="button"
-          className="flex-1 flex items-center justify-center border border-slate-300 rounded-[56.25rem] py-[0.625rem]  "
-        >
-          <img src={apple} className="h-[1.25rem] w-[1.25rem]" alt="Apple" />
+          {isLoading ? 'Logging in...' : 'Continue'}
         </button>
 
-        <button
-          type="button"
-          className="flex-1 flex items-center justify-center border border-slate-300 rounded-[56.25rem] py-[0.625rem]  "
-        >
-          <img src={google} className="h-[1.25rem] w-[1.25rem]" alt="Google" />
-        </button>
+        <div className="flex flex-col gap-3.5">
+          <p className="text-center text-sm text-[#7C5F42]">Or continue with</p>
+
+          <div className="flex items-center gap-3 w-full">
+            {socials.map(({ src, name }) => (
+              <button
+                key={name}
+                type="button"
+                aria-label={`Continue with ${name}`}
+                className="flex-1 h-[50px] border border-[#8B6F54] rounded-full flex items-center justify-center hover:bg-[#F8F4EE]/60 transition-colors cursor-pointer"
+              >
+                <img src={src} alt={name} className="w-[22px] h-[22.5px]" />
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-
-      <div className="flex text-sm text-primary-light-brown lg:hidden justify-center gap-x-2 mt-20 w-full">
-        <p>Not a member yet?</p>
-        <Link to="/register" className="underline underline-offset-2 transition hover:text-white">Create an account</Link>
-      </div>
-
-
-
     </ScreenWrapper>
   );
 };

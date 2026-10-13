@@ -30,7 +30,9 @@ export const AuthPromptToast: React.FC<AuthPromptToastProps> = ({
 
   if (!isOpen) return null;
 
-  const handleAuthRedirect = (path: string) => {
+  const handleAuthRedirect = (e: React.MouseEvent, path: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (targetId) {
       storePendingFavoriteAction(String(targetId), window.location.pathname, targetType);
     }
@@ -41,6 +43,12 @@ export const AuthPromptToast: React.FC<AuthPromptToastProps> = ({
   return createPortal(
     <div
       role="alert"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onMouseDown={(e) => e.stopPropagation()}
+      onMouseUp={(e) => e.stopPropagation()}
       className="fixed top-6 right-6 z-[300] w-[calc(100%-3rem)] max-w-[400px] rounded-[24px] bg-[#E2CBB3] p-6 text-[#342511] shadow-[0_12px_36px_rgba(0,0,0,0.18)] transition-all animate-in fade-in slide-in-from-top-4 duration-300 font-helvetica"
     >
       <div className="flex items-start justify-between gap-3">
@@ -49,7 +57,11 @@ export const AuthPromptToast: React.FC<AuthPromptToastProps> = ({
         </h2>
         <button
           type="button"
-          onClick={onClose}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClose();
+          }}
           aria-label="Close notification"
           className="rounded-full p-1 text-[#8B6F54] hover:bg-black/5 hover:text-[#342511] transition-colors"
         >
@@ -64,7 +76,7 @@ export const AuthPromptToast: React.FC<AuthPromptToastProps> = ({
       <div className="mt-6 flex items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => handleAuthRedirect("/register")}
+          onClick={(e) => handleAuthRedirect(e, "/register")}
           className="rounded-full text-[0.875rem] font-medium text-[#8B6F54] hover:text-[#342511] transition-colors px-2 py-1"
         >
           Register
@@ -72,7 +84,7 @@ export const AuthPromptToast: React.FC<AuthPromptToastProps> = ({
 
         <button
           type="button"
-          onClick={() => handleAuthRedirect("/login")}
+          onClick={(e) => handleAuthRedirect(e, "/login")}
           className="rounded-full bg-[#342511] px-6 py-2.5 text-[0.875rem] font-medium text-[#F8F4EE] hover:bg-[#463116] transition-all shadow-sm"
         >
           Log in
