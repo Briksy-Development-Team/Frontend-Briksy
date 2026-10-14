@@ -30,6 +30,16 @@ export const SEARCH_CATEGORIES: Category[] = [
     ],
   },
   {
+    id: "auction",
+    label: "Auction",
+    title: "AUCTION",
+    desc: "Find properties going under the hammer",
+    icon: Prop,
+    resultType: "auction",
+    placeholder: "Search auctions by suburb or property type...",
+    propTypes: [],
+  },
+  {
     id: "agents",
     label: "Agents",
     title: "AGENTS",

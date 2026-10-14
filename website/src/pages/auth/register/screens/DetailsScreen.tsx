@@ -48,7 +48,7 @@ export const DetailsScreen = ({ go }: { go: (s: RegisterStep) => void }) => {
   };
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper hasSticky>
       <StepIndicator step={1} />
       <AuthHeader title="Create your account" subtitle="Free for anyone buying, renting or hiring. Takes about a minute." />
       <div className="flex gap-4">

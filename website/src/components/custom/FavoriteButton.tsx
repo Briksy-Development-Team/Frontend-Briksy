@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Heart } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
 import { getSeekerFavorites, invalidateSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
 import { getCollectionsForTarget, type SeekerCollection } from "../../api/seeker/collections.api";
@@ -25,15 +25,18 @@ export default function FavoriteButton({
   targetId,
   targetType = "property",
 }: FavoriteButtonProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isSeeker } = useAuth();
   const [isFavourite, setIsFavourite] = useState(initialIsFavourite);
   const [showCollections, setShowCollections] = useState(false);
   const [showAuthToast, setShowAuthToast] = useState(false);
   const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
   const [collectionsRequest, setCollectionsRequest] = useState<Promise<{ data: SeekerCollection[] }> | null>(null);
-  const [defaultCollectionId, setDefaultCollectionId] = useState<string | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const inFlight = useRef(false);
+  const isFavouriteRef = useRef(isFavourite);
+
+  useEffect(() => {
+    isFavouriteRef.current = isFavourite;
+  }, [isFavourite]);
 
   useEffect(() => {
     if (!isAuthenticated || !targetId) {
@@ -53,48 +56,56 @@ export default function FavoriteButton({
     };
   }, [initialIsFavourite, isAuthenticated, targetId, targetType]);
 
-  const handleClick = async (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!targetId || inFlight.current) return;
-    if (!isAuthenticated) {
+    if (!targetId) return;
+    if (!isAuthenticated || !isSeeker) {
       setShowAuthToast(true);
       return;
     }
 
-    // Optimistic update; open the collections popover only when adding
-    const wasLiked = isFavourite;
-    invalidateSeekerFavorites(targetType);
-    setIsFavourite(!wasLiked);
-    if (!wasLiked) {
-      setButtonRect(buttonRef.current?.getBoundingClientRect() ?? null);
-      setCollectionsRequest(getCollectionsForTarget(targetType, String(targetId)));
-    } else {
-      setCollectionsRequest(null);
-      setDefaultCollectionId(null);
-    }
-    setShowCollections(!wasLiked);
-
-    inFlight.current = true;
-    try {
-      const res = await toggleSeekerFavorite(String(targetId), targetType);
-      invalidateSeekerFavorites(targetType);
-      setIsFavourite(res.data.action === "added");
-      setDefaultCollectionId(res.data.action === "added" ? (res.data.collection_id ?? null) : null);
-    } catch (error) {
-      setIsFavourite(wasLiked);
+    if (showCollections) {
       setShowCollections(false);
-      console.error("Unable to update favourite.", error);
-    } finally {
-      inFlight.current = false;
+      return;
+    }
+
+    // Do NOT automatically register or change favourite state here.
+    // The collection popover opens below, and state only changes when a collection is chosen.
+    setButtonRect(buttonRef.current?.getBoundingClientRect() ?? null);
+    setCollectionsRequest(getCollectionsForTarget(targetType, String(targetId)));
+    setShowCollections(true);
+  };
+
+  const handleSelectionChange = async (hasSelections: boolean, _collectionId: string, isAdded: boolean) => {
+    try {
+      if (isAdded) {
+        const wasNotFav = !isFavouriteRef.current;
+        setIsFavourite(true);
+        isFavouriteRef.current = true;
+        if (wasNotFav) {
+          await toggleSeekerFavorite(String(targetId), targetType);
+        }
+        invalidateSeekerFavorites(targetType);
+      } else if (!hasSelections) {
+        const wasFav = isFavouriteRef.current;
+        setIsFavourite(false);
+        isFavouriteRef.current = false;
+        if (wasFav) {
+          await toggleSeekerFavorite(String(targetId), targetType);
+        }
+        invalidateSeekerFavorites(targetType);
+      }
+    } catch (error) {
+      console.error("Unable to update favourite status.", error);
     }
   };
 
   const iconColor = isFavourite
     ? "fill-red-500 text-red-500"
     : variant === "overlay"
-      ? "fill-transparent text-white"
-      : "fill-transparent text-current";
+      ? "fill-white/40 text-white"
+      : "fill-white/40 text-current";
 
   return (
     <>
@@ -106,7 +117,7 @@ export default function FavoriteButton({
         onClick={(e) => void handleClick(e)}
         className={`flex items-center justify-center transition-transform duration-200 active:scale-125 ${className}`}
       >
-        <Heart
+        <Bookmark
           size={iconSize}
           strokeWidth={variant === "overlay" ? 2.5 : 2}
           className={`transition-colors duration-200 ${iconColor}`}
@@ -120,7 +131,7 @@ export default function FavoriteButton({
           targetType={targetType}
           buttonRect={buttonRect}
           collectionsRequest={collectionsRequest}
-          defaultCollectionId={defaultCollectionId}
+          onSelectionChange={handleSelectionChange}
           onClose={() => setShowCollections(false)}
         />
       )}

@@ -72,7 +72,10 @@ const AppRouter = () => {
         <Route path="/agents" element={<SearchPage />} />
         <Route path="/professionals" element={<SearchPage />} />
         <Route path="/commercials" element={<SearchPage />} />
+        <Route path="/auction" element={<SearchPage />} />
+        <Route path="/auctions" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
+        <Route path="/auction/:id" element={<PropertyDetail isAuction={true} />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
         <Route path="/agent/:id" element={<BuilderDetail />} />
         <Route path="/builder-project/:id" element={<BuilderProjectDetail />} />

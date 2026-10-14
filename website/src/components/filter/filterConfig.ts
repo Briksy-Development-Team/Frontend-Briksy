@@ -117,6 +117,8 @@ const WEEKLY_PRICE_RANGE_TABS: PriceRangeTab[] = [
 ];
 
 
+
+
 export type FilterMode = string;
 
 export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"): FilterField[] => {
@@ -215,6 +217,18 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
         { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
         { key: "verified", label: "Verified Agent", type: "toggle", column: "right" },
         { key: "accepting", label: "Currently taking new listings", type: "toggle", column: "right" },
+      ];
+
+    case "auction":
+      return [
+        { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        { key: "price", label: "Guide Price", type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
+        { key: "showPriceOnly", label: "Only show properties with price guide", type: "singleCheckbox", column: "right" },
+        { key: "bedrooms", label: "Bedroom", type: "pillSelect", options: BEDROOM_OPTIONS, column: "right" },
+        { key: "bathrooms", label: "Bathrooms", type: "pillSelect", options: BATHROOM_OPTIONS, column: "right" },
+        { key: "carSpaces", label: "Car spaces", type: "pillSelect", options: CAR_SPACE_OPTIONS, column: "right" },
+        { key: "landSize", label: "Land Size *(m²)*", type: "minMax", minKey: "landSizeMin", maxKey: "landSizeMax", column: "right" },
+        { key: "keyword", label: "Keywords", type: "input", placeholder: "Air con, pool, solar, etc.", column: "right" },
       ];
 
     default:

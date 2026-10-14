@@ -179,6 +179,12 @@ const BuilderDetail = () => {
           <div className="w-full hidden md:flex lg:w-[25%] shrink-0 lg:sticky lg:top-32">
             <BuilderSidebar
               name={builder.name}
+              address={[builder.address, builder.state, builder.postcode].filter(Boolean).join(", ") || null}
+              contactPhone={builder.contact?.phone || null}
+              contactEmail={builder.contact?.email || null}
+              website={builder.website || null}
+              isAgent={isAgent}
+              isBuyerAgent={isBuyerAgent}
               onEnquiry={() => {
                 setEnquiryError(null);
                 setEnquirySuccess(null);
@@ -186,6 +192,7 @@ const BuilderDetail = () => {
               }}
             />
           </div>
+
         </div>
       </main>
       <div className="mt-10  w-full flex items-center justify-center ">

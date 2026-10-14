@@ -12,7 +12,7 @@ import { useResultSearchParams } from "./useResultSearchParams";
 import { serviceSlugForLabel } from "../../constants/serviceCategories";
 
 const isPropertyType = (resultType: ResultType) =>
-  resultType === "property" || resultType === "commercial";
+  resultType === "property" || resultType === "commercial" || resultType === "auction";
 
 const slugify = (value: string) =>
   value

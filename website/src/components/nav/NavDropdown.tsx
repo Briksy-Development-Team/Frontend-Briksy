@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 
-export type DropdownKey = "agents" | "trades" | null;
+export type DropdownKey = "agents" | "trades" | "commercial" | null;
 type MenuKey = NonNullable<DropdownKey>;
 
 type NavLink = { label: string; to: string };
@@ -12,6 +12,7 @@ import Randomone from "../../assets/navbar/randomone.svg"
 import Randomtwo from "../../assets/navbar/Randomtwo.svg"
 import { getAgentTypes, type PublicAgentType } from "../../api/agentTypes.api";
 import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
+import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
 const HIDDEN_CLIP = "inset(0% 0% 100% 0%)";
 const SHOWN_CLIP = "inset(0% 0% 0% 0%)";
@@ -31,6 +32,14 @@ const MENUS: Record<MenuKey, Menu> = {
     cards: [
       { label: "Find a Professional", to: "/professionals", bg: Randomone },
       { label: "List Your Business", to: "/subs", bg: Randomtwo },
+    ],
+  },
+  commercial: {
+    title: "Commercial",
+    columns: [[]],
+    cards: [
+      { label: "Find Commercial Property", to: "/commercials", bg: Randomone },
+      { label: "List Your Property", to: "/subs", bg: Randomtwo },
     ],
   },
 };
@@ -73,11 +82,19 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
     to: `/professionals?tab=${encodeURIComponent(category.slug)}&service_slug=${encodeURIComponent(category.slug)}`,
   }));
   const serviceMidpoint = Math.ceil(serviceLinks.length / 2);
+  const commercialCategory = SEARCH_CATEGORIES.find((c) => c.id === "commercial");
+  const commercialLinks = (commercialCategory?.propTypes ?? []).map((p) => ({
+    label: p.label,
+    to: p.id === "all" ? "/commercials" : `/commercials?tab=${encodeURIComponent(p.id)}`,
+  }));
+
   const menu = activeMenu === "agents"
     ? { ...baseMenu, columns: [agentTypes.map((type) => ({ label: type.label, to: `/agents?tab=${encodeURIComponent(type.slug)}` }))] }
     : activeMenu === "trades"
       ? { ...baseMenu, columns: [serviceLinks.slice(0, serviceMidpoint), serviceLinks.slice(serviceMidpoint)] }
-      : baseMenu;
+      : activeMenu === "commercial"
+        ? { ...baseMenu, columns: [commercialLinks] }
+        : baseMenu;
 
   // Open: mount. Close: animate out, then unmount.
   useEffect(() => {
@@ -135,7 +152,7 @@ export default function NavDropdown({ open, onClose }: { open: DropdownKey; onCl
             </p>
             <div className="grid  grid-cols-2  w-full ">
               {menu.columns.map((links, i) => (
-                <div key={i} className="flex flex-col gap-3">
+                <div key={i} className="flex flex-col gap-2">
                   {links.map((l) => (
                     <Link
                       key={l.label}

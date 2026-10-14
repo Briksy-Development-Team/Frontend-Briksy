@@ -14,7 +14,7 @@ export default function MobileStickyAction({
       {price ? (
         <div className="flex flex-col">
           <span className="text-[1.25rem] font-medium text-primary-brown leading-tight">
-            {price === 'Contact' ? price : `From ${price}`}
+            {price === 'Contact' || price === 'Auction' ? price : `From ${price}`}
           </span>
           {priceLabel && (
             <span className="text-[0.8125rem] text-primary-light-brown">

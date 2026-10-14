@@ -1,19 +1,82 @@
 import { useRef, useEffect, type InputHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import gsap from 'gsap';
 import { type RegisterStep } from './register/Register';
 
-export const ScreenWrapper = ({ children, className = '' }: { children: ReactNode; className?: string }) => {
+export const AuthBackButton = ({
+  onBack,
+  className = "",
+}: {
+  onBack?: () => void;
+  className?: string;
+}) => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleBack}
+      className={`flex items-center gap-2 text-[0.875rem] font-medium text-primary-brown hover:text-primary-light-brown transition-colors cursor-pointer self-start ${className}`}
+      aria-label="Back"
+    >
+      <ArrowLeft className="w-4 h-4 stroke-[2]" />
+      <span>Back</span>
+    </button>
+  );
+};
+
+export const ScreenWrapper = ({
+  children,
+  className = '',
+  onBack,
+  showBack = true,
+  hasSticky = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  onBack?: () => void;
+  showBack?: boolean;
+  hasSticky?: boolean;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const arr = Array.isArray(children) ? children : [children];
-  const [sticky, ...rest] = arr;
+  const sticky = hasSticky ? arr[0] : null;
+  const content = hasSticky ? arr.slice(1) : arr;
+
   useEffect(() => {
-    const ctx = gsap.context(() => gsap.fromTo(Array.from(ref.current!.children), { x: 36, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: 0.08, clearProps: 'all' }), ref.current!);
+    if (!ref.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        Array.from(ref.current!.children),
+        { x: 36, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: 0.08, clearProps: 'all' }
+      );
+    }, ref.current);
     return () => ctx.revert();
   }, []);
+
   return (
-    <div className={`flex flex-col flex-1 overflow-hidden max-w-[40rem] w-full  mx-auto text-primary-brown ${className}`}>
-      <div className="sticky top-0 lg: z-10 px-8 pt-5 pb-3 ">{sticky}</div>
-      <div ref={ref} className="flex-1 overflow-y-auto px-8 py-5 flex flex-col gap-3">{rest}</div>
+    <div className={`flex flex-col flex-1 overflow-hidden max-w-[40rem] w-full mx-auto text-primary-brown relative ${className}`}>
+      {showBack && (
+        <div className="px-6 lg:px-12 pt-6 pb-2 shrink-0">
+          <AuthBackButton onBack={onBack} />
+        </div>
+      )}
+      {sticky && <div className="sticky top-0 z-10 px-6 lg:px-12 pt-1 pb-3">{sticky}</div>}
+      <div ref={ref} className="flex-1 overflow-y-auto px-6 lg:px-12 py-3 flex flex-col gap-4">{content}</div>
     </div>
   );
 };

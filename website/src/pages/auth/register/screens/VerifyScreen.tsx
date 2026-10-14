@@ -31,7 +31,7 @@ export const VerifyScreen = ({ go }: { go: (s: RegisterStep) => void }) => {
   const focusIdx = code.findIndex((c) => !c);
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper onBack={() => go("details")} hasSticky>
       <StepIndicator step={2} />
       <AuthHeader 
         title="Confirm your email"
