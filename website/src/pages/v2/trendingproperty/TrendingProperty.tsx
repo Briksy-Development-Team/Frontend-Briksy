@@ -1,12 +1,9 @@
-import { Swiper, SwiperSlide } from "swiper/react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProperties, type PublicProperty } from "../../../api/property/property.api";
 import { propertyToCard } from "../../../api/public.mappers";
 import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
-import "swiper/css";
-import { Mousewheel } from "swiper/modules";
-
+import SwiperScroll from "../../../components/swiper/SwiperScroll";
 
 const TrendingProperty = () => {
     const navigate = useNavigate();
@@ -29,25 +26,10 @@ const TrendingProperty = () => {
                         <span>↗</span>
                     </button>
                 </div>
-                <Swiper
-                    modules={[Mousewheel]}
-                    spaceBetween={12}
-                    slidesPerView="auto"
-                    watchOverflow={false}
-                    grabCursor={true}
-                    mousewheel={{
-                        forceToAxis: true,
-                        sensitivity: 1,
-                        releaseOnEdges: true,
-                    }}
-                    className="[overscroll-behavior-x:contain] touch-pan-y"
-                >
-                    {items.slice(0, 5).map((item) => (
-                        <SwiperSlide key={item.id} className="!w-[19.4375rem]">
-                            <PropertyGridCard item={propertyToCard(item)} />
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                <SwiperScroll
+                    items={items.slice(0, 5)}
+                    renderItem={(item) => <PropertyGridCard item={propertyToCard(item)} />}
+                />
             </div>
         </section>
     );

@@ -102,7 +102,7 @@ export default function FavoriteButton({
   };
 
   const iconColor = isFavourite
-    ? "fill-red-500 text-red-500"
+    ? "fill-primary-brown text-primary-brown"
     : variant === "overlay"
       ? "fill-white/40 text-white"
       : "fill-white/40 text-current";

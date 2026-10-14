@@ -16,6 +16,7 @@ import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
 import BuilderProjectDetail from "../pages/detail/builder/BuilderProjectDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
+import AgentDetail from "../pages/detail/agent/AgentDetail";
 import Login from "../pages/auth/login/Login.tsx";
 import ProtectedRoute from './ProtectedRoute.tsx'
 import Profile from '../pages/profile/Profile.tsx'
@@ -79,7 +80,7 @@ const AppRouter = () => {
         <Route path="/property/:id" element={<PropertyDetail />} />
         <Route path="/auction/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
-        <Route path="/agent/:id" element={<BuilderDetail />} />
+        <Route path="/agent/:id" element={<AgentDetail />} />
         <Route path="/builder-project/:id" element={<BuilderProjectDetail />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
 
