@@ -60,7 +60,7 @@ export function useListingData(
         verified_only: 1,
         category: resultType === "commercial" ? "commercial" : undefined,
         purpose: resultType === "commercial" ? undefined : purposeFor(tab),
-        transaction_status: resultType === "commercial" ? transactionStatusFor(tab) : undefined,
+        transaction_status: resultType === "commercial" || resultType === "property" ? transactionStatusFor(tab) : undefined,
         auction_only: resultType === "auction" ? 1 : undefined,
         search: filter || undefined,
         organization_slug: organizationSlug,

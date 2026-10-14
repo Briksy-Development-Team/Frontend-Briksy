@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import apple from '../../../assets/login/apple.svg';
 import google from '../../../assets/login/google.svg';
 import LogoM from '../../../assets/logo/logomobile.svg';
@@ -18,6 +18,7 @@ const socials = [
 
 export const LoginScreen = ({ go }: LoginScreenProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   const [form, setForm] = useState({ email: '', password: '' });
@@ -43,7 +44,8 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
       const response = await login({ email: form.email.trim(), password: form.password });
 
       if (response.abilities.includes('seeker')) {
-        navigate('/', { replace: true });
+        const fromPath = (location.state as { from?: string } | null)?.from ?? '/account/profile';
+        navigate(fromPath, { replace: true });
         return;
       }
 

@@ -42,8 +42,12 @@ export const PropertySidebar = ({
   listingPurpose,
   isAuction,
   venueAddress,
+  auctionVenue,
   auctionDate,
   auctionTime,
+  auctioneer,
+  auctionContact,
+  auctionDescription,
   propertyId,
   propertyTitle,
   organizationId,
@@ -53,8 +57,12 @@ export const PropertySidebar = ({
   listingPurpose?: ListingPurpose;
   isAuction?: boolean;
   venueAddress?: string;
+  auctionVenue?: string;
   auctionDate?: string;
   auctionTime?: string;
+  auctioneer?: string;
+  auctionContact?: string;
+  auctionDescription?: string;
   propertyId?: string;
   propertyTitle?: string;
   organizationId?: string;
@@ -65,8 +73,12 @@ export const PropertySidebar = ({
       <AuctionSidebar
         sidebar={sidebar}
         venueAddress={venueAddress}
+        auctionVenue={auctionVenue}
         auctionDate={auctionDate}
         auctionTime={auctionTime}
+        auctioneer={auctioneer}
+        auctionContact={auctionContact}
+        auctionDescription={auctionDescription}
         propertyId={propertyId}
         propertyTitle={propertyTitle}
         organizationId={organizationId}

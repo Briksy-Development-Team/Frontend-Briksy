@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
 const CLEAN_ROUTES: Record<string, Record<string, string>> = {
-  "/buy": { type: "property", intent: "buy" },
-  "/sold": { type: "property", intent: "sell" },
-  "/rent": { type: "property", intent: "rent" },
+  "/buy": { type: "property", tab: "buy" },
+  "/sold": { type: "property", tab: "sold" },
+  "/rent": { type: "property", tab: "rent" },
   "/builders": { type: "builder" },
   "/agents": { type: "builder", tab: "agents" },
   "/professionals": { type: "trader" },

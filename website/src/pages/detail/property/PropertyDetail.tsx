@@ -265,23 +265,6 @@ const PropertyDetail = () => {
                 <PropertyAbout about={property.about} />
               </div>
 
-              {isAuction && propertyData.auction_details && Object.keys(propertyData.auction_details).length > 0 ? (
-                <>
-                  <div className="w-full h-[1px] bg-[#EBE5D9]" />
-                  <section aria-labelledby="auction-details">
-                    <h2 id="auction-details" className="mb-4 text-[1.25rem] font-medium text-primary-brown">Auction Details</h2>
-                    <div className="grid gap-4 rounded-2xl bg-[#F8F4EE] p-5 text-sm text-primary-brown sm:grid-cols-2">
-                      {propertyData.auction_details.date && <div><div className="text-xs text-primary-light-brown">Date</div><div>{propertyData.auction_details.date}</div></div>}
-                      {propertyData.auction_details.time && <div><div className="text-xs text-primary-light-brown">Time</div><div>{propertyData.auction_details.time}</div></div>}
-                      {propertyData.auction_details.venue && <div><div className="text-xs text-primary-light-brown">Venue</div><div>{propertyData.auction_details.venue}</div></div>}
-                      {propertyData.auction_details.auctioneer && <div><div className="text-xs text-primary-light-brown">Auctioneer</div><div>{propertyData.auction_details.auctioneer}</div></div>}
-                      {propertyData.auction_details.contact && <div><div className="text-xs text-primary-light-brown">Contact</div><div>{propertyData.auction_details.contact}</div></div>}
-                      {propertyData.auction_details.description && <div className="sm:col-span-2"><div className="text-xs text-primary-light-brown">Additional information</div><div className="whitespace-pre-line">{propertyData.auction_details.description}</div></div>}
-                    </div>
-                  </section>
-                </>
-              ) : null}
-
               <button type="button" onClick={() => { setInitialInterestedIn(["inspection"]); setIsEnquiryOpen(true); }} className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90">Request an Inspection</button>
 
               <div className="w-full h-[1px] bg-[#EBE5D9]" />
@@ -346,15 +329,13 @@ const PropertyDetail = () => {
               sidebar={property.sidebar}
               listingPurpose={propertyData.listing_purpose}
               isAuction={isAuction}
-              venueAddress={
-                propertyData.full_address ||
-                propertyData.address ||
-                (propertyData.organization?.name
-                  ? `${propertyData.organization.name}, ${property.address || "1234 Elm Street, Richmond, VIC 3121, Australia"}`
-                  : undefined)
-              }
+                venueAddress={propertyData.full_address || propertyData.address || undefined}
+                auctionVenue={propertyData.auction_details?.venue}
               auctionDate={propertyData.auction_details?.date}
               auctionTime={propertyData.auction_details?.time}
+                auctioneer={propertyData.auction_details?.auctioneer}
+                auctionContact={propertyData.auction_details?.contact}
+                auctionDescription={propertyData.auction_details?.description}
               propertyId={propertyData.id}
               propertyTitle={propertyData.title}
               organizationId={propertyData.organization?.id || undefined}

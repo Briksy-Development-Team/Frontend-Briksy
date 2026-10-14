@@ -104,7 +104,7 @@ const SearchPage = () => {
       if (tab === "Buy") next.set("purpose", "sell");
       else if (tab === "Rent" || tab === "Lease") next.set("purpose", "rent");
 
-      if (activeCategoryId === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(tab)) {
+      if (["real-estate", "commercial"].includes(activeCategoryId) && ["Sold", "Lease", "Leased"].includes(tab)) {
         next.set("transaction_status", tab.toUpperCase());
       }
 

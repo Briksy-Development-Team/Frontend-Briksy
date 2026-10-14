@@ -1,6 +1,7 @@
 import Verify from "../../../../assets/icons/verify.svg";
 import { CalendarPlus } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createInquiry } from "../../../../api/seeker/inquiry.api";
 import { addAuctionCalendarEvent } from "../../../../api/seeker/calendar.api";
 import { useAuth } from "../../../../auth/AuthContext";
@@ -12,8 +13,12 @@ export interface AuctionSidebarProps {
     price?: number;
   };
   venueAddress?: string;
+  auctionVenue?: string;
   auctionDate?: string;
   auctionTime?: string;
+  auctioneer?: string;
+  auctionContact?: string;
+  auctionDescription?: string;
   propertyId?: string;
   propertyTitle?: string;
   organizationId?: string;
@@ -24,8 +29,12 @@ export interface AuctionSidebarProps {
 export function AuctionSidebar({
   sidebar,
   venueAddress,
-  auctionDate = "2026-10-17",
-  auctionTime = "11:00",
+  auctionVenue,
+  auctionDate = "",
+  auctionTime = "",
+  auctioneer,
+  auctionContact,
+  auctionDescription,
   propertyId,
   propertyTitle = "Property auction",
   organizationId,
@@ -33,19 +42,22 @@ export function AuctionSidebar({
   showVerifiedBadge = true,
 }: AuctionSidebarProps) {
   const { isAuthenticated, isSeeker, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [calendarAdded, setCalendarAdded] = useState(false);
   const [registrationOpen, setRegistrationOpen] = useState(false);
   const [registrationSubmitting, setRegistrationSubmitting] = useState(false);
   const [registrationError, setRegistrationError] = useState<string | null>(null);
   const [registration, setRegistration] = useState({ name: "", email: "", phone: "" });
   const displayAddress =
+    auctionVenue ||
     venueAddress ||
     (sidebar?.builderName && sidebar?.location
       ? `${sidebar.builderName}, ${sidebar.location}`
       : sidebar?.location ||
         (sidebar?.builderName
           ? `${sidebar.builderName}, 1234 Elm Street, Richmond, VIC 3121, Australia`
-          : "Sunrise Property Group, 1234 Elm Street, Richmond, VIC 3121, Australia"));
+          : "Venue not provided"));
 
   const footerText = sidebar?.builderName
     ? `Enquiries go directly to ${sidebar.builderName}. BRIKSY never charges buyers.`
@@ -69,7 +81,7 @@ export function AuctionSidebar({
     event.preventDefault();
     if (!organizationId || !propertyId) return;
     if (!isAuthenticated || !isSeeker) {
-      setRegistrationError("Please sign in as a seeker before registering for an auction.");
+      navigate("/login", { state: { from: `${location.pathname}${location.search}` } });
       return;
     }
 
@@ -108,6 +120,15 @@ export function AuctionSidebar({
     }
   };
 
+  const openRegistration = () => {
+    if (!isAuthenticated || !isSeeker) {
+      navigate("/login", { state: { from: `${location.pathname}${location.search}` } });
+      return;
+    }
+    setRegistrationError(null);
+    setRegistrationOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full">
       {showVerifiedBadge && (
@@ -132,7 +153,7 @@ export function AuctionSidebar({
         <div className="w-full rounded-[10px] border border-[#E7E7E4] p-3 flex flex-col gap-1.5">
           <div className="flex flex-col gap-0.5">
             <span className="text-[0.75rem] leading-[1.5em] text-[#98928E]">
-              Venue Address
+              Venue
             </span>
             <span className="text-[0.875rem] font-medium leading-5 text-black">
               {displayAddress}
@@ -154,19 +175,43 @@ export function AuctionSidebar({
 
           <div className="flex flex-col gap-0.5">
             <span className="text-[0.75rem] leading-[1.5em] text-[#98928E]">
-              Starting Time
+              Time
             </span>
             <span className="text-[0.875rem] font-medium leading-5 text-black">
               {displayTime}
             </span>
           </div>
+
+          {auctioneer && <>
+            <div className="w-full h-px bg-[#E7E7E4] my-0.5" />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[0.75rem] leading-[1.5em] text-[#98928E]">Auctioneer</span>
+              <span className="text-[0.875rem] font-medium leading-5 text-black">{auctioneer}</span>
+            </div>
+          </>}
+
+          {auctionContact && <>
+            <div className="w-full h-px bg-[#E7E7E4] my-0.5" />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[0.75rem] leading-[1.5em] text-[#98928E]">Contact</span>
+              <span className="text-[0.875rem] font-medium leading-5 text-black">{auctionContact}</span>
+            </div>
+          </>}
+
+          {auctionDescription && <>
+            <div className="w-full h-px bg-[#E7E7E4] my-0.5" />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[0.75rem] leading-[1.5em] text-[#98928E]">Additional information</span>
+              <span className="whitespace-pre-line text-[0.875rem] font-medium leading-5 text-black">{auctionDescription}</span>
+            </div>
+          </>}
         </div>
 
         {canAddToCalendar && (
           <div className="rounded-xl border border-[#E7DED0] bg-[#FCFAF7] p-3">
             <button
               type="button"
-              onClick={() => setRegistrationOpen(true)}
+              onClick={openRegistration}
               className="flex w-full items-center justify-center gap-2 rounded-full border border-primary-brown px-4 py-2.5 text-sm font-medium text-primary-brown hover:bg-primary-brown hover:text-white"
             >
               <CalendarPlus size={16} />
@@ -197,7 +242,6 @@ export function AuctionSidebar({
             <div className="mb-5">
               <h2 className="text-xl font-medium text-primary-brown">Register for this auction</h2>
               <p className="mt-1 text-sm text-primary-light-brown">Add the auction to your Briksy calendar and receive reminders.</p>
-              {!isAuthenticated || !isSeeker ? <p className="mt-2 text-sm text-amber-700">Please sign in as a seeker before registering so this event can be saved to your profile calendar.</p> : null}
             </div>
             <form onSubmit={registerForAuction} className="space-y-4">
               {isAuthenticated && isSeeker ? (
