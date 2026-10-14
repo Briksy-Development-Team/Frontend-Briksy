@@ -5,7 +5,7 @@ import { getSeekerProfile, updateSeekerProfile } from "../../../api/seeker/seeke
 import { SafeImage } from "../../custom/SafeImage";
 
 const Myprofile = () => {
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -14,6 +14,7 @@ const Myprofile = () => {
   const [lastName, setLastName] = useState('');
   const [budgetMin, setBudgetMin] = useState('');
   const [budgetMax, setBudgetMax] = useState('');
+  const [phone, setPhone] = useState('');
 
   useEffect(() => {
     if (user?.name) {
@@ -21,12 +22,14 @@ const Myprofile = () => {
       setFirstName(parts[0] ?? '');
       setLastName(parts.slice(1).join(' '));
     }
+    setPhone(user?.mobile_number || '');
   }, [user]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await getSeekerProfile();
+        setPhone(res.data?.mobile_number || '');
         setBudgetMin(res.data?.preferred_budget_min?.toString() || '');
         setBudgetMax(res.data?.preferred_budget_max?.toString() || '');
       } catch (err) {
@@ -42,11 +45,14 @@ const Myprofile = () => {
     try {
       setSaving(true);
       setMessage('');
-      await updateSeekerProfile({
+      const response = await updateSeekerProfile({
+        mobile_number: phone.trim() || null,
         preferred_budget_min: budgetMin ? parseInt(budgetMin, 10) : null,
         preferred_budget_max: budgetMax ? parseInt(budgetMax, 10) : null,
         current_postcode: null, // Add to UI if needed
       });
+      setPhone(response.data?.mobile_number || '');
+      await refresh();
       setMessage('Profile saved successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
@@ -71,13 +77,6 @@ const Myprofile = () => {
           </button>
         </div>
       </div>
-
-      {!user?.id_verified && (
-        <div className="w-full rounded-xl hidden md:flex bg-[#dbd0c7] px-7 py-4  items-center gap-5">
-          <span className="w-9 h-9 rounded-full bg-[#E2CBB3] flex items-center justify-center text-[#3D2B1F]">i</span>
-          <p className="text-sm text-[#3D2B1F]">Please verify your mobile number to access all features.</p>
-        </div>
-      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-20 text-primary-light-brown">
@@ -118,14 +117,7 @@ const Myprofile = () => {
               <div className="flex flex-col gap-2">
                 <label className="text-[0.875rem] text-[#8E8B82]">Phone No.</label>
                 <div className="relative">
-                  <input type="tel" value={user?.mobile_number || ''} readOnly placeholder="No phone added" className="h-[2.875rem] w-full rounded-xl border border-[#C8C5BD] bg-gray-50 px-4 pr-32 text-[1rem] text-[#30291F] outline-none" />
-                  {!user?.id_verified ? (
-                    <button type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-[0.875rem] font-medium text-red-600 hover:opacity-75">
-                      Verify Now
-                    </button>
-                  ) : (
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[0.875rem] font-medium text-green-600">Verified</span>
-                  )}
+                  <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Add contact number" className="h-[2.875rem] w-full rounded-xl border border-[#C8C5BD] bg-white px-4 text-[1rem] text-[#30291F] outline-none focus:border-primary-brown" />
                 </div>
               </div>
 

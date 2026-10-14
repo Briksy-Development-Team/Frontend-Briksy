@@ -153,8 +153,8 @@ export default function BrowseView({
       const commercialStatus = query.transaction_status || (resultType === "commercial" && tab && ["buy", "lease", "sold", "leased"].includes(tab.toLowerCase()) ? (tab.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED") : undefined);
       const request = resultType === "property" || resultType === "commercial" || resultType === "auction"
         ? Promise.all([
-            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, verified_only: 1 }),
-            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, sort: "created_at", direction: "desc", verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
           ])
         : getOrganizations({ type: organizationTypeForResult(resultType, tab, searchParams.get("agent_type") || tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {

@@ -151,6 +151,7 @@ export interface PropertyListing {
 
 export interface SeekerProfileItem {
   id: string
+  mobile_number?: string | null
   current_postcode: string | null
   preferred_budget_min: number | null
   preferred_budget_max: number | null
@@ -238,7 +239,7 @@ export const getSeekerProfile = async (): Promise<ApiEnvelope<SeekerProfileItem>
 }
 
 export const updateSeekerProfile = async (
-  payload: Pick<SeekerProfileItem, 'current_postcode' | 'preferred_budget_min' | 'preferred_budget_max'>
+  payload: Pick<SeekerProfileItem, 'mobile_number' | 'current_postcode' | 'preferred_budget_min' | 'preferred_budget_max'>
 ): Promise<ApiEnvelope<SeekerProfileItem>> => {
   const response = await api.put<ApiEnvelope<SeekerProfileItem>>('/seeker/profile', payload)
   return response.data

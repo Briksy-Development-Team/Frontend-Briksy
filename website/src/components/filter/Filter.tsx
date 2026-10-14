@@ -106,6 +106,7 @@ const Filter = ({
 
   const handleApply = () => {
     const params = new URLSearchParams();
+    const categoryConfig = SEARCH_CATEGORIES.find((category) => category.id === activeTab);
 
     params.set("page", "1");
     params.set("type", activeTab);

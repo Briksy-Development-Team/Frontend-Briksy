@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 
 import type { RootState, AppDispatch } from "../../services/store";
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
@@ -15,12 +15,14 @@ import { inquiryConfig } from "../../services/features/inquiries/inquiry.config"
 import { CheckoutLinkModal } from "./CheckoutLinkModal";
 import { InquiryStatusModal } from "./InquiryStatusModal";
 
-const InquiryList = ({ rowActions, pricingOnly = false }: { rowActions?: any[]; pricingOnly?: boolean }) => {
+const InquiryList = ({ rowActions, pricingOnly = false, auctionOnly = false }: { rowActions?: any[]; pricingOnly?: boolean; auctionOnly?: boolean }) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const { isSuperAdmin } = useRoleAccess();
     const { hasModule } = useModuleAccess();
-    const inquiryTitle = !isSuperAdmin && hasModule("builder_management")
+    const inquiryTitle = auctionOnly
+        ? "Auction inquiries"
+        : !isSuperAdmin && hasModule("builder_management")
         ? "Enquiries"
         : !isSuperAdmin && hasModule("service_management")
             ? "Service Enquiries"
@@ -36,7 +38,7 @@ const InquiryList = ({ rowActions, pricingOnly = false }: { rowActions?: any[]; 
     } = useSelector((s: RootState) => s.inquiries);
 
     const { params, handleParamsChange } = useEntityTable((p) =>
-        dispatch(fetchInquiries(pricingOnly ? { ...p, filters: { ...p.filters, lead_source: "pricing" } } : p)),
+        dispatch(fetchInquiries(pricingOnly || auctionOnly ? { ...p, filters: { ...p.filters, lead_source: pricingOnly ? "pricing" : "auction_registration" } } : p)),
     );
 
     return (
@@ -45,6 +47,10 @@ const InquiryList = ({ rowActions, pricingOnly = false }: { rowActions?: any[]; 
                 title={inquiryTitle}
                 subtitle="Manage enquiries submitted from the website"
             />
+            <div className="d-flex gap-3 mb-5 border-bottom pb-3">
+                <Link className={!auctionOnly ? "fw-bold text-primary" : "text-muted"} to={`${portalBase}/inquiry`}>All inquiries</Link>
+                <Link className={auctionOnly ? "fw-bold text-primary" : "text-muted"} to={`${portalBase}/auction-inquiries`}>Auction inquiries</Link>
+            </div>
 
             <EntityList
                 data={data}
@@ -57,9 +63,9 @@ const InquiryList = ({ rowActions, pricingOnly = false }: { rowActions?: any[]; 
                     ? inquiryConfig.builderColumns
                     : !isSuperAdmin && hasModule("service_management")
                         ? inquiryConfig.serviceColumns
-                        : inquiryConfig.columns}
+                    : inquiryConfig.columns}
                 filtersConfig={inquiryConfig.filters}
-                getRowLink={(row) => `${portalBase}/${pricingOnly ? "pricing-inquiries" : "inquiry"}/${getDisplayId(row)}`}
+                getRowLink={(row) => `${portalBase}/${auctionOnly ? "auction-inquiries" : pricingOnly ? "pricing-inquiries" : "inquiry"}/${getDisplayId(row)}`}
                 enableRowClick
                 rowActions={rowActions}
             />
@@ -69,12 +75,13 @@ const InquiryList = ({ rowActions, pricingOnly = false }: { rowActions?: any[]; 
 
 export default function InquiryPage() {
     const location = useLocation();
-    const pricingOnly = location.pathname.startsWith("/super-admin/pricing-inquiries");
+    const pricingOnly = location.pathname.includes("pricing-inquiries");
+    const auctionOnly = location.pathname.includes("auction-inquiries");
     const { isSuperAdmin } = useRoleAccess();
     const [selectedInquiry, setSelectedInquiry] = useState<any | null>(null);
     const [statusInquiry, setStatusInquiry] = useState<any | null>(null);
     const rowActions = isSuperAdmin ? [{ label: "Create Checkout Link", permission: "plan.update", onClick: (row: any) => { setSelectedInquiry(row); } }, { label: "Change Status", permission: "plan.update", onClick: (row: any) => { setStatusInquiry(row); } }] : undefined;
     return (
-        <><Routes><Route index element={<InquiryList rowActions={rowActions} pricingOnly={pricingOnly} />} /><Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} /></Routes>{selectedInquiry && <CheckoutLinkModal inquiry={selectedInquiry} onClose={() => setSelectedInquiry(null)} />}{statusInquiry && <InquiryStatusModal inquiry={statusInquiry} onClose={() => setStatusInquiry(null)} />}</>
+        <><Routes><Route index element={<InquiryList rowActions={rowActions} pricingOnly={pricingOnly} auctionOnly={auctionOnly} />} /><Route path=":id" element={<GenericDetailPage rowActions={rowActions} />} /></Routes>{selectedInquiry && <CheckoutLinkModal inquiry={selectedInquiry} onClose={() => setSelectedInquiry(null)} />}{statusInquiry && <InquiryStatusModal inquiry={statusInquiry} onClose={() => setStatusInquiry(null)} />}</>
     );
 }

@@ -27,6 +27,7 @@ export default function ProfileMobile() {
     else if (section === 'saved-search') label = 'Like searches';
     else if (section === 'collections') label = 'Collections';
     else if (section === 'notifications') label = 'Notification';
+    else if (section === 'calendar') label = 'My calendar';
     else if (section === 'privacy') label = 'Privacy';
 
     return (
@@ -59,6 +60,7 @@ export default function ProfileMobile() {
     { label: "Personal info", view: "personal-info" },
     { label: "Collections", view: "collections" },
     { label: "Notification", view: "notifications" },
+    { label: "My calendar", view: "calendar" },
     { label: "Privacy", view: "privacy" },
   ];
 
@@ -95,14 +97,6 @@ export default function ProfileMobile() {
           <p className="text-[1.125rem] font-medium text-[#342511] mt-2">{user?.name}</p>
           <p className="text-[0.75rem] text-[#8B6F54]">
             Seeker account · joined {formatJoined(user?.created_at)}
-          </p>
-        </div>
-
-        {/* Verify banner */}
-        <div className="bg-[#E2CBB3] rounded-xl px-4 py-3 flex items-start gap-2">
-          <span className="text-[#342511] text-xl font-medium leading-none mt-0.5">ⓘ</span>
-          <p className="text-[0.75rem] text-[#342511]">
-            Please verify your mobile number to access all features.
           </p>
         </div>
 

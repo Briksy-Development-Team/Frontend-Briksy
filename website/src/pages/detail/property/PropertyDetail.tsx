@@ -8,7 +8,7 @@ import { PropertySidebar } from "./components/PropertySidebar";
 import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getProperty, type PublicProperty } from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
@@ -25,17 +25,10 @@ import { organizationToTrader } from "../../../api/public.mappers";
 import type { Trader } from "../../../types/trader";
 import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
 import BuilderBackground from "../../../assets/place holder/builderbg.svg";
-import { formatPropertyPrice } from "../../../utils/propertyPrice";
 
-interface PropertyDetailProps {
-  isAuction?: boolean;
-}
-
-const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) => {
+const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
   const [propertyData, setPropertyData] = useState<PublicProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -100,7 +93,7 @@ const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) 
       logo: propertyData.organization?.logo_url || "",
     },
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
-    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: formatPropertyPrice(propertyData) },
+    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "",     price: propertyData.price ?? propertyData.price_min ?? propertyData.price_max ?? undefined },
   };
 
   const traderHost: Trader | null = propertyData.organization
@@ -163,14 +156,10 @@ const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) 
       setEnquirySubmitting(false);
     }
   };
-  const isAuction = Boolean(
-    isAuctionProp ||
-    location.pathname.startsWith("/auction") ||
-    searchParams.get("type") === "auction" ||
-    propertyData.listing_purpose?.toUpperCase() === "AUCTION" ||
-    (propertyData.transaction_status as string) === "AUCTION" ||
-    propertyData.property_category === "auction"
-  );
+  // Auction UI is shown only for an admin-enabled auction whose date has not passed.
+  const auctionDate = propertyData.auction_details?.date;
+  const today = new Date().toISOString().slice(0, 10);
+  const isAuction = Boolean(propertyData.is_auction && auctionDate && auctionDate >= today);
 
   const addressParts = property.address.split(', ');
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
@@ -266,7 +255,7 @@ const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) 
                 {propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status)}
               </span>
             ) : null}
-            {propertyData.is_auction ? (
+            {isAuction ? (
               <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">Auction</span>
             ) : null}
             <PropertyAgentCard agent={property.agent} />
@@ -276,7 +265,7 @@ const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) 
                 <PropertyAbout about={property.about} />
               </div>
 
-              {propertyData.is_auction && propertyData.auction_details && Object.keys(propertyData.auction_details).length > 0 ? (
+              {isAuction && propertyData.auction_details && Object.keys(propertyData.auction_details).length > 0 ? (
                 <>
                   <div className="w-full h-[1px] bg-[#EBE5D9]" />
                   <section aria-labelledby="auction-details">
@@ -364,7 +353,12 @@ const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) 
                   ? `${propertyData.organization.name}, ${property.address || "1234 Elm Street, Richmond, VIC 3121, Australia"}`
                   : undefined)
               }
-              onEnquiry={() => setIsEnquiryOpen(true)}
+              auctionDate={propertyData.auction_details?.date}
+              auctionTime={propertyData.auction_details?.time}
+              propertyId={propertyData.id}
+              propertyTitle={propertyData.title}
+              organizationId={propertyData.organization?.id || undefined}
+              onEnquiry={openGeneralEnquiry}
             />
           </aside>
         </div>
@@ -375,7 +369,7 @@ const PropertyDetail = ({ isAuction: isAuctionProp }: PropertyDetailProps = {}) 
       <MobileStickyAction
         price={isAuction ? "Auction" : property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
         priceLabel={isAuction ? "Saturday, 17 October 2026" : property.sidebar.price ? "fixed price" : undefined}
-        onEnquiry={() => setIsEnquiryOpen(true)}
+        onEnquiry={openGeneralEnquiry}
       />
 
       <EnquiryModal

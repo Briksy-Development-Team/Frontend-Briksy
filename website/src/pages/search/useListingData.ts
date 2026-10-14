@@ -61,6 +61,7 @@ export function useListingData(
         category: resultType === "commercial" ? "commercial" : undefined,
         purpose: resultType === "commercial" ? undefined : purposeFor(tab),
         transaction_status: resultType === "commercial" ? transactionStatusFor(tab) : undefined,
+        auction_only: resultType === "auction" ? 1 : undefined,
         search: filter || undefined,
         organization_slug: organizationSlug,
         ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),

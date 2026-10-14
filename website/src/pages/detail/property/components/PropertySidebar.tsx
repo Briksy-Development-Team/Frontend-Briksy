@@ -44,6 +44,9 @@ export const PropertySidebar = ({
   venueAddress,
   auctionDate,
   auctionTime,
+  propertyId,
+  propertyTitle,
+  organizationId,
   onEnquiry,
 }: {
   sidebar: { price?: number; builderName?: string; location?: string };
@@ -52,15 +55,21 @@ export const PropertySidebar = ({
   venueAddress?: string;
   auctionDate?: string;
   auctionTime?: string;
+  propertyId?: string;
+  propertyTitle?: string;
+  organizationId?: string;
   onEnquiry?: () => void;
 }) => {
-  if (isAuction || listingPurpose?.toUpperCase() === "AUCTION") {
+  if (isAuction) {
     return (
       <AuctionSidebar
         sidebar={sidebar}
         venueAddress={venueAddress}
         auctionDate={auctionDate}
         auctionTime={auctionTime}
+        propertyId={propertyId}
+        propertyTitle={propertyTitle}
+        organizationId={organizationId}
         onEnquiry={onEnquiry}
       />
     );

@@ -28,6 +28,7 @@ import Mynotification from "../components/profile-options/mynotification/Mynotif
 import Myprivacy from "../components/profile-options/myprivacy/Myprivacy";
 import CollectionsPage from "../components/profile-options/collections/CollectionsPage";
 import CollectionDetailPage from "../components/profile-options/collections/CollectionDetailPage";
+import MyCalendar from "../components/profile-options/calendar/MyCalendar";
 const AppRouter = () => {
   return (
     <Routes>
@@ -48,6 +49,7 @@ const AppRouter = () => {
             <Route path="collections" element={<CollectionsPage />} />
             <Route path="collections/:id" element={<CollectionDetailPage />} />
             <Route path="notifications" element={<Mynotification />} />
+            <Route path="calendar" element={<MyCalendar />} />
             <Route path="privacy" element={<Myprivacy />} />
           </Route>
         </Route>
@@ -75,7 +77,7 @@ const AppRouter = () => {
         <Route path="/auction" element={<SearchPage />} />
         <Route path="/auctions" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
-        <Route path="/auction/:id" element={<PropertyDetail isAuction={true} />} />
+        <Route path="/auction/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
         <Route path="/agent/:id" element={<BuilderDetail />} />
         <Route path="/builder-project/:id" element={<BuilderProjectDetail />} />
