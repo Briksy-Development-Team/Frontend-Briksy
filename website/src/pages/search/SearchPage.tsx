@@ -167,7 +167,7 @@ const SearchPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pt-24 pb-16 font-helvetica">
+    <div className="min-h-screen  pt-24 pb-16 font-helvetica">
       <div className="mx-auto pl-[3%] md:px-[3%] ">
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar

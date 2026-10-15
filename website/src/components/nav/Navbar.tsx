@@ -7,7 +7,8 @@ import LanguageModal from "./LanguageModal.tsx";
 import ProfileDropdown from "./ProfileDropdown.tsx";
 import Briskybrown from "../../assets/logo/briskybrown.svg";
 import { useAuth } from "../../auth/AuthContext";
-import NavDropdown, { type DropdownKey } from "./NavDropdown";
+import NavDropdown from "./NavDropdown";
+import { useNavMenu } from "../../hooks/useNavMenu";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
@@ -17,17 +18,6 @@ type NavbarProps = {
 };
 
 type Lang = { label: string; region: string };
-
-const navItems: { label: string; to: string; dropdown?: DropdownKey }[] = [
-  { label: "Buy", to: "/buy" },
-  { label: "Sold", to: "/sold" },
-  { label: "Rent", to: "/rent" },
-  { label: "Auctions", to: "/auctions" },
-  { label: "Agents +", to: "/agents", dropdown: "agents" },
-  { label: "Builders", to: "/builders" },
-  { label: "Trades & Professionals +", to: "/professionals", dropdown: "trades" },
-  { label: "Commercials +", to: "/commercials", dropdown: "commercial" },
-];
 
 const mobileMenuItems = [
   { label: "Buy / Sell", to: "/buy" },
@@ -45,11 +35,14 @@ const mobileItemClass =
 const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<DropdownKey>(null);
+  const [openLabel, setOpenLabel] = useState<string | null>(null);
   const [selectedLang, setSelectedLang] = useState<Lang>({ label: "English", region: "UK" });
   const [pastHero, setPastHero] = useState(!hasHero);
   const pastHeroRef = useRef(pastHero);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const navMenu = useNavMenu();
+  const openItem = navMenu.find((i) => i.label === openLabel) ?? null;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -61,16 +54,16 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
   };
   const scheduleClose = () => {
     cancelClose();
-    closeTimer.current = setTimeout(() => setOpenDropdown(null), 120);
+    closeTimer.current = setTimeout(() => setOpenLabel(null), 120);
   };
-  const openDD = (key: DropdownKey) => {
+  const openDD = (label: string) => {
     cancelClose();
-    setOpenDropdown(key);
+    setOpenLabel(label);
   };
 
   useEffect(() => {
     setMobileOpen(false);
-    setOpenDropdown(null);
+    setOpenLabel(null);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -123,19 +116,21 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
           </Link>
 
           <div className="hidden flex-1 items-center justify-center gap-4 lg:flex">
-            {navItems.map((item) => (
+            {navMenu.map((item) => (
               <div
                 key={item.label}
                 className="relative"
-                onMouseEnter={() => (item.dropdown ? openDD(item.dropdown) : scheduleClose())}
+                onMouseEnter={() => (item.children.length ? openDD(item.label) : scheduleClose())}
                 onMouseLeave={scheduleClose}
               >
                 <Link
                   to={item.to}
-                  className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${isNavItemActive(item.to) ? "border-b border-white" : ""
-                    }`}
+                  className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${
+                    isNavItemActive(item.to) || item.children.some((c) => isNavItemActive(c.to)) ? "border-b border-white" : ""
+                  }`}
                 >
                   {item.label}
+                  {item.children.length > 0 && " +"}
                 </Link>
               </div>
             ))}
@@ -175,7 +170,7 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
 
       {/* Mounted outside <nav> so it escapes the navbar stacking context */}
       <div onMouseEnter={cancelClose}>
-        <NavDropdown open={openDropdown} onClose={() => setOpenDropdown(null)} />
+        <NavDropdown item={openItem} onClose={() => setOpenLabel(null)} />
       </div>
 
       {/* Mobile drawer */}
