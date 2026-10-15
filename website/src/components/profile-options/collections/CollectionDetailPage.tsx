@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { Mousewheel } from "swiper/modules";
+import SwiperScroll from "../../swiper/SwiperScroll";
 import {
   getCollectionItems,
   getCollections,
@@ -210,26 +208,12 @@ function Section({
           </div>
         </div>
       ) : (
-        <Swiper
-          modules={[Mousewheel]}
+        <SwiperScroll
+          items={items.filter((item) => item.target && item.type)}
           spaceBetween={12}
-          slidesPerView="auto"
-          watchOverflow={false}
-          grabCursor
-          mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
-          slidesOffsetBefore={0}
-          slidesOffsetAfter={0}
-          className="!ml-0 [overscroll-behavior-x:contain] touch-pan-y"
-        >
-          {items.map((item) => {
-            if (!item.target || !item.type) return null;
-            return (
-              <SwiperSlide key={item.id} className="!w-[19.4375rem]">
-                {renderCard(item)}
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
+          className="!ml-0"
+          renderItem={(item: any) => renderCard(item)}
+        />
       )}
     </div>
   );

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, ArrowRight, Bookmark, X, Plus, Check } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { Mousewheel } from "swiper/modules";
+import SwiperScroll from "../../swiper/SwiperScroll";
 import {
   createCollection,
   deleteCollection,
@@ -147,36 +145,27 @@ export default function CollectionsPage() {
             </button>
           </div>
         ) : (
-          <Swiper
-            modules={[Mousewheel]}
+          <SwiperScroll
+            items={collections}
             spaceBetween={16}
-            slidesPerView="auto"
-            watchOverflow={false}
-            grabCursor
-            mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
-            slidesOffsetBefore={0}
-            slidesOffsetAfter={0}
-            className="!ml-0 [overscroll-behavior-x:contain] touch-pan-y !pb-4"
-          >
-            {collections.map((collection) => {
+            className="!ml-0 !pb-4"
+            renderItem={(collection: SeekerCollection) => {
               const count = collection.items_count ?? collection.properties_count ?? 0;
               const imgs = collection.preview_images ?? [];
               return (
-                <SwiperSlide key={collection.id} className="!w-[19.4375rem]">
-                  <CollectionCard
-                    collection={collection}
-                    count={count}
-                    imgs={imgs}
-                    isDeleting={isDeleting}
-                    deletingId={deletingId}
-                    onEdit={() => { setEditing(collection); setName(collection.name); setComposerOpen(true); }}
-                    onDeleteStart={() => setDeletingId(collection.id)}
-                    onDeleteConfirm={() => void remove(collection)}
-                  />
-                </SwiperSlide>
+                <CollectionCard
+                  collection={collection}
+                  count={count}
+                  imgs={imgs}
+                  isDeleting={isDeleting}
+                  deletingId={deletingId}
+                  onEdit={() => { setEditing(collection); setName(collection.name); setComposerOpen(true); }}
+                  onDeleteStart={() => setDeletingId(collection.id)}
+                  onDeleteConfirm={() => void remove(collection)}
+                />
               );
-            })}
-          </Swiper>
+            }}
+          />
         )}
       </div>
     </div>

@@ -13,9 +13,7 @@ import { getProperty, type PublicProperty } from "../../../api/property/property
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { Mousewheel } from "swiper/modules"
+import SwiperScroll from "../../../components/swiper/SwiperScroll";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
@@ -289,32 +287,16 @@ const PropertyDetail = () => {
                 <div className="mb-4">
                   <h2 className="text-[1.25rem] font-medium text-primary-brown">Meet The Host</h2>
                 </div>
-                <Swiper
-                  modules={[Mousewheel]}
-                  spaceBetween={14}
-                  slidesPerView="auto"
-                  watchOverflow={false}
-                  grabCursor
-                  mousewheel={{
-                    forceToAxis: true,
-                    sensitivity: 1,
-                    releaseOnEdges: true,
-                  }}
-                  slidesOffsetBefore={0}
-                  slidesOffsetAfter={0}
-                  className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
-                >
-                  {traderHost ? (
-                    <SwiperSlide
-                      key={traderHost.id}
-                      className=" !w-[19.4375rem]"
-                    >
-                      <TraderGridCard item={traderHost} />
-                    </SwiperSlide>
-                  ) : (
-                    <p className="text-sm text-primary-light-brown">Host details are not available for this listing.</p>
-                  )}
-                </Swiper>
+                {traderHost ? (
+                  <SwiperScroll
+                    items={[traderHost]}
+                    spaceBetween={14}
+                    className="!ml-0"
+                    renderItem={(host) => <TraderGridCard item={host} />}
+                  />
+                ) : (
+                  <p className="text-sm text-primary-light-brown">Host details are not available for this listing.</p>
+                )}
               </div>
 
 

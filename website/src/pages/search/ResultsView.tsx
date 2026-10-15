@@ -10,9 +10,7 @@ import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 import MapSplitView from "./MapSplitView";
 import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
-import "swiper/css";
+import SwiperScroll from "../../components/swiper/SwiperScroll";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
   if (resultType === "builder" && agentType) return agentType;
@@ -28,11 +26,9 @@ const organizationSort = (sort?: string) =>
 
 function SectionSwiper({ children }: { children: React.ReactNode[] }) {
   return (
-    <Swiper modules={[Mousewheel]} spaceBetween={16} slidesPerView="auto" watchOverflow={false} grabCursor mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }} className="[overscroll-behavior-x:contain] touch-pan-y">
-      {children.map((child, index) => (
-        <SwiperSlide key={index} className="!w-[20.5rem]">{child}</SwiperSlide>
-      ))}
-    </Swiper>
+    <SwiperScroll spaceBetween={16} slideClassName="!w-[20.5rem]">
+      {children}
+    </SwiperScroll>
   );
 }
 
