@@ -19,27 +19,14 @@ type NavbarProps = {
 
 type Lang = { label: string; region: string };
 
-const mobileMenuItems = [
-  { label: "Buy / Sell", to: "/buy" },
-  { label: "Auctions", to: "/auctions" },
-  { label: "Agents Finder", to: "/agents" },
-  { label: "Builders", to: "/builders" },
-  { label: "Trades & Professionals", to: "/professionals" },
-//   { label: "News", to: "/blogs" },
-  { label: "Commercials", to: "/commercials" },
-];
-
-const mobileItemClass =
-  "w-full text-left py-5 text-[1.0625rem] font-medium text-[#342511] border-b border-[#e5e0d8] hover:text-[#6b4c2a] transition-colors";
-
 const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [openLabel, setOpenLabel] = useState<string | null>(null);
   const [selectedLang, setSelectedLang] = useState<Lang>({ label: "English", region: "UK" });
   const [pastHero, setPastHero] = useState(!hasHero);
   const pastHeroRef = useRef(pastHero);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navMenu = useNavMenu();
   const openItem = navMenu.find((i) => i.label === openLabel) ?? null;
@@ -48,18 +35,6 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const isSearchOpen = mode !== "collapsed";
-
-  const cancelClose = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-  };
-  const scheduleClose = () => {
-    cancelClose();
-    closeTimer.current = setTimeout(() => setOpenLabel(null), 120);
-  };
-  const openDD = (label: string) => {
-    cancelClose();
-    setOpenLabel(label);
-  };
 
   useEffect(() => {
     setMobileOpen(false);
@@ -107,31 +82,44 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
   return (
     <>
       <nav
-        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white ${hideOnMobile ? "hidden md:block" : ""
-          }`}
+        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white ${
+          hideOnMobile ? "hidden md:block" : ""
+        }`}
       >
         <div className="flex h-20 items-center justify-between px-2 sm:px-4 lg:px-6">
-          <Link to="/" className="shrink-0 lg:w-[13.75rem]">
+          <Link to="/" onClick={() => setOpenLabel(null)} className="shrink-0 lg:w-[13.75rem]">
             <img loading="eager" src={Briskybrown} alt="Briksy" className="h-12 w-auto" />
           </Link>
 
           <div className="hidden flex-1 items-center justify-center gap-4 lg:flex">
             {navMenu.map((item) => (
-              <div
-                key={item.label}
-                className="relative"
-                onMouseEnter={() => (item.children.length ? openDD(item.label) : scheduleClose())}
-                onMouseLeave={scheduleClose}
-              >
-                <Link
-                  to={item.to}
-                  className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${
-                    isNavItemActive(item.to) || item.children.some((c) => isNavItemActive(c.to)) ? "border-b border-white" : ""
-                  }`}
-                >
-                  {item.label}
-                  {item.children.length > 0 && " +"}
-                </Link>
+              <div key={item.label} className="relative">
+                {item.children.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setOpenLabel((prev) => (prev === item.label ? null : item.label))}
+                    className={`flex items-center gap-1 whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white cursor-pointer ${
+                      openLabel === item.label ||
+                      isNavItemActive(item.to) ||
+                      item.children.some((c) => isNavItemActive(c.to))
+                        ? "border-b border-white text-white font-medium"
+                        : ""
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <span className="text-xs">{openLabel === item.label ? "−" : "+"}</span>
+                  </button>
+                ) : (
+                  <Link
+                    to={item.to}
+                    onClick={() => setOpenLabel(null)}
+                    className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${
+                      isNavItemActive(item.to) ? "border-b border-white text-white font-medium" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                )}
               </div>
             ))}
           </div>
@@ -140,7 +128,7 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
             {pastHero && !isSearchOpen && (
               <>
                 <div className="md:hidden">
-                  <NavSearchButton onClick={() => navigate("/result?type=all")} />
+                  <NavSearchButton onClick={() => navigate("/result?type=real-estate")} />
                 </div>
                 <div className="hidden md:block">
                   <NavSearchButton onClick={() => setMode("search")} />
@@ -148,7 +136,10 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
               </>
             )}
             <button
-              onClick={() => setLangModalOpen(true)}
+              onClick={() => {
+                setOpenLabel(null);
+                setLangModalOpen(true);
+              }}
               className="hidden transition hover:opacity-70 lg:block"
               aria-label="Language and region"
             >
@@ -169,20 +160,20 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
       </nav>
 
       {/* Mounted outside <nav> so it escapes the navbar stacking context */}
-      <div onMouseEnter={cancelClose}>
-        <NavDropdown item={openItem} onClose={() => setOpenLabel(null)} />
-      </div>
+      <NavDropdown item={openItem} onClose={() => setOpenLabel(null)} />
 
       {/* Mobile drawer */}
       <div
         onClick={() => setMobileOpen(false)}
         aria-hidden
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 lg:hidden ${mobileOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-          }`}
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 lg:hidden ${
+          mobileOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
       />
       <div
-        className={`fixed left-0 top-0 z-40 flex h-full w-full transform flex-col bg-[#f5f2ed] transition-transform duration-300 ease-in-out lg:hidden ${mobileOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed left-0 top-0 z-40 flex h-full w-full transform flex-col bg-[#f5f2ed] transition-transform duration-300 ease-in-out lg:hidden ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="flex h-20 shrink-0 items-center justify-between bg-primary-brown px-5">
           <Link to="/" onClick={() => setMobileOpen(false)}>
@@ -198,22 +189,61 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
         </div>
 
         <nav className="flex-1 overflow-y-auto px-6 py-4">
-          {mobileMenuItems.map((item) => (
-            <button key={item.label} onClick={() => goMobile(item.to)} className={mobileItemClass}>
-              {item.label}
-            </button>
+          {navMenu.map((item) => (
+            <div key={item.label} className="border-b border-[#e5e0d8]">
+              {item.children.length > 0 ? (
+                <div>
+                  <button
+                    onClick={() =>
+                      setMobileExpanded((prev) => (prev === item.label ? null : item.label))
+                    }
+                    className="w-full text-left py-4 text-[1.0625rem] font-medium text-[#342511] hover:text-[#6b4c2a] transition-colors flex items-center justify-between"
+                  >
+                    <span>{item.label}</span>
+                    <span className="text-sm font-semibold text-gray-500">
+                      {mobileExpanded === item.label ? "−" : "+"}
+                    </span>
+                  </button>
+                  {mobileExpanded === item.label && (
+                    <div className="pb-3 pl-4 flex flex-col gap-2">
+                      {item.children.map((child) => (
+                        <button
+                          key={child.label}
+                          onClick={() => goMobile(child.to)}
+                          className="w-full text-left py-1.5 text-[0.9375rem] text-[#5c4a36] hover:text-[#342511] transition-colors"
+                        >
+                          {child.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => goMobile(item.to)}
+                  className="w-full text-left py-4 text-[1.0625rem] font-medium text-[#342511] hover:text-[#6b4c2a] transition-colors"
+                >
+                  {item.label}
+                </button>
+              )}
+            </div>
           ))}
+
           <button
             onClick={() => {
               setMobileOpen(false);
               setLangModalOpen(true);
             }}
-            className={mobileItemClass}
+            className="w-full text-left py-4 text-[1.0625rem] font-medium text-[#342511] border-b border-[#e5e0d8] hover:text-[#6b4c2a] transition-colors"
           >
             Language
           </button>
+
           {isAuthenticated ? (
-            <button onClick={() => goMobile("/profile")} className={mobileItemClass}>
+            <button
+              onClick={() => goMobile("/profile")}
+              className="w-full text-left py-4 text-[1.0625rem] font-medium text-[#342511] border-b border-[#e5e0d8] hover:text-[#6b4c2a] transition-colors"
+            >
               Profile
             </button>
           ) : (

@@ -9,7 +9,7 @@ export type NavItem = NavLink & { children: NavLink[]; cards: NavCard[] };
 
 const realEstateLinks: NavLink[] = (SEARCH_CATEGORIES.find((c) => c.id === "real-estate")?.propTypes ?? []).map((p) => ({
   label: p.label,
-  to: p.id === "all" ? "/result?type=all" : `/${encodeURIComponent(p.id)}`,
+  to: p.id === "all" ? "/result?type=real-estate" : `/${encodeURIComponent(p.id)}`,
 }));
 
 const commercialLinks: NavLink[] = (SEARCH_CATEGORIES.find((c) => c.id === "commercial")?.propTypes ?? []).map((p) => ({
@@ -29,15 +29,18 @@ export const useNavMenu = (): NavItem[] => {
   const { data: categories = [] } = useServiceCategories();
 
   return [
-    item("Real Estate", "/result?type=all", realEstateLinks, [
-      { label: "Find Real Estate", to: "/result?type=all", bg: Randomone },
+    item("Real Estate", "/result?type=real-estate", realEstateLinks, [
+      { label: "Find Real Estate", to: "/result?type=real-estate", bg: Randomone },
       { label: "List Your Property", to: "/subs", bg: Randomtwo },
     ]),
     item("Auctions", "/auctions"),
     item(
       "Agents",
       "/agents",
-      agentTypes.map((t) => ({ label: t.label, to: `/agents?tab=${encodeURIComponent(t.slug)}` })),
+      [
+        { label: "All", to: "/agents" },
+        ...agentTypes.map((t) => ({ label: t.label, to: `/agents?tab=${encodeURIComponent(t.slug)}` })),
+      ],
       [
         { label: "Find an Agent", to: "/agents", bg: Randomone },
         { label: "List Your Business", to: "/subs", bg: Randomtwo },
@@ -47,10 +50,13 @@ export const useNavMenu = (): NavItem[] => {
     item(
       "Trades & Professionals",
       "/professionals",
-      categories.map((c) => ({
-        label: c.label,
-        to: `/professionals?tab=${encodeURIComponent(c.slug)}&service_slug=${encodeURIComponent(c.slug)}`,
-      })),
+      [
+        { label: "All", to: "/professionals" },
+        ...categories.map((c) => ({
+          label: c.label,
+          to: `/professionals?tab=${encodeURIComponent(c.slug)}&service_slug=${encodeURIComponent(c.slug)}`,
+        })),
+      ],
       [
         { label: "Find a Professional", to: "/professionals", bg: Randomone },
         { label: "List Your Business", to: "/subs", bg: Randomtwo },

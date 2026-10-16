@@ -59,7 +59,6 @@ export default function NavDropdown({ item, onClose }: { item: NavItem | null; o
 
       <div
         ref={panelRef}
-        onMouseLeave={onClose}
         className="fixed left-0 right-0 top-20 z-50 w-full overflow-hidden bg-[#F8F4EE]"
         style={{ clipPath: HIDDEN_CLIP, opacity: 0 }}
       >

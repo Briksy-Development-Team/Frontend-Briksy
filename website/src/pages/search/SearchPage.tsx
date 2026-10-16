@@ -37,7 +37,11 @@ const SearchPage = () => {
   const showMap = searchParams.get("map") === "1";
 
   const activeCategoryId =
-    SEARCH_CATEGORIES.find((c) => c.id === typeParam || c.resultType === typeParam)?.id || "all";
+    SEARCH_CATEGORIES.find((c) => c.id === typeParam)?.id ||
+    (typeParam !== "all"
+      ? SEARCH_CATEGORIES.find((c) => c.resultType === typeParam)?.id
+      : undefined) ||
+    "all";
 
   const activeCategory =
     SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
