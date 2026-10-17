@@ -21,7 +21,7 @@ export default function DevPlatformSwitcher() {
     <div
       role="region"
       aria-label="Development Platform Switcher"
-      className="fixed bottom-20 right-4 z-[9999] flex items-center gap-1.5 bg-[#1F170E]/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full shadow-2xl border border-white/15 select-none"
+      className="fixed bottom-20 right-4 z-[9999] flex md:hidden items-center gap-1.5 bg-[#1F170E]/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full shadow-2xl border border-white/15 select-none"
     >
       <button
         type="button"

@@ -1,29 +1,19 @@
-import AppHeader from "../../components/AppHeader";
-import AppSearchBar from "../../components/AppSearchBar";
-import AppQuickActions from "../../components/AppQuickActions";
-import TrendingProperty from "../../../pages/v2/trendingproperty/TrendingProperty";
-import BuilderList from "../../../pages/v2/builderlist/BuilderList";
-import ServiceList from "../../../pages/v2/servicelist/ServiceList";
-import Blogs from "../../../pages/home/blogs/Blogs";
+import AppHomeHero from "../../components/home/AppHomeHero";
+import AppVerifiedPromo from "../../components/home/AppVerifiedPromo";
+import AppPopularNearYou from "../../components/home/AppPopularNearYou";
+import AppShorts from "../../components/home/AppShorts";
 
 export default function AppHome() {
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-6">
-      {/* Mobile App Header */}
-      <AppHeader />
+    <div className="min-h-screen  pb-24 font-helvetica select-none">
+      <AppHomeHero />
 
-      {/* Mobile App Search Bar */}
-      <AppSearchBar />
+      <div className="relative z-20 -mt-7 bg-[#f0eae5] rounded-t-[28px] px-4 pt-3 space-y-6 max-w-md mx-auto shadow-[-2px_0_12px_rgba(0,0,0,0.06)]">
+        <div className="mx-auto w-18 h-1 rounded-full bg-[#342511]" />
 
-      {/* Quick Category Icons */}
-      <AppQuickActions />
-
-      {/* Main Content Sections */}
-      <div className="space-y-6 pt-2">
-        <TrendingProperty />
-        <BuilderList />
-        <ServiceList />
-        <Blogs />
+        <AppVerifiedPromo />
+        <AppPopularNearYou />
+        <AppShorts />
       </div>
     </div>
   );
