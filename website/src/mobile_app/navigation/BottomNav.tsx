@@ -36,17 +36,14 @@ const navItems: NavItem[] = [
   {
     id: "enquiries",
     label: "Enquiries",
-    to: "/profile/calendar",
+    to: "/enquiries",
     icon: MessageCircle,
-    isActive: (pathname) =>
-      pathname.startsWith("/profile/calendar") ||
-      pathname.startsWith("/calendar") ||
-      pathname.startsWith("/enquiries"),
+    isActive: (pathname) => pathname.startsWith("/enquiries"),
   },
   {
     id: "saved",
     label: "Saved",
-    to: "/profile/collections",
+    to: "/saved",
     icon: Heart,
     isActive: (pathname) =>
       pathname.startsWith("/profile/collections") ||

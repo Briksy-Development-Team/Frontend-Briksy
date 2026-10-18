@@ -1,8 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Globe, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NavSearchButton, SearchOverlay } from "./NavSearchBar";
-import { SCROLL_THRESHOLD } from "../search/FloatingSearch";
 import LanguageModal from "./LanguageModal.tsx";
 import ProfileDropdown from "./ProfileDropdown.tsx";
 import Briskybrown from "../../assets/logo/briskybrown.svg";
@@ -19,14 +18,12 @@ type NavbarProps = {
 
 type Lang = { label: string; region: string };
 
-const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarProps) => {
+const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [openLabel, setOpenLabel] = useState<string | null>(null);
   const [selectedLang, setSelectedLang] = useState<Lang>({ label: "English", region: "UK" });
-  const [pastHero, setPastHero] = useState(!hasHero);
-  const pastHeroRef = useRef(pastHero);
 
   const navMenu = useNavMenu();
   const openItem = navMenu.find((i) => i.label === openLabel) ?? null;
@@ -48,22 +45,6 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
     };
   }, [mobileOpen]);
 
-  useEffect(() => {
-    if (!hasHero) return;
-    const onScroll = () => {
-      if (document.body.style.position === "fixed") return;
-      const isPast = window.scrollY > SCROLL_THRESHOLD;
-      if (isPast !== pastHeroRef.current) {
-        setMode("collapsed");
-        pastHeroRef.current = isPast;
-        setPastHero(isPast);
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [hasHero, setMode]);
-
   const isNavItemActive = (to: string) => {
     const url = new URL(to, window.location.origin);
     if (location.pathname !== url.pathname) return false;
@@ -81,81 +62,80 @@ const Navbar = ({ mode, setMode, hasHero = true, hideOnMobile = false }: NavbarP
 
   return (
     <>
-      {/* Spacer: holds the navbar's 80px in the page flow, so pages need no padding-top.
-          Hidden together with the navbar when hideOnMobile is set. */}
-      <header className={`h-20 ${hideOnMobile ? "hidden md:block" : ""}`}>
-        <nav className="fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white">
-          <div className="flex h-20 items-center justify-between px-2 sm:px-4 lg:px-6">
-            <Link to="/" onClick={() => setOpenLabel(null)} className="shrink-0 lg:w-[13.75rem]">
-              <img loading="eager" src={Briskybrown} alt="Briksy" className="h-12 w-auto" />
-            </Link>
+      <nav
+        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white ${hideOnMobile ? "hidden lg:block" : ""
+          }`}
+      >
+        <div className="flex h-20 items-center justify-between px-2 sm:px-4 lg:px-6">
+          <Link to="/" onClick={() => setOpenLabel(null)} className="shrink-0 lg:w-[13.75rem]">
+            <img loading="eager" src={Briskybrown} alt="Briksy" className="h-12 w-auto" />
+          </Link>
 
-            <div className="hidden flex-1 items-center justify-center gap-4 lg:flex">
-              {navMenu.map((item) => (
-                <div key={item.label} className="relative">
-                  {item.children.length > 0 ? (
-                    <button
-                      type="button"
-                      onClick={() => setOpenLabel((prev) => (prev === item.label ? null : item.label))}
-                      className={`flex items-center gap-1 whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white cursor-pointer ${openLabel === item.label ||
-                          isNavItemActive(item.to) ||
-                          item.children.some((c) => isNavItemActive(c.to))
-                          ? "border-b border-white text-white font-medium"
-                          : ""
-                        }`}
-                    >
-                      <span>{item.label}</span>
-                      <span className="text-xs">{openLabel === item.label ? "−" : "+"}</span>
-                    </button>
-                  ) : (
-                    <Link
-                      to={item.to}
-                      onClick={() => setOpenLabel(null)}
-                      className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${isNavItemActive(item.to) ? "border-b border-white text-white font-medium" : ""
-                        }`}
-                    >
-                      {item.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="flex shrink-0 items-center justify-end gap-5 lg:w-[13.75rem]">
-              {pastHero && !isSearchOpen && (
-                <>
-                  <div className="md:hidden">
-                    <NavSearchButton onClick={() => navigate("/result?type=real-estate")} />
-                  </div>
-                  <div className="hidden md:block">
-                    <NavSearchButton onClick={() => setMode("search")} />
-                  </div>
-                </>
-              )}
-              <button
-                onClick={() => {
-                  setOpenLabel(null);
-                  setLangModalOpen(true);
-                }}
-                className="hidden transition hover:opacity-70 lg:block"
-                aria-label="Language and region"
-              >
-                <Globe size={18} color="white" />
-              </button>
-              <div className="hidden lg:block">
-                <ProfileDropdown />
+          <div className="hidden flex-1 items-center justify-center gap-4 lg:flex">
+            {navMenu.map((item) => (
+              <div key={item.label} className="relative">
+                {item.children.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setOpenLabel((prev) => (prev === item.label ? null : item.label))}
+                    className={`flex items-center gap-1 whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white cursor-pointer ${openLabel === item.label ||
+                      isNavItemActive(item.to) ||
+                      item.children.some((c) => isNavItemActive(c.to))
+                      ? "border-b border-white text-white font-medium"
+                      : ""
+                      }`}
+                  >
+                    <span>{item.label}</span>
+                    <span className="text-xs">{openLabel === item.label ? "−" : "+"}</span>
+                  </button>
+                ) : (
+                  <Link
+                    to={item.to}
+                    onClick={() => setOpenLabel(null)}
+                    className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${isNavItemActive(item.to) ? "border-b border-white text-white font-medium" : ""
+                      }`}
+                  >
+                    {item.label}
+                  </Link>
+                )}
               </div>
-              <button
-                onClick={() => setMobileOpen((v) => !v)}
-                className="p-1.5 text-white transition hover:opacity-70 lg:hidden"
-                aria-label={mobileOpen ? "Close menu" : "Open menu"}
-              >
-                {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-              </button>
-            </div>
+            ))}
           </div>
-        </nav>
-      </header>
+
+          <div className="flex shrink-0 items-center justify-end gap-5 lg:w-[13.75rem]">
+            {!isSearchOpen && (
+              <>
+                <div className="lg:hidden">
+                  <NavSearchButton onClick={() => navigate("/result?type=real-estate")} />
+                </div>
+                <div className="hidden lg:block">
+                  <NavSearchButton onClick={() => setMode("search")} />
+                </div>
+              </>
+            )}
+            <button
+              onClick={() => {
+                setOpenLabel(null);
+                setLangModalOpen(true);
+              }}
+              className="hidden transition hover:opacity-70 lg:block"
+              aria-label="Language and region"
+            >
+              <Globe size={18} color="white" />
+            </button>
+            <div className="hidden lg:block">
+              <ProfileDropdown />
+            </div>
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              className="p-1.5 text-white transition hover:opacity-70 lg:hidden"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          </div>
+        </div>
+      </nav>
 
       {/* Mounted outside <nav> so it escapes the navbar stacking context */}
       <NavDropdown item={openItem} onClose={() => setOpenLabel(null)} />

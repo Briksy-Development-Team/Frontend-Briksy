@@ -33,13 +33,13 @@ export default function BuilderProjectDetail() {
 
   return (
     <div className="min-h-screen md:mt-20 font-helvetica pb-10 text-primary-brown">
-      <main className="w-full px-[5%] py-6">
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
         <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Builder", href: project.organization?.slug ? `/builder/${project.organization.slug}` : "/builders" }, { label: project.name }]} />
         <div className="mt-6">
           <PropertyGallery images={media.length ? media : [ProjectPlaceholder]} />
         </div>
-        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_19.4375rem]">
-          <div className="min-w-0">
+        <div className="mt-8 md:mt-10 flex flex-col lg:flex-row items-start gap-12">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-medium">{project.name}</h1>
@@ -48,18 +48,18 @@ export default function BuilderProjectDetail() {
               </div>
               <span className="rounded-full bg-[#F7F1EA] px-3 py-1 text-xs capitalize">{project.status.replaceAll("_", " ")}</span>
             </div>
-            {project.description && <section className="mt-10"><h2 className="text-xl font-medium">About this project</h2><p className="mt-3 whitespace-pre-line leading-7 text-primary-light-brown">{project.description}</p></section>}
-            {project.features?.length ? <section className="mt-8"><h2 className="text-xl font-medium">Project features</h2><div className="mt-3 flex flex-wrap gap-2">{project.features.map((feature) => <span key={feature} className="rounded-full bg-[#F7F1EA] px-3 py-1 text-sm">{feature}</span>)}</div></section> : null}
-            <section className="mt-10 border-t border-[#EBE5D9] pt-8">
+            {project.description && <section><h2 className="text-xl font-medium">About this project</h2><p className="mt-3 whitespace-pre-line leading-7 text-primary-light-brown">{project.description}</p></section>}
+            {project.features?.length ? <section><h2 className="text-xl font-medium">Project features</h2><div className="mt-3 flex flex-wrap gap-2">{project.features.map((feature) => <span key={feature} className="rounded-full bg-[#F7F1EA] px-3 py-1 text-sm">{feature}</span>)}</div></section> : null}
+            <section className="border-t border-[#EBE5D9] pt-8">
               <h2 className="mb-4 text-xl font-medium">Meet The Host</h2>
               {project.creator ? <HostProfileCard host={project.creator} avatar={project.organization?.logo_url} organizationName={project.organization?.name} /> : <p className="text-sm text-primary-light-brown">Host details are not available for this project.</p>}
             </section>
           </div>
-          <aside>
-            <div className="sticky top-28 rounded-2xl border border-[#EDE8E4] bg-white p-6">
+          <aside className="w-full lg:w-[360px] lg:shrink-0">
+            <div className="sticky top-28 rounded-2xl border border-[#EDE8E4] bg-white p-6 shadow-xs">
               <p className="text-sm text-primary-light-brown">Builder</p>
               <p className="mt-1 text-lg font-medium">{project.organization?.name || "Builder"}</p>
-              {project.organization?.slug && <Link to={`/builder/${project.organization.slug}`} className="mt-5 inline-block rounded-full bg-primary-brown px-5 py-2 text-sm font-medium text-white">View builder profile</Link>}
+              {project.organization?.slug && <Link to={`/builder/${project.organization.slug}`} className="mt-5 inline-block rounded-full bg-primary-brown px-5 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity">View builder profile</Link>}
             </div>
           </aside>
         </div>

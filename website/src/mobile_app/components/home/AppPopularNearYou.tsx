@@ -1,237 +1,82 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import { SEARCH_CATEGORIES } from "../../../constants/searchCategories";
-import { getOrganizations } from "../../../api/seeker/organization.api";
-import { getProperties } from "../../../api/property/property.api";
-import {
-  organizationToBuilder,
-  organizationToTrader,
-  propertyToCard,
-} from "../../../api/public.mappers";
-import { serviceSlugForLabel } from "../../../constants/serviceCategories";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { SEARCH_CATEGORIES, type Category } from "../../../constants/searchCategories";
+import { useListingData } from "../../../pages/search/useListingData";
 import type { FilterTab } from "../../../components/filter/filterTypes";
 import TraderListCard from "../../../components/cards/trader/TraderListCard";
 import BuilderListCard from "../../../components/cards/builder/BuilderListCard";
 import PropertyListCard from "../../../components/cards/property/PropertyListCard";
 
+// Exclude the raw address category since it's a search input mode rather than a catalog category
 const CATEGORIES = SEARCH_CATEGORIES.filter((c) => c.id !== "address");
 
-const SEE_ALL: Record<string, string> = {
-  "real-estate": "/buy",
-  traders: "/professionals",
-  builders: "/builders",
-  agents: "/agents",
-  commercial: "/commercials",
-  auction: "/auctions",
-};
+interface AppPopularNearYouProps {
+  initialCategoryId?: string;
+  maxItems?: number;
+}
 
 export default function AppPopularNearYou({
   initialCategoryId = "real-estate",
   maxItems = 6,
-}: {
-  initialCategoryId?: string;
-  maxItems?: number;
-}) {
-  const [activeCategoryId, setActiveCategoryId] = useState(initialCategoryId);
+}: AppPopularNearYouProps) {
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(initialCategoryId);
   const [activeSubTab, setActiveSubTab] = useState<FilterTab | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [items, setItems] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const activeCategory = CATEGORIES.find((c) => c.id === activeCategoryId) ?? CATEGORIES[0];
+  const activeCategory: Category = useMemo(
+    () => CATEGORIES.find((c) => c.id === activeCategoryId) || CATEGORIES[0],
+    [activeCategoryId]
+  );
 
-  const handleCategoryChange = (id: string) => {
-    setActiveCategoryId(id);
+  const items = useListingData(activeCategory.resultType, "", activeSubTab, "popular");
+
+  const handleCategoryChange = (categoryId: string) => {
+    setActiveCategoryId(categoryId);
     setActiveSubTab(null);
   };
 
-  useEffect(() => {
-    let isCancelled = false;
-    setIsLoading(true);
-
-    const catId = activeCategory.id;
-    const subTab = activeSubTab;
-
-    const fetchData = async () => {
-      try {
-        if (catId === "real-estate") {
-          const purpose = subTab === "Buy" ? "sell" : subTab === "Rent" ? "rent" : undefined;
-          const status = subTab === "Sold" ? "SOLD" : undefined;
-          const res = await getProperties({
-            verified_only: 1,
-            sort: "rating",
-            purpose,
-            transaction_status: status,
-          }).catch(() => getProperties({ sort: "rating" }));
-
-          if (!isCancelled) {
-            setItems((res.data || []).map(propertyToCard));
-          }
-        } else if (catId === "commercial") {
-          const status = subTab && ["Buy", "Lease", "Sold", "Leased"].includes(subTab)
-            ? (subTab.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED")
-            : undefined;
-          const res = await getProperties({
-            category: "commercial",
-            transaction_status: status,
-            verified_only: 1,
-          }).catch(() => getProperties({ category: "commercial" }))
-            .catch(() => getProperties({}));
-
-          if (!isCancelled) {
-            setItems((res.data || []).map(propertyToCard));
-          }
-        } else if (catId === "auction") {
-          const res = await getProperties({ auction_only: 1, verified_only: 1 })
-            .catch(() => getProperties({ auction_only: 1 }))
-            .catch(() => getProperties({}));
-
-          if (!isCancelled) {
-            setItems((res.data || []).map(propertyToCard));
-          }
-        } else if (catId === "agents") {
-          const agentType =
-            subTab === "Buyer Agents"
-              ? "buyers-agent"
-              : subTab === "Real Estate Agents"
-              ? "real-estate-agent"
-              : undefined;
-
-          const res = await getOrganizations({
-            type: agentType || "agents",
-            verified_only: 1,
-          }).catch(() => getOrganizations({ type: "agents" }))
-            .catch(() => getOrganizations({}));
-
-          if (!isCancelled) {
-            setItems(
-              (res.data || []).map((o) => {
-                const trader = organizationToTrader(o);
-                return {
-                  ...trader,
-                  role: o.type?.name || "Agent",
-                  reviews: o.reviews_count || trader.reviews || 0,
-                  tags: trader.tags || [],
-                };
-              })
-            );
-          }
-        } else if (catId === "traders") {
-          const slug = subTab ? serviceSlugForLabel(subTab) : undefined;
-          const res = await getOrganizations({
-            type: "trades-professionals",
-            service_slug: slug,
-            verified_only: 1,
-          }).catch(() => getOrganizations({ type: "trades-professionals" }))
-            .catch(() => getOrganizations({}));
-
-          if (!isCancelled) {
-            setItems(
-              (res.data || []).map((o) => {
-                const trader = organizationToTrader(o);
-                return {
-                  ...trader,
-                  reviews: o.reviews_count || trader.reviews || 0,
-                  tags: trader.tags || [],
-                };
-              })
-            );
-          }
-        } else if (catId === "builders") {
-          const res = await getOrganizations({
-            type: "builders",
-            verified_only: 1,
-          }).catch(() => getOrganizations({ type: "builders" }))
-            .catch(() => getOrganizations({}));
-
-          if (!isCancelled) {
-            setItems(
-              (res.data || []).map((o) => {
-                const builder = organizationToBuilder(o);
-                return {
-                  ...builder,
-                  reviews: o.reviews_count || builder.reviews || 0,
-                  tags: builder.tags || [],
-                };
-              })
-            );
-          }
-        } else {
-          // Other categories default to builder cards
-          const res = await getOrganizations({ verified_only: 1 })
-            .catch(() => getOrganizations({}));
-
-          if (!isCancelled) {
-            setItems((res.data || []).map(organizationToBuilder));
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load category data:", err);
-        if (!isCancelled) {
-          setItems([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [activeCategory.id, activeSubTab]);
-
-  const renderCard = (item: any) => {
-    const catId = activeCategory.id;
-
-    if (catId === "real-estate" || catId === "commercial" || catId === "auction") {
-      return <PropertyListCard key={item.id} item={item} />;
-    }
-
-    if (catId === "agents" || catId === "traders") {
-      return <TraderListCard key={item.id} item={item} />;
-    }
-
-    return <BuilderListCard key={item.id} item={item} />;
+  const getSeeAllUrl = () => {
+    if (activeCategory.id === "traders") return "/professionals";
+    if (activeCategory.id === "builders") return "/builders";
+    if (activeCategory.id === "agents") return "/agents";
+    if (activeCategory.id === "commercial") return "/commercials";
+    if (activeCategory.id === "auction") return "/auctions";
+    return "/buy";
   };
 
   return (
     <section className="space-y-3.5">
       <div className="flex items-center justify-between">
-        <h2 className="text-[1.25rem] font-medium text-primary-brown tracking-tight">
-          Popular near you
-        </h2>
+        <h2 className="text-xl font-medium text-[#342511] tracking-tight">Popular near you</h2>
         <Link
-          to={SEE_ALL[activeCategory.id] ?? "/buy"}
-          className="text-[0.875rem] text-primary-light-brown hover:text-primary-brown flex items-center gap-1 transition-colors"
+          to={getSeeAllUrl()}
+          className="text-xs text-[#7C5F42] hover:text-[#342511] font-medium flex items-center gap-1 transition-colors"
         >
-          See all
+          <span>See all</span>
+          <ArrowRight size={13} />
         </Link>
       </div>
 
-      {/* Category tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide -mx-4 px-4 py-1">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => handleCategoryChange(cat.id)}
-            className={`flex-1 shrink-0 py-2 px-5 text-[0.875rem] font-medium rounded-full whitespace-nowrap transition-all cursor-pointer ${
-              cat.id === activeCategoryId
-                ? "bg-white text-primary-brown shadow-xs"
-                : "text-primary-light-brown hover:text-primary-brown"
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+      <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1 -mx-4 px-4">
+        {CATEGORIES.map((cat) => {
+          const isSelected = cat.id === activeCategoryId;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => handleCategoryChange(cat.id)}
+              className={`py-1.5 px-3.5 text-xs font-medium rounded-full transition-all text-center whitespace-nowrap cursor-pointer shrink-0 ${isSelected
+                ? "bg-[#342511] text-white shadow-xs"
+                : "bg-white text-[#7C5F42] border border-[#EDE8E4] hover:bg-[#F8F4EE] hover:text-[#342511]"
+                }`}
+            >
+              {cat.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Subcategory tabs */}
+      {/* Subcategory Pills (if the category has subcategories like Buy, Rent, Landscapers, etc.) */}
       {activeCategory.propTypes && activeCategory.propTypes.length > 0 && (
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-0.5 -mx-4 px-4">
           {activeCategory.propTypes.map((prop) => {
@@ -242,11 +87,10 @@ export default function AppPopularNearYou({
                 key={prop.id}
                 type="button"
                 onClick={() => setActiveSubTab(isAll ? null : (prop.label as FilterTab))}
-                className={`py-1 px-3 text-[11px] rounded-full whitespace-nowrap shrink-0 transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-primary-light-brown text-white font-medium"
-                    : "bg-[#EBE5DC] text-primary-light-brown hover:bg-[#dfd7cc]"
-                }`}
+                className={`py-1 px-3 text-[11px] rounded-full transition-all whitespace-nowrap cursor-pointer shrink-0 ${isSelected
+                  ? "bg-[#8B6F54] text-white font-medium"
+                  : "bg-[#EBE5DC] text-[#7C5F42] hover:bg-[#dfd7cc] font-normal"
+                  }`}
               >
                 {prop.label}
               </button>
@@ -255,19 +99,23 @@ export default function AppPopularNearYou({
         </div>
       )}
 
-      {/* Cards list */}
-      <div className="flex flex-col gap-3">
-        {isLoading ? (
-          <div className="py-8 flex flex-col items-center gap-2 text-primary-light-brown">
-            <Loader2 size={24} className="animate-spin text-primary-light-brown" />
+      {/* Vertical Cards Scroller */}
+      <div className="flex flex-col gap-3 pt-1">
+        {items.length === 0 ? (
+          <div className="py-8 flex flex-col items-center justify-center text-[#7C5F42] gap-2">
+            <Loader2 size={24} className="animate-spin text-[#8B6F54]" />
             <span className="text-xs">Loading {activeCategory.label.toLowerCase()}...</span>
           </div>
-        ) : items.length === 0 ? (
-          <div className="py-8 text-center text-xs text-primary-light-brown bg-white/40 rounded-2xl border border-[#EDE8E4] p-4">
-            No {activeCategory.label.toLowerCase()} found near you currently.
-          </div>
         ) : (
-          items.slice(0, maxItems).map((item) => renderCard(item))
+          items.slice(0, maxItems).map((item) => {
+            if (activeCategory.resultType === "trader") {
+              return <TraderListCard key={item.id} item={item} />;
+            }
+            if (activeCategory.resultType === "builder") {
+              return <BuilderListCard key={item.id} item={item} />;
+            }
+            return <PropertyListCard key={item.id} item={item} />;
+          })
         )}
       </div>
     </section>

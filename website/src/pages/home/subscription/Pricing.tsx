@@ -88,7 +88,7 @@ const Pricing = () => {
   const activeTab = tabs.find((t) => t.id === activeTabId) ?? tabs[0];
 
   return (
-    <main className="min-h-screen md:mt-20 font-helvetica text-primary-brown font-helvetica">
+    <main className="min-h-screen pt-20 md:pt-24 font-helvetica text-primary-brown">
 
       <section className="pt-12 pb-8 px-[5%] text-center">
         <h1 className="text-[2rem] md:text-[3rem] font-normal tracking-tight leading-tight text-primary-brown">

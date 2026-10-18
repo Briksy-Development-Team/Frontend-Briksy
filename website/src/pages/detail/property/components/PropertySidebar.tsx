@@ -1,7 +1,20 @@
-import { DetailSidebar } from "../../shared/DetailSidebar";
-import { AuctionSidebar } from "./AuctionSidebar";
+import {
+  RealEstateSidebar,
+  AuctionSidebar as SharedAuctionSidebar,
+  CommercialSidebar,
+  NeedHelpCard,
+  RealEstateAboveCard,
+  AuctionAboveCard,
+} from "../../shared/DetailSidebar";
 
-export { AuctionSidebar };
+export {
+  RealEstateSidebar,
+  SharedAuctionSidebar as AuctionSidebar,
+  CommercialSidebar,
+  NeedHelpCard,
+  RealEstateAboveCard,
+  AuctionAboveCard,
+};
 
 type ListingPurpose = "new_home" | "SELL" | "RENT" | "BOTH" | "sale" | "rent" | "land" | "AUCTION" | "auction" | string | undefined | null;
 
@@ -17,23 +30,13 @@ function getPriceLabel(listingPurpose: ListingPurpose): string {
   }
 }
 
-function getDescription(listingPurpose: ListingPurpose): string {
-  const p = listingPurpose?.toUpperCase();
-  switch (p) {
-    case "RENT":
-      return "Free inspection available. Typically replies within one business day.";
-    default:
-      return "Free consultation and site assessment · Typically replies within one business day";
-  }
-}
-
 function getButtonText(listingPurpose: ListingPurpose): string {
   const p = listingPurpose?.toUpperCase();
   switch (p) {
     case "RENT":
       return "Book an Inspection";
     default:
-      return "Send an Enquiry";
+      return "Send a enquiry";
   }
 }
 
@@ -42,15 +45,12 @@ export const PropertySidebar = ({
   listingPurpose,
   isAuction,
   venueAddress,
-  auctionVenue,
   auctionDate,
   auctionTime,
-  auctioneer,
-  auctionContact,
-  auctionDescription,
-  propertyId,
-  propertyTitle,
-  organizationId,
+  statusTag,
+  statusDate,
+  address,
+  organizationName,
   onEnquiry,
 }: {
   sidebar: { price?: number; builderName?: string; location?: string };
@@ -66,46 +66,44 @@ export const PropertySidebar = ({
   propertyId?: string;
   propertyTitle?: string;
   organizationId?: string;
+  statusTag?: string;
+  statusDate?: string;
+  address?: string;
+  organizationName?: string;
   onEnquiry?: () => void;
 }) => {
   if (isAuction) {
     return (
-      <AuctionSidebar
-        sidebar={sidebar}
-        venueAddress={venueAddress}
-        auctionVenue={auctionVenue}
-        auctionDate={auctionDate}
-        auctionTime={auctionTime}
-        auctioneer={auctioneer}
-        auctionContact={auctionContact}
-        auctionDescription={auctionDescription}
-        propertyId={propertyId}
-        propertyTitle={propertyTitle}
-        organizationId={organizationId}
+      <SharedAuctionSidebar
+        venueAddress={venueAddress || address || sidebar.location}
+        auctionDate={auctionDate || "Saturday, 17 October 2026"}
+        auctionTime={auctionTime || "11:00 AM"}
+        organizationName={organizationName || sidebar.builderName}
+        buttonText="Send a enquiry"
         onEnquiry={onEnquiry}
       />
     );
   }
+
   const priceLabel = getPriceLabel(listingPurpose);
-  const description = getDescription(listingPurpose);
   const buttonText = getButtonText(listingPurpose);
 
   const priceDisplay = sidebar.price
-    ? `$${(sidebar.price / 1000).toFixed(0)}k`
+    ? `$${sidebar.price.toLocaleString()}`
     : undefined;
 
   return (
-    <DetailSidebar
+    <RealEstateSidebar
       price={priceDisplay}
       priceLabel={priceDisplay ? priceLabel : undefined}
-      description={description}
+      statusTag={statusTag}
+      statusDate={statusDate}
+      address={address || sidebar.location}
+      organizationName={organizationName || sidebar.builderName}
       buttonText={buttonText}
       onEnquiry={onEnquiry}
-      footerText={
-        sidebar.builderName
-          ? `Enquiries go directly to ${sidebar.builderName}. BRIKSY never charges buyers.`
-          : "BRIKSY never charges buyers."
-      }
+      showNeedHelp={true}
     />
   );
 };
+

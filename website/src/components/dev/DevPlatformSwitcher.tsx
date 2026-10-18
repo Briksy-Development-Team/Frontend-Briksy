@@ -1,5 +1,6 @@
 import { useIsMobileApp, setDevPlatformOverride, getDevPlatformOverride } from "../../utils/platform";
-import { Smartphone, Globe, RotateCcw } from "lucide-react";
+import { setMobileWelcomeSeen } from "../../utils/welcome";
+import { Smartphone, Globe, RotateCcw, Sparkles } from "lucide-react";
 
 export default function DevPlatformSwitcher() {
   if (!import.meta.env.DEV) return null;
@@ -15,6 +16,11 @@ export default function DevPlatformSwitcher() {
   const resetToAuto = (e: React.MouseEvent) => {
     e.stopPropagation();
     setDevPlatformOverride(null);
+  };
+
+  const replayWelcome = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMobileWelcomeSeen(false);
   };
 
   return (
@@ -42,11 +48,23 @@ export default function DevPlatformSwitcher() {
         )}
       </button>
 
+      {isApp && (
+        <button
+          type="button"
+          onClick={replayWelcome}
+          className="ml-1 px-1.5 py-0.5 text-[10px] bg-white/10 hover:bg-white/20 text-[#DFB28A] rounded-full flex items-center gap-1 transition-colors cursor-pointer"
+          title="Replay first-time welcome screen"
+        >
+          <Sparkles size={10} />
+          <span>Welcome</span>
+        </button>
+      )}
+
       {override !== null && (
         <button
           type="button"
           onClick={resetToAuto}
-          className="ml-1 p-0.5 text-white/60 hover:text-white transition-colors"
+          className="ml-1 p-0.5 text-white/60 hover:text-white transition-colors cursor-pointer"
           title="Reset to automatic platform detection"
         >
           <RotateCcw size={11} />

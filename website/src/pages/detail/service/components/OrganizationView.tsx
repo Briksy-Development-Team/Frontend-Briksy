@@ -42,7 +42,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pb-16 font-helvetica md:pt-20">
-      <div className="w-full px-[3%] md:py-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
@@ -54,8 +54,8 @@ export function OrganizationView({ organization, service }: { organization: Publ
 
         <ServiceMobileHeader organization={organization} />
 
-        <div className="mt-4 flex flex-col items-start gap-12 md:mt-8 lg:flex-row">
-          <div className="hidden w-full md:block lg:sticky lg:top-28 lg:w-[30%]">
+        <div className="mt-6 md:mt-8 flex flex-col items-start gap-12 lg:flex-row">
+          <div className="hidden w-full md:block lg:sticky lg:top-28 lg:w-[360px] lg:shrink-0">
             <ServiceSidebar
               service={{
                 id: organization.id,
@@ -72,7 +72,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
             />
           </div>
 
-          <div className="flex w-full flex-col gap-12 pt-0 md:pt-6 lg:w-[70%]">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-8 pt-0">
             <div id="services">
               <ServiceList servicesData={{ list: mappedServices }} />
             </div>

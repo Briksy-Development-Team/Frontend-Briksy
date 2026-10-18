@@ -1,9 +1,12 @@
-import { Star, Share, Award, Phone } from "lucide-react";
+import { Star, Share, Award } from "lucide-react";
 import FavoriteButton from "../../../../components/custom/FavoriteButton";
 import { SafeImage } from "../../../../components/custom/SafeImage";
 import Verify from "../../../../assets/icons/verify.svg";
 import defaultBanner from "../../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../../assets/agent/agent_avatar.png";
+import { AgentAboveCard, NeedHelpCard } from "../../shared/DetailSidebar";
+
+export { AgentAboveCard, NeedHelpCard };
 
 export interface AgentSidebarProps {
   agent: {
@@ -155,31 +158,16 @@ export function AgentSidebar({
         </div>
       </div>
 
-      {/* Enquiry Card */}
-      <div className="w-full bg-white rounded-2xl border border-[#EDE8E4] flex flex-col gap-3.5 p-6 shadow-sm">
-        <button
-          onClick={onRequestAppraisal}
-          className="w-full h-10 rounded-full bg-[#342511] text-[#F8F4EE] font-medium text-[0.875rem] hover:opacity-90 transition-opacity flex items-center justify-center"
-        >
-          Request a free appraisal
-        </button>
+      {/* Above Card (Figma 4359-2102) */}
+      <AgentAboveCard
+        primaryButtonText="Request a free appraisal"
+        onPrimaryAction={onRequestAppraisal}
+        onEnquiry={onEnquiry}
+        onCall={onCallAgency}
+      />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onEnquiry}
-            className="flex-1 h-10 rounded-full border border-[#EDE8E4] bg-white text-[#342511] font-medium text-[0.875rem] hover:bg-gray-50 transition-colors flex items-center justify-center"
-          >
-            Enquiry
-          </button>
-          <button
-            onClick={onCallAgency}
-            className="flex-1 h-10 rounded-full border border-[#EDE8E4] bg-white text-[#342511] font-medium text-[0.875rem] hover:bg-gray-50 transition-colors flex items-center justify-center gap-1.5"
-          >
-            <Phone size={14} />
-            Call Agency
-          </button>
-        </div>
-      </div>
+      {/* Need Help with ? Card */}
+      <NeedHelpCard />
     </aside>
   );
 }
