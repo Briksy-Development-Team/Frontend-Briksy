@@ -14,6 +14,7 @@ import Reviews from "../../../components/reviews/Reviews";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
+import { DetailShorts } from "../shared";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
@@ -333,7 +334,12 @@ export const AgentDetail = () => {
               description={aboutDescription}
             />
 
-            {/* 4. Shared Reviews Component */}
+            {/* 4. Shorts Section */}
+            <div id="shorts">
+              <DetailShorts />
+            </div>
+
+            {/* 5. Shared Reviews Component */}
             <Reviews
               name={agentName}
               data={reviewsData}

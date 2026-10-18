@@ -7,6 +7,7 @@ import { ServiceEnquiry } from "./ServiceEnquiry";
 import { ServiceRecentWork } from "./ServiceDetails";
 import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../../components/custom/FraudBanner";
+import { DetailShorts } from "../../shared";
 
 export const joinAddress = (
   o?: {
@@ -127,6 +128,10 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
                 />
               </div>
             )}
+
+            <div id="shorts">
+              <DetailShorts />
+            </div>
           </div>
         </div>
       </div>

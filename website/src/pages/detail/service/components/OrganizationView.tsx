@@ -11,6 +11,7 @@ import { ServiceEnquiry } from "./ServiceEnquiry";
 import { joinAddress, toMedia } from "./ServiceOnlyView";
 import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../../components/custom/FraudBanner";
+import { DetailShorts } from "../../shared";
 
 export function OrganizationView({ organization, service }: { organization: PublicOrganization, service: PublicService | null }) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -119,6 +120,10 @@ export function OrganizationView({ organization, service }: { organization: Publ
                 name={organization.name}
                 data={{ overall: rating, count: 0, distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }, list: [] }}
               />
+            </div>
+
+            <div id="shorts">
+              <DetailShorts />
             </div>
           </div>
         </div>

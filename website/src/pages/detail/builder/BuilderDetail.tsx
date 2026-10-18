@@ -18,6 +18,7 @@ import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
+import { DetailShorts } from "../shared";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 
@@ -173,6 +174,9 @@ const BuilderDetail = () => {
               </div>
               <div id="about">
                 <BuilderAbout about={viewModel.about} />
+              </div>
+              <div id="shorts">
+                <DetailShorts />
               </div>
             </div>
           </div>

@@ -13,6 +13,7 @@ import { getProperty, getProperties, type PublicProperty } from "../../../api/pr
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
+import { DetailShorts } from "../shared";
 import SwiperScroll from "../../../components/swiper/SwiperScroll";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
@@ -320,6 +321,10 @@ const PropertyDetail = () => {
                 <PropertyMap mapSrc={property.mapSrc} />
               </div>
             )}
+
+            <div id="shorts">
+              <DetailShorts />
+            </div>
 
             {property.company && (
               <div id="company">

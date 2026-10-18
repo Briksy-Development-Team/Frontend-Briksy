@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ShieldCheck, ListTree, Star } from "lucide-react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { SafeImage } from "../../../../components/custom/SafeImage";
+import NearbySchools from "../../shared/NearbySchools";
 
 export const PropertyTitle = ({
   title,
@@ -192,26 +193,42 @@ export const PropertyAmenities = ({ amenities }: { amenities?: any[] }) => {
   );
 };
 
-export const PropertyMap = ({ mapSrc }: { mapSrc?: string | null }) => {
+export interface PropertyMapProps {
+  mapSrc?: string | null;
+  nearby?: boolean;
+  showNearby?: boolean;
+}
+
+export const PropertyMap = ({
+  mapSrc,
+  nearby = true,
+  showNearby = true,
+}: PropertyMapProps) => {
   if (!mapSrc) return null;
 
+  const displayNearby = nearby && showNearby;
+
   return (
-    <div className="flex flex-col gap-3 w-full">
-      <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
-        Where you’ll be
-      </h2>
-      <div className="w-full h-[280px] sm:h-[321px] rounded-xl overflow-hidden border border-[#EDE8E4] bg-[#F8F4EE]">
-        <iframe
-          title="Property location map"
-          src={mapSrc}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
+    <div className="flex flex-col gap-8 w-full">
+      <div className="flex flex-col gap-3 w-full">
+        <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+          Where you’ll be
+        </h2>
+        <div className="w-full h-[280px] sm:h-[321px] rounded-xl overflow-hidden border border-[#EDE8E4] bg-[#F8F4EE]">
+          <iframe
+            title="Property location map"
+            src={mapSrc}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
       </div>
+
+      {displayNearby && <NearbySchools />}
     </div>
   );
 };

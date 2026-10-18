@@ -5,6 +5,7 @@ import { useAuth } from '../../auth/AuthContext'
 import { isLocalFavorite } from '../../favorites/localFavorites'
 import { toggleSeekerPropertyFavorite } from '../../seeker/seeker.api'
 import AuthPromptToast from '../../components/custom/AuthPromptToast'
+import { DetailShorts } from './shared'
 
 const property = {
   title: '4 Bedroom Family Home with Pool',
@@ -116,6 +117,10 @@ const PropertyDetail = () => {
                   </span>
                 ))}
               </div>
+            </div>
+
+            <div id="shorts">
+              <DetailShorts />
             </div>
           </div>
 

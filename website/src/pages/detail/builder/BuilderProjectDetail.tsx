@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import { PropertyGallery } from "../property/components/PropertyGallery";
-import HostProfileCard from "../shared/HostProfileCard";
+import { PropertyMap } from "../property/components/PropertyInfo";
+import { DetailShorts, HostProfileCard } from "../shared";
 import { getBuilderProject, type PublicBuilderProject } from "../../../api/seeker/organization.api";
 import ProjectPlaceholder from "../../../assets/place holder/builderbg.svg";
 
@@ -50,6 +51,14 @@ export default function BuilderProjectDetail() {
             </div>
             {project.description && <section><h2 className="text-xl font-medium">About this project</h2><p className="mt-3 whitespace-pre-line leading-7 text-primary-light-brown">{project.description}</p></section>}
             {project.features?.length ? <section><h2 className="text-xl font-medium">Project features</h2><div className="mt-3 flex flex-wrap gap-2">{project.features.map((feature) => <span key={feature} className="rounded-full bg-[#F7F1EA] px-3 py-1 text-sm">{feature}</span>)}</div></section> : null}
+            {location && (
+              <div id="map">
+                <PropertyMap mapSrc={`https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`} />
+              </div>
+            )}
+            <div id="shorts">
+              <DetailShorts />
+            </div>
             <section className="border-t border-[#EBE5D9] pt-8">
               <h2 className="mb-4 text-xl font-medium">Meet The Host</h2>
               {project.creator ? <HostProfileCard host={project.creator} avatar={project.organization?.logo_url} organizationName={project.organization?.name} /> : <p className="text-sm text-primary-light-brown">Host details are not available for this project.</p>}

@@ -2,6 +2,7 @@ import { ShieldCheck, Play } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { loadGoogleMapsScript } from "../../../../utils/googleMapsLoader";
+import NearbySchools from "../../shared/NearbySchools";
 
 type ServiceAreaGeometry = { type: "Polygon"; coordinates: number[][][] };
 
@@ -362,7 +363,19 @@ function ServiceAreaMap({ location }: { location: any }) {
   return <div ref={mapElementRef} className="h-full w-full" />;
 }
 
-export function ServiceLocation({ location }: { location: any }) {
+export interface ServiceLocationProps {
+  location: any;
+  nearby?: boolean;
+  showNearby?: boolean;
+}
+
+export function ServiceLocation({
+  location,
+  nearby = true,
+  showNearby = true,
+}: ServiceLocationProps) {
+  const displayNearby = nearby && showNearby;
+
   return (
     <div className="flex flex-col gap-[1.5rem]">
       <div className="space-y-[1.5rem]">
@@ -400,6 +413,8 @@ export function ServiceLocation({ location }: { location: any }) {
           ? `Service location: ${location.address}`
           : "Contact this business to confirm the service location."}
       </p>
+
+      {displayNearby && <NearbySchools />}
     </div>
   );
 }
