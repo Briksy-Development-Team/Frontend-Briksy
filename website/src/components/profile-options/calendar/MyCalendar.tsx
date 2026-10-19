@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { getAuctionCalendarEvents, type AuctionCalendarEvent } from "../../../api/seeker/calendar.api";
+import { getProperties, type PublicProperty } from "../../../api/property/property.api";
 import type { CalendarEvent, DesktopCategory } from "../../../types/calendar";
 import EventGridCard from "../../cards/event/EventGridCard";
 import EventListCard from "../../cards/event/EventListCard";
 
-import imageOne from "../../../assets/dummy/imageone.png";
-import imageTwo from "../../../assets/dummy/imagetwo.png";
-import imageThree from "../../../assets/dummy/imagethree.png";
 import imageFour from "../../../assets/dummy/imagefour.png";
 import defaultAvatar from "../../../assets/agent/reviewer_avatar.png";
 
@@ -26,93 +24,41 @@ const DESKTOP_FILTERS: DesktopCategory[] = [
 
 const MOBILE_FILTERS = ["All", "Visit", "Open House", "Auction", "Meeting"] as const;
 
-const SAMPLE_EVENTS: CalendarEvent[] = [
-  {
-    id: "sample-1",
-    day: 13,
-    type: "Open Home",
-    desktopCategory: "Open Homes",
-    title: "Luxury Apartment in Melbourne",
-    time: "10:30 AM - 11:00 AM",
-    location: "Melbourne, VIC 3000",
-    image: imageOne,
-    listedBy: "Urban Living",
-    listedByAvatar: defaultAvatar,
-    isFavourite: true,
-  },
-  {
-    id: "sample-2",
-    day: 13,
-    type: "Open Home",
-    desktopCategory: "Open Homes",
-    title: "Modern Waterfront Residence",
-    time: "02:00 PM - 02:45 PM",
-    location: "Melbourne, VIC 3000",
-    image: imageTwo,
-    listedBy: "Urban Living",
-    listedByAvatar: defaultAvatar,
-    isFavourite: false,
-  },
-  {
-    id: "sample-3",
-    day: 16,
-    type: "Open House",
-    desktopCategory: "Open Homes",
-    title: "Michael Smith",
-    time: "00:00 AM - 00:00 PM",
-    location: "12 House, Melbourne, VIC 3000",
-    image: imageOne,
-    listedBy: "Michael Smith",
-    listedByAvatar: defaultAvatar,
-    isFavourite: true,
-  },
-  {
-    id: "sample-4",
-    day: 16,
-    type: "Visit",
-    desktopCategory: "Property Visits",
-    title: "Sarah Johnson",
-    time: "01:00 PM - 04:00 PM",
-    location: "45 Creative Ave, Sydney, NSW 2000",
-    image: imageTwo,
-    listedBy: "Sarah Johnson",
-    listedByAvatar: defaultAvatar,
-    isFavourite: false,
-  },
-  {
-    id: "sample-5",
-    day: 16,
-    type: "Open House",
-    desktopCategory: "Open Homes",
-    title: "David Lee",
-    time: "05:00 PM - 08:00 PM",
-    location: "78 Innovation St, Brisbane, QLD 4000",
-    image: imageThree,
-    listedBy: "David Lee",
-    listedByAvatar: defaultAvatar,
-    isFavourite: false,
-  },
-  {
-    id: "sample-6",
-    day: 16,
-    type: "Auction",
-    desktopCategory: "Auctions",
-    title: "Executive Penthouse Auction",
-    time: "11:00 AM - 12:00 PM",
-    location: "88 Queen St, Melbourne, VIC 3000",
-    image: imageFour,
-    listedBy: "Prestige Group",
-    listedByAvatar: defaultAvatar,
-    isFavourite: true,
-  },
-];
-
 function isSameDay(d1: Date, d2: Date) {
   return (
     d1.getFullYear() === d2.getFullYear() &&
     d1.getMonth() === d2.getMonth() &&
     d1.getDate() === d2.getDate()
   );
+}
+
+function dateKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+function auctionDateTime(property: PublicProperty): Date | null {
+  const date = property.auction_details?.date;
+  if (!date) return null;
+  const time = property.auction_details?.time?.slice(0, 5) || "00:00";
+  const parsed = new Date(`${date}T${time}:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function auctionTimeLabel(property: PublicProperty): string {
+  const time = property.auction_details?.time;
+  if (!time) return "Time to be confirmed";
+  const parsed = new Date(`2000-01-01T${time.slice(0, 5)}:00`);
+  return Number.isNaN(parsed.getTime())
+    ? time
+    : parsed.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" });
+}
+
+function propertyPreviewImage(property: PublicProperty): string {
+  return property.images?.find((image) => image.is_primary)?.url
+    || property.images?.find((image) => image.url)?.url
+    || property.media?.find((media) => media.type === "image" && media.is_primary)?.url
+    || property.media?.find((media) => media.type === "image")?.url
+    || imageFour;
 }
 
 function getCalendarMatrix(year: number, monthIndex: number) {
@@ -160,15 +106,26 @@ function getCalendarMatrix(year: number, monthIndex: number) {
 }
 
 export default function MyCalendar() {
-  const [month, setMonth] = useState(() => new Date(2026, 9, 1));
-  const [selectedDate, setSelectedDate] = useState(() => new Date(2026, 9, 13));
+  const [month, setMonth] = useState(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [desktopFilters, setDesktopFilters] = useState<DesktopCategory[]>([]);
   const [mobileFilter, setMobileFilter] = useState<string>("All");
   const [apiEvents, setApiEvents] = useState<AuctionCalendarEvent[]>([]);
+  const [auctionProperties, setAuctionProperties] = useState<PublicProperty[]>([]);
 
   useEffect(() => {
     getAuctionCalendarEvents()
       .then((res) => setApiEvents(res ?? []))
+      .catch(() => {});
+
+    getProperties({ auction_only: true, verified_only: 1, per_page: 100 })
+      .then((res) => {
+        const listings = (res.data ?? []).filter((property) => property.is_auction && auctionDateTime(property));
+        setAuctionProperties(listings);
+      })
       .catch(() => {});
   }, []);
 
@@ -177,17 +134,31 @@ export default function MyCalendar() {
     [month]
   );
 
-  const allEventsForSelectedDate = useMemo(() => {
-    const selectedDayNum = selectedDate.getDate();
+  const auctionDateKeys = useMemo(() => {
+    const keys = new Set<string>();
+    auctionProperties.forEach((property) => {
+      const date = auctionDateTime(property);
+      if (date) keys.add(dateKey(date));
+    });
+    apiEvents.forEach((event) => {
+      const date = new Date(event.starts_at);
+      if (!Number.isNaN(date.getTime())) keys.add(dateKey(date));
+    });
+    return keys;
+  }, [auctionProperties, apiEvents]);
 
-    // Map any real API events for this day
+  const allEventsForSelectedDate = useMemo(() => {
+    const registeredAuctionIds = new Set(apiEvents.map((event) => event.property_listing_id));
+
+    // Map user-added calendar events for this day.
     const fromApi: CalendarEvent[] = apiEvents
       .filter((ev) => {
         const d = new Date(ev.starts_at);
         return isSameDay(d, selectedDate);
       })
-      .map((ev) => {
+      .map((ev): CalendarEvent => {
         const d = new Date(ev.starts_at);
+        const relatedProperty = auctionProperties.find((property) => property.id === ev.property_listing_id);
         return {
           id: ev.id,
           day: d.getDate(),
@@ -196,50 +167,40 @@ export default function MyCalendar() {
           title: ev.property?.title || ev.title.replace("Auction: ", "") || "Property Auction",
           time: d.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" }),
           location: ev.venue || ev.property?.address || "Australia",
-          image: imageFour,
+          image: relatedProperty ? propertyPreviewImage(relatedProperty) : imageFour,
           listedBy: "Briksy Auction",
           listedByAvatar: defaultAvatar,
         };
       });
 
-    // Sample events for this day
-    const matchingSample = SAMPLE_EVENTS.filter((e) => e.day === selectedDayNum);
+    // Also show published auction listings even before the user adds them to
+    // their personal reminder calendar.
+    const fromAuctionListings: CalendarEvent[] = auctionProperties
+      .filter((property) => !registeredAuctionIds.has(property.id))
+      .map((property): CalendarEvent => {
+        const date = auctionDateTime(property)!;
+        return {
+          id: `auction-listing-${property.id}`,
+          day: date.getDate(),
+          type: "Auction",
+          desktopCategory: "Auctions",
+          title: property.title,
+          time: auctionTimeLabel(property),
+          location: property.auction_details?.venue || property.full_address || property.address || "Australia",
+          image: propertyPreviewImage(property),
+          listedBy: property.organization?.name || "Briksy Auction",
+          listedByAvatar: property.organization?.logo_url || defaultAvatar,
+          isFavourite: Boolean(property.is_favourite),
+        };
+      })
+      .filter((event) => {
+        const property = auctionProperties.find((item) => `auction-listing-${item.id}` === event.id);
+        const date = property ? auctionDateTime(property) : null;
+        return Boolean(date && isSameDay(date, selectedDate));
+      });
 
-    // If day has neither sample nor API events, provide fallback sample items so user always sees the design
-    if (fromApi.length === 0 && matchingSample.length === 0) {
-      const fallbackItems: CalendarEvent[] = [
-        {
-          id: `fallback-${selectedDayNum}-1`,
-          day: selectedDayNum,
-          type: "Open Home",
-          desktopCategory: "Open Homes",
-          title: "Luxury Apartment in Melbourne",
-          time: "10:30 AM - 11:00 AM",
-          location: "Melbourne, VIC 3000",
-          image: imageOne,
-          listedBy: "Urban Living",
-          listedByAvatar: defaultAvatar,
-          isFavourite: true,
-        },
-        {
-          id: `fallback-${selectedDayNum}-2`,
-          day: selectedDayNum,
-          type: "Visit",
-          desktopCategory: "Property Visits",
-          title: "Sarah Johnson",
-          time: "01:00 PM - 04:00 PM",
-          location: "45 Creative Ave, Sydney, NSW 2000",
-          image: imageTwo,
-          listedBy: "Sarah Johnson",
-          listedByAvatar: defaultAvatar,
-          isFavourite: false,
-        },
-      ];
-      return fallbackItems;
-    }
-
-    return [...fromApi, ...matchingSample];
-  }, [selectedDate, apiEvents]);
+    return [...fromApi, ...fromAuctionListings];
+  }, [selectedDate, apiEvents, auctionProperties]);
 
   // Desktop filtering
   const filteredDesktopEvents = useMemo(() => {
@@ -294,6 +255,7 @@ export default function MyCalendar() {
           <div className="grid grid-cols-7 gap-1.5">
             {calendarCells.map((cell, idx) => {
               const isSelected = isSameDay(cell.date, selectedDate);
+              const hasAuction = auctionDateKeys.has(dateKey(cell.date));
               return (
                 <button
                   key={idx}
@@ -304,7 +266,7 @@ export default function MyCalendar() {
                       setMonth(new Date(cell.date.getFullYear(), cell.date.getMonth(), 1));
                     }
                   }}
-                  className={`h-9 rounded-lg text-xs flex items-center justify-center transition-all ${
+                    className={`relative h-9 rounded-lg text-xs flex items-center justify-center transition-all ${
                     isSelected
                       ? "bg-[#342511] text-white font-medium shadow-sm"
                       : cell.isCurrentMonth
@@ -313,6 +275,12 @@ export default function MyCalendar() {
                   }`}
                 >
                   {cell.dayNum}
+                  {hasAuction && (
+                    <span
+                      aria-label="Auction date"
+                      className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isSelected ? "bg-white" : "bg-[#8B5E34]"}`}
+                    />
+                  )}
                 </button>
               );
             })}
@@ -400,6 +368,7 @@ export default function MyCalendar() {
               <div className="grid grid-cols-7 gap-2">
                 {calendarCells.map((cell, idx) => {
                   const isSelected = isSameDay(cell.date, selectedDate);
+                  const hasAuction = auctionDateKeys.has(dateKey(cell.date));
                   return (
                     <button
                       key={idx}
@@ -410,7 +379,7 @@ export default function MyCalendar() {
                           setMonth(new Date(cell.date.getFullYear(), cell.date.getMonth(), 1));
                         }
                       }}
-                      className={`h-9 rounded-xl text-xs font-medium flex items-center justify-center transition-all ${
+                      className={`relative h-9 rounded-xl text-xs font-medium flex items-center justify-center transition-all ${
                         isSelected
                           ? "bg-[#342511] text-white font-medium shadow-sm"
                           : cell.isCurrentMonth
@@ -419,6 +388,12 @@ export default function MyCalendar() {
                       }`}
                     >
                       {cell.dayNum}
+                    {hasAuction && (
+                      <span
+                        aria-label="Auction date"
+                        className={`absolute bottom-1 h-1.5 w-1.5 rounded-full ${isSelected ? "bg-white" : "bg-[#8B5E34]"}`}
+                      />
+                    )}
                     </button>
                   );
                 })}

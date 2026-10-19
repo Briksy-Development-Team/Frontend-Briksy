@@ -179,6 +179,9 @@ export interface AuctionAboveProps {
   venueAddress?: string;
   auctionDate?: string;
   auctionTime?: string;
+  auctioneer?: string;
+  auctionContact?: string;
+  auctionDescription?: string;
   organizationName?: string;
   buttonText?: string;
   onEnquiry?: () => void;
@@ -190,6 +193,9 @@ export function AuctionAboveCard({
   venueAddress,
   auctionDate,
   auctionTime,
+  auctioneer,
+  auctionContact,
+  auctionDescription,
   organizationName,
   buttonText = "Send a enquiry",
   onEnquiry,
@@ -242,7 +248,25 @@ export function AuctionAboveCard({
               </span>
             </div>
           )}
+
+          {auctioneer && (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[12px] font-normal text-[#98928E]">Auctioneer</span>
+              <span className="text-[14px] font-medium text-black leading-tight">{auctioneer}</span>
+            </div>
+          )}
+
+          {auctionContact && (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[12px] font-normal text-[#98928E]">Auction Contact</span>
+              <span className="text-[14px] font-medium text-black leading-tight">{auctionContact}</span>
+            </div>
+          )}
         </div>
+
+        {auctionDescription && (
+          <p className="text-[13px] leading-[19px] text-[#342511]">{auctionDescription}</p>
+        )}
       </div>
 
       <button

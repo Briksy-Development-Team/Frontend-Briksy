@@ -1,15 +1,15 @@
 import {
   RealEstateSidebar,
-  AuctionSidebar as SharedAuctionSidebar,
   CommercialSidebar,
   NeedHelpCard,
   RealEstateAboveCard,
   AuctionAboveCard,
 } from "../../shared/DetailSidebar";
+import ExistingAuctionSidebar from "./AuctionSidebar";
 
 export {
   RealEstateSidebar,
-  SharedAuctionSidebar as AuctionSidebar,
+  ExistingAuctionSidebar as AuctionSidebar,
   CommercialSidebar,
   NeedHelpCard,
   RealEstateAboveCard,
@@ -45,8 +45,15 @@ export const PropertySidebar = ({
   listingPurpose,
   isAuction,
   venueAddress,
+  auctionVenue,
   auctionDate,
   auctionTime,
+  auctioneer,
+  auctionContact,
+  auctionDescription,
+  propertyId,
+  propertyTitle,
+  organizationId,
   statusTag,
   statusDate,
   address,
@@ -74,12 +81,18 @@ export const PropertySidebar = ({
 }) => {
   if (isAuction) {
     return (
-      <SharedAuctionSidebar
-        venueAddress={venueAddress || address || sidebar.location}
-        auctionDate={auctionDate || "Saturday, 17 October 2026"}
-        auctionTime={auctionTime || "11:00 AM"}
-        organizationName={organizationName || sidebar.builderName}
-        buttonText="Send a enquiry"
+      <ExistingAuctionSidebar
+        sidebar={sidebar}
+        venueAddress={auctionVenue || venueAddress || address || sidebar.location}
+        auctionVenue={auctionVenue}
+        auctionDate={auctionDate}
+        auctionTime={auctionTime}
+        auctioneer={auctioneer}
+        auctionContact={auctionContact}
+        auctionDescription={auctionDescription}
+        propertyId={propertyId}
+        propertyTitle={propertyTitle}
+        organizationId={organizationId}
         onEnquiry={onEnquiry}
       />
     );

@@ -170,7 +170,12 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
 
 // 1 image = full, 2 = side by side, 3 = left tall + right split, 4 = 2x2
 function CollectionMosaic({ imgs }: { imgs: string[] }) {
-  const tiles = imgs.slice(0, 4);
+  const sources = Array.from(new Set(imgs.filter(Boolean))).slice(0, 4);
+  const sourceKey = sources.join("\u0000");
+  const [failureState, setFailureState] = useState<{ key: string; sources: string[] }>({ key: "", sources: [] });
+  const failedSources = failureState.key === sourceKey ? failureState.sources : [];
+
+  const tiles = sources.filter((src) => !failedSources.includes(src));
 
   if (!tiles.length) {
     return (
@@ -180,14 +185,26 @@ function CollectionMosaic({ imgs }: { imgs: string[] }) {
     );
   }
 
+  const layoutClass = tiles.length === 1
+    ? ""
+    : tiles.length === 3
+      ? "grid-cols-2 grid-rows-2"
+      : "grid-cols-2";
+
   return (
-    <div className={`grid h-full w-full gap-px ${tiles.length > 1 ? "grid-cols-2" : ""}`}>
+    <div className={`grid h-full w-full ${layoutClass}`}>
       {tiles.map((src, i) => (
         <img
-          key={i}
+          key={src}
           src={src}
           alt=""
-          className={`h-full w-full object-cover ${tiles.length === 3 && i === 0 ? "row-span-2" : ""}`}
+          onError={() => setFailureState((current) => ({
+            key: sourceKey,
+            sources: current.key === sourceKey && !current.sources.includes(src)
+              ? [...current.sources, src]
+              : current.key === sourceKey ? current.sources : [src],
+          }))}
+          className={`h-full w-full min-h-0 object-cover ${tiles.length === 3 && i === 0 ? "row-span-2" : ""}`}
         />
       ))}
     </div>

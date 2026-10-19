@@ -165,6 +165,7 @@ export default function BrowseView({
 
   const allTraders = organizations.filter(o => o.type?.slug === "trades-professionals" || (!o.type?.slug && !o.type?.name)).map(organizationToTrader);
   const allAgenciesAndBuilders = organizations.filter(o => o.type?.module === "Agents" || o.type?.slug === "builders").map(organizationToBuilder);
+  const backendAgentTypeName = organizations.find((organization) => organization.type?.module === "Agents")?.type?.name;
   const allCommercialCards = commercialProperties.map(propertyToCard);
   const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 
@@ -208,14 +209,14 @@ export default function BrowseView({
       {resultType === "builder" && (
         <>
           <Section
-            title={isAgents ? (tab || "Agents") : "Popular Builders"}
+            title={isAgents ? (backendAgentTypeName || tab || "Agents") : "Popular Builders"}
             count={builders.length}
             items={builders.slice(0, 4)}
             Card={BuilderGridCard}
             onViewMore={() => onViewMore("popular")}
           />
           <Section
-            title={isAgents ? `Newly Listed ${tab || "Agents"}` : "Newly Listed Builders"}
+            title={isAgents ? `Newly Listed ${backendAgentTypeName || tab || "Agents"}` : "Newly Listed Builders"}
             count={builders.length}
             items={builders.slice(4)}
             Card={BuilderGridCard}

@@ -30,6 +30,7 @@ export default function ProfileMobile() {
     else if (section === 'saved-search') label = 'Like searches';
     else if (section === 'collections' || location.pathname.includes('/collections')) label = 'Collections';
     else if (section === 'notifications') label = 'Notification';
+    else if (section === 'enquiries') label = 'Enquiries';
     else if (section === 'calendar') label = 'My calendar';
     else if (section === 'privacy') label = 'Privacy';
 
@@ -63,6 +64,7 @@ export default function ProfileMobile() {
     { label: "Personal info", view: "personal-info" },
     { label: "Collections", view: "collections" },
     { label: "Notification", view: "notifications" },
+    { label: "Enquiries", view: "enquiries" },
     { label: "My calendar", view: "calendar" },
     { label: "Privacy", view: "privacy" },
   ];

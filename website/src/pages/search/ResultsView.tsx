@@ -101,7 +101,10 @@ export default function ResultsView({
   const builders = organizations.map(organizationToBuilder);
   const propertyCards = properties.map(propertyToCard);
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
-  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : resultType === "auction" ? "Auctions" : "Real Estate");
+  const backendAgentTypeName = organizations.find((organization) => organization.type?.module === "Agents")?.type?.name;
+  const selectedHeading = resultType === "builder" && backendAgentTypeName
+    ? backendAgentTypeName
+    : selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : resultType === "auction" ? "Auctions" : "Real Estate");
 
   const hasLoadedItems = resultType === "property" || resultType === "commercial" || resultType === "auction"
     ? properties.length > 0
