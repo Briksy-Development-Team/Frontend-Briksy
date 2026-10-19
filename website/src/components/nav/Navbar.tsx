@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Globe, Menu, X } from "lucide-react";
+import { Bell, Globe, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NavSearchButton, SearchOverlay } from "./NavSearchBar";
 import LanguageModal from "./LanguageModal.tsx";
@@ -8,6 +8,7 @@ import Briskybrown from "../../assets/logo/briskybrown.svg";
 import { useAuth } from "../../auth/AuthContext";
 import NavDropdown from "./NavDropdown";
 import { useNavMenu } from "../../hooks/useNavMenu";
+import { getSeekerNotificationUnreadCount } from "../../api/seeker/seeker.api";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
@@ -31,6 +32,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const isSearchOpen = mode !== "collapsed";
 
   useEffect(() => {
@@ -44,6 +46,16 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setUnreadNotifications(0);
+      return;
+    }
+    getSeekerNotificationUnreadCount()
+      .then((response) => setUnreadNotifications(response.data?.count ?? 0))
+      .catch(() => setUnreadNotifications(0));
+  }, [isAuthenticated, location.pathname]);
 
   const isNavItemActive = (to: string) => {
     const url = new URL(to, window.location.origin);
@@ -126,6 +138,12 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
             <div className="hidden lg:block">
               <ProfileDropdown />
             </div>
+            {isAuthenticated && (
+              <button type="button" onClick={() => navigate("/profile/notifications")} className="relative hidden lg:block text-white transition hover:opacity-70" aria-label="Notifications">
+                <Bell size={18} />
+                {unreadNotifications > 0 && <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E86749] px-1 text-[10px] font-bold text-white">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
+              </button>
+            )}
             <button
               onClick={() => setMobileOpen((v) => !v)}
               className="p-1.5 text-white transition hover:opacity-70 lg:hidden"

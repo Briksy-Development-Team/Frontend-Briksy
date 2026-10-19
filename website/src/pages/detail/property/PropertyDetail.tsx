@@ -4,6 +4,7 @@ import { PropertyGallery } from "./components/PropertyGallery";
 import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, PropertyMap } from "./components/PropertyInfo";
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
+import AuctionSidebar from "./components/AuctionSidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
 import { Share, ChevronLeft, FolderPlus, ArrowUpRight } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
@@ -185,10 +186,10 @@ const PropertyDetail = () => {
       setEnquirySubmitting(false);
     }
   };
-  // Auction UI is shown only for an admin-enabled auction whose date has not passed.
-  const auctionDate = propertyData.auction_details?.date;
-  const today = new Date().toISOString().slice(0, 10);
-  const isAuction = Boolean(propertyData.is_auction && auctionDate && auctionDate >= today);
+  // The admin flag is the source of truth. Auction details can be incomplete
+  // while staff are still updating them, and past auctions should still retain
+  // their auction label/history on the property page.
+  const isAuction = Boolean(propertyData.is_auction);
 
   const addressParts = property.address.split(', ');
   const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
@@ -287,6 +288,25 @@ const PropertyDetail = () => {
             ) : null}
             {isAuction ? (
               <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">Auction</span>
+            ) : null}
+
+            {isAuction ? (
+              <div className="md:hidden">
+                <AuctionSidebar
+                  sidebar={property.sidebar}
+                  venueAddress={propertyData.auction_details?.venue || propertyData.full_address || propertyData.address || undefined}
+                  auctionVenue={propertyData.auction_details?.venue}
+                  auctionDate={propertyData.auction_details?.date}
+                  auctionTime={propertyData.auction_details?.time}
+                  auctioneer={propertyData.auction_details?.auctioneer}
+                  auctionContact={propertyData.auction_details?.contact}
+                  auctionDescription={propertyData.auction_details?.description}
+                  propertyId={propertyData.id}
+                  propertyTitle={propertyData.title}
+                  organizationId={propertyData.organization?.id || undefined}
+                  onEnquiry={openGeneralEnquiry}
+                />
+              </div>
             ) : null}
 
             {property.agent && <PropertyAgentCard agent={property.agent} />}
