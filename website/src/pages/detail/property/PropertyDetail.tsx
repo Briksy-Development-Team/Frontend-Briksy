@@ -68,7 +68,7 @@ const PropertyDetail = () => {
           .map(propertyToCard);
         setSimilarProperties(filtered);
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => { active = false; };
   }, [id]);
 
@@ -93,45 +93,45 @@ const PropertyDetail = () => {
     })(),
     agent: propertyData.organization
       ? {
-          name: propertyData.organization.name || "Property Management",
-          role: "Property Management",
-          verified: propertyData.organization.is_verified ? "Verified" : "",
-          avatar: propertyData.organization.logo_url || "",
-          since: (propertyData.organization as any).established_year || undefined,
-        }
+        name: propertyData.organization.name || "Property Management",
+        role: "Property Management",
+        verified: propertyData.organization.is_verified ? "Verified" : "",
+        avatar: propertyData.organization.logo_url || "",
+        since: (propertyData.organization as any).established_year || undefined,
+      }
       : null,
     about: propertyData.description || "",
     amenities: (propertyData.features || []).map((feature) => ({ name: feature.name })),
     mapSrc: (propertyData.location?.latitude && propertyData.location?.longitude) || propertyData.full_address || propertyData.address
       ? buildGoogleMapsEmbedUrl({
-          lat: propertyData.location?.latitude,
-          lng: propertyData.location?.longitude,
-          address: propertyData.full_address || propertyData.address,
-        })
+        lat: propertyData.location?.latitude,
+        lng: propertyData.location?.longitude,
+        address: propertyData.full_address || propertyData.address,
+      })
       : null,
     company: propertyData.organization
       ? {
-          id: propertyData.organization.slug || propertyData.organization.id || "",
-          name: propertyData.organization.name || "",
-          location: propertyData.address || "",
-          tags: [],
-          rating: propertyData.rating || 0,
-          reviews: 0,
-          since: (propertyData.organization as any).established_year || undefined,
-          logo: propertyData.organization.logo_url || "",
-        }
+        id: propertyData.organization.slug || propertyData.organization.id || "",
+        name: propertyData.organization.name || "",
+        location: propertyData.address || "",
+        tags: [],
+        rating: propertyData.rating || 0,
+        reviews: 0,
+        since: (propertyData.organization as any).established_year || undefined,
+        logo: propertyData.organization.logo_url || "",
+      }
       : null,
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
-    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "",     price: propertyData.price ?? propertyData.price_min ?? propertyData.price_max ?? undefined },
+    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price ?? propertyData.price_min ?? propertyData.price_max ?? undefined },
   };
 
   const traderHost: Trader | null = propertyData.organization
     ? organizationToTrader({
-        ...propertyData.organization,
-        address: propertyData.full_address || propertyData.address,
-      } as any)
+      ...propertyData.organization,
+      address: propertyData.full_address || propertyData.address,
+    } as any)
     : propertyData.creator
-    ? {
+      ? {
         id: propertyData.creator.id,
         name: propertyData.creator.name,
         tagLine: "Property Host",
@@ -145,7 +145,7 @@ const PropertyDetail = () => {
         isFavourite: false,
         favoriteId: propertyData.creator.id,
       }
-    : null;
+      : null;
 
   const submitEnquiry = async (values: {
     seeker_name: string;
@@ -205,8 +205,8 @@ const PropertyDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen  md:mt-20 font-helvetica flex pb-6 md:pb-0 flex-col">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12 pt-4 md:py-6">
+    <div className="min-h-screen  md:mt-20 font-helvetica flex   md:pb-0 flex-col">
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12  md:py-6">
 
         {/* Desktop Header */}
         <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
@@ -333,8 +333,8 @@ const PropertyDetail = () => {
             )}
 
             {traderHost && (
-              <div id="host" className="flex flex-col gap-3.5 w-full">
-                <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+              <div id="host" className="flex flex-col gap-3.5 w-full overflow-hidden">
+                <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-primary-brown">
                   Meet The Host
                 </h2>
                 <SwiperScroll
@@ -354,7 +354,7 @@ const PropertyDetail = () => {
           </div>
 
           {/* Right Sidebar matching Figma width: 360px */}
-          <aside className="w-full lg:w-[360px] hidden md:flex shrink-0 lg:sticky lg:top-28">
+          <aside className="w-full lg:w-[360px] hidden lg:flex shrink-0 lg:sticky lg:top-28">
             <PropertySidebar
               sidebar={property.sidebar}
               listingPurpose={propertyData.listing_purpose}
@@ -380,9 +380,9 @@ const PropertyDetail = () => {
 
         {/* Similar Properties Section from Figma 4503:6064 */}
         {similarProperties.length > 0 && (
-          <div className="mt-12 flex flex-col gap-6 w-full">
+          <div className="mt-10 flex flex-col gap-6 overflow-hidden">
             <div className="flex items-center justify-between">
-              <h2 className="text-[24px] md:text-[30px] font-medium leading-[36px] tracking-[-0.03em] text-[#222222]">
+              <h2 className="text-[24px] md:text-[30px] font-medium leading-[36px] tracking-[-0.03em] text-prim">
                 Similar Properties
               </h2>
               <Link
@@ -402,15 +402,16 @@ const PropertyDetail = () => {
           </div>
         )}
       </main>
-      <div className="mt-10  w-full flex items-center justify-center ">
+      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
-      <MobileStickyAction
-        price={isAuction ? "Auction" : property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
-        priceLabel={isAuction ? "Saturday, 17 October 2026" : property.sidebar.price ? "fixed price" : undefined}
-        onEnquiry={openGeneralEnquiry}
-      />
-
+      <div className="sticky bottom-0 z-20">
+        <MobileStickyAction
+          price={isAuction ? "Auction" : property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
+          priceLabel={isAuction ? "Saturday, 17 October 2026" : property.sidebar.price ? "fixed price" : undefined}
+          onEnquiry={openGeneralEnquiry}
+        />
+      </div>
       <EnquiryModal
         open={isEnquiryOpen}
         companyName={propertyData.organization?.name || undefined}

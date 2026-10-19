@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Heart, LoaderCircle } from 'lucide-react'
+import { ArrowRight, LoaderCircle } from 'lucide-react'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { Bookmark02Icon } from '@hugeicons/core-free-icons'
 import type { Property } from '../../../types/property'
 import Mappin from '../../../assets/icons/location.svg'
 import { SafeImage } from '../../custom/SafeImage'
@@ -74,7 +76,8 @@ const PropertyListCard = ({ item }: Props) => {
             {isProcessing ? (
               <LoaderCircle className="h-3 w-3 animate-spin text-primary-brown" />
             ) : (
-              <Heart
+              <HugeiconsIcon
+                icon={Bookmark02Icon}
                 size={14}
                 className={isFavourite ? 'fill-primary-brown text-primary-brown' : 'fill-transparent text-primary-brown stroke-[1.5]'}
               />

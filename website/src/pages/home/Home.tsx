@@ -18,7 +18,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen overflow-hidden space-y-20 ">
+    <div className="min-h-screen overflow-hidden  space-y-20 ">
       <Heroone />
 
       <ImageAnimation />

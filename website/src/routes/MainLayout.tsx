@@ -8,8 +8,7 @@ import { useIsMobileApp } from '../utils/platform';
 import { useMobileWelcome } from '../utils/welcome';
 import AppWelcome from '../mobile_app/pages/welcome/AppWelcome';
 
-const HIDE_NAV_MOBILE = ['/property/', '/builder/', '/notification', '/help-support', '/company-details', '/terms', '/service', '/privacy-policy', '/enquiries', '/saved'];
-const HIDE_BOTTOM_NAV_ROUTES = ['/checkout'];
+import { getNavbarVisibilityClass, isNavbarHiddenBelowMd, isBottomNavHidden } from './navConfig';
 
 const MainLayout = () => {
     const [mode, setMode] = useState<"collapsed" | "search" | "ai">("collapsed");
@@ -19,8 +18,9 @@ const MainLayout = () => {
     const { showWelcome, completeWelcome } = useMobileWelcome(isApp);
 
     const hasHero = location.pathname === '/' || location.pathname === '/home';
-    const hideOnMobile = HIDE_NAV_MOBILE.some(r => location.pathname.startsWith(r));
-    const hideBottomNav = HIDE_BOTTOM_NAV_ROUTES.some(r => location.pathname.startsWith(r));
+    const hideOnMobile = isNavbarHiddenBelowMd(location.pathname);
+    const navVisibilityClass = getNavbarVisibilityClass(location.pathname);
+    const hideBottomNav = isBottomNavHidden(location.pathname);
 
     if (isApp) {
         if (showWelcome && hasHero) {
@@ -39,9 +39,9 @@ const MainLayout = () => {
         }
 
         return (
-            <div className="min-h-[100dvh] flex flex-col bg-[#F8F4EE]">
+            <div className="min-h-[100dvh]  flex flex-col ">
                 <div className={`flex-1 min-h-[100dvh] ${hideBottomNav ? "" : "pb-16"}`}>
-                    <Outlet context={{ mode, setMode, isApp }} />
+                    <Outlet context={{ mode, setMode, isApp, hideBottomNav, hideOnMobile }} />
                 </div>
                 {!hideBottomNav && <BottomNav />}
                 <LocationPermissionPrompt />
@@ -50,10 +50,10 @@ const MainLayout = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8F4EE] flex flex-col">
-            <Navbar mode={mode} setMode={setMode} hasHero={hasHero} hideOnMobile={hideOnMobile} />
+        <div className="min-h-screen   max-w-[2000px] mx-auto flex flex-col">
+            <Navbar mode={mode} setMode={setMode} hasHero={hasHero} hideOnMobile={hideOnMobile} visibilityClass={navVisibilityClass} />
             <div className="flex-1">
-                <Outlet context={{ mode, setMode, isApp }} />
+                <Outlet context={{ mode, setMode, isApp, hideBottomNav, hideOnMobile }} />
             </div>
             <Footer />
             <LocationPermissionPrompt />

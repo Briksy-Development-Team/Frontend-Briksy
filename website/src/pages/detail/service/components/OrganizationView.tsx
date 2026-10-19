@@ -42,7 +42,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
   const rating = Number(organization.rating || 0);
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-16 font-helvetica md:pt-20">
+    <div className="min-h-screen   font-helvetica md:pt-20">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
         <Breadcrumb
           items={[
@@ -56,7 +56,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
         <ServiceMobileHeader organization={organization} />
 
         <div className="mt-6 md:mt-8 flex flex-col items-start gap-12 lg:flex-row">
-          <div className="hidden w-full md:block lg:sticky lg:top-28 lg:w-[360px] lg:shrink-0">
+          <div className="hidden w-full lg:block lg:sticky lg:top-28 lg:w-[360px] lg:shrink-0">
             <ServiceSidebar
               service={{
                 id: organization.id,
@@ -128,13 +128,15 @@ export function OrganizationView({ organization, service }: { organization: Publ
           </div>
         </div>
       </div>
-      <div className="mt-10  w-full flex items-center justify-center ">
+      <div className="my-10  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
+      <div className="sticky bottom-0 z-20">
 
       <MobileStickyAction
         onEnquiry={() => setIsEnquiryOpen(true)}
       />
+      </div>
 
       <ServiceEnquiry
         open={isEnquiryOpen}

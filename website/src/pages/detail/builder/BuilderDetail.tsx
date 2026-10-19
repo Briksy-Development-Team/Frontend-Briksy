@@ -128,8 +128,8 @@ const BuilderDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] md:mt-20 mt-0 font-helvetica flex flex-col pb-6 md:pb-0">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12 pt-4 md:py-6">
+    <div className="min-h-screen  md:mt-20 mt-0 font-helvetica flex flex-col  md:pb-0">
+      <main className="flex-1 max-w-[1440px] w-full mx-auto sm:px-8 lg:px-20 pb-6  md:py-6">
         <div className="hidden sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb
             items={[
@@ -157,9 +157,9 @@ const BuilderDetail = () => {
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-12 items-start relative">
-          <div className="flex-1 min-w-0 flex flex-col gap-8 w-full">
+          <div className="flex-1  min-w-0 flex flex-col gap-8 w-full">
             <BuilderHeader builder={viewModel} />
-            <div className="flex flex-col px-0 gap-12">
+            <div className="flex flex-col px-4 px-0 gap-12">
               {!isBuyerAgent && (
                 <div id="homes">
                   <BuilderHomes
@@ -169,7 +169,7 @@ const BuilderDetail = () => {
                   />
                 </div>
               )}
-              <div id="projects">
+              <div id="projects" className="overflow-hidden ">
                 <BuilderProjects projects={projects} builderName={builder.name} builderLogo={builder.logo_url || BusinessPlaceholder} />
               </div>
               <div id="about">
@@ -180,7 +180,7 @@ const BuilderDetail = () => {
               </div>
             </div>
           </div>
-          <div className="w-full hidden md:flex lg:w-[360px] shrink-0 lg:sticky lg:top-28">
+          <div className="w-full hidden lg:flex lg:w-[360px] shrink-0 lg:sticky lg:top-28">
             <BuilderSidebar
               name={builder.name}
               address={[builder.address, builder.state, builder.postcode].filter(Boolean).join(", ") || null}
@@ -199,17 +199,18 @@ const BuilderDetail = () => {
 
         </div>
       </main>
-      <div className="mt-10  w-full flex items-center justify-center ">
+      <div className="my-10 px-[3%] w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
-      <MobileStickyAction
-        price="Contact"
-        onEnquiry={() => {
-          setEnquiryError(null);
-          setEnquirySuccess(null);
-          setIsEnquiryOpen(true);
-        }}
-      />
+      <div className="sticky bottom-0 z-20">
+        <MobileStickyAction
+          price="Contact"
+          onEnquiry={() => {
+            setEnquiryError(null);
+            setEnquirySuccess(null);
+            setIsEnquiryOpen(true);
+          }}
+        /></div>
 
       <EnquiryModal
         open={isEnquiryOpen}

@@ -1,11 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Bookmark } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Bookmark02Icon } from '@hugeicons/core-free-icons';
 import { AuthHeader, Btn, ScreenWrapper } from '../../shared';
+
+const BookmarkStepIcon = (props: any) => (
+  <HugeiconsIcon icon={Bookmark02Icon} {...props} />
+);
 
 const STEPS = [
   { Icon: Search, title: 'Start your search', desc: 'Browse verified professionals and properties near you.' },
   { Icon: Bell,   title: 'Set up alerts',     desc: 'Get notified when new listings or pros match your needs.' },
-  { Icon: Bookmark, title: 'Save your favourites', desc: 'Bookmark properties and pros to compare later.' },
+  { Icon: BookmarkStepIcon, title: 'Save your favourites', desc: 'Bookmark properties and pros to compare later.' },
 ];
 
 export const WelcomeScreen = () => {

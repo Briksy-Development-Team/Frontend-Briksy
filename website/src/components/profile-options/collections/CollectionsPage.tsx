@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Bookmark, Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bookmark02Icon } from "@hugeicons/core-free-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   createCollection,
@@ -133,7 +135,7 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
         ) : collections.length === 0 ? (
           <div className="py-16 text-center text-primary-light-brown max-w-sm mx-auto">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F8F4EE] text-primary-brown mb-4">
-              <Bookmark size={26} />
+              <HugeiconsIcon icon={Bookmark02Icon} size={26} />
             </div>
             <h3 className="text-base font-medium text-primary-brown mb-1">No collections yet</h3>
             <p className="text-xs text-primary-light-brown mb-5">
@@ -173,7 +175,7 @@ function CollectionMosaic({ imgs }: { imgs: string[] }) {
   if (!tiles.length) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#4a2c1a] to-[#8B6340]">
-        <Bookmark size={40} className="text-white/30" />
+        <HugeiconsIcon icon={Bookmark02Icon} size={40} className="text-white/30" />
       </div>
     );
   }

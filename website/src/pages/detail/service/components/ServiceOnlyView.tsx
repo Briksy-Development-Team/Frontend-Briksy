@@ -37,7 +37,7 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
   const media = toMedia(service.images, service.videos);
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-24 font-helvetica">
+    <div className="min-h-screen  pb-16 pt-24 font-helvetica">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
         <Breadcrumb
           items={[
@@ -135,13 +135,15 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
           </div>
         </div>
       </div>
-      <div className="mt-10  w-full flex items-center justify-center ">
+      <div className="my-10  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
+      <div className="sticky bottom-0 z-20">
 
-      <MobileStickyAction
-        onEnquiry={() => setIsEnquiryOpen(true)}
-      />
+        <MobileStickyAction
+          onEnquiry={() => setIsEnquiryOpen(true)}
+        />
+      </div>
 
       <ServiceEnquiry
         open={isEnquiryOpen}

@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Heart, MapPin, ArrowRight } from "lucide-react";
+import { MapPin, ArrowRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bookmark02Icon } from "@hugeicons/core-free-icons";
 import type { CalendarEvent } from "../../../types/calendar";
 
 type Props = {
@@ -34,7 +36,11 @@ const EventGridCard = ({ item, onFavouriteToggle }: Props) => {
           className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#342511] hover:bg-white transition-colors"
           aria-label="Favourite"
         >
-          <Heart size={16} className={fav ? "fill-[#342511] text-[#342511]" : "text-[#342511]"} />
+          <HugeiconsIcon
+            icon={Bookmark02Icon}
+            size={16}
+            className={fav ? "fill-[#342511] text-[#342511]" : "text-[#342511]"}
+          />
         </button>
       </div>
 

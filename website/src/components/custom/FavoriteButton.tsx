@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { Bookmark } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bookmark02Icon } from "@hugeicons/core-free-icons";
 import { useAuth } from "../../auth/AuthContext";
 import { getSeekerFavorites, invalidateSeekerFavorites, toggleSeekerFavorite, type FavoriteType } from "../../api/seeker/seeker.api";
 import { getCollectionsForTarget, type SeekerCollection } from "../../api/seeker/collections.api";
@@ -117,7 +118,8 @@ export default function FavoriteButton({
         onClick={(e) => void handleClick(e)}
         className={`flex items-center justify-center transition-transform duration-200 active:scale-125 ${className}`}
       >
-        <Bookmark
+        <HugeiconsIcon
+          icon={Bookmark02Icon}
           size={iconSize}
           strokeWidth={variant === "overlay" ? 2.5 : 2}
           className={`transition-colors duration-200 ${iconColor}`}

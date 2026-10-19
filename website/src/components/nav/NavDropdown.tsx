@@ -49,17 +49,17 @@ export default function NavDropdown({ item, onClose }: { item: NavItem | null; o
 
   return (
     <>
-      <div
+      {/* <div
         ref={backdropRef}
         onClick={onClose}
         aria-hidden
-        className="fixed inset-0 top-20 z-40 bg-black/20"
+        className="fixed inset-0 top-20 z-40 bg-black/20 "
         style={{ opacity: 0 }}
-      />
+      /> */}
 
       <div
         ref={panelRef}
-        className="fixed left-0 right-0 top-20 z-50 w-full overflow-hidden bg-[#F8F4EE]"
+        className="fixed left-0 right-0 top-20 z-50 w-full max-w-[2000px] mx-auto overflow-hidden bg-[#F8F4EE]"
         style={{ clipPath: HIDDEN_CLIP, opacity: 0 }}
       >
         <div className="mx-auto flex gap-10 px-40 py-12">

@@ -41,6 +41,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), svgr(), adminMiddleware],
   envDir: "..",
   server: {
+    host: true,
     port: 5173,
     strictPort: true,
   },

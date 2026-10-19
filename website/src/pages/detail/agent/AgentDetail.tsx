@@ -247,7 +247,7 @@ export const AgentDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-[#342511]">
+      <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">
         Loading agent profile...
       </div>
     );
@@ -255,7 +255,7 @@ export const AgentDetail = () => {
 
   if (error || !organization) {
     return (
-      <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-[#342511]">
+      <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">
         {error || "Agent not found."}
       </div>
     );
@@ -286,8 +286,8 @@ export const AgentDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-16 font-helvetica md:pt-20">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12 pt-4 md:py-6">
+    <div className="min-h-screen  font-helvetica md:pt-20">
+      <main className="flex-1 max-w-[1440px] w-full mx-auto  sm:px-8 lg:px-20 pb-12  md:py-6">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -301,7 +301,7 @@ export const AgentDetail = () => {
         <AgentMobileHeader agent={agentModel} />
 
         {/* 2-Column Layout matching PropertyDetail gap-12 */}
-        <div className="mt-4 flex flex-col items-start gap-12 md:mt-8 lg:flex-row">
+        <div className="mt-4 flex flex-col items-start px-4 gap-12 md:mt-8 lg:flex-row">
           {/* Left Column (Sticky Sidebar on Desktop matching 360px) */}
           <aside className="hidden w-full md:flex flex-col lg:sticky lg:top-28 lg:w-[360px] shrink-0">
             <AgentSidebar
@@ -347,26 +347,27 @@ export const AgentDetail = () => {
           </div>
         </div>
 
-      {/* Fraud notice & reporting */}
-      <div className="mt-12 w-full flex flex-col items-center justify-center gap-4 px-[3%]">
-        <FraudBanner className="w-full md:w-[60%] lg:w-[50%]" />
-        <div className="text-[0.875rem] text-[#342511] flex items-center gap-1.5 mt-2">
-          <span>See an issue?</span>
-          <button
-            onClick={openGeneralEnquiryModal}
-            className="underline font-medium hover:text-black transition-colors cursor-pointer"
-          >
-            Report this listing
-          </button>
+        {/* Fraud notice & reporting */}
+        <div className="mt-12 w-full flex flex-col items-center justify-center gap-4 px-[3%]">
+          <FraudBanner className="w-full md:w-[60%] lg:w-[50%]" />
+          <div className="text-[0.875rem] text-primary-brown flex items-center gap-1.5 mt-2">
+            <span>See an issue?</span>
+            <button
+              onClick={openGeneralEnquiryModal}
+              className="underline font-medium hover:text-black transition-colors cursor-pointer"
+            >
+              Report this listing
+            </button>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <div className="sticky bottom-0 z-20">
 
-      {/* Mobile Sticky Action */}
-      <MobileStickyAction
-        price="Appraisal"
-        onEnquiry={openAppraisalModal}
-      />
+        <MobileStickyAction
+          price="Appraisal"
+          onEnquiry={openAppraisalModal}
+        />
+      </div>
 
       {/* Enquiry / Appraisal Modal */}
       <EnquiryModal
