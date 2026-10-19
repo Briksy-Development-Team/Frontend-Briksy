@@ -15,6 +15,9 @@ type Props = {
   item: Property
 }
 
+// Mobile: one line cut with "..."  |  md and above: show full text
+const clip = 'truncate md:overflow-visible md:text-clip md:whitespace-normal'
+
 const PropertyListCard = ({ item }: Props) => {
   const { isAuthenticated, isSeeker } = useAuth();
   const [isFavourite, setIsFavourite] = useState(item.isFavourite);
@@ -48,86 +51,86 @@ const PropertyListCard = ({ item }: Props) => {
 
   return (
     <>
-    <Link to={`/property/${item.id}`} className="flex items-center gap-3 rounded-[1.25rem] border border-[#E7E7E4] bg-white px-2 py-2 font-helvetica lg:gap-4 hover:border hover:border-primary">
-    <div className="relative w-[108px] aspect-4/5 shrink-0 overflow-hidden rounded-2xl">
-      <SafeImage loading="lazy"
-        src={item.image}
-        alt={item.title}
-        className="h-full w-full object-cover"
-      />
-      <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-        {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
-      </span>
-      <button
-        type="button"
-        onClick={(event) => {
-          event.preventDefault()
-          event.stopPropagation()
-          void handleFavouriteClick()
-        }}
-        className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/85"
-        aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
-      >
-        {isProcessing ? (
-          <LoaderCircle className="h-4 w-4 animate-spin text-primary-brown" />
-        ) : (
-          <Heart
-            size={16}
-            className={isFavourite ? 'fill-primary-brown text-primary-brown' : 'fill-transparent text-primary-brown stroke-[1.5]'}
-          />
-        )}
-      </button>
-    </div>
-
-    <div className="flex w-[70%] flex-col items-start">
-      <h3 className="line-clamp-2 text-[0.9375rem] text-primary-brown lg:text-[1rem] font-medium ">
-        {item.title}
-      </h3>
-
-      <div className=" flex items-center gap-1 text-[0.875rem] lg:text-[1rem]">
-        <img loading="lazy" src={Mappin} alt="" />
-        <span className="text-primary-brown">{item.address}</span>
-      </div>
-
-      <p className=" text-[1rem] text-primary-brown font-medium">
-          {formatPropertyPrice({ pricing_type: item.pricingType, price: item.price, price_min: item.priceMin, price_max: item.priceMax })}
-      </p>
-
-      <p className="text-[0.875rem] text-primary-brown">
-        {item.propertyType && `${item.propertyType} • `}
-        {item.beds} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{item.baths} Bath&nbsp;&nbsp;•&nbsp;&nbsp;{item.sqm} sqm
-      </p>
-
-      <div className="w-full my-2 border-t border-primary-light-brown/70" />
-
-      <div className=" flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
+      <Link to={`/property/${item.id}`} className="flex items-center gap-3 rounded-[1.25rem] border border-[#E7E7E4] bg-white px-2 py-2 font-helvetica lg:gap-4 hover:border hover:border-primary">
+        <div className="relative w-[100px] aspect-4/5 shrink-0 overflow-hidden rounded-2xl">
           <SafeImage loading="lazy"
-            src={item.posterAvatar}
-            alt={item.posterName}
-            className="h-7 w-7 rounded-full object-cover"
+            src={item.image}
+            alt={item.title}
+            className="h-full w-full object-cover"
           />
-          <span className="text-[0.875rem] text-primary-brown">
-            Listed by <span className="font-medium">{item.posterName}</span>
+          <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
+            {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
           </span>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              void handleFavouriteClick()
+            }}
+            className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/85"
+            aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+          >
+            {isProcessing ? (
+              <LoaderCircle className="h-3 w-3 animate-spin text-primary-brown" />
+            ) : (
+              <Heart
+                size={14}
+                className={isFavourite ? 'fill-primary-brown text-primary-brown' : 'fill-transparent text-primary-brown stroke-[1.5]'}
+              />
+            )}
+          </button>
         </div>
-        <ArrowRight size={18} className="text-primary-light-brown/70" />
-      </div>
-    </div>
-    </Link>
-    {collectionPromptOpen && (
-      <CollectionModal
-        propertyId={String(item.id)}
+
+        <div className="flex min-w-0 flex-1 flex-col text-primary-brown">
+          <h3 className="line-clamp-1 md:line-clamp-2 text-[0.875rem] font-medium">
+            {item.title}
+          </h3>
+
+          <div className="flex items-center gap-1 text-[0.75rem] ">
+            <img loading="lazy" src={Mappin} alt="" className="shrink-0" />
+            <span className={`min-w-0 ${clip}`}>{item.address}</span>
+          </div>
+
+          <p className={`text-[1rem] font-medium ${clip}`}>
+            {formatPropertyPrice({ pricing_type: item.pricingType, price: item.price, price_min: item.priceMin, price_max: item.priceMax })}
+          </p>
+
+          <p className={`text-[0.75rem] ${clip}`}>
+            {item.propertyType && `${item.propertyType} • `}
+            {item.beds} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{item.baths} Bath&nbsp;&nbsp;•&nbsp;&nbsp;{item.sqm} sqm
+          </p>
+
+          <div className="w-full my-2 border-t border-primary-light-brown/70" />
+
+          <div className="flex w-full items-center justify-between ">
+            <div className="flex min-w-0 items-center gap-1">
+              <SafeImage loading="lazy"
+                src={item.posterAvatar}
+                alt={item.posterName}
+                className="h-7 w-7 shrink-0 rounded-full object-cover"
+              />
+              <span className={`text-[0.75rem] ${clip}`}>
+                Listed by <span className="font-medium">{item.posterName}</span>
+              </span>
+            </div>
+            <ArrowRight size={18} className="shrink-0 text-primary-light-brown/70" />
+          </div>
+        </div>
+      </Link>
+      {collectionPromptOpen && (
+        <CollectionModal
+          propertyId={String(item.id)}
+          targetType="property"
+          onClose={() => setCollectionPromptOpen(false)}
+        />
+      )}
+      <AuthPromptToast
+        isOpen={showAuthToast}
+        onClose={() => setShowAuthToast(false)}
+        targetId={item.id}
         targetType="property"
-        onClose={() => setCollectionPromptOpen(false)}
       />
-    )}
-    <AuthPromptToast
-      isOpen={showAuthToast}
-      onClose={() => setShowAuthToast(false)}
-      targetId={item.id}
-      targetType="property"
-    />
     </>
   )
 }

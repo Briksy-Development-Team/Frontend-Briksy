@@ -30,6 +30,7 @@ import Myprivacy from "../components/profile-options/myprivacy/Myprivacy";
 import CollectionsPage from "../components/profile-options/collections/CollectionsPage";
 import CollectionDetailPage from "../components/profile-options/collections/CollectionDetailPage";
 import MyCalendar from "../components/profile-options/calendar/MyCalendar";
+import AppEnquiries from "../mobile_app/pages/enquiries/AppEnquiries";
 const AppRouter = () => {
   return (
     <Routes>
@@ -45,15 +46,22 @@ const AppRouter = () => {
 
         <Route element={<ProtectedRoute />}>
           <Route path="profile" element={<Profile />}>
+            <Route index element={<Myprofile />} />
             <Route path="personal-info" element={<Myprofile />} />
             <Route path="saved-search" element={<Mysavedata />} />
-            <Route path="collections" element={<CollectionsPage />} />
-            <Route path="collections/:id" element={<CollectionDetailPage />} />
+            <Route path="collections" element={<CollectionsPage showBack={false} />} />
+            <Route path="collections/:id" element={<CollectionDetailPage showBack={false} />} />
             <Route path="notifications" element={<Mynotification />} />
             <Route path="calendar" element={<MyCalendar />} />
             <Route path="privacy" element={<Myprivacy />} />
           </Route>
+          <Route path="/saved" element={<CollectionsPage showBack={false} />} />
+          <Route path="enquiries" element={<AppEnquiries />} />
+          <Route path="profile/enquiries" element={<Navigate to="/enquiries" replace />} />
         </Route>
+        <Route path="/calendar" element={<Navigate to="/profile/calendar" replace />} />
+        <Route path="/collections" element={<Navigate to="/profile/collections" replace />} />
+
         <Route path="/privacy-policy" element={<Myprivacy />} />
 
         <Route path="/notification" element={<Notification />} />

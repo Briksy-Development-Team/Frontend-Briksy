@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useIsMobileApp } from "../../utils/platform";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
-import type { BreadcrumbItem } from "../../components/nav/Breadcrumb";
-import Breadcrumb from "../../components/nav/Breadcrumb";
+import Breadcrumb, { type BreadcrumbItem } from "../../components/nav/Breadcrumb";
 import SearchToolbar from "./SearchToolbar";
 import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 import BrowseView from "./BrowseView";
@@ -11,65 +13,65 @@ import FullListView from "./FullListView";
 import { useResultSearchParams } from "./useResultSearchParams";
 import { serviceSlugForLabel } from "../../constants/serviceCategories";
 
-const HEADERS: Record<string, { title: string; crumb: string }> = {
-  all: { title: "Find anything", crumb: "Search" },
-  "real-estate": { title: "Find real estate", crumb: "Find real estate" },
-  agents: { title: "Find an agent", crumb: "Find an agent" },
-  traders: { title: "Find a professional", crumb: "Find a professional" },
-  builders: { title: "Find a builder", crumb: "Find a builder" },
-  address: { title: "Search by address", crumb: "Address" },
-  commercial: { title: "Find commercial", crumb: "Commercial" },
-  auction: { title: "Find auctions", crumb: "Auctions" },
-};
-
 type BrowseSection = "all" | "popular" | "newly";
 
+const CRUMBS: Record<string, string> = {
+  all: "Search",
+  "real-estate": "Find real estate",
+  agents: "Find an agent",
+  traders: "Find a professional",
+  builders: "Find a builder",
+  address: "Address",
+  commercial: "Commercial",
+  auction: "Auctions",
+};
+
+const TAB_MAP: Record<string, FilterTab> = {
+  all: "All",
+  buy: "Buy",
+  rent: "Rent",
+  sold: "Sold",
+  lease: "Lease",
+  leased: "Leased",
+  "real-estate": "Real Estate Agents",
+  buyer: "Buyer Agents",
+  landscaper: "Landscapers",
+  concreter: "Concreter",
+  fencing: "Fencing",
+  mortgage: "Mortgage Brokers",
+  conveyancer: "Conveyancers",
+  "building-pest": "Building & Pest",
+};
+
+const SORTS = ["featured", "newest", "oldest", "price-low", "price-high"];
+
 const SearchPage = () => {
+  const isApp = useIsMobileApp();
   const [searchParams, setSearchParams] = useResultSearchParams();
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
+  const navigate = useNavigate();
 
   const typeParam = searchParams.get("type");
   const queryParam = searchParams.get("q") || "";
-  const sortParam = searchParams.get("sort_by") as SortType | null;
-  const sort: SortType = ["featured", "newest", "oldest", "price-low", "price-high"].includes(sortParam || "")
-    ? (sortParam as SortType)
-    : "featured";
+  const sortParam = searchParams.get("sort_by") ?? "";
+  const sort = (SORTS.includes(sortParam) ? sortParam : "featured") as SortType;
   const showMap = searchParams.get("map") === "1";
 
   const activeCategoryId =
-    SEARCH_CATEGORIES.find((c) => c.id === typeParam || c.resultType === typeParam)?.id || "all";
+    SEARCH_CATEGORIES.find((c) => c.id === typeParam)?.id ||
+    (typeParam !== "all" ? SEARCH_CATEGORIES.find((c) => c.resultType === typeParam)?.id : undefined) ||
+    "all";
+  const activeCategory = SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
+  const resultType = activeCategory.resultType;
+  const crumb = CRUMBS[activeCategoryId] ?? CRUMBS.all;
 
-  const activeCategory =
-    SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
-
-  const rawTabParam = searchParams.get("tab");
-  const tabMap: Record<string, FilterTab> = {
-    "all": "All",
-    "buy": "Buy",
-    "rent": "Rent",
-    "sold": "Sold",
-    "lease": "Lease",
-    "leased": "Leased",
-    "real-estate": "Real Estate Agents",
-    "buyer": "Buyer Agents",
-    "landscaper": "Landscapers",
-    "concreter": "Concreter",
-    "fencing": "Fencing",
-    "mortgage": "Mortgage Brokers",
-    "conveyancer": "Conveyancers",
-    "building-pest": "Building & Pest"
-  };
-  const tabParam = rawTabParam ? tabMap[rawTabParam] || null : null;
+  const tabParam = TAB_MAP[searchParams.get("tab") ?? ""] ?? null;
   const defaultTab = (activeCategory.propTypes[0]?.label as FilterTab) || null;
-
-  const [activeTab, setActiveTab] = useState<FilterTab | null>((tabParam as FilterTab) || defaultTab);
+  const [activeTab, setActiveTab] = useState<FilterTab | null>(tabParam ?? defaultTab);
 
   useEffect(() => {
-    setActiveTab((tabParam as FilterTab) || defaultTab);
+    setActiveTab(tabParam ?? defaultTab);
   }, [tabParam, defaultTab]);
-
-  const resultType = activeCategory.resultType;
-  const { crumb } = HEADERS[activeCategoryId] || HEADERS.all;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -85,21 +87,15 @@ const SearchPage = () => {
   const handleTabChange = (tab: FilterTab | null) => {
     setActiveTab(tab);
     updateSearchParams((next) => {
-      next.delete("page");
-      next.delete("intent");
-      next.delete("purpose");
-      next.delete("transaction_status");
-      next.delete("service_slug");
+      ["page", "intent", "purpose", "transaction_status", "service_slug"].forEach((k) => next.delete(k));
+      next.set("type", activeCategoryId);
 
       if (!tab) {
         next.delete("tab");
-        next.set("type", activeCategoryId);
         return;
       }
 
-      const rawTabParam = Object.keys(tabMap).find(key => tabMap[key] === tab) || tab.toLowerCase();
-      next.set("tab", rawTabParam);
-      next.set("type", activeCategoryId);
+      next.set("tab", Object.keys(TAB_MAP).find((key) => TAB_MAP[key] === tab) || tab.toLowerCase());
 
       if (tab === "Buy") next.set("purpose", "sell");
       else if (tab === "Rent" || tab === "Lease") next.set("purpose", "rent");
@@ -136,23 +132,18 @@ const SearchPage = () => {
     });
   };
 
+  const sectionLabel = browseSection === "popular" ? "Popular" : "Newly Listed";
   const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
   if (activeTab && activeTab !== "All") {
     breadcrumbs.push({ label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } });
     if (browseSection !== "all") {
-      breadcrumbs.push(
-        { label: activeTab, onClick: () => setBrowseSection("all") },
-        { label: browseSection === "popular" ? "Popular" : "Newly Listed" }
-      );
+      breadcrumbs.push({ label: activeTab, onClick: () => setBrowseSection("all") }, { label: sectionLabel });
     } else {
       breadcrumbs.push({ label: activeTab });
     }
   } else if (browseSection !== "all") {
     const noun = crumb.split(" ").pop() || "Results";
-    breadcrumbs.push(
-      { label: crumb, onClick: () => setBrowseSection("all") },
-      { label: browseSection === "popular" ? `Popular ${noun}` : `Newly Listed ${noun}` }
-    );
+    breadcrumbs.push({ label: crumb, onClick: () => setBrowseSection("all") }, { label: `${sectionLabel} ${noun}` });
   } else {
     breadcrumbs.push({ label: crumb });
   }
@@ -167,8 +158,23 @@ const SearchPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pt-24 pb-16 font-helvetica">
-      <div className="mx-auto pl-[3%] md:px-[3%] ">
+    <div className={`min-h-screen pb-16 font-helvetica ${isApp ? "pt-2" : "pt-20 md:pt-24"}`}>
+      {isApp && (
+        <div className="flex items-center justify-between px-4 pt-1 pb-3">
+          <p className="text-xl font-medium text-primary-brown">Search</p>
+
+          <button
+            type="button"
+            onClick={() => navigate("/notification")}
+            className="relative w-10 h-10 rounded-full bg-white border border-[#342511]/10 flex items-center justify-center text-[#342511] hover:bg-[#342511]/10 active:scale-95 transition-all cursor-pointer shadow-sm"
+            aria-label="Notifications"
+          >
+            <Bell size={19} />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#F5551A] ring-2 ring-white" />
+          </button>
+        </div>
+      )}
+      <div className="mx-auto pl-[3%] pt-6 md:px-[3%] ">
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar
           activeCategoryId={activeCategoryId}

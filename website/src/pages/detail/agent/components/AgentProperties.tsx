@@ -5,12 +5,15 @@ import SwiperScroll from "../../../../components/swiper/SwiperScroll";
 import PropertyGridCard from "../../../../components/cards/property/PropertyGridCard";
 import type { Property } from "../../../../types/property";
 import defaultMapBanner from "../../../../assets/agent/agent_map.png";
+import NearbySchools from "../../shared/NearbySchools";
 
 export interface AgentPropertiesProps {
   agentName: string;
   homes: Property[];
   totalCount?: number;
   slug?: string | null;
+  nearby?: boolean;
+  showNearby?: boolean;
 }
 
 /**
@@ -22,10 +25,13 @@ export function AgentProperties({
   homes,
   totalCount,
   slug,
+  nearby = true,
+  showNearby = true,
 }: AgentPropertiesProps) {
   const [filter, setFilter] = useState<"sales" | "rentals" | "sold">("sales");
 
   const countDisplay = totalCount || homes.length;
+  const displayNearby = nearby && showNearby;
 
   const toggleFilter = () => {
     setFilter((prev) => (prev === "sales" ? "rentals" : prev === "rentals" ? "sold" : "sales"));
@@ -60,6 +66,8 @@ export function AgentProperties({
           </button>
         </div>
       </div>
+
+      {displayNearby && <NearbySchools />}
 
       {/* Counter text */}
       <div className="flex items-center justify-between">

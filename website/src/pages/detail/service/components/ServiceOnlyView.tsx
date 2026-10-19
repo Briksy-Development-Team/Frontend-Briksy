@@ -7,6 +7,7 @@ import { ServiceEnquiry } from "./ServiceEnquiry";
 import { ServiceRecentWork } from "./ServiceDetails";
 import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../../components/custom/FraudBanner";
+import { DetailShorts } from "../../shared";
 
 export const joinAddress = (
   o?: {
@@ -37,7 +38,7 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-24 font-helvetica">
-      <div className="mx-auto w-full px-[5%] py-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
@@ -46,8 +47,8 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
           ]}
         />
 
-        <div className="mt-8 grid gap-12 lg:grid-cols-[30%_1fr]">
-          <div className="h-fit rounded-3xl bg-white p-6 lg:sticky lg:top-28">
+        <div className="mt-8 flex flex-col lg:flex-row items-start gap-12">
+          <div className="w-full lg:w-[360px] lg:shrink-0 rounded-3xl bg-white p-6 lg:sticky lg:top-28 border border-[#EDE8E4] shadow-xs">
             <img
               src={service.images[0]?.url || ServicePlaceholder}
               alt=""
@@ -96,7 +97,7 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
             </button>
           </div>
 
-          <div className="space-y-8">
+          <div className="flex-1 min-w-0 w-full space-y-8">
             <div className="rounded-3xl bg-white p-7">
               <h2 className="text-xl font-medium text-primary-brown">
                 {service.title || service.name}
@@ -127,6 +128,10 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
                 />
               </div>
             )}
+
+            <div id="shorts">
+              <DetailShorts />
+            </div>
           </div>
         </div>
       </div>

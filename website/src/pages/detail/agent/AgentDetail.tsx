@@ -14,6 +14,7 @@ import Reviews from "../../../components/reviews/Reviews";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
+import { DetailShorts } from "../shared";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
@@ -286,7 +287,7 @@ export const AgentDetail = () => {
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pb-16 font-helvetica md:pt-20">
-      <div className="w-full px-[3%] md:py-6">
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12 pt-4 md:py-6">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -299,20 +300,20 @@ export const AgentDetail = () => {
         {/* Mobile Header */}
         <AgentMobileHeader agent={agentModel} />
 
-        {/* 2-Column Layout */}
+        {/* 2-Column Layout matching PropertyDetail gap-12 */}
         <div className="mt-4 flex flex-col items-start gap-12 md:mt-8 lg:flex-row">
-          {/* Left Column (Sticky Sidebar on Desktop) */}
-          <div className="hidden w-full md:block lg:sticky lg:top-28 lg:w-[32%] xl:w-[30%] shrink-0">
+          {/* Left Column (Sticky Sidebar on Desktop matching 360px) */}
+          <aside className="hidden w-full md:flex flex-col lg:sticky lg:top-28 lg:w-[360px] shrink-0">
             <AgentSidebar
               agent={agentModel}
               onRequestAppraisal={openAppraisalModal}
               onEnquiry={openGeneralEnquiryModal}
               onCallAgency={handleCallAgency}
             />
-          </div>
+          </aside>
 
-          {/* Right Column (Content) */}
-          <div className="flex w-full flex-col gap-14 pt-0 md:pt-2 lg:w-[68%] xl:w-[70%]">
+          {/* Right Column (Content matching gap-8) */}
+          <div className="flex-1 min-w-0 flex flex-col gap-8 w-full pt-0 md:pt-2">
             {/* 1. Performance Snapshot */}
             <AgentPerformance
               agentName={agentName}
@@ -333,14 +334,18 @@ export const AgentDetail = () => {
               description={aboutDescription}
             />
 
-            {/* 4. Shared Reviews Component */}
+            {/* 4. Shorts Section */}
+            <div id="shorts">
+              <DetailShorts />
+            </div>
+
+            {/* 5. Shared Reviews Component */}
             <Reviews
               name={agentName}
               data={reviewsData}
             />
           </div>
         </div>
-      </div>
 
       {/* Fraud notice & reporting */}
       <div className="mt-12 w-full flex flex-col items-center justify-center gap-4 px-[3%]">
@@ -355,6 +360,7 @@ export const AgentDetail = () => {
           </button>
         </div>
       </div>
+    </main>
 
       {/* Mobile Sticky Action */}
       <MobileStickyAction

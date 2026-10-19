@@ -5,22 +5,25 @@ import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, Pro
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { Share, ChevronLeft, FolderPlus } from "lucide-react";
+import { Share, ChevronLeft, FolderPlus, ArrowUpRight } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getProperty, type PublicProperty } from "../../../api/property/property.api";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { getProperty, getProperties, type PublicProperty } from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
+import { DetailShorts } from "../shared";
 import SwiperScroll from "../../../components/swiper/SwiperScroll";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
-import { organizationToTrader } from "../../../api/public.mappers";
+import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
+import { organizationToTrader, propertyToCard } from "../../../api/public.mappers";
 import type { Trader } from "../../../types/trader";
+import type { Property } from "../../../types/property";
 import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
 import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 
@@ -36,6 +39,7 @@ const PropertyDetail = () => {
   const [enquiryError, setEnquiryError] = useState<string | null>(null);
   const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
   const [collectionOpen, setCollectionOpen] = useState(false);
+  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
 
   const openGeneralEnquiry = () => {
     setInitialInterestedIn([]);
@@ -50,6 +54,21 @@ const PropertyDetail = () => {
       .then(({ data }) => { if (active) setPropertyData(data); })
       .catch((reason: any) => { if (active) setError(reason?.response?.status === 404 ? "This property was not found." : "Unable to load this property."); })
       .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+    getProperties({ per_page: 8 })
+      .then((res) => {
+        if (!active) return;
+        const filtered = (res.data || [])
+          .filter((p) => String(p.id) !== String(id))
+          .map(propertyToCard);
+        setSimilarProperties(filtered);
+      })
+      .catch(() => {});
     return () => { active = false; };
   }, [id]);
 
@@ -72,24 +91,36 @@ const PropertyDetail = () => {
 
       return formattedMedia;
     })(),
-    agent: { name: propertyData.organization?.name || "Property agent", role: "Verified property organisation", verified: propertyData.organization?.is_verified ? "Verified" : "", avatar: propertyData.organization?.logo_url || "" },
-    about: propertyData.description || "No description provided.",
+    agent: propertyData.organization
+      ? {
+          name: propertyData.organization.name || "Property Management",
+          role: "Property Management",
+          verified: propertyData.organization.is_verified ? "Verified" : "",
+          avatar: propertyData.organization.logo_url || "",
+          since: (propertyData.organization as any).established_year || undefined,
+        }
+      : null,
+    about: propertyData.description || "",
     amenities: (propertyData.features || []).map((feature) => ({ name: feature.name })),
-    mapSrc: buildGoogleMapsEmbedUrl({
-      lat: propertyData.location?.latitude,
-      lng: propertyData.location?.longitude,
-      address: propertyData.full_address || propertyData.address,
-    }),
-    company: {
-      id: propertyData.organization?.slug || propertyData.organization?.id || "",
-      name: propertyData.organization?.name || "Property organisation",
-      location: propertyData.address || "",
-      tags: [],
-      rating: propertyData.rating || 0,
-      reviews: 0,
-      since: undefined,
-      logo: propertyData.organization?.logo_url || "",
-    },
+    mapSrc: (propertyData.location?.latitude && propertyData.location?.longitude) || propertyData.full_address || propertyData.address
+      ? buildGoogleMapsEmbedUrl({
+          lat: propertyData.location?.latitude,
+          lng: propertyData.location?.longitude,
+          address: propertyData.full_address || propertyData.address,
+        })
+      : null,
+    company: propertyData.organization
+      ? {
+          id: propertyData.organization.slug || propertyData.organization.id || "",
+          name: propertyData.organization.name || "",
+          location: propertyData.address || "",
+          tags: [],
+          rating: propertyData.rating || 0,
+          reviews: 0,
+          since: (propertyData.organization as any).established_year || undefined,
+          logo: propertyData.organization.logo_url || "",
+        }
+      : null,
     reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
     sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "",     price: propertyData.price ?? propertyData.price_min ?? propertyData.price_max ?? undefined },
   };
@@ -174,15 +205,15 @@ const PropertyDetail = () => {
   ];
 
   return (
-    <div className="min-h-screen md:mt-20 font-helvetica flex pb-6 md:pb-0 flex-col ">
-      <main className="flex-1 w-full  px-[5%] pb-6 md:pb-0  md:py-6">
+    <div className="min-h-screen  md:mt-20 font-helvetica flex pb-6 md:pb-0 flex-col">
+      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12 pt-4 md:py-6">
 
         {/* Desktop Header */}
         <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
 
           <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0">
-            <button className="flex items-center gap-2 hover:opacity-70 transition">
+            <button className="flex items-center gap-2 hover:opacity-70 transition cursor-pointer">
               <Share size={18} /> Share
             </button>
             <FavoriteButton
@@ -194,14 +225,14 @@ const PropertyDetail = () => {
               targetType="property"
               initialIsFavourite={Boolean(propertyData.is_favourite)}
             />
-            <button type="button" onClick={() => setCollectionOpen(true)} className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown"><FolderPlus size={18} /> Add to Collection</button>
+            <button type="button" onClick={() => setCollectionOpen(true)} className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown cursor-pointer"><FolderPlus size={18} /> Add to Collection</button>
           </div>
         </div>
         {collectionOpen && <CollectionModal propertyId={property.id} onClose={() => setCollectionOpen(false)} />}
 
         <div className="mb-10 w-full relative">
           {/* Mobile Overlay Header */}
-          <div className="md:hidden absolute top-4 left-0  right-0 z-10 flex justify-between items-center pointer-events-none">
+          <div className="md:hidden absolute top-4 left-0 right-0 z-10 flex justify-between items-center pointer-events-none px-2">
             <button
               onClick={() => {
                 if (window.history.length > 1) {
@@ -233,21 +264,22 @@ const PropertyDetail = () => {
           <PropertyGallery images={property.images} floorplan={propertyData.floorplan?.url} />
         </div>
 
-
-        <div className="flex flex-col lg:flex-row gap-10 items-start relative">
-          <div className="flex-1 min-w-0 flex flex-col gap-10 w-full">
-
+        {/* Main Body Grid matching Figma gap: 48px (gap-12) */}
+        <div className="flex flex-col lg:flex-row gap-12 items-start relative">
+          {/* Left Column matching Figma gap: 32px (gap-8) */}
+          <div className="flex-1 min-w-0 flex flex-col gap-8 w-full">
             <PropertyTitle
               title={property.title}
               beds={propertyData.bedroom_option}
               baths={propertyData.bathroom_option}
               car={propertyData.car_space_option}
               sqm={propertyData.floor_area_sqm || propertyData.land_area_sqm}
-              rating={property.company.rating}
-              ratingCount={property.reviews?.count || 0} // Using reviews count for rating count since they seem related in the mock
-              reviewsCount={property.company.reviews}
-              organizationName={property.company.name}
+              rating={property.company?.rating}
+              ratingCount={property.reviews?.count || 0}
+              reviewsCount={property.company?.reviews}
+              organizationName={property.company?.name}
             />
+
             {propertyData.transaction_status ? (
               <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
                 {propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status)}
@@ -256,75 +288,119 @@ const PropertyDetail = () => {
             {isAuction ? (
               <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">Auction</span>
             ) : null}
-            <PropertyAgentCard agent={property.agent} />
 
-            <div className="flex flex-col gap-12 pb-8">
+            {property.agent && <PropertyAgentCard agent={property.agent} />}
+
+            {property.about && (
               <div id="about">
                 <PropertyAbout about={property.about} />
               </div>
+            )}
 
-              <button type="button" onClick={() => { setInitialInterestedIn(["inspection"]); setIsEnquiryOpen(true); }} className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90">Request an Inspection</button>
+            {propertyData.transaction_status !== "SOLD" && propertyData.transaction_status !== "LEASED" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setInitialInterestedIn(["inspection"]);
+                  setIsEnquiryOpen(true);
+                }}
+                className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                Request an Inspection
+              </button>
+            )}
 
-              <div className="w-full h-[1px] bg-[#EBE5D9]" />
-
+            {property.amenities && property.amenities.length > 0 && (
               <div id="amenities">
                 <PropertyAmenities amenities={property.amenities} />
               </div>
+            )}
 
-              <div className="w-full h-[1px] bg-[#EBE5D9]" />
-
+            {property.mapSrc && (
               <div id="map">
                 <PropertyMap mapSrc={property.mapSrc} />
               </div>
+            )}
 
-              <div className="w-full h-[1px] bg-[#EBE5D9]" />
+            <div id="shorts">
+              <DetailShorts />
+            </div>
 
+            {property.company && (
               <div id="company">
                 <PropertyCompanyDetails company={property.company} />
               </div>
+            )}
 
-              <div id="host">
-                <div className="mb-4">
-                  <h2 className="text-[1.25rem] font-medium text-primary-brown">Meet The Host</h2>
-                </div>
-                {traderHost ? (
-                  <SwiperScroll
-                    items={[traderHost]}
-                    spaceBetween={14}
-                    className="!ml-0"
-                    renderItem={(host) => <TraderGridCard item={host} />}
-                  />
-                ) : (
-                  <p className="text-sm text-primary-light-brown">Host details are not available for this listing.</p>
-                )}
+            {traderHost && (
+              <div id="host" className="flex flex-col gap-3.5 w-full">
+                <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+                  Meet The Host
+                </h2>
+                <SwiperScroll
+                  items={[traderHost]}
+                  spaceBetween={14}
+                  className="!ml-0"
+                  renderItem={(host) => <TraderGridCard item={host} />}
+                />
               </div>
+            )}
 
-
+            {property.reviews && (property.reviews.count > 0 || (property.reviews.list && property.reviews.list.length > 0)) && (
               <div id="reviews">
-                <Reviews data={property.reviews} name={property.agent.name} />
+                <Reviews data={property.reviews} name={property.agent?.name || property.title} />
               </div>
-            </div>
+            )}
           </div>
 
-          <aside className="w-full lg:w-[30%] hidden md:flex shrink-0 lg:sticky lg:top-32">
+          {/* Right Sidebar matching Figma width: 360px */}
+          <aside className="w-full lg:w-[360px] hidden md:flex shrink-0 lg:sticky lg:top-28">
             <PropertySidebar
               sidebar={property.sidebar}
               listingPurpose={propertyData.listing_purpose}
               isAuction={isAuction}
-                venueAddress={propertyData.full_address || propertyData.address || undefined}
-                auctionVenue={propertyData.auction_details?.venue}
+              venueAddress={propertyData.full_address || propertyData.address || undefined}
+              auctionVenue={propertyData.auction_details?.venue}
               auctionDate={propertyData.auction_details?.date}
               auctionTime={propertyData.auction_details?.time}
-                auctioneer={propertyData.auction_details?.auctioneer}
-                auctionContact={propertyData.auction_details?.contact}
-                auctionDescription={propertyData.auction_details?.description}
+              auctioneer={propertyData.auction_details?.auctioneer}
+              auctionContact={propertyData.auction_details?.contact}
+              auctionDescription={propertyData.auction_details?.description}
               propertyId={propertyData.id}
               propertyTitle={propertyData.title}
               organizationId={propertyData.organization?.id || undefined}
+              statusTag={propertyData.transaction_status ? propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status) : undefined}
+              statusDate={propertyData.transaction_status === "SOLD" ? "Sold on 18 Sep 2026" : undefined}
+              address={property.address}
+              organizationName={propertyData.organization?.name || undefined}
               onEnquiry={openGeneralEnquiry}
             />
           </aside>
         </div>
+
+        {/* Similar Properties Section from Figma 4503:6064 */}
+        {similarProperties.length > 0 && (
+          <div className="mt-12 flex flex-col gap-6 w-full">
+            <div className="flex items-center justify-between">
+              <h2 className="text-[24px] md:text-[30px] font-medium leading-[36px] tracking-[-0.03em] text-[#222222]">
+                Similar Properties
+              </h2>
+              <Link
+                to="/buy"
+                className="text-[14px] md:text-[16px] font-medium text-[#8B6F54] hover:text-[#562F00] flex items-center gap-1.5 transition-colors"
+              >
+                <span>View All</span>
+                <ArrowUpRight size={18} />
+              </Link>
+            </div>
+            <SwiperScroll
+              items={similarProperties}
+              spaceBetween={16}
+              className="!ml-0"
+              renderItem={(item) => <PropertyGridCard item={item} />}
+            />
+          </div>
+        )}
       </main>
       <div className="mt-10  w-full flex items-center justify-center ">
         <FraudBanner />
