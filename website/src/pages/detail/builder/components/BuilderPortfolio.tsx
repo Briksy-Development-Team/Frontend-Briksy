@@ -1,7 +1,5 @@
 import StaffGrid from '../../../../components/grids/StaffGrid';
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { Mousewheel } from "swiper/modules";
+import SwiperScroll from '../../../../components/swiper/SwiperScroll';
 import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
 import type { Property } from '../../../../types/property';
 import { Link } from 'react-router-dom';
@@ -81,30 +79,12 @@ export function BuilderHomes({ homes, description, propertiesHref }: { homes: an
         </p>
       </div>
 
-      <Swiper
-        modules={[Mousewheel]}
+      <SwiperScroll
+        items={homes.slice(0, 3)}
         spaceBetween={14}
-        slidesPerView="auto"
-        watchOverflow={false}
-        grabCursor
-        mousewheel={{
-          forceToAxis: true,
-          sensitivity: 1,
-          releaseOnEdges: true,
-        }}
-        slidesOffsetBefore={0}
-        slidesOffsetAfter={0}
-        className="!ml-0  [overscroll-behavior-x:contain] touch-pan-y"
-      >
-        {homes.slice(0, 3).map((item) => (
-          <SwiperSlide
-            key={item.id}
-            className=" !w-[19.4375rem]"
-          >
-            <PropertyGridCard item={item} />
-          </SwiperSlide>
-        ))}
-      </Swiper>
+        className="!ml-0"
+        renderItem={(item) => <PropertyGridCard item={item} />}
+      />
       <div>
         <Link to={propertiesHref || '/search?tab=properties'} className="inline-block bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
           Show all Real Estate
@@ -152,17 +132,12 @@ export function BuilderProjects({ projects, builderName, builderLogo }: { projec
         {visibleProjects.map((project) => <div key={project.id}>{renderProjectCard(project)}</div>)}
       </div>
     ) : (
-      <Swiper
-        modules={[Mousewheel]}
+      <SwiperScroll
+        items={visibleProjects}
         spaceBetween={14}
-        slidesPerView="auto"
-        watchOverflow={false}
-        grabCursor
-        mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
-        className="!ml-0 [overscroll-behavior-x:contain] touch-pan-y"
-      >
-        {visibleProjects.map((project) => <SwiperSlide key={project.id} className="!w-[19.4375rem]">{renderProjectCard(project)}</SwiperSlide>)}
-      </Swiper>
+        className="!ml-0"
+        renderItem={(project) => renderProjectCard(project)}
+      />
     )}
     {projects.length > 3 && (
       <div>

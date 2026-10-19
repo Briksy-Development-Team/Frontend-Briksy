@@ -12,7 +12,7 @@ import { useResultSearchParams } from "./useResultSearchParams";
 import { serviceSlugForLabel } from "../../constants/serviceCategories";
 
 const isPropertyType = (resultType: ResultType) =>
-  resultType === "property" || resultType === "commercial";
+  resultType === "property" || resultType === "commercial" || resultType === "auction";
 
 const slugify = (value: string) =>
   value
@@ -60,7 +60,8 @@ export function useListingData(
         verified_only: 1,
         category: resultType === "commercial" ? "commercial" : undefined,
         purpose: resultType === "commercial" ? undefined : purposeFor(tab),
-        transaction_status: resultType === "commercial" ? transactionStatusFor(tab) : undefined,
+        transaction_status: resultType === "commercial" || resultType === "property" ? transactionStatusFor(tab) : undefined,
+        auction_only: resultType === "auction" ? 1 : undefined,
         search: filter || undefined,
         organization_slug: organizationSlug,
         ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),

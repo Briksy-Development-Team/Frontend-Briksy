@@ -167,7 +167,7 @@ export const inquiryConfig = {
       key: "lead_source",
       label: "Lead Source",
       type: "select",
-      options: ["property_listing", "direct"],
+      options: ["property_listing", "auction_registration", "direct"],
     },
   ],
 };

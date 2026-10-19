@@ -214,6 +214,17 @@ const PrivateRoutes = () => {
         />
 
         <Route
+          path="/admin/auction-inquiries/*"
+          element={
+            <RoleGuard allow={["admin", "admin_staff"]}>
+              <ModuleGuard anyOf={["inquiry_management"]}>
+                <SuspensedView><InquiryPage /></SuspensedView>
+              </ModuleGuard>
+            </RoleGuard>
+          }
+        />
+
+        <Route
           path="/admin/referrals/*"
           element={
             <RoleGuard allow={["admin", "admin_staff"]}>
@@ -330,6 +341,11 @@ const PrivateRoutes = () => {
               </SuspensedView>
             </RoleGuard>
           }
+        />
+
+        <Route
+          path="/super-admin/auction-inquiries/*"
+          element={<RoleGuard allow={["super_admin"]}><SuspensedView><InquiryPage /></SuspensedView></RoleGuard>}
         />
 
         <Route

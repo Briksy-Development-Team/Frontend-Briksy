@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { Plus, X } from "lucide-react";
+import { X } from "lucide-react";
 import ModalWrapper from "../../../components/wrapper/ModalWrapper";
 
 const inputClass =
@@ -13,8 +13,6 @@ export type EnquiryValues = {
   seeker_phone: string;
   subject: string;
   message: string;
-  screenshot: File | null;
-  send_copy: boolean;
 };
 
 const INTEREST_OPTIONS = [
@@ -68,8 +66,6 @@ export function EnquiryModal({
     seeker_phone: "",
     subject: initialSubject,
     message: "",
-    screenshot: null,
-    send_copy: false,
   });
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -94,13 +90,6 @@ export function EnquiryModal({
         ? values.interested_in.filter((item) => item !== value)
         : [...values.interested_in, value],
     );
-
-  const pickScreenshot = (file?: File) => {
-    if (file && file.size > 10 * 1024 * 1024)
-      return setFormError("Screenshot must be under 10MB.");
-    setFormError(null);
-    update("screenshot", file ?? null);
-  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -222,34 +211,6 @@ export function EnquiryModal({
                   placeholder="Tell the company what you’d like to know..."
                 />
               </Field>
-
-              <label className="flex cursor-pointer items-center justify-between rounded-xl border border-dashed border-[#D9D5CC] px-4 py-3 text-sm text-primary-brown">
-                <span className="flex items-center gap-2">
-                  <Plus size={16} />
-                  {values.screenshot
-                    ? values.screenshot.name
-                    : "Attach a screenshot"}
-                </span>
-                <span className="text-xs text-primary-light-brown">
-                  PNG or JPG, up to 10MB
-                </span>
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg"
-                  className="hidden"
-                  onChange={(e) => pickScreenshot(e.target.files?.[0])}
-                />
-              </label>
-
-              <label className="flex items-center gap-2 text-sm text-primary-brown">
-                <input
-                  type="checkbox"
-                  checked={values.send_copy}
-                  onChange={(e) => update("send_copy", e.target.checked)}
-                  className="h-4 w-4 rounded accent-primary-brown"
-                />
-                Email me a copy of this message
-              </label>
 
               {shownError && (
                 <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">

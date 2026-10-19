@@ -2,6 +2,7 @@ import { ChevronRight ,ArrowLeft } from "lucide-react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/AuthContext";
 import { SafeImage } from "../../../components/custom/SafeImage";
+import { useIsMobileApp } from "../../../utils/platform";
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -17,6 +18,7 @@ export default function ProfileMobile() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const isApp = useIsMobileApp();
 
   const isHub = location.pathname.replace(/\/$/, '') === '/profile';
 
@@ -25,12 +27,13 @@ export default function ProfileMobile() {
     let label = 'Back';
     if (section === 'personal-info') label = 'Personal info';
     else if (section === 'saved-search') label = 'Like searches';
-    else if (section === 'collections') label = 'Collections';
+    else if (section === 'collections' || location.pathname.includes('/collections')) label = 'Collections';
     else if (section === 'notifications') label = 'Notification';
+    else if (section === 'calendar') label = 'My calendar';
     else if (section === 'privacy') label = 'Privacy';
 
     return (
-      <div className="min-h-screen  font-helvetica">
+      <div className={`min-h-screen bg-[#F8F4EE] font-helvetica ${isApp ? "" : "pt-20"}`}>
         <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
           <button
             onClick={() => {
@@ -59,11 +62,12 @@ export default function ProfileMobile() {
     { label: "Personal info", view: "personal-info" },
     { label: "Collections", view: "collections" },
     { label: "Notification", view: "notifications" },
+    { label: "My calendar", view: "calendar" },
     { label: "Privacy", view: "privacy" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] font-helvetica pb-8">
+    <div className={`min-h-screen font-helvetica pb-8 ${isApp ? "py-8" : "pt-24 pb-8"}`}>
       {/* Top bar */}
       {/* <div className="flex items-center justify-between px-5 py-[18px]">
         <h1 className="text-[1.875rem] font-medium text-[#342511]">Profile</h1>
@@ -79,7 +83,7 @@ export default function ProfileMobile() {
         </div>
       </div> */}
 
-      <div className="flex flex-col gap-5 px-5 mt-28">
+      <div className="flex flex-col gap-5 px-5 ">
        <div className="bg-white rounded-3xl shadow-[0px_8px_24px_rgba(0,0,0,0.1)] px-6 py-8 flex flex-col items-center gap-2">
           {user?.avatar_url ? (
             <SafeImage
@@ -95,14 +99,6 @@ export default function ProfileMobile() {
           <p className="text-[1.125rem] font-medium text-[#342511] mt-2">{user?.name}</p>
           <p className="text-[0.75rem] text-[#8B6F54]">
             Seeker account · joined {formatJoined(user?.created_at)}
-          </p>
-        </div>
-
-        {/* Verify banner */}
-        <div className="bg-[#E2CBB3] rounded-xl px-4 py-3 flex items-start gap-2">
-          <span className="text-[#342511] text-xl font-medium leading-none mt-0.5">ⓘ</span>
-          <p className="text-[0.75rem] text-[#342511]">
-            Please verify your mobile number to access all features.
           </p>
         </div>
 

@@ -11,7 +11,7 @@ const STEPS = [
 export const WelcomeScreen = () => {
   const navigate = useNavigate();
   return (
-    <ScreenWrapper>
+    <ScreenWrapper onBack={() => navigate('/')}>
       <AuthHeader title="Welcome to Briksy, Abhi" subtitle="Your account is ready. Here's what's worth doing first." />
       <div className="flex flex-col gap-2.5">
         {STEPS.map(({ Icon, title, desc }) => (

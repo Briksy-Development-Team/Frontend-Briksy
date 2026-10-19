@@ -1,27 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
-import { SERVICE_CATEGORIES } from "../../../constants/serviceCategories";
-import { getServiceCategories, type PublicServiceCategory } from "../../../api/serviceCategories.api";
-import { Mousewheel } from "swiper/modules";
-
+import { useServiceCategories } from "../../../hooks/useTaxonomy";
 import { organizationToTrader } from "../../../api/public.mappers";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
+import SwiperScroll from "../../../components/swiper/SwiperScroll";
 
 const ServiceList = () => {
   const [activeIdx, setActiveIdx] = useState(0);
   const [items, setItems] = useState<PublicOrganization[]>([]);
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<PublicServiceCategory[]>([...SERVICE_CATEGORIES]);
-
-  useEffect(() => {
-    void getServiceCategories().then(setCategories).catch(() => undefined);
-  }, []);
+  const { data: categories = [] } = useServiceCategories();
 
   useEffect(() => {
     const category = categories[activeIdx];
+    if (!category) return;
 
     getOrganizations({ type: "trades-professionals", service_slug: category.slug, verified_only: 1 })
       .then((response) => setItems(response.data)).catch(console.error);
@@ -59,25 +52,10 @@ const ServiceList = () => {
         </div>
 
         <div key={activeIdx} className="animate-fade-in gap-3">
-          <Swiper
-            modules={[Mousewheel]}
-            spaceBetween={12}
-            slidesPerView="auto"
-            watchOverflow={false}
-            grabCursor={true}
-            mousewheel={{
-              forceToAxis: true,
-              sensitivity: 1,
-              releaseOnEdges: true,
-            }}
-            className="[overscroll-behavior-x:contain] touch-pan-y"
-          >
-            {items.map((item) => (
-              <SwiperSlide key={item.id} className="!w-[19.4375rem]">
-                <TraderGridCard item={organizationToTrader(item)} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <SwiperScroll
+            items={items}
+            renderItem={(item) => <TraderGridCard item={organizationToTrader(item)} />}
+          />
         </div>
       </div>
     </section>

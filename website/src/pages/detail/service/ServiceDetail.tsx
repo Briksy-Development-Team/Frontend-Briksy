@@ -40,9 +40,9 @@ const ServiceDetail = () => {
     return () => { active = false; };
   }, [id]);
 
-  if (loading) return <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32">Loading professional...</div>;
+  if (loading) return <div className="min-h-screen  px-[5%] pt-32">Loading professional...</div>;
   if (error || (!organization && !service)) {
-    return <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-primary-brown">{error || "Professional or service not found."}</div>;
+    return <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">{error || "Professional or service not found."}</div>;
   }
 
   if (organization) {

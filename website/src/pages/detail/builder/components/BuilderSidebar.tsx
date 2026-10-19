@@ -1,13 +1,42 @@
-import { DetailSidebar } from "../../shared/DetailSidebar";
+import { BuilderSidebar as SharedBuilderSidebar, BuilderAboveCard, NeedHelpCard } from "../../shared/DetailSidebar";
 
-export function BuilderSidebar({ price, name, onEnquiry }: { price?: number; name?: string; onEnquiry?: () => void }) {
+export { BuilderAboveCard, NeedHelpCard };
+
+type Props = {
+  name?: string;
+  address?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  website?: string | null;
+  operatingHours?: string | null;
+  isAgent?: boolean;
+  isBuyerAgent?: boolean;
+  onEnquiry?: () => void;
+  onCall?: () => void;
+};
+
+export function BuilderSidebar({
+  name,
+  address,
+  contactPhone,
+  website,
+  operatingHours,
+  onEnquiry,
+  onCall,
+}: Props) {
   return (
-    <DetailSidebar
-      price={price ? `$${price / 1000}k` : "Contact"}
-      priceLabel={price ? "fixed price" : undefined}
-      description="Free consultation and site assessment. Typically replies within one business day."
-      footerText={name ? `Enquiries go directly to ${name}. BRIKSY never charges buyers.` : "BRIKSY never charges buyers."}
+    <SharedBuilderSidebar
+      title="Contact Details"
+      address={address}
+      time={operatingHours || "Mon-Sat, 12:00AM-12:00AM"}
+      phone={contactPhone || undefined}
+      website={website || undefined}
+      organizationName={name}
+      primaryButtonText="Request a free consultation"
+      onPrimaryAction={onEnquiry}
       onEnquiry={onEnquiry}
+      onCall={onCall}
+      showNeedHelp={true}
     />
   );
 }

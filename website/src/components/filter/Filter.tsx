@@ -80,6 +80,10 @@ const Filter = ({
       initial.propertyFor = initialTab.toLowerCase();
     }
 
+    if (initial.property_types && !initial.propertyTypes) {
+      initial.propertyTypes = initial.property_types;
+    }
+
     setCurrentValues(initial);
   }, [isOpen, location.search, activeTab, initialTab]);
 
@@ -102,6 +106,7 @@ const Filter = ({
 
   const handleApply = () => {
     const params = new URLSearchParams();
+    const categoryConfig = SEARCH_CATEGORIES.find((category) => category.id === activeTab);
 
     params.set("page", "1");
     params.set("type", activeTab);
@@ -121,7 +126,7 @@ const Filter = ({
       if (activeTab === "commercial" && ["buy", "lease", "sold", "leased"].includes(propTypeValue.toLowerCase())) {
         params.set("transaction_status", propTypeValue.toUpperCase());
       }
-    } else {
+    } else if (categoryConfig && categoryConfig.propTypes.length > 0) {
       params.set("tab", "all");
     }
 

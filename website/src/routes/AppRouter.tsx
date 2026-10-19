@@ -16,6 +16,7 @@ import PropertyDetail from "../pages/detail/property/PropertyDetail";
 import BuilderDetail from "../pages/detail/builder/BuilderDetail";
 import BuilderProjectDetail from "../pages/detail/builder/BuilderProjectDetail";
 import ServiceDetail from "../pages/detail/service/ServiceDetail";
+import AgentDetail from "../pages/detail/agent/AgentDetail";
 import Login from "../pages/auth/login/Login.tsx";
 import ProtectedRoute from './ProtectedRoute.tsx'
 import Profile from '../pages/profile/Profile.tsx'
@@ -28,6 +29,8 @@ import Mynotification from "../components/profile-options/mynotification/Mynotif
 import Myprivacy from "../components/profile-options/myprivacy/Myprivacy";
 import CollectionsPage from "../components/profile-options/collections/CollectionsPage";
 import CollectionDetailPage from "../components/profile-options/collections/CollectionDetailPage";
+import MyCalendar from "../components/profile-options/calendar/MyCalendar";
+import AppEnquiries from "../mobile_app/pages/enquiries/AppEnquiries";
 const AppRouter = () => {
   return (
     <Routes>
@@ -43,14 +46,22 @@ const AppRouter = () => {
 
         <Route element={<ProtectedRoute />}>
           <Route path="profile" element={<Profile />}>
+            <Route index element={<Myprofile />} />
             <Route path="personal-info" element={<Myprofile />} />
             <Route path="saved-search" element={<Mysavedata />} />
-            <Route path="collections" element={<CollectionsPage />} />
-            <Route path="collections/:id" element={<CollectionDetailPage />} />
+            <Route path="collections" element={<CollectionsPage showBack={false} />} />
+            <Route path="collections/:id" element={<CollectionDetailPage showBack={false} />} />
             <Route path="notifications" element={<Mynotification />} />
+            <Route path="calendar" element={<MyCalendar />} />
             <Route path="privacy" element={<Myprivacy />} />
           </Route>
+          <Route path="/saved" element={<CollectionsPage showBack={false} />} />
+          <Route path="enquiries" element={<AppEnquiries />} />
+          <Route path="profile/enquiries" element={<Navigate to="/enquiries" replace />} />
         </Route>
+        <Route path="/calendar" element={<Navigate to="/profile/calendar" replace />} />
+        <Route path="/collections" element={<Navigate to="/profile/collections" replace />} />
+
         <Route path="/privacy-policy" element={<Myprivacy />} />
 
         <Route path="/notification" element={<Notification />} />
@@ -72,9 +83,12 @@ const AppRouter = () => {
         <Route path="/agents" element={<SearchPage />} />
         <Route path="/professionals" element={<SearchPage />} />
         <Route path="/commercials" element={<SearchPage />} />
+        <Route path="/auction" element={<SearchPage />} />
+        <Route path="/auctions" element={<SearchPage />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
+        <Route path="/auction/:id" element={<PropertyDetail />} />
         <Route path="/builder/:id" element={<BuilderDetail />} />
-        <Route path="/agent/:id" element={<BuilderDetail />} />
+        <Route path="/agent/:id" element={<AgentDetail />} />
         <Route path="/builder-project/:id" element={<BuilderProjectDetail />} />
         <Route path="/service/:id" element={<ServiceDetail />} />
 

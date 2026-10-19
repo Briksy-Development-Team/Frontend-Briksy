@@ -5,6 +5,7 @@ import Notification from "../../../assets/icons/profile/notification.svg?react";
 import Placeholder from "../../../assets/icons/profile/placeholder.svg?react";
 import Privacy from "../../../assets/icons/profile/privacy.svg?react";
 import Save from "../../../assets/icons/profile/save.svg?react";
+import { CalendarDays } from "lucide-react";
 
 const ProfileDesktop = () => {
     const location = useLocation();
@@ -19,6 +20,7 @@ const ProfileDesktop = () => {
         { id: "personal-info", label: "My profile", icon: Placeholder },
         { id: "collections", label: "Saved searches", icon: Save },
         { id: "notifications", label: "Notifications", icon: Notification },
+        { id: "calendar", label: "My calendar", icon: CalendarDays },
         { id: "privacy", label: "Privacy", icon: Privacy },
     ];
 

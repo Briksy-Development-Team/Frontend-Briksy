@@ -1,11 +1,9 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getOrganizations, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { organizationToBuilder } from "../../../api/public.mappers";
-import "swiper/css";
 import BuilderGridCard from "../../../components/cards/builder/BuilderGridCard";
+import SwiperScroll from "../../../components/swiper/SwiperScroll";
 
 const BuilderList = () => {
     const navigate = useNavigate();
@@ -29,25 +27,10 @@ const BuilderList = () => {
                     </button>
                 </div>
 
-                <Swiper
-                    modules={[Mousewheel]}
-                    spaceBetween={12}
-                    slidesPerView="auto"
-                    watchOverflow={false}
-                    grabCursor={true}
-                    mousewheel={{
-                        forceToAxis: true,
-                        sensitivity: 1,
-                        releaseOnEdges: true,
-                    }}
-                    className="[overscroll-behavior-x:contain] touch-pan-y"
-                >
-                    {items.map((item) => (
-                        <SwiperSlide key={item.id} className="!w-[19.4375rem]">
-                            <BuilderGridCard item={organizationToBuilder(item)} />
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+                <SwiperScroll
+                    items={items}
+                    renderItem={(item) => <BuilderGridCard item={organizationToBuilder(item)} />}
+                />
             </div>
         </section>
     );

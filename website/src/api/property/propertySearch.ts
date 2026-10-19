@@ -5,6 +5,8 @@ export type PropertySearchParams = {
   purpose?: "sell" | "rent";
   transaction_status?: "BUY" | "LEASE" | "SOLD" | "LEASED";
   category?: "residential" | "commercial";
+  property_type?: string;
+  property_types?: string[];
   search?: string;
   organization_slug?: string;
   suburb?: string;
@@ -108,6 +110,12 @@ export const propertyQueryToParams = (
       : query.get("category") === "residential"
         ? "residential"
         : undefined,
+  property_type: query.get("property_type") || undefined,
+  property_types: query.getAll("property_types[]").length
+    ? query.getAll("property_types[]")
+    : query.getAll("propertyTypes[]").length
+      ? query.getAll("propertyTypes[]")
+      : undefined,
   search: query.get("q") || query.get("search") || undefined,
   organization_slug: query.get("organization_slug") || undefined,
   suburb: query.get("suburb") || undefined,

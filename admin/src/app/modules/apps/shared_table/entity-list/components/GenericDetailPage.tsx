@@ -26,6 +26,7 @@ type DetailRegistryEntry = {
 
 const routeAliases: Record<string, string> = {
   inquiry: 'inquiries',
+  'auction-inquiries': 'inquiries',
   solo: 'organization',
   'solo-traders': 'organization',
   users: 'staff',

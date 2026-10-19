@@ -8,10 +8,8 @@ import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { useResultSearchParams } from "./useResultSearchParams";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel } from "swiper/modules";
-import "swiper/css";
 import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
+import SwiperScroll from "../../components/swiper/SwiperScroll";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
   if (resultType === "builder" && agentType) return agentType;
@@ -27,21 +25,9 @@ const organizationSort = (sort?: string) =>
 
 function SectionSwiper({ children }: { children: React.ReactNode[] }) {
   return (
-    <Swiper
-      modules={[Mousewheel]}
-      spaceBetween={16}
-      slidesPerView="auto"
-      watchOverflow={false}
-      grabCursor
-      mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
-      className="[overscroll-behavior-x:contain] touch-pan-y"
-    >
-      {children.map((child, index) => (
-        <SwiperSlide key={index} className="!w-[20.5rem] ">
-          {child}
-        </SwiperSlide>
-      ))}
-    </Swiper>
+    <SwiperScroll spaceBetween={16} slideClassName="!w-[20.5rem]">
+      {children}
+    </SwiperScroll>
   );
 }
 
@@ -150,15 +136,16 @@ export default function BrowseView({
           if (active) setLoading(false);
         });
     } else {
-      const request = resultType === "property" || resultType === "commercial"
+      const commercialStatus = query.transaction_status || (resultType === "commercial" && tab && ["buy", "lease", "sold", "leased"].includes(tab.toLowerCase()) ? (tab.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED") : undefined);
+      const request = resultType === "property" || resultType === "commercial" || resultType === "auction"
         ? Promise.all([
-            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, verified_only: 1 }),
-            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, sort: "created_at", direction: "desc", verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, verified_only: 1 }),
+            getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
           ])
         : getOrganizations({ type: organizationTypeForResult(resultType, tab, searchParams.get("agent_type") || tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {
         if (!active) return;
-        if (resultType === "property" || resultType === "commercial") {
+        if (resultType === "property" || resultType === "commercial" || resultType === "auction") {
           setProperties(r[0].data);
           if (resultType === "commercial") setNewlyCommercialProperties(r[1].data);
           else setNewlyProperties(r[1].data);
@@ -181,7 +168,7 @@ export default function BrowseView({
   const allCommercialCards = commercialProperties.map(propertyToCard);
   const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 
-  const hasLoadedItems = resultType === "property" || resultType === "commercial"
+  const hasLoadedItems = resultType === "property" || resultType === "commercial" || resultType === "auction"
     ? properties.length > 0 || commercialProperties.length > 0
     : organizations.length > 0;
   if (loading && !hasLoadedItems) return <ResultsLoadingSkeleton resultType={resultType} />;
@@ -193,7 +180,7 @@ export default function BrowseView({
       </div>
     );
   }
-  if ((resultType === "property" || resultType === "commercial") && propertyCards.length === 0) return (
+  if ((resultType === "property" || resultType === "commercial" || resultType === "auction") && propertyCards.length === 0) return (
     <div className="rounded-2xl bg-white p-8 text-center text-primary-light-brown">
       <p>No properties found for the selected filters.</p>
       <button type="button" onClick={resetFilters} className="mt-4 underline">Reset filters</button>
@@ -246,6 +233,12 @@ export default function BrowseView({
         <>
           <Section title="Popular Commercial" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
           <Section title="Newly Listed Commercial" count={newlyCommercialCards.length} items={newlyCommercialCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
+        </>
+      )}
+      {resultType === "auction" && (
+        <>
+          <Section title="Popular Auctions" count={total} items={propertyCards.slice(0, 4)} Card={PropertyGridCard} onViewMore={() => onViewMore("popular")} />
+          <Section title="Newly Listed Auctions" count={newlyPropertyCards.length} items={newlyPropertyCards} Card={PropertyGridCard} onViewMore={() => onViewMore("newly")} />
         </>
       )}
     </>

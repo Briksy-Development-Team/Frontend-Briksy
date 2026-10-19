@@ -26,6 +26,7 @@ interface AuthContextValue {
   login: (payload: LoginPayload) => Promise<AuthResponse>
   register: (payload: RegisterPayload) => Promise<void>
   logout: () => Promise<void>
+  refresh: () => Promise<void>
 }
 
 const useSeekerAuthSelector: TypedUseSelectorHook<SeekerAuthRootState> = useSelector
@@ -98,6 +99,9 @@ export const useAuth = (): AuthContextValue => {
       },
       logout: async () => {
         await logoutSeekerSession(dispatch)
+      },
+      refresh: async () => {
+        await bootstrapSeekerAuth(dispatch)
       },
     }),
     [auth, dispatch]

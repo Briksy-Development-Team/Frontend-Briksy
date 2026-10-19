@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { SlidersHorizontal, Search, Sparkles } from "lucide-react";
 import DropdownPill from "../../components/custom/DropdownPill";
-import { createPortal } from "react-dom";
 import Filter from "../../components/filter/Filter";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
@@ -139,16 +138,14 @@ export default function SearchToolbar({
         </div>
       )}
 
-      {isFilterOpen &&
-        createPortal(
-          <Filter
-            isOpen={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-            category={activeCategory.id}
-            initialTab={activeTab || (activeCategory.propTypes[0]?.label as FilterTab) || "All"}
-          />,
-          document.body,
-        )}
+      {isFilterOpen && (
+        <Filter
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          category={activeCategory.id}
+          initialTab={activeTab || (activeCategory.propTypes[0]?.label as FilterTab) || "All"}
+        />
+      )}
     </div>
   );
 }

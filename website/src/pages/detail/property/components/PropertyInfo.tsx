@@ -1,5 +1,8 @@
-import { ShieldCheck, List, Star } from "lucide-react";
+import { useState } from "react";
+import { ShieldCheck, ListTree, Star } from "lucide-react";
 import Approves from "../../../../assets/logo/apprrove.svg";
+import { SafeImage } from "../../../../components/custom/SafeImage";
+import NearbySchools from "../../shared/NearbySchools";
 
 export const PropertyTitle = ({
   title,
@@ -21,143 +24,211 @@ export const PropertyTitle = ({
   ratingCount?: number | null;
   reviewsCount?: number | null;
   organizationName?: string | null;
-}) => (
-  <div>
-    <h1 className="text-[1.4rem] md:text-[1.875rem] font-medium text-primary-brown leading-tight">
-      {title}
-    </h1>
-    <div className="text-[1.125rem] text-primary-brown mt-1.5 font-normal">
-      {[
-        beds ? `${beds} Bed` : null,
-        baths ? `${baths} Bath` : null,
-        car ? `${car} Car` : null,
-        sqm ? `${sqm} sqm` : null,
-      ]
-        .filter(Boolean)
-        .join(" \u00A0\u2022\u00A0 ")}
-    </div>
+}) => {
+  const specs = [
+    beds ? `${beds} Bed${Number(beds) === 1 ? "" : "s"}` : null,
+    baths ? `${baths} Bath${Number(baths) === 1 ? "" : "s"}` : null,
+    car ? `${car} Car` : null,
+    sqm ? `${sqm} sqm` : null,
+  ].filter(Boolean);
 
-    {(rating || organizationName) && (
-      <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[0.95rem] text-[#8C8370] font-medium">
-        {rating ? (
-          <div className="flex items-center gap-1 text-primary-brown">
-            <Star
-              className="text-[#ff6b4a] -mt-1"
-              size={15}
-              fill="#ff6b4a"
-              strokeWidth={1}
-            />
-            <span className="text-primary-light-brown">{rating}</span>
-            <span className="text-primary-light-brown font-normal ml-0.5">
-              ( {ratingCount || 0} ){" "}
-              {reviewsCount ? `(${reviewsCount} reviews)` : ""}
-            </span>
-          </div>
-        ) : null}
-
-        {rating && organizationName && <span className="mx-1">·</span>}
-
-        {organizationName && (
-          <span className="font-normal">Listed by {organizationName}</span>
-        )}
-      </div>
-    )}
-  </div>
-);
-
-export const PropertyAgentCard = ({ agent }: { agent: any }) => (
-  <div className="flex flex-col sm:flex-row sm:items-center justify-between  bg-white px-6 rounded-[0.75rem] py-6">
-    <div className="flex items-center gap-4">
-      <div className="relative">
-        <img
-          src={agent.avatar}
-          className="w-14 h-14 rounded-full object-cover"
-          alt=""
-        />
-        <div className="absolute -bottom-2  right-2 bg-white rounded-full p-[2px]">
-          <img
-            loading="lazy"
-            src={Approves}
-            alt="Verified"
-            className="h-full w-full object-cover"
-          />{" "}
-        </div>
-      </div>
-      <div>
-        <p className=" text-[0.875rem] md:text-[1rem] text-primary-brown">
-          {agent.name}
-        </p>
-        <p className="text-[0.875rem] text-primary-light-brown mt-0.5">
-          {agent.role}
-        </p>
-      </div>
-    </div>
-    <div className=" items-center hidden md:flex gap-2 mt-4 sm:mt-0 text-primary-brown text-[1rem] font-medium">
-      <ShieldCheck size={20} />
-      {agent.verified}
-    </div>
-  </div>
-);
-
-export const PropertyAbout = ({ about }: { about: string }) => (
-  <div className="flex flex-col border-y border-[#E2CBB3] py-10 gap-6">
-    <h2 className="text-[1.25rem] font-medium text-primary-brown">
-      About this property
-    </h2>
-    <p className="text-[1rem] text-primary-brown leading-relaxed tracking-wider whitespace-pre-line">
-      {about}
-    </p>
-  </div>
-);
-
-export const PropertyAmenities = ({ amenities }: { amenities: any[] }) => {
-  const groups = amenities.reduce<Record<string, any[]>>((result, item) => {
-    const key = item.category || "Other features";
-    (result[key] ??= []).push(item);
-    return result;
-  }, {});
   return (
-  <div className="flex flex-col gap-6">
-    <h2 className="text-[1.25rem] font-medium text-primary-brown">
-      What this place offers
-    </h2>
-    {amenities.length > 0 ? (
-      <div className="flex flex-col gap-5">
-        {Object.entries(groups).map(([category, items]) => <div key={category}><h3 className="mb-3 text-sm font-medium text-primary-brown">{category}</h3><div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 md:gap-x-8">{items.map((item, idx) => (
-          <div
-            key={`${category}-${idx}`}
-            className="flex items-center gap-3 text-primary-brown text-[1rem]"
-          >
-            <List size={16} className="text-primary-light-brown" />
-            <span className="text-[0.750rem] ">{item.name}</span>
-          </div>
-        ))}</div></div>)}
-      </div>
-    ) : (
-      <p className="text-[0.875rem] text-primary-light-brown">
-        No property features have been provided.
-      </p>
-    )}
-  </div>
+    <div className="flex flex-col gap-1 w-full">
+      <h1 className="text-[24px] md:text-[30px] font-medium leading-[34px] md:leading-[38px] tracking-[-0.03em] text-[#342511]">
+        {title}
+      </h1>
+
+      {specs.length > 0 && (
+        <p className="text-[14px] font-medium leading-[20px] text-[#342511]/75">
+          {specs.join(" \u00A0•\u00A0 ")}
+        </p>
+      )}
+
+      {(rating || organizationName) && (
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[0.875rem] text-[#8C8370] font-medium">
+          {rating ? (
+            <div className="flex items-center gap-1 text-[#342511]">
+              <Star
+                className="text-[#F05537] fill-[#F05537] -mt-0.5"
+                size={14}
+              />
+              <span className="font-semibold text-[#342511]">{rating}</span>
+              <span className="text-[#8C8370] font-normal">
+                ({ratingCount || reviewsCount || 0} reviews)
+              </span>
+            </div>
+          ) : null}
+
+          {rating && organizationName && <span className="mx-1 text-[#BF9F7D]">•</span>}
+
+          {organizationName && (
+            <span className="font-normal text-[#6B6560]">Listed by {organizationName}</span>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
-export const PropertyMap = ({ mapSrc }: { mapSrc: string }) => (
-  <div className="flex flex-col gap-6">
-    <h2 className="text-[1.25rem] font-medium text-primary-brown">
-      Where you'll be
-    </h2>
-    <div className="w-full h-[250px] md:h-[320px] rounded-2xl overflow-hidden border border-[#EBE5D9]">
-      <iframe
-        title="Property location map"
-        src={mapSrc}
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        allowFullScreen
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
+export const PropertyAgentCard = ({ agent }: { agent: any }) => {
+  if (!agent || !agent.name) return null;
+
+  return (
+    <div className="w-full bg-white rounded-xl p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[#EDE8E4] shadow-xs">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="relative shrink-0">
+          <SafeImage
+            src={agent.avatar}
+            className="w-12 h-12 rounded-full object-cover border border-[#EDE8E4]"
+            alt={agent.name}
+          />
+          {agent.verified && (
+            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-[1px]">
+              <img
+                loading="lazy"
+                src={Approves}
+                alt="Verified"
+                className="w-4 h-4 object-contain"
+              />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col min-w-0">
+          <h4 className="text-[16px] font-bold text-[#342511] leading-tight truncate">
+            {agent.name}
+          </h4>
+          <div className="flex items-center gap-1.5 text-[14px] text-[#342511]/80 font-normal mt-0.5">
+            <span>{agent.role || "Property Management"}</span>
+            {agent.since && (
+              <>
+                <span className="text-[#BF9F7D] font-medium">•</span>
+                <span>Since {agent.since}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {agent.verified && (
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#EDE8E4] text-[#342511] text-[13px] font-medium shrink-0 self-start sm:self-auto">
+          <ShieldCheck size={18} className="text-[#342511]" />
+          <span>Verified [ Builder / Org. ]</span>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
+
+export const PropertyAbout = ({ about }: { about?: string | null }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!about || !about.trim() || about.trim() === "No description provided.") {
+    return null;
+  }
+
+  const isLong = about.length > 280;
+
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+        About this property
+      </h2>
+      <p
+        className={`text-[15px] font-normal leading-[26px] text-[#222222] whitespace-pre-line ${
+          !expanded && isLong ? "line-clamp-4" : ""
+        }`}
+      >
+        {about}
+      </p>
+      {isLong && (
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="w-fit text-[14px] font-medium text-[#222222] hover:opacity-75 transition-opacity flex items-center gap-1 mt-0.5 cursor-pointer"
+        >
+          {expanded ? "Show Less" : "Show More"}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export const PropertyAmenities = ({ amenities }: { amenities?: any[] }) => {
+  const [showAll, setShowAll] = useState(false);
+
+  if (!amenities || amenities.length === 0) {
+    return null;
+  }
+
+  const displayed = showAll ? amenities : amenities.slice(0, 12);
+
+  return (
+    <div className="flex flex-col gap-3.5 w-full">
+      <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+        What this place offers
+      </h2>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3.5 gap-x-6">
+        {displayed.map((item, idx) => (
+          <div
+            key={`${item.name}-${idx}`}
+            className="flex items-center gap-2.5 text-[#000000] text-[14px] font-medium"
+          >
+            <ListTree size={16} className="text-[#342511] shrink-0" />
+            <span className="truncate">{item.name}</span>
+          </div>
+        ))}
+      </div>
+
+      {amenities.length > 12 && (
+        <button
+          type="button"
+          onClick={() => setShowAll(!showAll)}
+          className="w-fit mt-1 px-4 py-2 rounded-lg border border-[#EDE8E4] bg-white text-[14px] font-medium text-[#222222] hover:bg-[#F8F4EE] transition-colors cursor-pointer"
+        >
+          {showAll ? "Show Less Amenities" : "Show All Amenities"}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export interface PropertyMapProps {
+  mapSrc?: string | null;
+  nearby?: boolean;
+  showNearby?: boolean;
+}
+
+export const PropertyMap = ({
+  mapSrc,
+  nearby = true,
+  showNearby = true,
+}: PropertyMapProps) => {
+  if (!mapSrc) return null;
+
+  const displayNearby = nearby && showNearby;
+
+  return (
+    <div className="flex flex-col gap-8 w-full">
+      <div className="flex flex-col gap-3 w-full">
+        <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+          Where you’ll be
+        </h2>
+        <div className="w-full h-[280px] sm:h-[321px] rounded-xl overflow-hidden border border-[#EDE8E4] bg-[#F8F4EE]">
+          <iframe
+            title="Property location map"
+            src={mapSrc}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
+      </div>
+
+      {displayNearby && <NearbySchools />}
+    </div>
+  );
+};

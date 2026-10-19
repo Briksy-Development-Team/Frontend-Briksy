@@ -34,4 +34,9 @@ export const LISTING_DISPLAY: Record<
     newlyTitle: "Newly Listed Real Estate",
     Card: PropertyGridCard,
   },
+  auction: {
+    popularTitle: "Popular Auctions",
+    newlyTitle: "Newly Listed Auctions",
+    Card: PropertyGridCard,
+  },
 };

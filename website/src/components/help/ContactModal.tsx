@@ -1,5 +1,4 @@
-import React, { useRef, useState } from "react";
-import { X, ChevronDown, Plus } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import ModalWrapper from "../wrapper/ModalWrapper";
 
 interface ContactModalProps {
@@ -8,26 +7,6 @@ interface ContactModalProps {
 }
 
 const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [screenshot, setScreenshot] = useState<File | null>(null);
-
-    const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-
-        if (!file) return;
-
-        if (!["image/png", "image/jpeg"].includes(file.type)) {
-            alert("Please select a PNG or JPG image.");
-            return;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-            alert("File size must be less than 10MB.");
-            return;
-        }
-
-        setScreenshot(file);
-    };
     return (
         <ModalWrapper isOpen={isOpen}>
             <div className="fixed inset-0 z-50 flex items-center justify-center  p-3 md:p-4 font-helvetica">
@@ -126,44 +105,6 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                                 </div>
 
                                 
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/png,image/jpeg"
-                                    className="hidden"
-                                    onChange={handleScreenshotChange}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="flex w-full items-center justify-between  rounded-xl border border-dashed border-white-100 p-3 md:p-4 transition-colors hover:bg-gray-50 flex-col sm:flex-row gap-2 sm:gap-0"
-                                >
-                                    <div className="flex items-center gap-2 md:gap-3 text-[0.75rem] md:text-[0.875rem] text-primary-light-brown">
-                                        <Plus className="w-4 h-4 md:w-4 md:h-4" />
-                                        <span>
-                                            {screenshot ? screenshot.name : "Attach a screenshot"}
-                                        </span>
-                                    </div>
-                                    <span className="text-[0.65rem] md:text-[0.75rem] text-[#A89F95]">
-                                        {screenshot
-                                            ? `${(screenshot.size / 1024 / 1024).toFixed(2)} MB`
-                                            : "PNG or JPG, up to 10MB"}
-                                    </span>
-                                </button>
-
-                                
-                                <div className="pt-1 md:pt-2">
-                                    <label className="flex items-center gap-2 md:gap-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="h-4 w-4 md:h-5 md:w-5 rounded border-white-100 accent-primary-brown text-primary-brown focus:ring-primary-brown cursor-pointer"
-                                        />
-                                        <span className="text-[0.75rem] md:text-[0.875rem] text-primary-brown">
-                                            Email me a copy of this message
-                                        </span>
-                                    </label>
-                                </div>
-
                                 
                                 <div className="flex flex-col  sm:flex-row sm:items-center gap-3 sm:gap-6 py-2 md:py-4">
                                     <button

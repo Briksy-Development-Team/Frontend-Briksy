@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import { Mousewheel } from "swiper/modules";
+import SwiperScroll from "../../swiper/SwiperScroll";
 import {
   getCollectionItems,
   getCollections,
@@ -11,14 +9,18 @@ import {
   type CollectionItem,
   type SeekerCollection,
 } from "../../../api/seeker/collections.api";
-import { organizationToTrader, propertyToCard } from "../../../api/public.mappers";
+import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../../api/public.mappers";
 import PropertyGridCard from "../../cards/property/PropertyGridCard";
+import PropertyListCard from "../../cards/property/PropertyListCard";
 import TraderGridCard from "../../cards/trader/TraderGridCard";
+import TraderListCard from "../../cards/trader/TraderListCard";
+import BuilderGridCard from "../../cards/builder/BuilderGridCard";
+import BuilderListCard from "../../cards/builder/BuilderListCard";
 import type { PublicOrganization } from "../../../api/seeker/organization.api";
 import type { PublicProperty } from "../../../api/property/property.api";
 import PlaceholderProperty from "../../../assets/profile/placeholderproperty.svg";
 
-export default function CollectionDetailPage() {
+export default function CollectionDetailPage({ showBack = true }: { showBack?: boolean }) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [collection, setCollection] = useState<SeekerCollection | null>(null);
@@ -82,18 +84,20 @@ export default function CollectionDetailPage() {
 
   return (
     <div className="w-full space-y-8">
-      {/* Header — centered name, back arrow left */}
+      {/* Header — centered name, back arrow left (optional) */}
       <div className="flex items-center justify-between gap-4">
-        <button
-          type="button"
-          aria-label="Back to Collections"
-          onClick={() => navigate(-1)}
-          className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#F0EBE5] text-primary-brown transition-colors shrink-0"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
+        {showBack ? (
+          <button
+            type="button"
+            aria-label="Back to Collections"
+            onClick={() => navigate(-1)}
+            className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#F0EBE5] text-primary-brown transition-colors shrink-0"
+          >
+            <ArrowLeft size={18} />
+          </button>
+        ) : (
+          <div className="w-9 shrink-0" />
+        )}
 
         <div className="flex flex-col items-center gap-1.5 text-center min-w-0">
           <h1 className="text-xl font-medium text-primary-brown leading-7 tracking-tight truncate max-w-[16rem] md:max-w-none">
@@ -115,34 +119,39 @@ export default function CollectionDetailPage() {
         <Section
           title="Real Estate"
           items={properties}
-          renderCard={(item) => (
-            <div className="relative group">
-              <PropertyGridCard item={propertyToCard(item.target as PublicProperty)} />
-              <RemoveBtn onClick={() => void remove(item)} />
-            </div>
+          onRemove={(item) => void remove(item)}
+          renderListCard={(item) => (
+            <PropertyListCard item={propertyToCard(item.target as PublicProperty)} />
+          )}
+          renderGridCard={(item) => (
+            <PropertyGridCard item={propertyToCard(item.target as PublicProperty)} />
           )}
         />
 
         <Section
           title="Professionals"
           items={professionals}
-          renderCard={(item) => (
-            <div className="relative group">
-              {organizationForItem(item) && <TraderGridCard item={organizationToTrader(organizationForItem(item)!)} />}
-              <RemoveBtn onClick={() => void remove(item)} />
-            </div>
-          )}
+          onRemove={(item) => void remove(item)}
+          renderListCard={(item) => {
+            const org = organizationForItem(item);
+            return org ? <TraderListCard item={organizationToTrader(org)} /> : null;
+          }}
+          renderGridCard={(item) => {
+            const org = organizationForItem(item);
+            return org ? <TraderGridCard item={organizationToTrader(org)} /> : null;
+          }}
         />
 
         {builders.length > 0 && (
           <Section
             title="Builders / Org."
             items={builders}
-            renderCard={(item) => (
-              <div className="relative group">
-                <TraderGridCard item={organizationToTrader(item.target as PublicOrganization)} />
-                <RemoveBtn onClick={() => void remove(item)} />
-              </div>
+            onRemove={(item) => void remove(item)}
+            renderListCard={(item) => (
+              <BuilderListCard item={organizationToBuilder(item.target as PublicOrganization)} />
+            )}
+            renderGridCard={(item) => (
+              <BuilderGridCard item={organizationToBuilder(item.target as PublicOrganization)} />
             )}
           />
         )}
@@ -151,13 +160,19 @@ export default function CollectionDetailPage() {
   );
 }
 
-function RemoveBtn({ onClick }: { onClick: () => void }) {
+function RemoveBtn({ onClick, className }: { onClick: () => void; className?: string }) {
   return (
     <button
       type="button"
       aria-label="Remove from Collection"
-      onClick={onClick}
-      className="absolute bottom-[4.5rem] right-3 z-10 rounded-full bg-white/90 p-1.5 text-primary-brown shadow-md opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 transition-all"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      }}
+      className={`absolute z-10 rounded-full bg-white/90 p-1.5 text-primary-brown shadow-md hover:bg-red-50 hover:text-red-600 transition-all ${
+        className ?? "bottom-[4.5rem] right-3 opacity-0 group-hover:opacity-100"
+      }`}
     >
       <X size={15} />
     </button>
@@ -167,22 +182,28 @@ function RemoveBtn({ onClick }: { onClick: () => void }) {
 function Section({
   title,
   items,
-  renderCard,
+  renderGridCard,
+  renderListCard,
+  onRemove,
 }: {
   title: string;
   items: CollectionItem[];
-  renderCard: (item: CollectionItem) => React.ReactNode;
+  renderGridCard: (item: CollectionItem) => React.ReactNode;
+  renderListCard: (item: CollectionItem) => React.ReactNode;
+  onRemove: (item: CollectionItem) => void;
 }) {
+  const validItems = items.filter((item) => item.target && item.type);
+
   return (
     <div className="space-y-3">
       {/* Section head */}
       <div className="pb-[14px]">
         <h2 className="text-xl font-medium text-primary-brown leading-7 tracking-tight">
-          {title}{items.length > 0 ? ` (${String(items.length).padStart(2, "0")})` : ""}
+          {title}{validItems.length > 0 ? ` (${String(validItems.length).padStart(2, "0")})` : ""}
         </h2>
       </div>
 
-      {items.length === 0 ? (
+      {validItems.length === 0 ? (
         /* Empty state card — matches Figma exactly */
         <div className="w-full rounded-2xl border border-[#EDE8E4] bg-white">
           <div className="flex flex-col items-center gap-4 py-[72px] px-10 text-center">
@@ -210,26 +231,35 @@ function Section({
           </div>
         </div>
       ) : (
-        <Swiper
-          modules={[Mousewheel]}
-          spaceBetween={12}
-          slidesPerView="auto"
-          watchOverflow={false}
-          grabCursor
-          mousewheel={{ forceToAxis: true, sensitivity: 1, releaseOnEdges: true }}
-          slidesOffsetBefore={0}
-          slidesOffsetAfter={0}
-          className="!ml-0 [overscroll-behavior-x:contain] touch-pan-y"
-        >
-          {items.map((item) => {
-            if (!item.target || !item.type) return null;
-            return (
-              <SwiperSlide key={item.id} className="!w-[19.4375rem]">
-                {renderCard(item)}
-              </SwiperSlide>
-            );
-          })}
-        </Swiper>
+        <>
+          {/* Under sm: Vertical stack of list cards */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {validItems.map((item) => (
+              <div key={item.id} className="relative group">
+                {renderListCard(item)}
+                <RemoveBtn
+                  onClick={() => onRemove(item)}
+                  className="top-2.5 right-2.5 opacity-90 active:opacity-100"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* sm and above: SwiperScroll with grid cards */}
+          <div className="hidden sm:block">
+            <SwiperScroll
+              items={validItems}
+              spaceBetween={12}
+              className="!ml-0"
+              renderItem={(item: any) => (
+                <div className="relative group">
+                  {renderGridCard(item)}
+                  <RemoveBtn onClick={() => onRemove(item)} />
+                </div>
+              )}
+            />
+          </div>
+        </>
       )}
     </div>
   );
