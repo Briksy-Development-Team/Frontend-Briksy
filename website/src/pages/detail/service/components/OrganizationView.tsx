@@ -11,7 +11,7 @@ import { ServiceEnquiry } from "./ServiceEnquiry";
 import { joinAddress, toMedia } from "./ServiceOnlyView";
 import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../../components/custom/FraudBanner";
-import { DetailShorts } from "../../shared";
+import { DetailShorts, SimilarSection } from "../../shared";
 
 export function OrganizationView({ organization, service }: { organization: PublicOrganization, service: PublicService | null }) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -43,7 +43,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
 
   return (
     <div className="min-h-screen   font-helvetica md:pt-20">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
+      <div className="max-w-[2000px] mx-auto  sm:px-8 lg:px-20  md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
@@ -55,7 +55,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
 
         <ServiceMobileHeader organization={organization} />
 
-        <div className="mt-6 md:mt-8 flex flex-col items-start gap-12 lg:flex-row">
+        <div className="mt-6 md:mt-8 flex flex-col items-start px-4 gap-12 lg:flex-row">
           <div className="hidden w-full lg:block lg:sticky lg:top-28 lg:w-[360px] lg:shrink-0">
             <ServiceSidebar
               service={{
@@ -73,7 +73,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
             />
           </div>
 
-          <div className="flex-1 min-w-0 w-full flex flex-col gap-8 pt-0">
+          <div className="flex-1 min-w-0 w-full flex  px-4 flex-col gap-8 pt-0">
             <div id="services">
               <ServiceList servicesData={{ list: mappedServices }} />
             </div>
@@ -127,8 +127,11 @@ export function OrganizationView({ organization, service }: { organization: Publ
             </div>
           </div>
         </div>
+
+        {/* Similar Professionals / Traders Section */}
+        <SimilarSection type="trader" currentId={organization.id} />
       </div>
-      <div className="my-10  w-full flex items-center justify-center ">
+      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
       <div className="sticky bottom-0 z-20">

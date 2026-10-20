@@ -14,7 +14,7 @@ import Reviews from "../../../components/reviews/Reviews";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts } from "../shared";
+import { DetailShorts, SimilarSection } from "../shared";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
@@ -287,7 +287,7 @@ export const AgentDetail = () => {
 
   return (
     <div className="min-h-screen  font-helvetica md:pt-20">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto  sm:px-8 lg:px-20 pb-12  md:py-6">
+      <main className="flex-1 max-w-[2000px] w-full mx-auto  sm:px-8 lg:px-20 pb-12  md:py-6">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -347,20 +347,13 @@ export const AgentDetail = () => {
           </div>
         </div>
 
-        {/* Fraud notice & reporting */}
-        <div className="mt-12 w-full flex flex-col items-center justify-center gap-4 px-[3%]">
-          <FraudBanner className="w-full md:w-[60%] lg:w-[50%]" />
-          <div className="text-[0.875rem] text-primary-brown flex items-center gap-1.5 mt-2">
-            <span>See an issue?</span>
-            <button
-              onClick={openGeneralEnquiryModal}
-              className="underline font-medium hover:text-black transition-colors cursor-pointer"
-            >
-              Report this listing
-            </button>
-          </div>
-        </div>
+        {/* Similar Agents Section */}
+        <SimilarSection type="agent" currentId={id} className="px-4 sm:px-0" />
+
       </main>
+      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
+        <FraudBanner />
+      </div>
       <div className="sticky bottom-0 z-20">
 
         <MobileStickyAction

@@ -18,7 +18,7 @@ import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts } from "../shared";
+import { DetailShorts, SimilarSection } from "../shared";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 
@@ -129,7 +129,7 @@ const BuilderDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 mt-0 font-helvetica flex flex-col  md:pb-0">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto sm:px-8 lg:px-20 pb-6  md:py-6">
+      <main className="flex-1 max-w-[2000px] w-full mx-auto sm:px-8 lg:px-20 pb-6  md:py-6">
         <div className="hidden sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb
             items={[
@@ -198,8 +198,11 @@ const BuilderDetail = () => {
           </div>
 
         </div>
+
+        {/* Similar Builders Section */}
+        <SimilarSection type="builder" currentId={id} className="px-4 sm:px-0" />
       </main>
-      <div className="my-10 px-[3%] w-full flex items-center justify-center ">
+      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
       <div className="sticky bottom-0 z-20">

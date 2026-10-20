@@ -1,28 +1,40 @@
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import Reviews from "../../../components/reviews/Reviews";
 import { PropertyGallery } from "./components/PropertyGallery";
-import { PropertyTitle, PropertyAgentCard, PropertyAbout, PropertyAmenities, PropertyMap } from "./components/PropertyInfo";
+import {
+  PropertyTitle,
+  PropertyAgentCard,
+  PropertyAbout,
+  PropertyAmenities,
+  PropertyMap,
+} from "./components/PropertyInfo";
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 import AuctionSidebar from "./components/AuctionSidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { Share, ChevronLeft, FolderPlus, ArrowUpRight } from "lucide-react";
+import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { getProperty, getProperties, type PublicProperty } from "../../../api/property/property.api";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  getProperty,
+  getProperties,
+  type PublicProperty,
+} from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts } from "../shared";
+import { DetailShorts, SimilarSection } from "../shared";
 import SwiperScroll from "../../../components/swiper/SwiperScroll";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
-import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
-import { organizationToTrader, propertyToCard } from "../../../api/public.mappers";
+import {
+  organizationToTrader,
+  propertyToCard,
+} from "../../../api/public.mappers";
 import type { Trader } from "../../../types/trader";
 import type { Property } from "../../../types/property";
 import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
@@ -52,10 +64,23 @@ const PropertyDetail = () => {
     let active = true;
     setLoading(true);
     getProperty(id)
-      .then(({ data }) => { if (active) setPropertyData(data); })
-      .catch((reason: any) => { if (active) setError(reason?.response?.status === 404 ? "This property was not found." : "Unable to load this property."); })
-      .finally(() => { if (active) setLoading(false); });
-    return () => { active = false; };
+      .then(({ data }) => {
+        if (active) setPropertyData(data);
+      })
+      .catch((reason: any) => {
+        if (active)
+          setError(
+            reason?.response?.status === 404
+              ? "This property was not found."
+              : "Unable to load this property.",
+          );
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   useEffect(() => {
@@ -69,83 +94,141 @@ const PropertyDetail = () => {
           .map(propertyToCard);
         setSimilarProperties(filtered);
       })
-      .catch(() => { });
-    return () => { active = false; };
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   if (loading) return <p className="py-20 text-center">Loading property...</p>;
   if (error) return <p className="py-20 text-center text-red-700">{error}</p>;
-  if (!propertyData) return <p className="py-20 text-center">This property is unavailable.</p>;
+  if (!propertyData)
+    return <p className="py-20 text-center">This property is unavailable.</p>;
 
   const property = {
     ...propertyData,
     address: propertyData.full_address || propertyData.address || "",
-    subtitle: [propertyData.bedroom_option, propertyData.bathroom_option, propertyData.car_space_option].filter(Boolean).join(" • "),
+    subtitle: [
+      propertyData.bedroom_option,
+      propertyData.bathroom_option,
+      propertyData.car_space_option,
+    ]
+      .filter(Boolean)
+      .join(" • "),
     images: (() => {
-      const media = (propertyData.media?.length ? propertyData.media : [
-        ...(propertyData.images || []).map((item, index) => ({ ...item, id: `image-${index}`, type: 'image' as const })),
-        ...(propertyData.videos || []).map((item, index) => ({ ...item, id: `video-${index}`, type: 'video' as const })),
-      ]);
+      const media = propertyData.media?.length
+        ? propertyData.media
+        : [
+            ...(propertyData.images || []).map((item, index) => ({
+              ...item,
+              id: `image-${index}`,
+              type: "image" as const,
+            })),
+            ...(propertyData.videos || []).map((item, index) => ({
+              ...item,
+              id: `video-${index}`,
+              type: "video" as const,
+            })),
+          ];
       let formattedMedia = media
-        .filter((item, index, all) => item.url && all.findIndex((candidate) => candidate.id ? candidate.id === item.id : candidate.url === item.url) === index)
-        .map((item) => ({ id: item.id, src: item.url ?? undefined, type: item.type, videoSrc: item.type === 'video' ? item.url ?? undefined : undefined }));
+        .filter(
+          (item, index, all) =>
+            item.url &&
+            all.findIndex((candidate) =>
+              candidate.id
+                ? candidate.id === item.id
+                : candidate.url === item.url,
+            ) === index,
+        )
+        .map((item) => ({
+          id: item.id,
+          src: item.url ?? undefined,
+          type: item.type,
+          videoSrc: item.type === "video" ? (item.url ?? undefined) : undefined,
+        }));
 
       return formattedMedia;
     })(),
     agent: propertyData.organization
       ? {
-        name: propertyData.organization.name || "Property Management",
-        role: "Property Management",
-        verified: propertyData.organization.is_verified ? "Verified" : "",
-        avatar: propertyData.organization.logo_url || "",
-        since: (propertyData.organization as any).established_year || undefined,
-      }
+          name: propertyData.organization.name || "Property Management",
+          role: "Property Management",
+          verified: propertyData.organization.is_verified ? "Verified" : "",
+          avatar: propertyData.organization.logo_url || "",
+          since:
+            (propertyData.organization as any).established_year || undefined,
+        }
       : null,
     about: propertyData.description || "",
-    amenities: (propertyData.features || []).map((feature) => ({ name: feature.name })),
-    mapSrc: (propertyData.location?.latitude && propertyData.location?.longitude) || propertyData.full_address || propertyData.address
-      ? buildGoogleMapsEmbedUrl({
-        lat: propertyData.location?.latitude,
-        lng: propertyData.location?.longitude,
-        address: propertyData.full_address || propertyData.address,
-      })
-      : null,
+    amenities: (propertyData.features || []).map((feature) => ({
+      name: feature.name,
+    })),
+    mapSrc:
+      (propertyData.location?.latitude && propertyData.location?.longitude) ||
+      propertyData.full_address ||
+      propertyData.address
+        ? buildGoogleMapsEmbedUrl({
+            lat: propertyData.location?.latitude,
+            lng: propertyData.location?.longitude,
+            address: propertyData.full_address || propertyData.address,
+          })
+        : null,
     company: propertyData.organization
       ? {
-        id: propertyData.organization.slug || propertyData.organization.id || "",
-        name: propertyData.organization.name || "",
-        location: propertyData.address || "",
-        tags: [],
-        rating: propertyData.rating || 0,
-        reviews: 0,
-        since: (propertyData.organization as any).established_year || undefined,
-        logo: propertyData.organization.logo_url || "",
-      }
+          id:
+            propertyData.organization.slug ||
+            propertyData.organization.id ||
+            "",
+          name: propertyData.organization.name || "",
+          location: propertyData.address || "",
+          tags: [],
+          rating: propertyData.rating || 0,
+          reviews: 0,
+          since:
+            (propertyData.organization as any).established_year || undefined,
+          logo: propertyData.organization.logo_url || "",
+        }
       : null,
-    reviews: { overall: propertyData.rating || 0, count: 0, distribution: {}, list: [] },
-    sidebar: { builder: propertyData.organization?.name || "", builderName: propertyData.organization?.name || "", availability: "", location: propertyData.address || "", price: propertyData.price ?? propertyData.price_min ?? propertyData.price_max ?? undefined },
+    reviews: {
+      overall: propertyData.rating || 0,
+      count: 0,
+      distribution: {},
+      list: [],
+    },
+    sidebar: {
+      builder: propertyData.organization?.name || "",
+      builderName: propertyData.organization?.name || "",
+      availability: "",
+      location: propertyData.address || "",
+      price:
+        propertyData.price ??
+        propertyData.price_min ??
+        propertyData.price_max ??
+        undefined,
+    },
   };
 
   const traderHost: Trader | null = propertyData.organization
     ? organizationToTrader({
-      ...propertyData.organization,
-      address: propertyData.full_address || propertyData.address,
-    } as any)
+        ...propertyData.organization,
+        address: propertyData.full_address || propertyData.address,
+      } as any)
     : propertyData.creator
       ? {
-        id: propertyData.creator.id,
-        name: propertyData.creator.name,
-        tagLine: "Property Host",
-        role: "Host",
-        location: propertyData.full_address || propertyData.address || "Australia",
-        avatar: ServicePlaceholder,
-        bannerImage: BuilderBackground,
-        rating: propertyData.rating || 0,
-        reviews: 0,
-        tags: [],
-        isFavourite: false,
-        favoriteId: propertyData.creator.id,
-      }
+          id: propertyData.creator.id,
+          name: propertyData.creator.name,
+          tagLine: "Property Host",
+          role: "Host",
+          location:
+            propertyData.full_address || propertyData.address || "Australia",
+          avatar: ServicePlaceholder,
+          bannerImage: BuilderBackground,
+          rating: propertyData.rating || 0,
+          reviews: 0,
+          tags: [],
+          isFavourite: false,
+          favoriteId: propertyData.creator.id,
+        }
       : null;
 
   const submitEnquiry = async (values: {
@@ -177,11 +260,16 @@ const PropertyDetail = () => {
         seeker_email: values.seeker_email,
         seeker_phone: values.seeker_phone || null,
       });
-      setEnquirySuccess(result.data?.email_delivery?.status !== "sent"
-        ? `${result.message} Our team can still view it.`
-        : "Your enquiry has been sent successfully.");
+      setEnquirySuccess(
+        result.data?.email_delivery?.status !== "sent"
+          ? `${result.message} Our team can still view it.`
+          : "Your enquiry has been sent successfully.",
+      );
     } catch (reason: any) {
-      setEnquiryError(reason?.response?.data?.message || "Unable to send enquiry. Please try again.");
+      setEnquiryError(
+        reason?.response?.data?.message ||
+          "Unable to send enquiry. Please try again.",
+      );
     } finally {
       setEnquirySubmitting(false);
     }
@@ -191,10 +279,10 @@ const PropertyDetail = () => {
   // their auction label/history on the property page.
   const isAuction = Boolean(propertyData.is_auction);
 
-  const addressParts = property.address.split(', ');
-  const suburbStateZip = addressParts[addressParts.length - 1].split(' ');
+  const addressParts = property.address.split(", ");
+  const suburbStateZip = addressParts[addressParts.length - 1].split(" ");
   const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";
-  const suburb = suburbStateZip.slice(0, -2).join(' ') || "Toorak";
+  const suburb = suburbStateZip.slice(0, -2).join(" ") || "Toorak";
 
   const breadcrumbs = [
     { label: "Home", href: "/" },
@@ -202,13 +290,12 @@ const PropertyDetail = () => {
     { label: isAuction ? "Auction property" : "New property" },
     { label: state },
     { label: suburb },
-    { label: property.title }
+    { label: property.title },
   ];
 
   return (
     <div className="min-h-screen  md:mt-20 font-helvetica flex   md:pb-0 flex-col">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12  md:py-6">
-
+      <main className="flex-1 max-w-[2000px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12  md:py-6">
         {/* Desktop Header */}
         <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
@@ -226,10 +313,21 @@ const PropertyDetail = () => {
               targetType="property"
               initialIsFavourite={Boolean(propertyData.is_favourite)}
             />
-            <button type="button" onClick={() => setCollectionOpen(true)} className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown cursor-pointer"><FolderPlus size={18} /> Add to Collection</button>
+            <button
+              type="button"
+              onClick={() => setCollectionOpen(true)}
+              className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown cursor-pointer"
+            >
+              <FolderPlus size={18} /> Add to Collection
+            </button>
           </div>
         </div>
-        {collectionOpen && <CollectionModal propertyId={property.id} onClose={() => setCollectionOpen(false)} />}
+        {collectionOpen && (
+          <CollectionModal
+            propertyId={property.id}
+            onClose={() => setCollectionOpen(false)}
+          />
+        )}
 
         <div className="mb-10 w-full relative">
           {/* Mobile Overlay Header */}
@@ -262,7 +360,10 @@ const PropertyDetail = () => {
             </div>
           </div>
 
-          <PropertyGallery images={property.images} floorplan={propertyData.floorplan?.url} />
+          <PropertyGallery
+            images={property.images}
+            floorplan={propertyData.floorplan?.url}
+          />
         </div>
 
         {/* Main Body Grid matching Figma gap: 48px (gap-12) */}
@@ -283,18 +384,28 @@ const PropertyDetail = () => {
 
             {propertyData.transaction_status ? (
               <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
-                {propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status)}
+                {propertyStatusLabel(
+                  propertyData.listing_purpose,
+                  propertyData.transaction_status,
+                )}
               </span>
             ) : null}
             {isAuction ? (
-              <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">Auction</span>
+              <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">
+                Auction
+              </span>
             ) : null}
 
             {isAuction ? (
               <div className="md:hidden">
                 <AuctionSidebar
                   sidebar={property.sidebar}
-                  venueAddress={propertyData.auction_details?.venue || propertyData.full_address || propertyData.address || undefined}
+                  venueAddress={
+                    propertyData.auction_details?.venue ||
+                    propertyData.full_address ||
+                    propertyData.address ||
+                    undefined
+                  }
                   auctionVenue={propertyData.auction_details?.venue}
                   auctionDate={propertyData.auction_details?.date}
                   auctionTime={propertyData.auction_details?.time}
@@ -316,19 +427,19 @@ const PropertyDetail = () => {
                 <PropertyAbout about={property.about} />
               </div>
             )}
-
-            {propertyData.transaction_status !== "SOLD" && propertyData.transaction_status !== "LEASED" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setInitialInterestedIn(["inspection"]);
-                  setIsEnquiryOpen(true);
-                }}
-                className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                Request an Inspection
-              </button>
-            )}
+            {propertyData.transaction_status !== "SOLD" &&
+              propertyData.transaction_status !== "LEASED" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setInitialInterestedIn(["inspection"]);
+                    setIsEnquiryOpen(true);
+                  }}
+                  className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  Request an Inspection
+                </button>
+              )}
 
             {property.amenities && property.amenities.length > 0 && (
               <div id="amenities">
@@ -353,7 +464,10 @@ const PropertyDetail = () => {
             )}
 
             {traderHost && (
-              <div id="host" className="flex flex-col gap-3.5 w-full overflow-hidden">
+              <div
+                id="host"
+                className="flex flex-col gap-3.5 w-full overflow-hidden"
+              >
                 <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-primary-brown">
                   Meet The Host
                 </h2>
@@ -366,11 +480,17 @@ const PropertyDetail = () => {
               </div>
             )}
 
-            {property.reviews && (property.reviews.count > 0 || (property.reviews.list && property.reviews.list.length > 0)) && (
-              <div id="reviews">
-                <Reviews data={property.reviews} name={property.agent?.name || property.title} />
-              </div>
-            )}
+            {property.reviews &&
+              (property.reviews.count > 0 ||
+                (property.reviews.list &&
+                  property.reviews.list.length > 0)) && (
+                <div id="reviews">
+                  <Reviews
+                    data={property.reviews}
+                    name={property.agent?.name || property.title}
+                  />
+                </div>
+              )}
           </div>
 
           {/* Right Sidebar matching Figma width: 360px */}
@@ -379,7 +499,9 @@ const PropertyDetail = () => {
               sidebar={property.sidebar}
               listingPurpose={propertyData.listing_purpose}
               isAuction={isAuction}
-              venueAddress={propertyData.full_address || propertyData.address || undefined}
+              venueAddress={
+                propertyData.full_address || propertyData.address || undefined
+              }
               auctionVenue={propertyData.auction_details?.venue}
               auctionDate={propertyData.auction_details?.date}
               auctionTime={propertyData.auction_details?.time}
@@ -389,8 +511,19 @@ const PropertyDetail = () => {
               propertyId={propertyData.id}
               propertyTitle={propertyData.title}
               organizationId={propertyData.organization?.id || undefined}
-              statusTag={propertyData.transaction_status ? propertyStatusLabel(propertyData.listing_purpose, propertyData.transaction_status) : undefined}
-              statusDate={propertyData.transaction_status === "SOLD" ? "Sold on 18 Sep 2026" : undefined}
+              statusTag={
+                propertyData.transaction_status
+                  ? propertyStatusLabel(
+                      propertyData.listing_purpose,
+                      propertyData.transaction_status,
+                    )
+                  : undefined
+              }
+              statusDate={
+                propertyData.transaction_status === "SOLD"
+                  ? "Sold on 18 Sep 2026"
+                  : undefined
+              }
               address={property.address}
               organizationName={propertyData.organization?.name || undefined}
               onEnquiry={openGeneralEnquiry}
@@ -398,37 +531,32 @@ const PropertyDetail = () => {
           </aside>
         </div>
 
-        {/* Similar Properties Section from Figma 4503:6064 */}
-        {similarProperties.length > 0 && (
-          <div className="mt-10 flex flex-col gap-6 overflow-hidden">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[24px] md:text-[30px] font-medium leading-[36px] tracking-[-0.03em] text-prim">
-                Similar Properties
-              </h2>
-              <Link
-                to="/buy"
-                className="text-[14px] md:text-[16px] font-medium text-[#8B6F54] hover:text-[#562F00] flex items-center gap-1.5 transition-colors"
-              >
-                <span>View All</span>
-                <ArrowUpRight size={18} />
-              </Link>
-            </div>
-            <SwiperScroll
-              items={similarProperties}
-              spaceBetween={16}
-              className="!ml-0"
-              renderItem={(item) => <PropertyGridCard item={item} />}
-            />
-          </div>
-        )}
+        {/* Similar Properties Section */}
+        <SimilarSection
+          type="property"
+          currentId={id}
+          items={similarProperties}
+        />
       </main>
       <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
       <div className="sticky bottom-0 z-20">
         <MobileStickyAction
-          price={isAuction ? "Auction" : property.sidebar.price ? `$${(property.sidebar.price / 1000).toFixed(0)}k` : "Contact"}
-          priceLabel={isAuction ? "Saturday, 17 October 2026" : property.sidebar.price ? "fixed price" : undefined}
+          price={
+            isAuction
+              ? "Auction"
+              : property.sidebar.price
+                ? `$${(property.sidebar.price / 1000).toFixed(0)}k`
+                : "Contact"
+          }
+          priceLabel={
+            isAuction
+              ? "Saturday, 17 October 2026"
+              : property.sidebar.price
+                ? "fixed price"
+                : undefined
+          }
           onEnquiry={openGeneralEnquiry}
         />
       </div>

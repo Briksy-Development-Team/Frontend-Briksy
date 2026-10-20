@@ -3,3 +3,4 @@ export { default as NearbySchools, DEFAULT_NEARBY_SCHOOLS, type SchoolItem, type
 export { default as HostProfileCard } from "./HostProfileCard";
 export { DetailSidebar } from "./DetailSidebar";
 export { EnquiryModal } from "./EnquiryModal";
+export { default as SimilarSection, type SimilarSectionProps, type SimilarType } from "./SimilarSection";
