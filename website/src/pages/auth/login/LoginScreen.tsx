@@ -44,7 +44,7 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
       const response = await login({ email: form.email.trim(), password: form.password });
 
       if (response.abilities.includes('seeker')) {
-        const fromPath = (location.state as { from?: string } | null)?.from ?? '/account/profile';
+        const fromPath = (location.state as { from?: string } | null)?.from ?? '/profile';
         navigate(fromPath, { replace: true });
         return;
       }

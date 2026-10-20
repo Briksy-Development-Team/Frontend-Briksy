@@ -1,13 +1,19 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, Compass, MessageCircle, Heart, User } from "lucide-react";
+import { Home, Compass, MessageCircle, User } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bookmark02Icon } from "@hugeicons/core-free-icons";
 
 interface NavItem {
   id: string;
   label: string;
   to: string;
-  icon: typeof Home;
+  icon: React.ComponentType<any>;
   isActive: (pathname: string) => boolean;
 }
+
+const BookmarkNavIcon = (props: any) => (
+  <HugeiconsIcon icon={Bookmark02Icon} {...props} />
+);
 
 const navItems: NavItem[] = [
   {
@@ -44,7 +50,7 @@ const navItems: NavItem[] = [
     id: "saved",
     label: "Saved",
     to: "/saved",
-    icon: Heart,
+    icon: BookmarkNavIcon,
     isActive: (pathname) =>
       pathname.startsWith("/profile/collections") ||
       pathname.startsWith("/saved") ||

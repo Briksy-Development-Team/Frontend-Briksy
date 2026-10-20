@@ -7,7 +7,7 @@ import { ServiceEnquiry } from "./ServiceEnquiry";
 import { ServiceRecentWork } from "./ServiceDetails";
 import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../../components/custom/FraudBanner";
-import { DetailShorts } from "../../shared";
+import { DetailShorts, SimilarSection } from "../../shared";
 
 export const joinAddress = (
   o?: {
@@ -37,8 +37,8 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
   const media = toMedia(service.images, service.videos);
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-16 pt-24 font-helvetica">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-20 py-4 md:py-6">
+    <div className="min-h-screen  pb-16 pt-24 font-helvetica">
+      <div className="max-w-[2000px] mx-auto  sm:px-8 lg:px-20  md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
@@ -134,14 +134,19 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
             </div>
           </div>
         </div>
+
+        {/* Similar Professionals / Traders Section */}
+        <SimilarSection type="trader" currentId={service.id} />
       </div>
-      <div className="mt-10  w-full flex items-center justify-center ">
+      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
         <FraudBanner />
       </div>
+      <div className="sticky bottom-0 z-20">
 
-      <MobileStickyAction
-        onEnquiry={() => setIsEnquiryOpen(true)}
-      />
+        <MobileStickyAction
+          onEnquiry={() => setIsEnquiryOpen(true)}
+        />
+      </div>
 
       <ServiceEnquiry
         open={isEnquiryOpen}

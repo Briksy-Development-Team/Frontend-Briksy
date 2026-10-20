@@ -15,11 +15,12 @@ type NavbarProps = {
   setMode: (mode: "collapsed" | "search" | "ai") => void;
   hasHero?: boolean;
   hideOnMobile?: boolean;
+  visibilityClass?: string;
 };
 
 type Lang = { label: string; region: string };
 
-const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
+const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -75,7 +76,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
   return (
     <>
       <nav
-        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white ${hideOnMobile ? "hidden lg:block" : ""
+        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b max-w-[2000px] mx-auto border-[#d8d8d8] bg-primary-brown text-white ${visibilityClass ?? (hideOnMobile ? "hidden md:block" : "")
           }`}
       >
         <div className="flex h-20 items-center justify-between px-2 sm:px-4 lg:px-6">

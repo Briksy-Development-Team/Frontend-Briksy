@@ -47,7 +47,7 @@ export function ServiceList({ servicesData }: { servicesData: any }) {
   );
 }
 
-export function ServiceQualifications({
+export function  ServiceQualifications({
   companyName,
   companyLogo,
   qualifications,
@@ -63,7 +63,7 @@ export function ServiceQualifications({
       </h2>
 
       <div className="flex flex-col md:flex-row gap-6">
-        <div className="w-full lg:w-[30%] bg-white rounded-3xl p-3 xl:p-6 border border-gray-50 shadow-sm hidden md:flex md:flex-col items-center justify-center text-center gap-3">
+        <div className="w-full md:w-[30%] bg-white rounded-3xl p-3 xl:p-6 border border-gray-50 shadow-sm hidden md:flex md:flex-col items-center justify-center text-center gap-3">
           <div className="flex w-fit flex-col  items-center">
             <img
               loading="lazy"
