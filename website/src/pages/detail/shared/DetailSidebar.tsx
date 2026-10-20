@@ -9,9 +9,9 @@ export interface NeedHelpItem {
 }
 
 const DEFAULT_NEED_HELP_ITEMS: NeedHelpItem[] = [
-  { label: "Find a Buyer's Agent", href: "/agents" },
-  { label: "Find a Mortgage Broker", href: "/professionals?category=broker" },
-  { label: "Find a Conveyancer", href: "/professionals?category=conveyancer" },
+  { label: "Find a Buyer's Agent", href: "/agents?tab=buyers-agent" },
+  { label: "Find a Mortgage Broker", href: "/professionals?tab=mortgage-brokers&service_slug=mortgage-brokers" },
+  { label: "Find a Conveyancer", href: "/professionals?tab=conveyancers&service_slug=conveyancers" },
 ];
 
 /**

@@ -36,11 +36,15 @@ const TAB_MAP: Record<string, FilterTab> = {
   "real-estate": "Real Estate Agents",
   buyer: "Buyer Agents",
   landscaper: "Landscapers",
+  landscapers: "Landscapers",
   concreter: "Concreter",
   fencing: "Fencing",
   mortgage: "Mortgage Brokers",
+  "mortgage-brokers": "Mortgage Brokers",
   conveyancer: "Conveyancers",
+  conveyancers: "Conveyancers",
   "building-pest": "Building & Pest",
+  "building-and-pest": "Building & Pest",
 };
 
 const SORTS = ["featured", "newest", "oldest", "price-low", "price-high"];

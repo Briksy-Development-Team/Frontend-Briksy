@@ -99,19 +99,21 @@ export function AgentMobileHeader({ agent }: AgentMobileHeaderProps) {
         <h1 className="text-[1.375rem] font-medium text-[#342511] mt-3">
           {agent.name}
         </h1>
-        <p className="text-[0.875rem] text-[#7C5F42]">
-          {agent.role || "Selling Principal"} at {agent.agencyName || "Ray White - Hervey Bay"}
-        </p>
+        {(agent.role || agent.agencyName) && (
+          <p className="text-[0.875rem] text-[#7C5F42]">
+            {agent.role}{agent.role && agent.agencyName ? " at " : ""}{agent.agencyName}
+          </p>
+        )}
 
-        <div className="flex items-center gap-1.5 mt-2">
-          <Star size={16} className="fill-[#F5551A] text-[#F5551A]" />
-          <span className="font-medium text-[0.875rem] text-[#342511]">
-            {agent.rating || 4.9}
-          </span>
-          <span className="text-[0.875rem] text-[#8B6F54]">
-            ({agent.reviewsCount || 64} reviews)
-          </span>
-        </div>
+        {typeof agent.rating === "number" && (
+          <div className="flex items-center gap-1.5 mt-2">
+            <Star size={16} className="fill-[#F5551A] text-[#F5551A]" />
+            <span className="font-medium text-[0.875rem] text-[#342511]">{agent.rating}</span>
+            {typeof agent.reviewsCount === "number" && (
+              <span className="text-[0.875rem] text-[#8B6F54]">({agent.reviewsCount} reviews)</span>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center gap-1.5 mt-3 py-1 px-3 rounded-full bg-white shadow-sm border border-[#EDE8E4]">
           <img src={Verify} alt="Verified" className="h-4 w-auto" />

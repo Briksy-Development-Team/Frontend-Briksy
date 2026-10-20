@@ -21,6 +21,12 @@ const organizationTypeForResult = (resultType: ResultType, tab?: string | null, 
   return "trades-professionals";
 };
 
+const agentOrganizationType = (tab: string | null) => {
+  if (tab === "buyer") return "buyers-agent";
+  if (tab === "real-estate") return "real-estate-agent";
+  return undefined;
+};
+
 const organizationSort = (sort?: string) =>
   sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
 
@@ -73,6 +79,10 @@ export default function ResultsView({
     setError(null);
     const query = propertyQueryToParams(searchParams);
     const serviceSlug = searchParams.get("service_slug") || undefined;
+    const categoryId = searchParams.get("type");
+    const organizationType = categoryId === "agents"
+      ? agentOrganizationType(searchParams.get("tab"))
+      : organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab"));
     const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" || selectedSub === "Lease" ? "rent" : undefined);
     const commercialStatus = query.transaction_status || (resultType === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(selectedSub) ? (selectedSub.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED") : undefined);
     const propertyStatus = query.transaction_status || (resultType === "property" && selectedSub === "Sold" ? "SOLD" : undefined);
@@ -81,7 +91,7 @@ export default function ResultsView({
           getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, verified_only: 1 }),
           getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
         ])
-      : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab")), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+      : getOrganizations({ type: organizationType, search: query.search, service_slug: categoryId === "traders" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "commercial" || resultType === "auction") {
@@ -89,8 +99,14 @@ export default function ResultsView({
         setNewlyProperties(r[1].data);
         setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
       } else {
-        setOrganizations(r.data);
-        setTotal(r.data.length);
+        const agentOrganizations = categoryId === "agents"
+          ? r.data.filter((organization: PublicOrganization) =>
+              organization.type?.module === "Agents" ||
+              ["buyers-agent", "real-estate-agent"].includes(organization.type?.slug || ""),
+            )
+          : r.data;
+        setOrganizations(agentOrganizations);
+        setTotal(agentOrganizations.length);
       }
     }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
       .finally(() => { if (active) setLoading(false); });
