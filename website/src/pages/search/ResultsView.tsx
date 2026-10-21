@@ -10,7 +10,7 @@ import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 import MapSplitView from "./MapSplitView";
 import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
-import SwiperScroll from "../../components/swiper/SwiperScroll";
+import { SwiperSection } from "../../components/swiper";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
   if (resultType === "builder" && agentType) return agentType;
@@ -21,34 +21,30 @@ const organizationTypeForResult = (resultType: ResultType, tab?: string | null, 
   return "trades-professionals";
 };
 
+const agentOrganizationType = (tab: string | null) => {
+  if (tab === "buyer") return "buyers-agent";
+  if (tab === "real-estate") return "real-estate-agent";
+  return undefined;
+};
+
 const organizationSort = (sort?: string) =>
   sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
-
-function SectionSwiper({ children }: { children: React.ReactNode[] }) {
-  return (
-    <SwiperScroll spaceBetween={16} slideClassName="!w-[20.5rem]">
-      {children}
-    </SwiperScroll>
-  );
-}
 
 function Section<T extends { id: string | number }>({ title, count, items, Card, onViewMore }: {
   title: string; count: number; items: T[]; Card: React.ComponentType<{ item: T }>; onViewMore: () => void;
 }) {
   return (
-    <section>
-      <div className="flex items-center justify-between py-2">
-        <h2 className="text-[1.5rem] font-medium tracking-tight text-[#342511]">{title}</h2>
-        {items.length > 4 && (
-          <button type="button" onClick={onViewMore} className="text-[0.75rem] text-[#8B6F54] transition-colors hover:text-[#342511]">
-            View more ({count})
-          </button>
-        )}
-      </div>
-      <SectionSwiper>
-        {items.slice(0, 10).map((item) => <div key={item.id}><Card item={item} /></div>)}
-      </SectionSwiper>
-    </section>
+    <SwiperSection
+      title={title}
+      variant="search"
+      count={count}
+      showViewAll={items.length > 4}
+      onViewAll={onViewMore}
+      items={items.slice(0, 10)}
+      slideClassName="!w-[20.5rem]"
+      spaceBetween={16}
+      renderItem={(item) => <div key={item.id}><Card item={item} /></div>}
+    />
   );
 }
 
@@ -73,6 +69,10 @@ export default function ResultsView({
     setError(null);
     const query = propertyQueryToParams(searchParams);
     const serviceSlug = searchParams.get("service_slug") || undefined;
+    const categoryId = searchParams.get("type");
+    const organizationType = categoryId === "agents"
+      ? agentOrganizationType(searchParams.get("tab"))
+      : organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab"));
     const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" || selectedSub === "Lease" ? "rent" : undefined);
     const commercialStatus = query.transaction_status || (resultType === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(selectedSub) ? (selectedSub.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED") : undefined);
     const propertyStatus = query.transaction_status || (resultType === "property" && selectedSub === "Sold" ? "SOLD" : undefined);
@@ -81,7 +81,7 @@ export default function ResultsView({
           getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, verified_only: 1 }),
           getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
         ])
-      : getOrganizations({ type: organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab")), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+      : getOrganizations({ type: organizationType, search: query.search, service_slug: categoryId === "traders" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
       if (!active) return;
       if (resultType === "property" || resultType === "commercial" || resultType === "auction") {
@@ -89,8 +89,14 @@ export default function ResultsView({
         setNewlyProperties(r[1].data);
         setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
       } else {
-        setOrganizations(r.data);
-        setTotal(r.data.length);
+        const agentOrganizations = categoryId === "agents"
+          ? r.data.filter((organization: PublicOrganization) =>
+              organization.type?.module === "Agents" ||
+              ["buyers-agent", "real-estate-agent"].includes(organization.type?.slug || ""),
+            )
+          : r.data;
+        setOrganizations(agentOrganizations);
+        setTotal(agentOrganizations.length);
       }
     }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
       .finally(() => { if (active) setLoading(false); });
@@ -101,7 +107,10 @@ export default function ResultsView({
   const builders = organizations.map(organizationToBuilder);
   const propertyCards = properties.map(propertyToCard);
   const displayItems = resultType === "trader" ? traders : resultType === "builder" ? builders : propertyCards;
-  const selectedHeading = selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : resultType === "auction" ? "Auctions" : "Real Estate");
+  const backendAgentTypeName = organizations.find((organization) => organization.type?.module === "Agents")?.type?.name;
+  const selectedHeading = resultType === "builder" && backendAgentTypeName
+    ? backendAgentTypeName
+    : selectedSub || (resultType === "trader" ? "Professionals" : resultType === "commercial" ? "Commercial Real Estate" : resultType === "auction" ? "Auctions" : "Real Estate");
 
   const hasLoadedItems = resultType === "property" || resultType === "commercial" || resultType === "auction"
     ? properties.length > 0

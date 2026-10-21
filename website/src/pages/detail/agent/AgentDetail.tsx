@@ -6,123 +6,18 @@ import { getProperties } from "../../../api/property/property.api";
 import { propertyToCard } from "../../../api/public.mappers";
 import type { Property } from "../../../types/property";
 import { AgentSidebar } from "./components/AgentSidebar";
-import { AgentPerformance } from "./components/AgentPerformance";
 import { AgentProperties } from "./components/AgentProperties";
 import { AgentAbout } from "./components/AgentAbout";
 import { AgentMobileHeader } from "./components/AgentMobileHeader";
-import Reviews from "../../../components/reviews/Reviews";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts } from "../shared";
+import { SimilarSection } from "../shared";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
-import defaultReviewer from "../../../assets/agent/reviewer_avatar.png";
 
 type HttpLikeError = Error & { response?: { status?: number } };
-
-// Fallback data centralized in the main detail page as requested
-const DEFAULT_PERFORMANCE = {
-  medianSoldPrice: "$809k",
-  medianDaysAdvertised: 42,
-  propertiesSoldLead: 126,
-  propertiesSoldSecondary: 44,
-};
-
-const DEFAULT_BADGES = ["2025 Top Agent", "14 years experience"];
-
-const getDefaultProperties = (agentName: string): Property[] => [
-  {
-    id: "agent-prop-1",
-    title: "Home in Bondi Beach",
-    address: "1702/433 Kent Street, Sydney NSW",
-    location: "Bondi Beach, Sydney",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80",
-    price: 10000,
-    beds: 3,
-    baths: 2,
-    sqm: 135,
-    posterName: agentName,
-    posterAvatar: defaultAvatar,
-    badge: "Trending",
-    lat: -33.8915,
-    lng: 151.2767,
-    isFavourite: false,
-  },
-  {
-    id: "agent-prop-2",
-    title: "Luxury Beachfront Apartment",
-    address: "88 Campbell Parade, Bondi NSW",
-    location: "Bondi Beach, Sydney",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop&q=80",
-    price: 18500,
-    beds: 3,
-    baths: 2,
-    sqm: 140,
-    posterName: agentName,
-    posterAvatar: defaultAvatar,
-    badge: "Trending",
-    lat: -33.892,
-    lng: 151.275,
-    isFavourite: false,
-  },
-  {
-    id: "agent-prop-3",
-    title: "Contemporary Villa with Pool",
-    address: "12 Ramsgate Avenue, North Bondi NSW",
-    location: "North Bondi, Sydney",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&auto=format&fit=crop&q=80",
-    price: 24000,
-    beds: 4,
-    baths: 3,
-    sqm: 210,
-    posterName: agentName,
-    posterAvatar: defaultAvatar,
-    badge: "Trending",
-    lat: -33.89,
-    lng: 151.279,
-    isFavourite: false,
-  },
-];
-
-const getDefaultAbout = (agentName: string) =>
-  `Low-maintenance living with open-plan design and secure parking. Dedicated and experienced, ${agentName} offers unparalleled service across residential property sales, project marketing, and expert negotiations. With deep local market insight and a commitment to transparent communication, clients receive tailored advice that delivers exceptional outcomes at every stage of the property journey.`;
-
-const getDefaultReviews = (agentName: string) => ({
-  overall: 4.8,
-  count: 123,
-  distribution: { 5: 86, 4: 11, 3: 2, 2: 1, 1: 0 },
-  list: [
-    {
-      id: "rev-1",
-      author: "Priya & Marcus",
-      avatar: defaultReviewer,
-      date: "May 2026",
-      rating: 5,
-      review:
-        "“He told us to hold off six weeks and repaint rather than list immediately. Cost us $4k and added a lot more than that at auction. The advice was against his own short-term interest and that told us everything.”",
-    },
-    {
-      id: "rev-2",
-      author: "Daniel & Sarah Jenkins",
-      avatar: defaultReviewer,
-      date: "April 2026",
-      rating: 5,
-      review:
-        `“Exceptional market knowledge and honest guidance from ${agentName}. Guided our auction campaign smoothly, keeping us informed daily. Achieved $120k above our reserve price.”`,
-    },
-    {
-      id: "rev-3",
-      author: "Catherine O'Connor",
-      avatar: defaultReviewer,
-      date: "March 2026",
-      rating: 5,
-      review:
-        "“Transparent, professional, and went the extra mile to coordinate pre-settlement inspections. Would recommend without hesitation.”",
-    },
-  ],
-});
 
 /**
  * Dedicated Agent Details Page matching Figma node 4359-2061.
@@ -247,7 +142,7 @@ export const AgentDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-[#342511]">
+      <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">
         Loading agent profile...
       </div>
     );
@@ -255,30 +150,26 @@ export const AgentDetail = () => {
 
   if (error || !organization) {
     return (
-      <div className="min-h-screen bg-[#F8F4EE] px-[5%] pt-32 text-[#342511]">
+      <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">
         {error || "Agent not found."}
       </div>
     );
   }
 
-  // Fallback data passed from main controller
   const agentName = organization.name;
-  const propertiesList = properties.length > 0 ? properties : getDefaultProperties(agentName);
-  const totalPropertiesCount = propertyCount || propertiesList.length || 169;
-  const aboutDescription = organization.description?.trim() || getDefaultAbout(agentName);
-  const reviewsData = getDefaultReviews(agentName);
+  const propertiesList = properties;
+  const aboutDescription = organization.description?.trim();
 
   const agentModel = {
     id: organization.id,
     name: agentName,
-    role: organization.type?.name || "Selling Principal",
-    agencyName: organization.type?.label || "Ray White - Hervey Bay",
+    role: organization.type?.name,
+    agencyName: organization.type?.label,
     agencyUrl: organization.website || undefined,
     bannerImage: organization.banner_url || defaultBanner,
     avatar: organization.logo_url || defaultAvatar,
-    rating: organization.rating || 4.9,
-    reviewsCount: organization.reviews_count || 64,
-    badges: DEFAULT_BADGES,
+    rating: organization.rating,
+    reviewsCount: organization.reviews_count,
     phone: organization.contact?.phone,
     email: organization.contact?.email,
     is_favourite: organization.is_favourite,
@@ -286,8 +177,8 @@ export const AgentDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F4EE] pb-16 font-helvetica md:pt-20">
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12 pt-4 md:py-6">
+    <div className="min-h-screen  font-helvetica md:pt-20">
+      <main className="flex-1 max-w-[2000px] w-full mx-auto  sm:px-8 lg:px-20 pb-12  md:py-6">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[
@@ -301,7 +192,7 @@ export const AgentDetail = () => {
         <AgentMobileHeader agent={agentModel} />
 
         {/* 2-Column Layout matching PropertyDetail gap-12 */}
-        <div className="mt-4 flex flex-col items-start gap-12 md:mt-8 lg:flex-row">
+        <div className="mt-4 flex flex-col items-start px-4 gap-12 md:mt-8 lg:flex-row">
           {/* Left Column (Sticky Sidebar on Desktop matching 360px) */}
           <aside className="hidden w-full md:flex flex-col lg:sticky lg:top-28 lg:w-[360px] shrink-0">
             <AgentSidebar
@@ -314,59 +205,35 @@ export const AgentDetail = () => {
 
           {/* Right Column (Content matching gap-8) */}
           <div className="flex-1 min-w-0 flex flex-col gap-8 w-full pt-0 md:pt-2">
-            {/* 1. Performance Snapshot */}
-            <AgentPerformance
-              agentName={agentName}
-              snapshot={DEFAULT_PERFORMANCE}
-            />
-
-            {/* 2. Properties with Map visual & SwiperScroll */}
+            {/* Organization-linked properties from the backend */}
             <AgentProperties
               agentName={agentName}
               homes={propertiesList}
-              totalCount={totalPropertiesCount}
+              totalCount={propertyCount}
               slug={organization.slug}
             />
 
-            {/* 3. About Section */}
-            <AgentAbout
-              agentName={agentName}
-              description={aboutDescription}
-            />
+            {aboutDescription && (
+              <AgentAbout agentName={agentName} description={aboutDescription} />
+            )}
 
-            {/* 4. Shorts Section */}
-            <div id="shorts">
-              <DetailShorts />
-            </div>
-
-            {/* 5. Shared Reviews Component */}
-            <Reviews
-              name={agentName}
-              data={reviewsData}
-            />
           </div>
         </div>
 
-      {/* Fraud notice & reporting */}
-      <div className="mt-12 w-full flex flex-col items-center justify-center gap-4 px-[3%]">
-        <FraudBanner className="w-full md:w-[60%] lg:w-[50%]" />
-        <div className="text-[0.875rem] text-[#342511] flex items-center gap-1.5 mt-2">
-          <span>See an issue?</span>
-          <button
-            onClick={openGeneralEnquiryModal}
-            className="underline font-medium hover:text-black transition-colors cursor-pointer"
-          >
-            Report this listing
-          </button>
-        </div>
-      </div>
-    </main>
+        {/* Similar Agents Section */}
+        <SimilarSection type="agent" currentId={id} className="px-4 sm:px-0" />
 
-      {/* Mobile Sticky Action */}
-      <MobileStickyAction
-        price="Appraisal"
-        onEnquiry={openAppraisalModal}
-      />
+      </main>
+      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
+        <FraudBanner />
+      </div>
+      <div className="sticky bottom-0 z-20">
+
+        <MobileStickyAction
+          price="Appraisal"
+          onEnquiry={openAppraisalModal}
+        />
+      </div>
 
       {/* Enquiry / Appraisal Modal */}
       <EnquiryModal

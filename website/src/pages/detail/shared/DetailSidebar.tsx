@@ -9,9 +9,9 @@ export interface NeedHelpItem {
 }
 
 const DEFAULT_NEED_HELP_ITEMS: NeedHelpItem[] = [
-  { label: "Find a Buyer's Agent", href: "/agents" },
-  { label: "Find a Mortgage Broker", href: "/professionals?category=broker" },
-  { label: "Find a Conveyancer", href: "/professionals?category=conveyancer" },
+  { label: "Find a Buyer's Agent", href: "/agents?tab=buyers-agent" },
+  { label: "Find a Mortgage Broker", href: "/professionals?tab=mortgage-brokers&service_slug=mortgage-brokers" },
+  { label: "Find a Conveyancer", href: "/professionals?tab=conveyancers&service_slug=conveyancers" },
 ];
 
 /**
@@ -179,6 +179,9 @@ export interface AuctionAboveProps {
   venueAddress?: string;
   auctionDate?: string;
   auctionTime?: string;
+  auctioneer?: string;
+  auctionContact?: string;
+  auctionDescription?: string;
   organizationName?: string;
   buttonText?: string;
   onEnquiry?: () => void;
@@ -190,6 +193,9 @@ export function AuctionAboveCard({
   venueAddress,
   auctionDate,
   auctionTime,
+  auctioneer,
+  auctionContact,
+  auctionDescription,
   organizationName,
   buttonText = "Send a enquiry",
   onEnquiry,
@@ -242,7 +248,25 @@ export function AuctionAboveCard({
               </span>
             </div>
           )}
+
+          {auctioneer && (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[12px] font-normal text-[#98928E]">Auctioneer</span>
+              <span className="text-[14px] font-medium text-black leading-tight">{auctioneer}</span>
+            </div>
+          )}
+
+          {auctionContact && (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[12px] font-normal text-[#98928E]">Auction Contact</span>
+              <span className="text-[14px] font-medium text-black leading-tight">{auctionContact}</span>
+            </div>
+          )}
         </div>
+
+        {auctionDescription && (
+          <p className="text-[13px] leading-[19px] text-[#342511]">{auctionDescription}</p>
+        )}
       </div>
 
       <button

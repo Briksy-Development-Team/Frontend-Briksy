@@ -16,31 +16,31 @@ export function ServiceMobileHeader({
 }) {
   const navigate = useNavigate();
   return (
-    <div className="w-full md:hidden mb-8">
+    <div className="w-full  md:hidden mb-8">
       {/* Banner */}
       <div
         className="relative h-[300px] -mx-[3%] bg-[#E2CBB3]"
         style={{ width: "calc(100% + 6%)" }}
       >
         <SafeImage
-            src={org.banner_url || ''}
-            alt="Banner"
-            className="w-full h-full object-cover"
-          />
+          src={org.banner_url || ''}
+          alt="Banner"
+          className="w-full h-full object-cover"
+        />
         <div className="absolute top-4 inset-x-0 px-[3%] flex justify-between">
-          <button 
+          <button
             onClick={() => {
               if (window.history.length > 1) {
                 navigate(-1);
               } else {
                 navigate("/");
               }
-            }} 
+            }}
             className={circleBtn}
           >
             <ChevronLeft size={20} />
           </button>
-          <div className="flex items-center gap-3 pointer-events-auto">
+          <div className="flex items-center gap-3 pointer-events-auto ">
             <button className="w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-brown hover:bg-gray-50">
               <Share size={18} />
             </button>
@@ -56,15 +56,15 @@ export function ServiceMobileHeader({
           </div>
         </div>
       </div>
-
-      <SafeImage
-        src={org.logo_url || ServicePlaceholder}
-        alt={org.name}
-        className="relative -mt-16 ml-0 w-[120px] h-[120px] rounded-full object-cover border-[5px] border-white bg-white shadow-xl"
-      />
-
+      <div className="px-4 ">
+        <SafeImage
+          src={org.logo_url || ServicePlaceholder}
+          alt={org.name}
+          className="relative -mt-16 ml-0 w-[120px] h-[120px]  rounded-full object-cover border-[5px] border-white bg-white shadow-xl"
+        />
+      </div>
       {/* Info */}
-      <div className=" mt-4 flex flex-col gap-2 text-primary-brown">
+      <div className=" mt-4 flex flex-col gap-2 px-4 text-primary-brown">
         <h1 className="text-xl font-bold">{org.name}</h1>
         <p className="text-sm">{org.type?.name}</p>
 

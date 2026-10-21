@@ -11,7 +11,6 @@ export type SeekerCollection = {
   is_default?: boolean;
   contains_property?: boolean;
   contains_item?: boolean;
-  // ponytail: backend must return this; if absent, card shows placeholder. Upgrade: add withCount('items:media') in Laravel.
   preview_images?: string[];
   created_at?: string | null;
   updated_at?: string | null;
@@ -35,7 +34,7 @@ export type CollectionTargetType = "property" | "service" | "organization";
 
 export const getCollectionsForTarget = async (type: CollectionTargetType, targetId: string) =>
   (await api.get<{ data: SeekerCollection[] }>("/seeker/collections", {
-    params: { target_type: type, target_id: targetId },
+    params: { target_type: type, target_id: targetId, include: "preview_images" },
   })).data;
 
 export const createCollection = async (name: string) =>

@@ -40,9 +40,7 @@ export function AgentSidebar({
   onEnquiry,
   onCallAgency,
 }: AgentSidebarProps) {
-  const rating = agent.rating || 4.9;
-  const reviewsCount = agent.reviewsCount || 64;
-  const badges = agent.badges || ["2025 Top Agent", "14 years experience"];
+  const hasRating = typeof agent.rating === "number";
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -99,33 +97,40 @@ export function AgentSidebar({
             <h1 className="text-[1.375rem] font-medium text-[#342511] leading-tight">
               {agent.name}
             </h1>
-            <p className="text-[0.875rem] text-[#7C5F42]">
-              {agent.role || "Selling Principal"} at{" "}
-              {agent.agencyUrl ? (
+            {(agent.role || agent.agencyName) && (
+              <p className="text-[0.875rem] text-[#7C5F42]">
+                {agent.role}{agent.role && agent.agencyName ? " at " : ""}
+                {agent.agencyName && (agent.agencyUrl ? (
                 <a
                   href={agent.agencyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline hover:text-[#342511] transition-colors"
                 >
-                  {agent.agencyName || "Ray White - Hervey Bay"}
+                  {agent.agencyName}
                 </a>
               ) : (
-                <span className="underline">{agent.agencyName || "Ray White - Hervey Bay"}</span>
-              )}
-            </p>
+                <span className="underline">{agent.agencyName}</span>
+              ))}
+              </p>
+            )}
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1.5 text-[0.875rem] text-[#342511]">
-            <Star size={18} className="fill-[#F5551A] text-[#F5551A]" />
-            <span className="font-medium">{rating}</span>
-            <span className="text-[#8B6F54]">({reviewsCount} reviews)</span>
-          </div>
+          {hasRating && (
+            <div className="flex items-center gap-1.5 text-[0.875rem] text-[#342511]">
+              <Star size={18} className="fill-[#F5551A] text-[#F5551A]" />
+              <span className="font-medium">{agent.rating}</span>
+              {typeof agent.reviewsCount === "number" && (
+                <span className="text-[#8B6F54]">({agent.reviewsCount} reviews)</span>
+              )}
+            </div>
+          )}
 
           {/* Badges / Experience */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
-            {badges.map((badge, idx) => (
+          {agent.badges && agent.badges.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-1">
+              {agent.badges.map((badge, idx) => (
               <span
                 key={idx}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#F8F4EE] text-[#8B6F54] text-[0.75rem] font-medium border border-[#EDE8E4]"
@@ -133,8 +138,9 @@ export function AgentSidebar({
                 {idx === 0 && <Award size={14} className="text-[#8B6F54]" />}
                 {badge}
               </span>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Share & Favorite buttons */}
           <div className="flex items-center gap-3 mt-3">

@@ -3,6 +3,13 @@ import { ShieldCheck, ListTree, Star } from "lucide-react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { SafeImage } from "../../../../components/custom/SafeImage";
 import NearbySchools from "../../shared/NearbySchools";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bathtub01Icon,
+  BedDoubleIcon,
+  Car01Icon,
+  House01Icon,
+} from "@hugeicons/core-free-icons";
 
 export const PropertyTitle = ({
   title,
@@ -26,33 +33,43 @@ export const PropertyTitle = ({
   organizationName?: string | null;
 }) => {
   const specs = [
-    beds ? `${beds} Bed${Number(beds) === 1 ? "" : "s"}` : null,
-    baths ? `${baths} Bath${Number(baths) === 1 ? "" : "s"}` : null,
-    car ? `${car} Car` : null,
-    sqm ? `${sqm} sqm` : null,
-  ].filter(Boolean);
+    { icon: Bathtub01Icon, value: baths },
+    { icon: BedDoubleIcon, value: beds },
+    { icon: Car01Icon, value: car },
+    { icon: House01Icon, value: sqm ? `${sqm}m²` : null },
+  ].filter(({ value }) => value != null && value !== "" && value !== 0);
 
   return (
     <div className="flex flex-col gap-1 w-full">
-      <h1 className="text-[24px] md:text-[30px] font-medium leading-[34px] md:leading-[38px] tracking-[-0.03em] text-[#342511]">
+      <h1 className="text-[24px] md:text-[30px] font-medium leading-[34px] md:leading-[38px] tracking-[-0.03em] text-primary-brown">
         {title}
       </h1>
 
-      {specs.length > 0 && (
-        <p className="text-[14px] font-medium leading-[20px] text-[#342511]/75">
-          {specs.join(" \u00A0•\u00A0 ")}
-        </p>
-      )}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-primary-brown">
+        {specs.map(({ icon, value }, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <HugeiconsIcon icon={icon} size={23} strokeWidth={1.7} />
+            <span className="text-base font-medium">{value}</span>
+          </div>
+        ))}
+
+        {/* {openHouse && (
+          <>
+            <span className="text-[#8C8370]">•</span>
+            <span className="text-base font-medium">Open House</span>
+          </>
+        )} */}
+      </div>
 
       {(rating || organizationName) && (
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[0.875rem] text-[#8C8370] font-medium">
           {rating ? (
-            <div className="flex items-center gap-1 text-[#342511]">
+            <div className="flex items-center gap-1 text-primary-brown">
               <Star
                 className="text-[#F05537] fill-[#F05537] -mt-0.5"
                 size={14}
               />
-              <span className="font-semibold text-[#342511]">{rating}</span>
+              <span className="font-semibold text-primary-brown">{rating}</span>
               <span className="text-[#8C8370] font-normal">
                 ({ratingCount || reviewsCount || 0} reviews)
               </span>
@@ -94,10 +111,10 @@ export const PropertyAgentCard = ({ agent }: { agent: any }) => {
           )}
         </div>
         <div className="flex flex-col min-w-0">
-          <h4 className="text-[16px] font-bold text-[#342511] leading-tight truncate">
+          <h4 className="text-[16px] font-bold text-primary-brown leading-tight truncate">
             {agent.name}
           </h4>
-          <div className="flex items-center gap-1.5 text-[14px] text-[#342511]/80 font-normal mt-0.5">
+          <div className="flex items-center gap-1.5 text-[14px] text-primary-brown0 font-normal mt-0.5">
             <span>{agent.role || "Property Management"}</span>
             {agent.since && (
               <>
@@ -111,7 +128,7 @@ export const PropertyAgentCard = ({ agent }: { agent: any }) => {
 
       {agent.verified && (
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#EDE8E4] text-[#342511] text-[13px] font-medium shrink-0 self-start sm:self-auto">
-          <ShieldCheck size={18} className="text-[#342511]" />
+          <ShieldCheck size={18} className="text-primary-brown" />
           <span>Verified [ Builder / Org. ]</span>
         </div>
       )}
@@ -134,9 +151,8 @@ export const PropertyAbout = ({ about }: { about?: string | null }) => {
         About this property
       </h2>
       <p
-        className={`text-[15px] font-normal leading-[26px] text-[#222222] whitespace-pre-line ${
-          !expanded && isLong ? "line-clamp-4" : ""
-        }`}
+        className={`text-[15px] font-normal leading-[26px] text-[#222222] whitespace-pre-line ${!expanded && isLong ? "line-clamp-4" : ""
+          }`}
       >
         {about}
       </p>

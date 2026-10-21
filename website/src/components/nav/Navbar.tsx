@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Globe, Menu, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Bell, ChevronDown, Globe, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NavSearchButton, SearchOverlay } from "./NavSearchBar";
 import LanguageModal from "./LanguageModal.tsx";
@@ -8,22 +8,25 @@ import Briskybrown from "../../assets/logo/briskybrown.svg";
 import { useAuth } from "../../auth/AuthContext";
 import NavDropdown from "./NavDropdown";
 import { useNavMenu } from "../../hooks/useNavMenu";
+import { getSeekerNotificationUnreadCount } from "../../api/seeker/seeker.api";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
   setMode: (mode: "collapsed" | "search" | "ai") => void;
   hasHero?: boolean;
   hideOnMobile?: boolean;
+  visibilityClass?: string;
 };
 
 type Lang = { label: string; region: string };
 
-const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
+const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: NavbarProps) => {
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [openLabel, setOpenLabel] = useState<string | null>(null);
   const [selectedLang, setSelectedLang] = useState<Lang>({ label: "English", region: "UK" });
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const navMenu = useNavMenu();
   const openItem = navMenu.find((i) => i.label === openLabel) ?? null;
@@ -31,11 +34,23 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const isSearchOpen = mode !== "collapsed";
+
+  // Hover helpers: small delay so the dropdown doesn't flicker when the mouse moves between tab and panel
+  const cancelClose = () => clearTimeout(closeTimer.current);
+  const openMenu = (label: string | null) => {
+    cancelClose();
+    setOpenLabel(label);
+  };
+  const closeMenu = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => setOpenLabel(null), 150);
+  };
 
   useEffect(() => {
     setMobileOpen(false);
-    setOpenLabel(null);
+    openMenu(null);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -44,6 +59,16 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setUnreadNotifications(0);
+      return;
+    }
+    getSeekerNotificationUnreadCount()
+      .then((response) => setUnreadNotifications(response.data?.count ?? 0))
+      .catch(() => setUnreadNotifications(0));
+  }, [isAuthenticated, location.pathname]);
 
   const isNavItemActive = (to: string) => {
     const url = new URL(to, window.location.origin);
@@ -63,43 +88,49 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
   return (
     <>
       <nav
-        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b border-[#d8d8d8] bg-primary-brown text-white ${hideOnMobile ? "hidden lg:block" : ""
+        className={`fixed left-0 right-0 top-0 z-50 h-20 border-b max-w-[2000px] mx-auto border-[#d8d8d8] bg-primary-brown text-white ${visibilityClass ?? (hideOnMobile ? "hidden md:block" : "")
           }`}
       >
         <div className="flex h-20 items-center justify-between px-2 sm:px-4 lg:px-6">
-          <Link to="/" onClick={() => setOpenLabel(null)} className="shrink-0 lg:w-[13.75rem]">
+          <Link to="/" onClick={() => openMenu(null)} className="shrink-0 lg:w-[13.75rem]">
             <img loading="eager" src={Briskybrown} alt="Briksy" className="h-12 w-auto" />
           </Link>
 
           <div className="hidden flex-1 items-center justify-center gap-4 lg:flex">
-            {navMenu.map((item) => (
-              <div key={item.label} className="relative">
-                {item.children.length > 0 ? (
-                  <button
-                    type="button"
-                    onClick={() => setOpenLabel((prev) => (prev === item.label ? null : item.label))}
-                    className={`flex items-center gap-1 whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white cursor-pointer ${openLabel === item.label ||
-                      isNavItemActive(item.to) ||
-                      item.children.some((c) => isNavItemActive(c.to))
-                      ? "border-b border-white text-white font-medium"
-                      : ""
-                      }`}
-                  >
-                    <span>{item.label}</span>
-                    <span className="text-xs">{openLabel === item.label ? "−" : "+"}</span>
-                  </button>
-                ) : (
-                  <Link
-                    to={item.to}
-                    onClick={() => setOpenLabel(null)}
-                    className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${isNavItemActive(item.to) ? "border-b border-white text-white font-medium" : ""
-                      }`}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </div>
-            ))}
+            {navMenu.map((item) => {
+              const hasChildren = item.children.length > 0;
+              const isActive = isNavItemActive(item.to) || item.children.some((c) => isNavItemActive(c.to));
+
+              return (
+                <div
+                  key={item.label}
+                  className="relative flex h-20 items-center"
+                  onMouseEnter={() => openMenu(hasChildren ? item.label : null)}
+                  onMouseLeave={closeMenu}
+                >
+                  {hasChildren ? (
+                    <div
+                      className={`flex cursor-default items-center gap-1 whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${openLabel === item.label || isActive ? "border-b border-white text-white font-medium" : ""
+                        }`}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform duration-300 ${openLabel === item.label ? "rotate-180" : ""}`}
+                      />
+                    </div>
+                  ) : (
+                    <Link
+                      to={item.to}
+                      className={`whitespace-nowrap py-1 text-sm font-normal text-white/90 transition hover:text-white ${isActive ? "border-b border-white text-white font-medium" : ""
+                        }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div className="flex shrink-0 items-center justify-end gap-5 lg:w-[13.75rem]">
@@ -115,7 +146,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
             )}
             <button
               onClick={() => {
-                setOpenLabel(null);
+                openMenu(null);
                 setLangModalOpen(true);
               }}
               className="hidden transition hover:opacity-70 lg:block"
@@ -126,6 +157,12 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
             <div className="hidden lg:block">
               <ProfileDropdown />
             </div>
+            {isAuthenticated && (
+              <button type="button" onClick={() => navigate("/profile/notifications")} className="relative hidden lg:block text-white transition hover:opacity-70" aria-label="Notifications">
+                <Bell size={18} />
+                {unreadNotifications > 0 && <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E86749] px-1 text-[10px] font-bold text-white">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
+              </button>
+            )}
             <button
               onClick={() => setMobileOpen((v) => !v)}
               className="p-1.5 text-white transition hover:opacity-70 lg:hidden"
@@ -138,7 +175,12 @@ const Navbar = ({ mode, setMode, hideOnMobile = false }: NavbarProps) => {
       </nav>
 
       {/* Mounted outside <nav> so it escapes the navbar stacking context */}
-      <NavDropdown item={openItem} onClose={() => setOpenLabel(null)} />
+      <NavDropdown
+        item={openItem}
+        onMouseEnter={cancelClose}
+        onMouseLeave={closeMenu}
+        onClose={() => openMenu(null)}
+      />
 
       {/* Mobile drawer */}
       <div

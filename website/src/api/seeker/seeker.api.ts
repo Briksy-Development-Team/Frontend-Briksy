@@ -83,6 +83,7 @@ export interface InquiryItem {
   lead_source: string | null
   status: string
   subject: string
+  interested_in: string[]
   message: string
   seeker: {
     name: string | null
@@ -120,6 +121,21 @@ export interface InquiryItem {
   }
   created_at?: string
   updated_at?: string
+}
+
+export interface SeekerNotification {
+  id: string
+  type: string
+  title: string | null
+  message: string | null
+  entity_type: string | null
+  entity_id: string | null
+  action_url: string | null
+  priority: string
+  image_url?: string | null
+  metadata?: Record<string, unknown>
+  created_at: string | null
+  read_at: string | null
 }
 
 export interface PropertyListing {
@@ -226,6 +242,24 @@ export const removeSeekerFavorite = async (favoriteId: string): Promise<void> =>
 export const getSeekerInquiries = async (): Promise<ApiEnvelope<InquiryItem[]>> => {
   const response = await api.get<ApiEnvelope<InquiryItem[]>>('/seeker/inquiries')
   return response.data
+}
+
+export const getSeekerNotifications = async (params: { unread?: boolean; per_page?: number } = {}): Promise<ApiEnvelope<SeekerNotification[]>> => {
+  const response = await api.get<ApiEnvelope<SeekerNotification[]>>('/seeker/notifications', { params })
+  return response.data
+}
+
+export const getSeekerNotificationUnreadCount = async (): Promise<ApiEnvelope<{ count: number }>> => {
+  const response = await api.get<ApiEnvelope<{ count: number }>>('/seeker/notifications/unread-count')
+  return response.data
+}
+
+export const markSeekerNotificationRead = async (id: string): Promise<void> => {
+  await api.patch(`/seeker/notifications/${id}/read`)
+}
+
+export const markAllSeekerNotificationsRead = async (): Promise<void> => {
+  await api.patch('/seeker/notifications/read-all')
 }
 
 export const getSeekerProperty = async (propertyId: string): Promise<ApiEnvelope<PropertyListing>> => {

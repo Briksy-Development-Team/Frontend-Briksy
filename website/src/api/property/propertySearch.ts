@@ -18,6 +18,7 @@ export type PropertySearchParams = {
   car_spaces?: number;
   min_land_size?: number;
   max_land_size?: number;
+  has_price?: boolean | number;
   features?: string[];
   page?: number;
   sort?: string;
@@ -127,6 +128,7 @@ export const propertyQueryToParams = (
   car_spaces: queryNumber(query, "car_spaces"),
   min_land_size: queryNumber(query, "min_land_size"),
   max_land_size: queryNumber(query, "max_land_size"),
+  has_price: query.get("has_price") === "1" || query.get("has_price") === "true" || undefined,
   features: query.getAll("features[]").length
     ? query.getAll("features[]")
     : query.getAll("features"),

@@ -10,7 +10,7 @@ export default function MobileStickyAction({
   onEnquiry,
 }: MobileStickyActionProps) {
   return (
-    <div className="md:hidden w-full bg-white border-t border-[#EBE5D9] px-[5%] py-4 flex items-center justify-between">
+    <div className="lg:hidden w-full bg-white border-t border-[#EBE5D9] px-[5%] py-4 flex items-center justify-between">
       {price ? (
         <div className="flex flex-col">
           <span className="text-[1.25rem] font-medium text-primary-brown leading-tight">

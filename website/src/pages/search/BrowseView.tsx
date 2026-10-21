@@ -9,7 +9,7 @@ import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { useResultSearchParams } from "./useResultSearchParams";
 import { propertyQueryToParams } from "../../api/property/propertySearch";
 import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
-import SwiperScroll from "../../components/swiper/SwiperScroll";
+import { SwiperSection } from "../../components/swiper";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
   if (resultType === "builder" && agentType) return agentType;
@@ -22,14 +22,6 @@ const organizationTypeForResult = (resultType: ResultType, tab?: string | null, 
 
 const organizationSort = (sort?: string) =>
   sort === "created_at" || sort === "rating" || sort === "name" || sort === "priority" ? sort : undefined;
-
-function SectionSwiper({ children }: { children: React.ReactNode[] }) {
-  return (
-    <SwiperScroll spaceBetween={16} slideClassName="!w-[20.5rem]">
-      {children}
-    </SwiperScroll>
-  );
-}
 
 function Section<T extends { id: string | number }>({
   title,
@@ -54,27 +46,21 @@ function Section<T extends { id: string | number }>({
   }
 
   return (
-    <section>
-      <div className="flex items-center justify-between py-2">
-        <h2 className=" text-[1.2rem] md:text-[1.5rem] ml-2  font-medium tracking-tight text-primary-brown">{title}</h2>
-        {items.length > 4 && (
-          <button
-            type="button"
-            onClick={onViewMore}
-            className="text-[0.75rem] pr-[3%] text-[#8B6F54] transition-colors hover:text-primary-brown"
-          >
-            View more ({count})
-          </button>
-        )}
-      </div>
-      <SectionSwiper>
-        {items.slice(0, 10).map((item) => (
-          <div key={item.id}>
-            <Card item={item} />
-          </div>
-        ))}
-      </SectionSwiper>
-    </section>
+    <SwiperSection
+      title={title}
+      variant="search"
+      count={count}
+      showViewAll={items.length > 4}
+      onViewAll={onViewMore}
+      items={items.slice(0, 10)}
+      slideClassName="!w-[20.5rem]"
+      spaceBetween={16}
+      renderItem={(item) => (
+        <div key={item.id}>
+          <Card item={item} />
+        </div>
+      )}
+    />
   );
 }
 
@@ -165,6 +151,7 @@ export default function BrowseView({
 
   const allTraders = organizations.filter(o => o.type?.slug === "trades-professionals" || (!o.type?.slug && !o.type?.name)).map(organizationToTrader);
   const allAgenciesAndBuilders = organizations.filter(o => o.type?.module === "Agents" || o.type?.slug === "builders").map(organizationToBuilder);
+  const backendAgentTypeName = organizations.find((organization) => organization.type?.module === "Agents")?.type?.name;
   const allCommercialCards = commercialProperties.map(propertyToCard);
   const newlyCommercialCards = newlyCommercialProperties.map(propertyToCard);
 
@@ -208,14 +195,14 @@ export default function BrowseView({
       {resultType === "builder" && (
         <>
           <Section
-            title={isAgents ? (tab || "Agents") : "Popular Builders"}
+            title={isAgents ? (backendAgentTypeName || tab || "Agents") : "Popular Builders"}
             count={builders.length}
             items={builders.slice(0, 4)}
             Card={BuilderGridCard}
             onViewMore={() => onViewMore("popular")}
           />
           <Section
-            title={isAgents ? `Newly Listed ${tab || "Agents"}` : "Newly Listed Builders"}
+            title={isAgents ? `Newly Listed ${backendAgentTypeName || tab || "Agents"}` : "Newly Listed Builders"}
             count={builders.length}
             items={builders.slice(4)}
             Card={BuilderGridCard}

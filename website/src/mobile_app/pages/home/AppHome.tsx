@@ -8,8 +8,8 @@ export default function AppHome() {
     <div className="min-h-screen  pb-24 font-helvetica select-none">
       <AppHomeHero />
 
-      <div className="relative z-20 -mt-7 bg-[#f0eae5] rounded-t-[28px] px-4 pt-3 space-y-6 max-w-md mx-auto shadow-[-2px_0_12px_rgba(0,0,0,0.06)]">
-        <div className="mx-auto w-18 h-1 rounded-full bg-[#342511]" />
+      <div className="relative z-20 -mt-7 bg-[#f0eae5] rounded-t-[28px] px-4 pt-3 space-y-6 max-w-lg mx-auto shadow-[-2px_0_12px_rgba(0,0,0,0.06)]">
+        <div className="mx-auto w-18 h-1 rounded-full bg-primary-brown" />
 
         <AppVerifiedPromo />
         <AppPopularNearYou />

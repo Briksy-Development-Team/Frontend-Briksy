@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Heart, MapPin, Bed, Bath, Square, Phone, Mail } from 'lucide-react'
+import { MapPin, Bed, Bath, Square, Phone, Mail } from 'lucide-react'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { Bookmark02Icon } from '@hugeicons/core-free-icons'
 import Breadcrumb from '../../components/nav/Breadcrumb'
 import { useAuth } from '../../auth/AuthContext'
 import { isLocalFavorite } from '../../favorites/localFavorites'
@@ -155,7 +157,11 @@ const PropertyDetail = () => {
                 </span>
               ) : (
                 <>
-                  <Heart size={15} className={isFavourite ? 'fill-primary-brown text-primary-brown' : ''} />
+                  <HugeiconsIcon
+                    icon={Bookmark02Icon}
+                    size={16}
+                    className={isFavourite ? 'fill-primary-brown text-primary-brown' : 'text-primary-brown'}
+                  />
                   {isFavourite ? 'Saved property' : 'Save property'}
                 </>
               )}

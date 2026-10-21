@@ -163,8 +163,8 @@ export default function NearbySchools({
               onClick={() => setActiveTab(tab)}
               className={`px-3.5 py-2 rounded-xl text-[14px] font-normal transition-all cursor-pointer ${
                 isActive
-                  ? "bg-[#342511] text-white shadow-xs"
-                  : "bg-white text-[#342511] hover:bg-[#F8F4EE] border border-[#EDE8E4]"
+                  ? "bg-primary-brown text-white shadow-xs"
+                  : "bg-white text-primary-brown hover:bg-[#F8F4EE] border border-[#EDE8E4]"
               }`}
             >
               {tab}
@@ -173,7 +173,6 @@ export default function NearbySchools({
         })}
       </div>
 
-      {/* List matching Figma Node 4539:4049 */}
       <div className="w-full flex flex-col divide-y divide-[#EDE8E4] mt-1">
         {filteredSchools.map((item) => (
           <div
@@ -181,10 +180,10 @@ export default function NearbySchools({
             className="flex flex-col sm:flex-row sm:items-center justify-between py-3 px-1 gap-1.5 sm:gap-4 transition-colors hover:bg-white/40"
           >
             <div className="flex-1 min-w-0 pr-2">
-              <p className="text-[14px] font-medium text-[#342511] truncate">{item.name}</p>
+              <p className="text-[12px] md:text-sm font-medium text-primary-brown truncate">{item.name}</p>
             </div>
 
-            <div className="flex items-center gap-6 sm:gap-12 shrink-0 text-[14px] text-[#8B6F54]">
+            <div className="flex items-center gap-6 sm:gap-12 shrink-0 text-[12px] text-[#8B6F54]">
               <span className="w-24 text-left">{item.level}</span>
               <span className="w-24 text-left">{item.sector}</span>
               <span className="w-16 text-right font-medium">{item.distance}</span>

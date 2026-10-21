@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Bookmark, Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Pencil, Plus, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Bookmark02Icon } from "@hugeicons/core-free-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   createCollection,
@@ -133,7 +135,7 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
         ) : collections.length === 0 ? (
           <div className="py-16 text-center text-primary-light-brown max-w-sm mx-auto">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F8F4EE] text-primary-brown mb-4">
-              <Bookmark size={26} />
+              <HugeiconsIcon icon={Bookmark02Icon} size={26} />
             </div>
             <h3 className="text-base font-medium text-primary-brown mb-1">No collections yet</h3>
             <p className="text-xs text-primary-light-brown mb-5">
@@ -168,24 +170,41 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
 
 // 1 image = full, 2 = side by side, 3 = left tall + right split, 4 = 2x2
 function CollectionMosaic({ imgs }: { imgs: string[] }) {
-  const tiles = imgs.slice(0, 4);
+  const sources = Array.from(new Set(imgs.filter(Boolean))).slice(0, 4);
+  const sourceKey = sources.join("\u0000");
+  const [failureState, setFailureState] = useState<{ key: string; sources: string[] }>({ key: "", sources: [] });
+  const failedSources = failureState.key === sourceKey ? failureState.sources : [];
+
+  const tiles = sources.filter((src) => !failedSources.includes(src));
 
   if (!tiles.length) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#4a2c1a] to-[#8B6340]">
-        <Bookmark size={40} className="text-white/30" />
+        <HugeiconsIcon icon={Bookmark02Icon} size={40} className="text-white/30" />
       </div>
     );
   }
 
+  const layoutClass = tiles.length === 1
+    ? ""
+    : tiles.length === 3
+      ? "grid-cols-2 grid-rows-2"
+      : "grid-cols-2";
+
   return (
-    <div className={`grid h-full w-full gap-px ${tiles.length > 1 ? "grid-cols-2" : ""}`}>
+    <div className={`grid h-full w-full ${layoutClass}`}>
       {tiles.map((src, i) => (
         <img
-          key={i}
+          key={src}
           src={src}
           alt=""
-          className={`h-full w-full object-cover ${tiles.length === 3 && i === 0 ? "row-span-2" : ""}`}
+          onError={() => setFailureState((current) => ({
+            key: sourceKey,
+            sources: current.key === sourceKey && !current.sources.includes(src)
+              ? [...current.sources, src]
+              : current.key === sourceKey ? current.sources : [src],
+          }))}
+          className={`h-full w-full min-h-0 object-cover ${tiles.length === 3 && i === 0 ? "row-span-2" : ""}`}
         />
       ))}
     </div>

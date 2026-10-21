@@ -6,7 +6,10 @@ const CLEAN_ROUTES: Record<string, Record<string, string>> = {
   "/rent": { type: "property", tab: "rent" },
   "/builders": { type: "builder" },
   "/agents": { type: "builder", tab: "agents" },
-  "/professionals": { type: "trader" },
+  // Keep agents and trades separate at the category level. Both use the
+  // trader result type, but `/professionals` must resolve to the Traders tab
+  // instead of falling back to the first trader category (Agents).
+  "/professionals": { type: "traders" },
   "/commercials": { type: "commercial" },
   "/auctions": { type: "auction" },
   "/auction": { type: "auction" },

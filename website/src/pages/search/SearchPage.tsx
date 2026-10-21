@@ -36,11 +36,15 @@ const TAB_MAP: Record<string, FilterTab> = {
   "real-estate": "Real Estate Agents",
   buyer: "Buyer Agents",
   landscaper: "Landscapers",
+  landscapers: "Landscapers",
   concreter: "Concreter",
   fencing: "Fencing",
   mortgage: "Mortgage Brokers",
+  "mortgage-brokers": "Mortgage Brokers",
   conveyancer: "Conveyancers",
+  conveyancers: "Conveyancers",
   "building-pest": "Building & Pest",
+  "building-and-pest": "Building & Pest",
 };
 
 const SORTS = ["featured", "newest", "oldest", "price-low", "price-high"];
@@ -187,7 +191,7 @@ const SearchPage = () => {
           query={queryParam}
           onQueryChange={handleQueryChange}
         />
-        <div className="mt-3 flex flex-col gap-6">{content}</div>
+        <div className="mt-3 flex flex-col ">{content}</div>
       </div>
     </div>
   );

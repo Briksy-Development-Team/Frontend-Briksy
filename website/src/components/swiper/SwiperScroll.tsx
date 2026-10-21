@@ -14,10 +14,7 @@ export interface SwiperScrollProps<T = any> {
   slidesPerView?: number | "auto";
 }
 
-/**
- * Reusable horizontal scroll carousel powered by Swiper + Mousewheel.
- * ponytail: one lightweight shared wrapper for all card carousels across the app.
- */
+
 export function SwiperScroll<T = any>({
   items,
   renderItem,

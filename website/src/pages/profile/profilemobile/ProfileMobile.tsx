@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/AuthContext";
 import { SafeImage } from "../../../components/custom/SafeImage";
 import { useIsMobileApp } from "../../../utils/platform";
+import { isNavbarHiddenBelowMd } from "../../../routes/navConfig";
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
@@ -29,11 +30,12 @@ export default function ProfileMobile() {
     else if (section === 'saved-search') label = 'Like searches';
     else if (section === 'collections' || location.pathname.includes('/collections')) label = 'Collections';
     else if (section === 'notifications') label = 'Notification';
+    else if (section === 'enquiries') label = 'Enquiries';
     else if (section === 'calendar') label = 'My calendar';
     else if (section === 'privacy') label = 'Privacy';
 
     return (
-      <div className={`min-h-screen bg-[#F8F4EE] font-helvetica ${isApp ? "" : "pt-20"}`}>
+      <div className={`min-h-screen bg-[#F8F4EE] font-helvetica ${isApp ? "" : isNavbarHiddenBelowMd(location.pathname) ? "pt-0 md:pt-20" : "pt-20"}`}>
         <div className="flex bg-white items-center mb-4 gap-3 px-5 py-5 ">
           <button
             onClick={() => {
@@ -62,12 +64,13 @@ export default function ProfileMobile() {
     { label: "Personal info", view: "personal-info" },
     { label: "Collections", view: "collections" },
     { label: "Notification", view: "notifications" },
+    { label: "Enquiries", view: "enquiries" },
     { label: "My calendar", view: "calendar" },
     { label: "Privacy", view: "privacy" },
   ];
 
   return (
-    <div className={`min-h-screen font-helvetica pb-8 ${isApp ? "py-8" : "pt-24 pb-8"}`}>
+    <div className={`min-h-screen font-helvetica pb-8 ${isApp ? "py-8" : isNavbarHiddenBelowMd(location.pathname) ? "pt-6 md:pt-24 pb-8" : "pt-24 pb-8"}`}>
       {/* Top bar */}
       {/* <div className="flex items-center justify-between px-5 py-[18px]">
         <h1 className="text-[1.875rem] font-medium text-[#342511]">Profile</h1>

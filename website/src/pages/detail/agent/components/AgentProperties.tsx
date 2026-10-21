@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { ChevronDown, MapPin } from "lucide-react";
-import SwiperScroll from "../../../../components/swiper/SwiperScroll";
+import { SwiperSection } from "../../../../components/swiper";
 import PropertyGridCard from "../../../../components/cards/property/PropertyGridCard";
 import type { Property } from "../../../../types/property";
 import defaultMapBanner from "../../../../assets/agent/agent_map.png";
@@ -16,10 +15,7 @@ export interface AgentPropertiesProps {
   showNearby?: boolean;
 }
 
-/**
- * Agent's Properties section with map banner and horizontal properties carousel.
- * Pure presentation: receives homes data from AgentDetail.
- */
+
 export function AgentProperties({
   agentName,
   homes,
@@ -57,6 +53,7 @@ export function AgentProperties({
         {/* Filter button pill */}
         <div className="absolute top-4 left-4 z-10">
           <button
+            type="button"
             onClick={toggleFilter}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/95 backdrop-blur-sm text-[0.875rem] text-[#222222] font-medium shadow-sm border border-white hover:bg-white transition-colors cursor-pointer"
           >
@@ -69,31 +66,17 @@ export function AgentProperties({
 
       {displayNearby && <NearbySchools />}
 
-      {/* Counter text */}
-      <div className="flex items-center justify-between">
-        <p className="text-[0.875rem] text-black">
-          Showing {homes.length} of {countDisplay} sold properties
-        </p>
-        {slug && (
-          <Link
-            to={`/result?type=property&organization_slug=${encodeURIComponent(slug)}`}
-            className="text-[0.875rem] font-medium text-[#8B6F54] hover:text-[#342511] transition-colors"
-          >
-            View all properties ↗
-          </Link>
-        )}
-      </div>
-
-      {/* Swiper Scroll */}
-      <div className="w-full">
-        <SwiperScroll
-          items={homes}
-          spaceBetween={16}
-          slideClassName="!w-[19.6667rem]"
-          className="!ml-0"
-          renderItem={(property) => <PropertyGridCard item={property} />}
-        />
-      </div>
+      {/* Properties Swiper Section */}
+      <SwiperSection
+        title={`Showing ${homes.length} of ${countDisplay} sold properties`}
+        variant="detail"
+        viewAllHref={slug ? `/result?type=property&organization_slug=${encodeURIComponent(slug)}` : undefined}
+        viewAllText="View all properties"
+        items={homes}
+        spaceBetween={16}
+        slideClassName="!w-[19.6667rem]"
+        renderItem={(property) => <PropertyGridCard item={property} />}
+      />
     </section>
   );
 }

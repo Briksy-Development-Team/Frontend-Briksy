@@ -8,6 +8,26 @@ import type { FilterMode } from "./filterConfig";
 import { serviceSlugForLabel } from "../../constants/serviceCategories";
 import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
 
+const FILTER_PARAM_KEYS: Record<string, string> = {
+  keyword: "q",
+  priceMin: "min_price",
+  priceMax: "max_price",
+  carSpaces: "car_spaces",
+  landSizeMin: "min_land_size",
+  landSizeMax: "max_land_size",
+  propertyTypes: "property_types",
+  showPriceOnly: "has_price",
+};
+
+const scalarFilterKeys = new Set(["bedrooms", "bathrooms", "carSpaces"]);
+
+const normalizeScalarFilterValue = (key: string, value: unknown) => {
+  if (scalarFilterKeys.has(key) && typeof value === "string" && value.endsWith("+")) {
+    return value.slice(0, -1);
+  }
+  return value;
+};
+
 type FilterProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -120,7 +140,11 @@ const Filter = ({
       if (propTypeValue.toLowerCase() === "buy") params.set("purpose", "sell");
       if (propTypeValue.toLowerCase() === "rent") params.set("purpose", "rent");
 
-      const serviceSlug = serviceSlugForLabel(propTypeValue);
+      const serviceLabel = categoryConfig?.propTypes.find((propType) =>
+        propType.id.toLowerCase() === propTypeValue.toLowerCase() ||
+        propType.label.toLowerCase() === propTypeValue.toLowerCase(),
+      )?.label;
+      const serviceSlug = serviceSlugForLabel(serviceLabel || propTypeValue);
       if (serviceSlug) params.set("service_slug", serviceSlug);
 
       if (activeTab === "commercial" && ["buy", "lease", "sold", "leased"].includes(propTypeValue.toLowerCase())) {
@@ -132,16 +156,23 @@ const Filter = ({
 
     Object.entries(currentValues).forEach(([key, value]) => {
       if (value === undefined || value === null || value === "" || key === "propertyFor") return;
+      const paramKey = FILTER_PARAM_KEYS[key] || key;
       if (Array.isArray(value)) {
-        if (value.length > 0) {
-          value.forEach(v => params.append(`${key}[]`, String(v)));
+        const values = value.filter((v) => v !== "any" && v !== "");
+        if (values.length > 0) {
+          if (scalarFilterKeys.has(key)) {
+            params.set(paramKey, String(normalizeScalarFilterValue(key, values[0])));
+          } else {
+            values.forEach(v => params.append(`${paramKey}[]`, String(v)));
+          }
         }
       } else {
-        // Special mapping for keyword searching
-        if (key === "keyword" && String(value).trim()) {
-          params.set("q", String(value).trim());
+        if (key === "showPriceOnly") {
+          if (value) params.set(paramKey, "1");
+        } else if (key === "keyword" && String(value).trim()) {
+          params.set(paramKey, String(value).trim());
         } else {
-          params.set(key, String(value));
+          params.set(paramKey, String(value));
         }
       }
     });

@@ -25,7 +25,6 @@ import BlogDetail from "../pages/blogs/BlogDetail";
 import PublicInfoPage from "../pages/static/PublicInfoPage";
 import Myprofile from "../components/profile-options/myprofile/Myprofile";
 import Mysavedata from "../components/profile-options/mysavedata/Mysavedata";
-import Mynotification from "../components/profile-options/mynotification/Mynotification";
 import Myprivacy from "../components/profile-options/myprivacy/Myprivacy";
 import CollectionsPage from "../components/profile-options/collections/CollectionsPage";
 import CollectionDetailPage from "../components/profile-options/collections/CollectionDetailPage";
@@ -51,13 +50,13 @@ const AppRouter = () => {
             <Route path="saved-search" element={<Mysavedata />} />
             <Route path="collections" element={<CollectionsPage showBack={false} />} />
             <Route path="collections/:id" element={<CollectionDetailPage showBack={false} />} />
-            <Route path="notifications" element={<Mynotification />} />
+            <Route path="notifications" element={<Notification />} />
+            <Route path="enquiries" element={<AppEnquiries />} />
             <Route path="calendar" element={<MyCalendar />} />
             <Route path="privacy" element={<Myprivacy />} />
           </Route>
           <Route path="/saved" element={<CollectionsPage showBack={false} />} />
           <Route path="enquiries" element={<AppEnquiries />} />
-          <Route path="profile/enquiries" element={<Navigate to="/enquiries" replace />} />
         </Route>
         <Route path="/calendar" element={<Navigate to="/profile/calendar" replace />} />
         <Route path="/collections" element={<Navigate to="/profile/collections" replace />} />

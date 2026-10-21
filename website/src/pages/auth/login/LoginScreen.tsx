@@ -1,20 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import apple from '../../../assets/login/apple.svg';
-import google from '../../../assets/login/google.svg';
 import LogoM from '../../../assets/logo/logomobile.svg';
-import { type Screen, ScreenWrapper, Field } from '../shared';
+import { type Screen, ScreenWrapper, Field, Btn, SocialAuthButtons } from '../shared';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../../auth/AuthContext';
 
 type LoginScreenProps = {
   go: (s: Screen) => void;
 };
-
-const socials = [
-  { src: apple, name: 'Apple' },
-  { src: google, name: 'Google' },
-];
 
 export const LoginScreen = ({ go }: LoginScreenProps) => {
   const navigate = useNavigate();
@@ -44,7 +37,7 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
       const response = await login({ email: form.email.trim(), password: form.password });
 
       if (response.abilities.includes('seeker')) {
-        const fromPath = (location.state as { from?: string } | null)?.from ?? '/account/profile';
+        const fromPath = (location.state as { from?: string } | null)?.from ?? '/profile';
         navigate(fromPath, { replace: true });
         return;
       }
@@ -65,7 +58,7 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
   };
 
   return (
-    <ScreenWrapper className="w-full pb-8 h-screen lg:h-auto flex flex-col mx-auto text-primary-brown">
+    <ScreenWrapper showBack={false} className="w-full pb-8 flex flex-col mx-auto text-primary-brown">
       <img src={LogoM} alt="Briksy" className="block lg:hidden h-[3.5rem] mx-auto w-auto mb-1" />
 
       <div className="flex flex-col gap-[26px] text-[#342511]">
@@ -126,31 +119,15 @@ export const LoginScreen = ({ go }: LoginScreenProps) => {
           <span className="text-base leading-6">Keep me signed in on this device</span>
         </label>
 
-        <button
+        <Btn
           type="button"
           onClick={submit}
           disabled={isLoading}
-          className="w-full bg-[#342511] hover:bg-[#281c0c] text-white font-medium rounded-full h-[50px] transition-colors text-sm cursor-pointer disabled:opacity-70"
         >
           {isLoading ? 'Logging in...' : 'Continue'}
-        </button>
+        </Btn>
 
-        <div className="flex flex-col gap-3.5">
-          <p className="text-center text-sm text-[#7C5F42]">Or continue with</p>
-
-          <div className="flex items-center gap-3 w-full">
-            {socials.map(({ src, name }) => (
-              <button
-                key={name}
-                type="button"
-                aria-label={`Continue with ${name}`}
-                className="flex-1 h-[50px] border border-[#8B6F54] rounded-full flex items-center justify-center hover:bg-[#F8F4EE]/60 transition-colors cursor-pointer"
-              >
-                <img src={src} alt={name} className="w-[22px] h-[22.5px]" />
-              </button>
-            ))}
-          </div>
-        </div>
+        <SocialAuthButtons />
       </div>
     </ScreenWrapper>
   );

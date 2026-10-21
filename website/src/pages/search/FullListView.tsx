@@ -10,7 +10,7 @@ import { useListingData } from "./useListingData";
 const GRID =
   "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6"; 
   
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 10;
 
 export default function FullListView({
   resultType,
