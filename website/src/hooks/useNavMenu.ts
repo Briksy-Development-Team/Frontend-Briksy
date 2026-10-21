@@ -11,6 +11,7 @@ const realEstateLinks: NavLink[] = (SEARCH_CATEGORIES.find((c) => c.id === "real
   label: p.label,
   to: p.id === "all" ? "/result?type=real-estate" : `/${encodeURIComponent(p.id)}`,
 }));
+realEstateLinks.push({ label: "Auction", to: "/auctions" });
 
 const commercialLinks: NavLink[] = (SEARCH_CATEGORIES.find((c) => c.id === "commercial")?.propTypes ?? []).map((p) => ({
   label: p.label,
@@ -33,7 +34,6 @@ export const useNavMenu = (): NavItem[] => {
       { label: "Find Real Estate", to: "/result?type=real-estate", bg: Randomone },
       { label: "List Your Property", to: "/subs", bg: Randomtwo },
     ]),
-    item("Auctions", "/auctions"),
     item(
       "Agents",
       "/agents",
