@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { type Screen, ScreenWrapper, Field, Btn, AuthHeader } from '../shared';
+import { type Screen, ScreenWrapper, Field, Btn, AuthHeader, RuleItem } from '../shared';
 
 export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
   const [pw, setPw] = useState('');
@@ -19,7 +19,6 @@ export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
       onBack={() => go('link-sent')}
       className="w-full pb-8 flex flex-col gap-[1.5rem] mx-auto text-primary-brown"
     >
-    
       <AuthHeader title="Set a new password" subtitle="Choose something you don't use anywhere else." />
 
       <div className="flex flex-col gap-[0.75rem]">
@@ -47,18 +46,9 @@ export const NewPasswordScreen = ({ go }: { go: (s: Screen) => void }) => {
         </Field>
       </div>
 
-      <div className="flex flex-col gap-[0.375rem]">
+      <div className="flex flex-col gap-2">
         {checks.map(([label, met]) => (
-          <label key={label} className="flex items-center gap-[0.5rem] text-[0.75rem] cursor-default select-none transition-colors" style={{ color: met ? '#3D2C1E' : '#A89F95' }}>
-            <span className={`w-[0.875rem] h-[0.875rem] rounded-full border flex items-center justify-center shrink-0 transition-all duration-200 ${met ? 'bg-[#3D2C1E] border-[#3D2C1E]' : 'border-white-100'}`}>
-              {met && (
-                <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                  <path d="M1.5 4l2 2 3-3" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
-            </span>
-            {label}
-          </label>
+          <RuleItem key={label} label={label} met={met} />
         ))}
       </div>
 
