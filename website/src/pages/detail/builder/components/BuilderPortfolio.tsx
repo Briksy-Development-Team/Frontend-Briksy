@@ -1,8 +1,7 @@
 import StaffGrid from '../../../../components/grids/StaffGrid';
-import SwiperScroll from '../../../../components/swiper/SwiperScroll';
+import { SwiperSection } from '../../../../components/swiper';
 import PropertyGridCard from '../../../../components/cards/property/PropertyGridCard';
 import type { Property } from '../../../../types/property';
-import { Link } from 'react-router-dom';
 import type { PublicBuilderProject } from '../../../../api/seeker/organization.api';
 import ProjectPlaceholder from '../../../../assets/place holder/builderbg.svg';
 import BusinessPlaceholder from '../../../../assets/place holder/bussinessholder.svg';
@@ -71,26 +70,16 @@ export function BuilderSnapshot({ snapshot }: { snapshot: any }) {
 
 export function BuilderHomes({ homes, description, propertiesHref }: { homes: any[]; description?: string; propertiesHref?: string }) {
   return (
-    <div className="flex flex-col items-start justify-start gap-6 overflow-hidden">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-[1.25rem] font-medium text-primary-brown">Our homes</h2>
-        <p className="text-[0.875rem] text-primary-light-brown">
-          {description || "Real Estate currently published by this organisation."}
-        </p>
-      </div>
-
-      <SwiperScroll
-        items={homes.slice(0, 3)}
-        spaceBetween={14}
-        className="!ml-0"
-        renderItem={(item) => <PropertyGridCard item={item} />}
-      />
-      <div>
-        <Link to={propertiesHref || '/search?tab=properties'} className="inline-block bg-white border border-white-100 text-primary-brown py-2 px-5 rounded-lg font-medium text-[0.875rem] hover:bg-white-50 transition-colors mt-2">
-          Show all Real Estate
-        </Link>
-      </div>
-    </div>
+    <SwiperSection
+      title="Our homes"
+      subtitle={description || "Real Estate currently published by this organisation."}
+      viewAllHref={propertiesHref || '/search?tab=properties'}
+      viewAllText="Show all Real Estate"
+      items={homes.slice(0, 3)}
+      spaceBetween={14}
+      variant="detail"
+      renderItem={(item) => <PropertyGridCard item={item} />}
+    />
   );
 }
 
@@ -122,31 +111,38 @@ export function BuilderProjects({ projects, builderName, builderLogo }: { projec
     return <PropertyGridCard item={builderProjectToProperty(project)} />;
   };
 
-  return <section className="flex flex-col gap-6" aria-labelledby="builder-projects-title">
-    <div className="flex flex-col gap-2">
-      <h2 id="builder-projects-title" className="text-[1.25rem] font-medium text-primary-brown">Our projects</h2>
-      <p className="text-[0.875rem] text-primary-light-brown">Developments and projects from this builder.</p>
-    </div>
-    {showAllProjects ? (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {visibleProjects.map((project) => <div key={project.id}>{renderProjectCard(project)}</div>)}
-      </div>
-    ) : (
-      <SwiperScroll
-        items={visibleProjects}
-        spaceBetween={14}
-        className="!ml-0"
-        renderItem={(project) => renderProjectCard(project)}
-      />
-    )}
-    {projects.length > 3 && (
-      <div>
-        <button type="button" onClick={() => setShowAllProjects((current) => !current)} className="mt-2 inline-block rounded-lg border border-white-100 bg-white px-5 py-2 text-[0.875rem] font-medium text-primary-brown transition-colors hover:bg-white-50">
-          {showAllProjects ? 'Show fewer Projects' : 'Show all Projects'}
-        </button>
-      </div>
-    )}
-  </section>;
+  return (
+    <section className="flex flex-col gap-6" aria-labelledby="builder-projects-title">
+      {showAllProjects ? (
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h2 id="builder-projects-title" className="text-[1.25rem] font-medium text-primary-brown">Our projects</h2>
+            <p className="text-[0.875rem] text-primary-light-brown">Developments and projects from this builder.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {visibleProjects.map((project) => <div key={project.id}>{renderProjectCard(project)}</div>)}
+          </div>
+        </div>
+      ) : (
+        <SwiperSection
+          title="Our projects"
+          subtitle="Developments and projects from this builder."
+          showViewAll={false}
+          items={visibleProjects}
+          spaceBetween={14}
+          variant="detail"
+          renderItem={(project) => renderProjectCard(project)}
+        />
+      )}
+      {projects.length > 3 && (
+        <div>
+          <button type="button" onClick={() => setShowAllProjects((current) => !current)} className="mt-2 inline-block rounded-lg border border-white-100 bg-white px-5 py-2 text-[0.875rem] font-medium text-primary-brown transition-colors hover:bg-white-50">
+            {showAllProjects ? 'Show fewer Projects' : 'Show all Projects'}
+          </button>
+        </div>
+      )}
+    </section>
+  );
 }
 
 export function BuilderPerformance({ performance }: { performance: any }) {

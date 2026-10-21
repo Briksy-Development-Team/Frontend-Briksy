@@ -1,7 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { ArrowUpRight } from "lucide-react";
-import SwiperScroll from "../../../components/swiper/SwiperScroll";
+import { SwiperSection } from "../../../components/swiper";
 import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
 import BuilderGridCard from "../../../components/cards/builder/BuilderGridCard";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
@@ -172,28 +170,14 @@ export default function SimilarSection<T = any>({
   };
 
   return (
-    <div className={`mt-10 flex flex-col gap-6 overflow-hidden ${className}`}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-[24px] md:text-[30px] font-medium leading-[36px] tracking-[-0.03em] text-primary-brown">
-          {heading}
-        </h2>
-        {linkHref && (
-          <Link
-            to={linkHref}
-            className="text-[14px] md:text-[16px] font-medium text-[#8B6F54] hover:text-[#562F00] flex items-center gap-1.5 transition-colors"
-          >
-            <span>View All</span>
-            <ArrowUpRight size={18} />
-          </Link>
-        )}
-      </div>
-
-      <SwiperScroll
-        items={items}
-        spaceBetween={16}
-        className="!ml-0"
-        renderItem={renderItem ?? defaultRenderer}
-      />
-    </div>
+    <SwiperSection
+      title={heading}
+      viewAllHref={linkHref}
+      items={items}
+      spaceBetween={16}
+      variant="detail"
+      className={`mt-10 overflow-hidden ${className}`}
+      renderItem={renderItem ?? defaultRenderer}
+    />
   );
 }

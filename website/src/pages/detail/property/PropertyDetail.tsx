@@ -25,7 +25,7 @@ import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
 import { DetailShorts, SimilarSection } from "../shared";
-import SwiperScroll from "../../../components/swiper/SwiperScroll";
+import { SwiperSection } from "../../../components/swiper";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
@@ -483,17 +483,13 @@ const PropertyDetail = () => {
             )}
 
             {traderHost && (
-              <div
-                id="host"
-                className="flex flex-col gap-3.5 w-full overflow-hidden"
-              >
-                <h2 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-primary-brown">
-                  Meet The Host
-                </h2>
-                <SwiperScroll
+              <div id="host" className="w-full">
+                <SwiperSection
+                  title="Meet The Host"
+                  showViewAll={false}
                   items={[traderHost]}
                   spaceBetween={14}
-                  className="!ml-0"
+                  variant="detail"
                   renderItem={(host) => <TraderGridCard item={host} />}
                 />
               </div>
