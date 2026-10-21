@@ -165,7 +165,8 @@ export default function FooterTiles() {
             gsap.ticker.remove(tick);
             io.disconnect();
             ro.disconnect();
-            Composite.clear(engine.world);
+            // Composite.clear(engine.world);
+            Composite.clear(engine.world, false);
             Engine.clear(engine);
         };
     }, [count]);
