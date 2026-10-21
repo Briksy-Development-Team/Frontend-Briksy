@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
 import gsap from "gsap";
 import { Home, LandPlot, Hammer, Zap, Building, Hospital, Building2, Store, Sprout } from "lucide-react";
@@ -19,18 +19,26 @@ const TILES = [
     { label: "Landscaper", icon: Sprout, color: "#a58f6e" },
 ];
 
-// every tile twice
 const ALL = [...TILES, ...TILES];
+const getCount = () => (window.innerWidth >= 1024 ? 18 : window.innerWidth >= 768 ? 12 : 8);
 
 export default function FooterTiles() {
     const area = useRef<HTMLDivElement>(null);
     const tiles = useRef<HTMLDivElement[]>([]);
+    const [count, setCount] = useState(getCount);
+
+    useEffect(() => {
+        const onResize = () => setCount(getCount());
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
 
     useEffect(() => {
         const el = area.current;
         if (!el) return;
 
         const { Engine, Bodies, Body, Composite, Constraint, Vector } = Matter;
+        const list = ALL.slice(0, count);
         let { width, height } = el.getBoundingClientRect();
 
         const getScale = () => Math.max(0.6, Math.min(1, width / 1400));
@@ -46,11 +54,11 @@ export default function FooterTiles() {
         const cw = W * s + 12;
         const ch = H * s + 8;
         const cols = Math.min(6, Math.floor((width - 20) / cw));
-        const rows = Math.ceil(ALL.length / cols);
-        const bodies = ALL.map((_, i) =>
+        const rows = Math.ceil(list.length / cols);
+        const bodies = list.map((_, i) =>
             Bodies.rectangle(
                 width - 20 - (W * s) / 2 - (i % cols) * cw,
-                height - 20 - (rows - Math.floor(i / cols)) * ch,
+                -(rows - Math.floor(i / cols)) * ch - Math.random() * 150,
                 W * s,
                 H * s,
                 {
@@ -63,15 +71,26 @@ export default function FooterTiles() {
         );
         Composite.add(engine.world, [...walls, ...bodies]);
 
-      
+        let started = false;
+        const io = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) return;
+                started = true;
+                io.disconnect();
+            },
+            { threshold: 0.25 }
+        );
+        io.observe(el);
+
+        
         let z = 1;
-        const grabs: (Matter.Constraint | null)[] = ALL.map(() => null);
-        const shifts = ALL.map(() => 0);
+        const grabs: (Matter.Constraint | null)[] = list.map(() => null);
+        const shifts = list.map(() => 0);
         const toPoint = (e: PointerEvent, i: number) => {
             const r = el.getBoundingClientRect();
             return { x: e.clientX - r.left + shifts[i], y: Math.min(e.clientY - r.top, height) };
         };
-        tiles.current.forEach((tile, i) => {
+        tiles.current.slice(0, count).forEach((tile, i) => {
             tile.onpointerdown = (e) => {
                 tile.setPointerCapture(e.pointerId);
                 tile.style.zIndex = String(++z);
@@ -115,11 +134,12 @@ export default function FooterTiles() {
 
         let acc = 0;
         const tick = (_: number, dt: number) => {
-            acc += Math.min(dt, 100);
-            for (; acc >= STEP; acc -= STEP) Engine.update(engine, STEP);
+            if (started) {
+                acc += Math.min(dt, 100);
+                for (; acc >= STEP; acc -= STEP) Engine.update(engine, STEP);
+            }
 
             bodies.forEach((b, i) => {
-             
                 const jump = b.bounds.max.x < 0 ? width - b.bounds.min.x : b.bounds.min.x > width ? -b.bounds.max.x : 0;
                 if (jump) {
                     Body.setPosition(b, { x: b.position.x + jump, y: b.position.y });
@@ -143,15 +163,16 @@ export default function FooterTiles() {
 
         return () => {
             gsap.ticker.remove(tick);
+            io.disconnect();
             ro.disconnect();
             Composite.clear(engine.world);
             Engine.clear(engine);
         };
-    }, []);
+    }, [count]);
 
     return (
         <div ref={area} className="pointer-events-none absolute inset-0 select-none overflow-hidden">
-            {ALL.map(({ label, icon: Icon, color, text }, i) => (
+            {ALL.slice(0, count).map(({ label, icon: Icon, color, text }, i) => (
                 <div
                     key={i}
                     ref={(n) => {
