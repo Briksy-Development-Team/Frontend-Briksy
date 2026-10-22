@@ -13,6 +13,7 @@ import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
 import { SimilarSection } from "../shared";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
@@ -141,11 +142,7 @@ export const AgentDetail = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">
-        Loading agent profile...
-      </div>
-    );
+    return <DetailSkeleton gallery={false} />;
   }
 
   if (error || !organization) {

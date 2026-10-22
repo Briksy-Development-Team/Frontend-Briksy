@@ -14,6 +14,7 @@ import AuctionSidebar from "./components/AuctionSidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
 import { Share, ChevronLeft, FolderPlus } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -100,7 +101,7 @@ const PropertyDetail = () => {
     };
   }, [id]);
 
-  if (loading) return <p className="py-20 text-center">Loading property...</p>;
+  if (loading) return <DetailSkeleton gallery={true} />;
   if (error) return <p className="py-20 text-center text-red-700">{error}</p>;
   if (!propertyData)
     return <p className="py-20 text-center">This property is unavailable.</p>;
@@ -297,7 +298,7 @@ const PropertyDetail = () => {
     <div className="min-h-screen  md:mt-20 font-helvetica flex   md:pb-0 flex-col">
       <main className="flex-1 max-w-[2000px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12  md:py-6">
         {/* Desktop Header */}
-        <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+        <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center  mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
 
           <div className="flex items-center gap-4 text-primary-brown text-[0.875rem] font-medium self-end sm:self-auto mb-6 sm:mb-0">

@@ -4,6 +4,7 @@ import Breadcrumb from "../../../components/nav/Breadcrumb";
 import { PropertyGallery } from "../property/components/PropertyGallery";
 import { PropertyMap } from "../property/components/PropertyInfo";
 import { DetailShorts, HostProfileCard } from "../shared";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { getBuilderProject, type PublicBuilderProject } from "../../../api/seeker/organization.api";
 import ProjectPlaceholder from "../../../assets/place holder/builderbg.svg";
 
@@ -23,7 +24,7 @@ export default function BuilderProjectDetail() {
     return () => { active = false; };
   }, [id]);
 
-  if (loading) return <p className="py-20 text-center text-primary-brown">Loading project...</p>;
+  if (loading) return <DetailSkeleton gallery={true} />;
   if (error || !project) return <p className="py-20 text-center text-primary-brown">{error || "This project is unavailable."}</p>;
 
   const media = [

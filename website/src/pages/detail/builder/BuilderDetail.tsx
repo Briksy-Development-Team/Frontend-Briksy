@@ -19,6 +19,7 @@ import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.sv
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
 import { DetailShorts, SimilarSection } from "../shared";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 
@@ -84,11 +85,7 @@ const BuilderDetail = () => {
   }, [id]);
 
   if (loading)
-    return (
-      <div className="min-h-screen px-[5%] pt-32 text-primary-brown">
-        Loading organisation...
-      </div>
-    );
+    return <DetailSkeleton gallery={false} />;
   if (error || !builder)
     return (
       <div className="min-h-screen px-[5%] pt-32 text-primary-brown">

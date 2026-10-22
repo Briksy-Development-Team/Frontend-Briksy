@@ -1,6 +1,7 @@
 import { List, Play } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PhotoTourModal, type Media } from '../../../../components/custom/PhotoTourModal';
+import GallerySkeleton from '../../../../components/skeletons/GallerySkeleton';
 
 type ImageInput = string | { src?: string; type?: 'image' | 'video'; videoSrc?: string };
 
@@ -19,10 +20,17 @@ const Thumb = ({ m, size = 48 }: { m: Media; size?: number }) => (
   </>
 );
 
-export const PropertyGallery = ({ images = [], floorplan }: { images?: ImageInput[]; floorplan?: string | null }) => {
+export const PropertyGallery = ({
+  images = [],
+  floorplan,
+  isLoading = false,
+}: {
+  images?: ImageInput[];
+  floorplan?: string | null;
+  isLoading?: boolean;
+}) => {
   const [tour, setTour] = useState<number | null>(null);
   const [view, setView] = useState<"gallery" | "floorplan">("gallery");
-
 
   const media = useMemo(() => {
     const all = images
@@ -36,6 +44,10 @@ export const PropertyGallery = ({ images = [], floorplan }: { images?: ImageInpu
     if (video) photos.splice(Math.min(3, photos.length), 0, video);
     return photos;
   }, [images]);
+
+  if (isLoading) {
+    return <GallerySkeleton />;
+  }
 
   const tiles = [1, 2, 3, 4].map((i) => media[i]);
 
