@@ -12,6 +12,9 @@ import {
 } from "../../services/features/organization/organization.api";
 import { fetchAdminDashboardSummary, type AdminDashboardSummary } from "../../services/features/dashboard/dashboard.api";
 import BuyerBriefListPage from "./BuyerBriefListPage";
+import MarketingReelsSection from "../../components/marketing/MarketingReelsSection";
+import { deleteMarketingReelApi, uploadMarketingReelsApi } from "../../services/features/marketing/marketingReels.api";
+import { mediaAllowance } from "../../modules/subscription/mediaEntitlements";
 
 const emptyProfile = {
   name: "", contact_email: "", contact_phone: "", address: "", description: "", website: "",
@@ -25,6 +28,7 @@ const BuyerAgentProfilePage = () => {
   const [form, setForm] = useState(emptyProfile);
   const [logo, setLogo] = useState<File | null>(null);
   const [banner, setBanner] = useState<File | null>(null);
+  const [marketingReels, setMarketingReels] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -34,6 +38,7 @@ const BuyerAgentProfilePage = () => {
     Promise.all([fetchCurrentOrganizationApi(), fetchAdminDashboardSummary()])
       .then(([profile, dashboard]) => {
         setOrganization(profile);
+        setMarketingReels([]);
         setSummary(dashboard);
         setForm({
           name: profile?.name ?? "",
@@ -59,6 +64,7 @@ const BuyerAgentProfilePage = () => {
   const mediaEnabled = entitlements?.features?.business_profile?.enabled ?? false;
   const introVideoEnabled = (entitlements?.limits?.videos ?? 0) > 0;
   const reelLimit = entitlements?.limits?.reels ?? 0;
+  const reelAllowance = mediaAllowance(entitlements);
 
   const save = async () => {
     if (!organization || !form.name.trim()) return;
@@ -74,9 +80,14 @@ const BuyerAgentProfilePage = () => {
       });
       let profile = updated;
       if (logo || banner) profile = await uploadOrganizationMediaApi(organization.id, { profile_image: logo ?? undefined, banner_image: banner ?? undefined });
-      setOrganization(profile); setLogo(null); setBanner(null); setMessage("Buyers Agent profile saved successfully.");
-    } catch (requestError: any) {
-      setError(requestError?.response?.data?.message ?? "The profile could not be saved.");
+      if (marketingReels.length) {
+        const uploaded = await uploadMarketingReelsApi("organization", organization.id, marketingReels);
+        profile = { ...profile, shorts: [...(profile.shorts ?? []), ...uploaded] };
+      }
+      setOrganization(profile); setLogo(null); setBanner(null); setMarketingReels([]); setMessage("Buyers Agent profile saved successfully.");
+    } catch (requestError: unknown) {
+      const response = (requestError as { response?: { data?: { message?: string } } }).response;
+      setError(response?.data?.message ?? "The profile could not be saved.");
     } finally { setSaving(false); }
   };
 
@@ -108,6 +119,7 @@ const BuyerAgentProfilePage = () => {
         <div className="row"><div className="col-md-6 fv-row mb-5"><label className="form-label">Agency logo</label><input className="form-control form-control-solid" type="file" accept="image/jpeg,image/png,image/webp" disabled={!mediaEnabled} onChange={(event) => setLogo(event.target.files?.[0] ?? null)} /></div><div className="col-md-6 fv-row mb-5"><label className="form-label">Cover image</label><input className="form-control form-control-solid" type="file" accept="image/jpeg,image/png,image/webp" disabled={!mediaEnabled} onChange={(event) => setBanner(event.target.files?.[0] ?? null)} /></div></div>
         <div className="fv-row mb-5"><label className="form-label">Intro video URL</label><input type="url" className="form-control form-control-solid" disabled={!introVideoEnabled} value={form.intro_video_url} onChange={(event) => update("intro_video_url", event.target.value)} /></div>
         <div className="fv-row mb-5"><label className="form-label">Reel URLs <span className="text-muted">(one per line, max {reelLimit})</span></label><textarea className="form-control form-control-solid" rows={3} disabled={!reelLimit} value={form.reel_urls} onChange={(event) => update("reel_urls", event.target.value)} /></div>
+        <MarketingReelsSection existing={[...(organization?.shorts ?? []), ...(organization?.reel_urls ?? []).map((url, index) => ({ id: `url-${index}`, url }))]} selected={marketingReels} limit={reelAllowance.reels} included={reelAllowance.reelsIncluded} onChange={setMarketingReels} onDelete={async (id) => { if (id.startsWith("url-")) return; await deleteMarketingReelApi(id); setOrganization((current) => current ? { ...current, shorts: current.shorts?.filter((item) => item.id !== id) } : current); }} />
 
         <h3 className="fw-bold mb-6 mt-8">Performance stats</h3>
         <div className="row g-4">{[["Leads", summary?.metrics.inquiries ?? 0], ["New leads", summary?.metrics.new_inquiries ?? 0], ["Team members", summary?.metrics.team_members ?? 0], ["Lead conversion", `${summary?.lead_conversion_rate ?? 0}%`]].map(([label, value]) => <div className="col-6 col-lg-3" key={String(label)}><div className="border rounded p-4"><div className="text-muted fs-7">{label}</div><div className="fs-2 fw-bold">{value}</div></div></div>)}</div>

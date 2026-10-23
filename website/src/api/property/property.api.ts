@@ -88,6 +88,7 @@ export type PublicProperty = {
     url: string | null;
     is_primary: boolean;
   }[];
+  shorts?: { id?: string; url: string; sort_order?: number }[];
   floorplan?: { id?: string; url: string | null } | null;
 };
 

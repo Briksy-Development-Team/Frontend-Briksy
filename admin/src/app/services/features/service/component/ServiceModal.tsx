@@ -8,6 +8,8 @@ import type { ServiceAreaGeometry } from "../serviceAreaGeometry";
 import { fetchAdminDashboardSummary } from "../../dashboard/dashboard.api";
 import { useAuth, useRoleAccess } from "../../../../modules/auth";
 import { mediaAllowance } from "../../../../modules/subscription/mediaEntitlements";
+import MarketingReelsSection from "../../../../components/marketing/MarketingReelsSection";
+import { deleteMarketingReelApi } from "../../marketing/marketingReels.api";
 
 const SERVICE_AREA_OPTIONS = [
     "Australia-wide",
@@ -44,8 +46,10 @@ const ServiceModal = ({
     const allowance = mediaAllowance(entitlements);
     const [images, setImages] = useState<File[]>([]);
     const [videos, setVideos] = useState<File[]>([]);
+    const [marketingReels, setMarketingReels] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState(initialValues?.images ?? []);
     const [existingVideos, setExistingVideos] = useState(initialValues?.videos ?? []);
+    const [existingReels, setExistingReels] = useState(initialValues?.shorts ?? []);
     const [serviceAreaEnabled, setServiceAreaEnabled] = useState(isSuperAdmin);
     const [serviceAreaLimit, setServiceAreaLimit] = useState<number | null>(null);
     const [serviceAreasUsed, setServiceAreasUsed] = useState<number | null>(null);
@@ -72,8 +76,10 @@ const ServiceModal = ({
         });
         setImages([]);
         setVideos([]);
+        setMarketingReels([]);
         setExistingImages(initialValues?.images ?? []);
         setExistingVideos(initialValues?.videos ?? []);
+        setExistingReels(initialValues?.shorts ?? []);
     }, [initialValues]);
 
     useEffect(() => {
@@ -141,6 +147,7 @@ const ServiceModal = ({
                     ...form,
                     images,
                     videos,
+                    marketing_reels: marketingReels,
                     category: form.category?.trim() || form.name.trim(),
                 })
             }
@@ -226,6 +233,8 @@ const ServiceModal = ({
                     </div>
                 )}
             </div>
+
+            <MarketingReelsSection existing={existingReels} selected={marketingReels} limit={allowance.reels} included={allowance.reelsIncluded} onChange={setMarketingReels} onDelete={async (id) => { await deleteMarketingReelApi(id); setExistingReels((items) => items.filter((item) => item.id !== id)); }} />
 
             <div className="fv-row mt-6">
                 <label className="form-label">Images</label>

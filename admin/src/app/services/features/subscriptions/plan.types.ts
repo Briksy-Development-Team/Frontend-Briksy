@@ -104,6 +104,7 @@ export const DEFAULT_FEATURES: { name: string; numeric?: boolean }[] = [
   { name: "Property Videos", numeric: true },
   { name: "Portfolio Photos", numeric: true },
   { name: "Portfolio Videos", numeric: true },
+  { name: "Reels", numeric: true },
   { name: "Custom Branding" },
   { name: "Promo Offers", numeric: true },
 ];

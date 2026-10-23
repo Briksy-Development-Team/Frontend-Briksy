@@ -36,6 +36,7 @@ export type Service = {
   image?: string | null;
   images?: ServiceMedia[];
   videos?: ServiceMedia[];
+  shorts?: ServiceMedia[];
 
   created_at?: string | null;
 
@@ -70,6 +71,7 @@ export type ServiceList = {
   image?: string | null;
   images?: ServiceMedia[];
   videos?: ServiceMedia[];
+  shorts?: ServiceMedia[];
 
   organization_type?: {
     id: string;
@@ -108,6 +110,7 @@ export type ServiceFormValues = {
   image?: File | string | null;
   images?: (File | string)[];
   videos?: (File | string)[];
+  marketing_reels?: File[];
 };
 
 export type ServiceMedia = {

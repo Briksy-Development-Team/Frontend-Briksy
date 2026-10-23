@@ -2,17 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import { getOrganization, type PublicOrganization } from "../../../api/seeker/organization.api";
-import { getProperties } from "../../../api/property/property.api";
-import { propertyToCard } from "../../../api/public.mappers";
-import type { Property } from "../../../types/property";
 import { AgentSidebar } from "./components/AgentSidebar";
-import { AgentProperties } from "./components/AgentProperties";
+import { AgentPortfolio } from "./components/AgentPortfolio";
 import { AgentAbout } from "./components/AgentAbout";
 import { AgentMobileHeader } from "./components/AgentMobileHeader";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { SimilarSection } from "../shared";
+import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
@@ -27,8 +24,6 @@ type HttpLikeError = Error & { response?: { status?: number } };
 export const AgentDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [organization, setOrganization] = useState<PublicOrganization | null>(null);
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [propertyCount, setPropertyCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,18 +45,6 @@ export const AgentDetail = () => {
       .then((orgRes) => {
         if (!active) return;
         setOrganization(orgRes.data);
-
-        // Fetch properties related to this agent / organization
-        return getProperties({
-          organization_slug: orgRes.data.slug || undefined,
-          organization_id: orgRes.data.id,
-          per_page: 12,
-        }).then((propRes) => {
-          if (!active) return;
-          const mapped = propRes.data.map(propertyToCard);
-          setProperties(mapped);
-          setPropertyCount(propRes.meta?.pagination?.total ?? mapped.length);
-        });
       })
       .catch((reason: HttpLikeError) => {
         if (active) {
@@ -108,9 +91,10 @@ export const AgentDetail = () => {
           ? `${result.message} Our team can still view it.`
           : "Your enquiry has been sent successfully.",
       );
-    } catch (reason: any) {
+    } catch (reason: unknown) {
+      const response = (reason as { response?: { data?: { message?: string } } }).response;
       setEnquiryError(
-        reason?.response?.data?.message || "Unable to send enquiry. Please try again.",
+        response?.data?.message || "Unable to send enquiry. Please try again.",
       );
     } finally {
       setEnquirySubmitting(false);
@@ -157,7 +141,6 @@ export const AgentDetail = () => {
   }
 
   const agentName = organization.name;
-  const propertiesList = properties;
   const aboutDescription = organization.description?.trim();
 
   const agentModel = {
@@ -205,13 +188,15 @@ export const AgentDetail = () => {
 
           {/* Right Column (Content matching gap-8) */}
           <div className="flex-1 min-w-0 flex flex-col gap-8 w-full pt-0 md:pt-2">
-            {/* Organization-linked properties from the backend */}
-            <AgentProperties
-              agentName={agentName}
-              homes={propertiesList}
-              totalCount={propertyCount}
-              slug={organization.slug}
+            <AgentPortfolio
+              serviceAreas={organization.service_areas}
+              socialLinks={organization.social_links}
+              introVideoUrl={organization.intro_video_url}
+              reelUrls={organization.reel_urls}
             />
+            <div id="shorts">
+              <DetailShorts reels={marketingReelsToItems([...(organization.shorts ?? []), ...(organization.reel_urls ?? []).map((url, index) => ({ id: `reel-url-${index}`, url }))])} />
+            </div>
 
             {aboutDescription && (
               <AgentAbout agentName={agentName} description={aboutDescription} />

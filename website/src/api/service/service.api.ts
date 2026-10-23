@@ -28,6 +28,7 @@ export type PublicService = {
   } | null;
   images: { id: string; url: string; is_primary: boolean; sort_order: number }[];
   videos: { id: string; url: string; is_primary: boolean; sort_order: number }[];
+  shorts?: { id: string; url: string; sort_order?: number }[];
 };
 
 export const getServices = async (params: Record<string, string | number | undefined> = {}) =>

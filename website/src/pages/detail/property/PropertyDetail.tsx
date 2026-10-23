@@ -24,7 +24,7 @@ import {
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts, SimilarSection } from "../shared";
+import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
 import { SwiperSection } from "../../../components/swiper";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
@@ -473,7 +473,7 @@ const PropertyDetail = () => {
             )}
 
             <div id="shorts">
-              <DetailShorts />
+              <DetailShorts reels={marketingReelsToItems(propertyData.shorts)} />
             </div>
 
             {property.company && (

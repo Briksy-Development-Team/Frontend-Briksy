@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import { PropertyGallery } from "../property/components/PropertyGallery";
 import { PropertyMap } from "../property/components/PropertyInfo";
-import { DetailShorts, HostProfileCard } from "../shared";
+import { DetailShorts, HostProfileCard, marketingReelsToItems } from "../shared";
 import { getBuilderProject, type PublicBuilderProject } from "../../../api/seeker/organization.api";
 import ProjectPlaceholder from "../../../assets/place holder/builderbg.svg";
 
@@ -57,7 +57,7 @@ export default function BuilderProjectDetail() {
               </div>
             )}
             <div id="shorts">
-              <DetailShorts />
+              <DetailShorts reels={marketingReelsToItems(project.shorts)} />
             </div>
             <section className="border-t border-[#EBE5D9] pt-8">
               <h2 className="mb-4 text-xl font-medium">Meet The Host</h2>

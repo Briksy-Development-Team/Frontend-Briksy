@@ -11,7 +11,7 @@ import { ServiceEnquiry } from "./ServiceEnquiry";
 import { joinAddress, toMedia } from "./ServiceOnlyView";
 import MobileStickyAction from "../../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../../components/custom/FraudBanner";
-import { DetailShorts, SimilarSection } from "../../shared";
+import { DetailShorts, SimilarSection, marketingReelsToItems } from "../../shared";
 
 export function OrganizationView({ organization, service }: { organization: PublicOrganization, service: PublicService | null }) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -123,7 +123,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
             </div>
 
             <div id="shorts">
-              <DetailShorts />
+              <DetailShorts reels={marketingReelsToItems([...(organization.shorts ?? []), ...(organization.reel_urls ?? []).map((url, index) => ({ id: `reel-url-${index}`, url }))])} />
             </div>
           </div>
         </div>

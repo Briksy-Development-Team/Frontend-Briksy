@@ -18,7 +18,7 @@ import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts, SimilarSection } from "../shared";
+import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 
@@ -176,7 +176,7 @@ const BuilderDetail = () => {
                 <BuilderAbout about={viewModel.about} />
               </div>
               <div id="shorts">
-                <DetailShorts />
+                <DetailShorts reels={marketingReelsToItems(builder.shorts)} />
               </div>
             </div>
           </div>

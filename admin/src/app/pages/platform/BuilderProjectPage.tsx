@@ -12,6 +12,7 @@ import {
   type ProjectFormValues,
 } from "../../services/features/builder_projects/component/BuilderProjectModal";
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
+import { uploadMarketingReelsApi, deleteMarketingReelApi } from "../../services/features/marketing/marketingReels.api";
 
 export default function BuilderProjectPage() {
   const location = useLocation();
@@ -56,8 +57,11 @@ export default function BuilderProjectPage() {
     try {
       if (editingProject) {
         await axiosInstance.post(`/admin/builder-projects/${editingProject.id}`, toProjectFormData(values, true));
+        if (values.marketing_reels.length) await uploadMarketingReelsApi("builder-project", editingProject.id, values.marketing_reels);
       } else {
-        await axiosInstance.post("/admin/builder-projects", toProjectFormData(values));
+        const response = await axiosInstance.post<{ data?: { id?: string } }>("/admin/builder-projects", toProjectFormData(values));
+        const id = response.data?.data?.id;
+        if (id && values.marketing_reels.length) await uploadMarketingReelsApi("builder-project", id, values.marketing_reels);
       }
       setShowProjectModal(false);
       setEditingProject(null);
@@ -94,6 +98,11 @@ export default function BuilderProjectPage() {
       images: current.images?.filter((media) => media.id !== mediaId),
       videos: current.videos?.filter((media) => media.id !== mediaId),
     } : current);
+  };
+
+  const deleteProjectReel = async (mediaId: string) => {
+    await deleteMarketingReelApi(mediaId);
+    setEditingProject((current) => current ? { ...current, shorts: current.shorts?.filter((media) => media.id !== mediaId) } : current);
   };
 
   const reviewProject = async (id: string, action: "approve" | "reject") => {
@@ -158,6 +167,7 @@ export default function BuilderProjectPage() {
             }}
             onSubmit={saveProject}
             onDeleteMedia={deleteProjectMedia}
+            onDeleteReel={deleteProjectReel}
           />
         )}
       </>
@@ -232,6 +242,7 @@ export default function BuilderProjectPage() {
           }}
           onSubmit={saveProject}
           onDeleteMedia={deleteProjectMedia}
+          onDeleteReel={deleteProjectReel}
         />
       )}
     </Content>

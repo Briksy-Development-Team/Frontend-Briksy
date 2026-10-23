@@ -123,6 +123,7 @@ export type Property = {
 
   images?: PropertyImage[];
   videos?: PropertyVideo[];
+  shorts?: PropertyVideo[];
   features?: PropertyFeature[];
 
   organization?: {
@@ -197,6 +198,7 @@ export type PropertyFormValues = {
 
   images?: (File | string)[];
   videos?: (File | string)[];
+  marketing_reels?: File[];
   features?: string[];
   floorplan?: File | string | null;
 };

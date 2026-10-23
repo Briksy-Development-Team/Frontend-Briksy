@@ -5,6 +5,8 @@ import { LocationMapPreview } from "../../maps/LocationMapPreview";
 import { useAuth } from "../../../../modules/auth";
 import { mediaAllowance } from "../../../../modules/subscription/mediaEntitlements";
 import type { BuilderProject, BuilderProjectMedia } from "../builder_project.types";
+import MarketingReelsSection from "../../../../components/marketing/MarketingReelsSection";
+import { deleteMarketingReelApi } from "../../marketing/marketingReels.api";
 
 export type ProjectFormValues = {
   name: string;
@@ -18,6 +20,7 @@ export type ProjectFormValues = {
   longitude: string | number;
   images: File[];
   videos: File[];
+  marketing_reels: File[];
 };
 
 type Props = {
@@ -26,6 +29,7 @@ type Props = {
   onClose: () => void;
   onSubmit: (values: ProjectFormValues) => void | Promise<unknown>;
   onDeleteMedia?: (mediaId: string) => void | Promise<unknown>;
+  onDeleteReel?: (mediaId: string) => void | Promise<unknown>;
 };
 
 export const BuilderProjectModal = ({
@@ -34,6 +38,7 @@ export const BuilderProjectModal = ({
   onClose,
   onSubmit,
   onDeleteMedia,
+  onDeleteReel,
 }: Props) => {
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
@@ -62,7 +67,10 @@ export const BuilderProjectModal = ({
     longitude: initialValues?.longitude ?? "",
     images: [],
     videos: [],
+    marketing_reels: [],
   });
+  const [marketingReels, setMarketingReels] = useState<File[]>([]);
+  const [existingReels, setExistingReels] = useState<BuilderProjectMedia[]>(initialValues?.shorts ?? []);
 
   useEffect(() => {
     setForm({
@@ -77,10 +85,13 @@ export const BuilderProjectModal = ({
       longitude: initialValues?.longitude ?? "",
       images: [],
       videos: [],
+      marketing_reels: [],
     });
     setImages([]);
     setVideos([]);
+    setMarketingReels([]);
     setMediaError(null);
+    setExistingReels(initialValues?.shorts ?? []);
   }, [initialValues]);
 
   const updateForm = (key: keyof ProjectFormValues, value: string) =>
@@ -323,6 +334,14 @@ export const BuilderProjectModal = ({
               onDeleteMedia={onDeleteMedia}
             />
           ) : null}
+          <MarketingReelsSection
+            existing={existingReels}
+            selected={marketingReels}
+            limit={allowance.reels}
+            included={allowance.reelsIncluded}
+            onChange={(files) => { setMarketingReels(files); setForm((current) => ({ ...current, marketing_reels: files })); }}
+            onDelete={async (id) => { await (onDeleteReel ? onDeleteReel(id) : deleteMarketingReelApi(id)); setExistingReels((items) => items.filter((item) => item.id !== id)); }}
+          />
         </div>
       </div>
     </ModalShell>

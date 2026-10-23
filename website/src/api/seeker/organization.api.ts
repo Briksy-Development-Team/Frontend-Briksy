@@ -40,6 +40,7 @@ export type PublicOrganization = {
   service_areas?: string[];
   intro_video_url?: string | null;
   reel_urls?: string[];
+  shorts?: { id: string; url: string; sort_order?: number }[];
 };
 
 export type PublicBuilderProject = {
@@ -54,6 +55,7 @@ export type PublicBuilderProject = {
   postcode?: string | null;
   images?: { id?: string; url: string; is_primary?: boolean }[];
   videos?: { id?: string; url: string }[];
+  shorts?: { id: string; url: string; sort_order?: number }[];
   organization?: { id: string; name: string; slug?: string | null; logo_url?: string | null } | null;
   creator?: { id: string; name: string; email?: string | null; mobile_number?: string | null } | null;
 };
