@@ -8,6 +8,7 @@ import type {
   PropertyListParams,
   PropertyFeatureGroup,
 } from "./property.types";
+import { uploadMarketingReelsApi } from "../marketing/marketingReels.api";
 
 const toFormData = (payload: PropertyFormValues) => {
   const formData = new FormData();
@@ -184,7 +185,11 @@ export const createPropertyApi = async (payload: PropertyFormValues) => {
     toFormData(payload),
   );
 
-  return res.data.data;
+  const property = res.data.data;
+  if (payload.marketing_reels?.length && property?.id) {
+    property.shorts = [...(property.shorts ?? []), ...(await uploadMarketingReelsApi("property", property.id, payload.marketing_reels))];
+  }
+  return property;
 };
 
 export const updatePropertyApi = async (
@@ -196,13 +201,15 @@ export const updatePropertyApi = async (
   );
 
   if (!hasFiles) {
-    const { images: _images, videos: _videos, floorplan: _floorplan, ...jsonPayload } = payload;
+    const { images: _images, videos: _videos, floorplan: _floorplan, marketing_reels: _marketingReels, ...jsonPayload } = payload;
     const res = await axiosInstance.put<ApiResponse<Property>>(
       `${getBasePath()}/${id}`,
       jsonPayload,
     );
 
-    return res.data.data;
+    const property = res.data.data;
+    if (payload.marketing_reels?.length) property.shorts = [...(property.shorts ?? []), ...(await uploadMarketingReelsApi("property", id, payload.marketing_reels))];
+    return property;
   }
 
   const formData = toFormData(payload);
@@ -213,7 +220,9 @@ export const updatePropertyApi = async (
     formData,
   );
 
-  return res.data.data;
+  const property = res.data.data;
+  if (payload.marketing_reels?.length) property.shorts = [...(property.shorts ?? []), ...(await uploadMarketingReelsApi("property", id, payload.marketing_reels))];
+  return property;
 };
 
 export const deletePropertyApi = async (id: string) => {

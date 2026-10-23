@@ -46,6 +46,7 @@ export type Organization = {
   service_areas?: string[];
   intro_video_url?: string | null;
   reel_urls?: string[];
+  shorts?: Array<{ id?: string; url: string; sort_order?: number }>;
 };
 
 export type OrganizationType = {

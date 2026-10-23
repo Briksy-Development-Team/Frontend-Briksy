@@ -133,7 +133,7 @@ export function SwiperSection<T = any>({
         <div
           className={`relative ${headerMargin} ${
             variant === "home"
-              ? "lg:mr-14 max-w-[1530px] mx-auto"
+              ? "max-w-[1530px] mx-auto pr-4 md:pr-8 xl:pr-14"
               : ""
           } flex flex-col text-primary-brown items-start justify-end lg:justify-center ${headerClassName}`}
         >

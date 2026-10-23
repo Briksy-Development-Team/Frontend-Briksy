@@ -122,7 +122,7 @@ const PropertyDetail = () => {
             </div>
 
             <div id="shorts">
-              <DetailShorts />
+              <DetailShorts reels={[]} />
             </div>
           </div>
 

@@ -18,6 +18,14 @@ export interface ReelItem {
   videoUrl?: string;
 }
 
+export const marketingReelsToItems = (items?: { id?: string; url: string }[] | null): ReelItem[] =>
+  (items ?? []).map((item, index) => ({
+    id: item.id,
+    thumbnail: DEFAULT_SHORTS[index % DEFAULT_SHORTS.length].thumbnail,
+    title: `Marketing short ${index + 1}`,
+    videoUrl: item.url,
+  }));
+
 export const DEFAULT_SHORTS: ReelItem[] = [
   {
     id: "short-1",

@@ -32,7 +32,7 @@ const mediaFeatureNames = (family: PlanFamily) =>
 const defaultFeatureList = (family: PlanFamily): PlanFeature[] =>
   DEFAULT_FEATURES
     .filter((feature) => !feature.name.includes("Images") && !feature.name.includes("Videos") && !feature.name.includes("Photos"))
-    .concat(DEFAULT_FEATURES.filter((feature) => mediaFeatureNames(family).includes(feature.name)))
+    .concat(DEFAULT_FEATURES.filter((feature) => mediaFeatureNames(family).includes(feature.name) || feature.name === "Reels"))
     .map((feature) => ({
     name: feature.name,
     enabled: false,
@@ -51,7 +51,7 @@ const normalizeFeatureList = (features: PlanFeature[] | undefined, family: PlanF
   }));
 
   const existing = new Set(normalized.map((feature) => feature.name.toLowerCase()));
-  mediaFeatureNames(family).forEach((name) => {
+  [...mediaFeatureNames(family), "Reels"].forEach((name) => {
     if (!existing.has(name.toLowerCase())) {
       normalized.push({ name, enabled: false, value: 0 });
     }

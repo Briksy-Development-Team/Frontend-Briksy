@@ -10,6 +10,8 @@ import { fetchOrganizationApi, fetchOrganizationByIdApi } from "../../organizati
 import { mapOrganization } from "../../organization/organization.mapper";
 import type { Organization } from "../../organization/organization.types";
 import type { PropertyFeatureGroup } from "../property.types";
+import MarketingReelsSection from "../../../../components/marketing/MarketingReelsSection";
+import { deleteMarketingReelApi } from "../../marketing/marketingReels.api";
 
 type Props = {
     initialValues?: Property | null;
@@ -78,8 +80,10 @@ const PropertyModal = ({
 
     const [images, setImages] = useState<File[]>([]);
     const [videos, setVideos] = useState<File[]>([]);
+    const [marketingReels, setMarketingReels] = useState<File[]>([]);
     const [existingImages, setExistingImages] = useState<PropertyImage[]>(initialValues?.images ?? []);
     const [existingVideos, setExistingVideos] = useState<PropertyVideo[]>(initialValues?.videos ?? []);
+    const [existingReels, setExistingReels] = useState<PropertyVideo[]>(initialValues?.shorts ?? []);
     const [existingFloorplan, setExistingFloorplan] = useState<PropertyImage | null>(initialValues?.floorplan ?? null);
     const [floorplan, setFloorplan] = useState<File | null>(null);
     const [deletingImageIds, setDeletingImageIds] = useState<string[]>([]);
@@ -174,11 +178,14 @@ const PropertyModal = ({
                 features: [],
                 images: [],
                 videos: [],
+        marketing_reels: [],
             });
             setImages([]);
             setVideos([]);
+            setMarketingReels([]);
             setExistingImages([]);
             setExistingVideos([]);
+            setExistingReels([]);
             setExistingFloorplan(null);
             setFloorplan(null);
             setPropertyCategory("residential");
@@ -223,8 +230,10 @@ const PropertyModal = ({
         });
         setImages([]);
         setVideos([]);
+        setMarketingReels([]);
         setExistingImages(initialValues.images ?? []);
         setExistingVideos(initialValues.videos ?? []);
+        setExistingReels(initialValues.shorts ?? []);
         setExistingFloorplan(initialValues.floorplan ?? null);
         setFloorplan(null);
         setPropertyCategory(
@@ -305,6 +314,7 @@ const PropertyModal = ({
             location_verified: undefined,
             images,
             videos,
+            marketing_reels: marketingReels,
             floorplan: floorplan ?? undefined,
         });
     };
@@ -934,6 +944,8 @@ const PropertyModal = ({
                     ))}
                 </div>
             )}
+
+            <MarketingReelsSection existing={existingReels} selected={marketingReels} limit={allowance.reels} included={allowance.reelsIncluded} onChange={setMarketingReels} onDelete={async (id) => { await deleteMarketingReelApi(id); setExistingReels((items) => items.filter((item) => item.id !== id)); }} />
 
             {/* Existing Videos */}
             {existingVideos.length ? (

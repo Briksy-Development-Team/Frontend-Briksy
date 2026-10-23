@@ -173,7 +173,7 @@ const BuilderDetail = () => {
                 <BuilderAbout about={viewModel.about} />
               </div>
               <div id="shorts">
-                <DetailShorts />
+                <DetailShorts reels={marketingReelsToItems(builder.shorts)} />
               </div>
             </div>
           </div>

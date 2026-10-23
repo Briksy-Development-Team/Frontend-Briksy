@@ -19,6 +19,7 @@ export type BuilderProject = {
   description?: string | null;
   images?: BuilderProjectMedia[];
   videos?: BuilderProjectMedia[];
+  shorts?: BuilderProjectMedia[];
   features?: string[];
   submitted_at?: string | null;
   reviewed_at?: string | null;

@@ -7,6 +7,7 @@ import type {
   ServiceFormValues,
   GetServiceListParams,
 } from "./service_list.types";
+import { uploadMarketingReelsApi } from "../marketing/marketingReels.api";
 
 export type { GetServiceListParams } from "./service_list.types";
 
@@ -34,7 +35,7 @@ type ApiResponse<T> = {
 const toFormData = (payload: ServiceFormValues) => {
   const formData = new FormData();
   Object.entries(payload).forEach(([key, value]) => {
-    if (key === "images" || key === "videos" || key === "image" || value === undefined || value === null) return;
+    if (key === "images" || key === "videos" || key === "marketing_reels" || key === "image" || value === undefined || value === null) return;
     if (typeof value === "boolean") formData.append(key, value ? "1" : "0");
     else if (typeof value === "object") formData.append(key, JSON.stringify(value));
     else formData.append(key, String(value));
@@ -70,7 +71,9 @@ export const createServiceApi = async (payload: ServiceFormValues) => {
   const hasFiles = [...(payload.images ?? []), ...(payload.videos ?? [])].some((item) => item instanceof File);
   const res = await axiosInstance.post<ApiResponse<Service>>(getBasePath(), hasFiles ? toFormData(payload) : payload);
 
-  return res.data.data;
+  const service = res.data.data;
+  if (payload.marketing_reels?.length && service?.id) service.shorts = [...(service.shorts ?? []), ...(await uploadMarketingReelsApi("service", service.id, payload.marketing_reels))];
+  return service;
 };
 
 export const updateServiceApi = async (
@@ -86,7 +89,9 @@ export const updateServiceApi = async (
     ? await axiosInstance.post<ApiResponse<Service>>(`${getBasePath()}/${id}`, formData)
     : await axiosInstance.put<ApiResponse<Service>>(`${getBasePath()}/${id}`, payload);
 
-  return res.data.data;
+  const service = res.data.data;
+  if (payload.marketing_reels?.length) service.shorts = [...(service.shorts ?? []), ...(await uploadMarketingReelsApi("service", id, payload.marketing_reels))];
+  return service;
 };
 
 export const deleteServiceApi = async (id: string) => {

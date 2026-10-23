@@ -58,7 +58,7 @@ export default function BuilderProjectDetail() {
               </div>
             )}
             <div id="shorts">
-              <DetailShorts />
+              <DetailShorts reels={marketingReelsToItems(project.shorts)} />
             </div>
             <section className="border-t border-[#EBE5D9] pt-8">
               <h2 className="mb-4 text-xl font-medium">Meet The Host</h2>

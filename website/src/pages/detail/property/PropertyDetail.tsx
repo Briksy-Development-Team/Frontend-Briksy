@@ -25,7 +25,7 @@ import {
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts, SimilarSection } from "../shared";
+import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
 import { SwiperSection } from "../../../components/swiper";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
@@ -275,9 +275,7 @@ const PropertyDetail = () => {
       setEnquirySubmitting(false);
     }
   };
-  // The admin flag is the source of truth. Auction details can be incomplete
-  // while staff are still updating them, and past auctions should still retain
-  // their auction label/history on the property page.
+
   const isAuction = Boolean(propertyData.is_auction);
 
   const addressParts = property.address.split(", ");
@@ -474,7 +472,7 @@ const PropertyDetail = () => {
             )}
 
             <div id="shorts">
-              <DetailShorts />
+              <DetailShorts reels={marketingReelsToItems(propertyData.shorts)} />
             </div>
 
             {property.company && (
