@@ -67,11 +67,11 @@ export default function NavDropdown({ item, onClose, onMouseEnter, onMouseLeave 
       ref={panelRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`fixed left-0 right-0 top-20 z-50 w-full max-w-[2000px] mx-auto overflow-hidden bg-[#F8F4EE] ${item ? "" : "pointer-events-none"
+      className={`fixed left-0 right-0 top-20 z-50 w-full overflow-hidden bg-[#F8F4EE] ${item ? "" : "pointer-events-none"
         }`}
       style={{ clipPath: HIDDEN_CLIP, opacity: 0 }}
     >
-      <div className="mx-auto flex gap-10 px-40 py-12">
+      <div className="mx-auto flex w-full max-w-[1530px] gap-10 px-4 sm:px-8 xl:px-14 py-12">
         <div className={`flex flex-col justify-start gap-6 ${hasCards ? "w-[50%]" : "w-full"}`}>
           <p className="dd-item text-[11px] font-semibold uppercase tracking-[0.1364em] text-black/50">
             {content.label}

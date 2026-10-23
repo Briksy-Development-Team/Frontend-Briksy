@@ -99,7 +99,7 @@ const PublicInfoPage = ({ kind }: Props) => {
       </div>
 
       <div className="hidden md:block pt-28 pb-20">
-        <div className="px-[5%]">
+        <div className="w-full max-w-[1530px] mx-auto px-[5%]">
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },

@@ -58,7 +58,7 @@ const AppPreview = () => {
             </div>
 
             {/* md and up: bordered card, phone image bleeding the outer border */}
-            <div className="hidden sm:flex w-full px-[3%] justify-center items-center">
+            <div className="mx-auto hidden sm:flex w-full max-w-[1530px] px-[3%] justify-center items-center">
                 <div className="relative w-full h-[300px] lg:h-[20rem] xl:h-[30rem] rounded-3xl border border-[#e2cbb3] overflow-hidden">
                     {/* Brown card sits behind the phone image, inset from the outer border */}
                     <div

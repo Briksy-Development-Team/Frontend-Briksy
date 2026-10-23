@@ -26,7 +26,7 @@ const ProfileDesktop = () => {
     ];
 
     return (
-        <div className="mt-28 w-full font-helvetica px-8 pb-16">
+        <div className="mt-28 w-full max-w-[1530px] mx-auto font-helvetica px-8 pb-16">
             <div className="flex w-full justify-around items-start">
                 <div className="sticky top-32 w-[20%] pb-8">
                     <h1 className="pb-5 text-[1.875rem] font-medium text-primary-brown">

@@ -6,10 +6,10 @@ const badges = ["ABN verification required", "No setup fees", "Cancel anytime"];
 const Contact = () => {
   const navigate = useNavigate();
   return (
-    <div className="w-full px-[3%] font-helvetica  ">
-      <div className="w-full bg-[#F0ECE5] rounded-[2rem] lg:px-8 p-4  flex flex-col-reverse lg:flex-row items-center justify-between gap-10">
-        <div className="lg:w-[50%] w-full ">
-          <div className=" flex-wrap hidden lg:flex gap-3 mb-8">
+    <div className="mx-auto w-full max-w-[1530px] px-[3%] font-helvetica">
+      <div className="w-full bg-[#F0ECE5] rounded-[2rem] lg:px-8 p-4 flex flex-col-reverse lg:flex-row items-center justify-between gap-10">
+        <div className="lg:w-[50%] w-full">
+          <div className="flex-wrap hidden lg:flex gap-3 mb-8">
             {badges.map((badge) => (
               <span
                 key={badge}
@@ -33,28 +33,29 @@ const Contact = () => {
           </p>
 
           <div className="flex flex-col md:flex-row items-center gap-4 mt-10">
-            <button onClick={() => navigate("/register")} className="sm:px-6 sm:py-3 px-3 py-5 w-full md:w-auto text-center   bg-primary-brown text-white rounded-xl text-[1rem] font-medium">
+            <button onClick={() => navigate("/register")} className="sm:px-6 sm:py-3 px-3 py-5 w-full md:w-auto text-center bg-primary-brown text-white rounded-xl text-[1rem] font-medium cursor-pointer">
               List Your Business
             </button>
 
             <Link
               to="/subs"
-              className="sm:px-6 sm:py-3 border  w-full md:w-auto px-3 py-5  border-primary-brown text-center text-primary-brown rounded-xl text-[1rem] font-medium bg-white"
+              className="sm:px-6 sm:py-3 border w-full md:w-auto px-3 py-5 border-primary-brown text-center text-primary-brown rounded-xl text-[1rem] font-medium bg-white"
             >
               View Subscription Plans
             </Link>
           </div>
         </div>
 
-        <div className="lg:w-[40%] bg-gray-400     justify-center">
-          <video preload="none"
+        <div className="lg:w-[40%] bg-gray-400 justify-center">
+          <video
+            preload="none"
             src={Contacts}
             autoPlay
             loop
             muted
             playsInline
-            className="w-full  h-auto object-contain"
-          />{" "}
+            className="w-full h-auto object-contain"
+          />
         </div>
       </div>
     </div>

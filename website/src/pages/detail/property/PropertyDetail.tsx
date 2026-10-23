@@ -296,7 +296,7 @@ const PropertyDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 font-helvetica flex   md:pb-0 flex-col">
-      <main className="flex-1 max-w-[2000px] w-full mx-auto px-4 sm:px-8 lg:px-20 pb-12  md:py-6">
+      <main className="flex-1 w-full max-w-[1530px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
         {/* Desktop Header */}
         <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center  mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />

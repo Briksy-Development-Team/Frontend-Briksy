@@ -50,15 +50,15 @@ const MainLayout = () => {
     }
 
     return (
-        <div className="min-h-screen   max-w-[2000px] mx-auto flex flex-col">
+        <div className="min-h-screen w-full flex flex-col">
             <Navbar mode={mode} setMode={setMode} hasHero={hasHero} hideOnMobile={hideOnMobile} visibilityClass={navVisibilityClass} />
-            <div className="flex-1">
+            <div className="flex-1 w-full">
                 <Outlet context={{ mode, setMode, isApp, hideBottomNav, hideOnMobile }} />
             </div>
             <Footer />
             <LocationPermissionPrompt />
         </div>
-    )
-}
+    );
+};
 
-export default MainLayout
+export default MainLayout;
