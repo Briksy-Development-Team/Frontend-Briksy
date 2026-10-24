@@ -18,7 +18,7 @@ import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts, SimilarSection } from "../shared";
+import { DetailShorts, marketingReelsToItems, SimilarSection } from "../shared";
 import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";

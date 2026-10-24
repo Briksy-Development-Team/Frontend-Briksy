@@ -7,9 +7,6 @@ type ImageInput = string | { src?: string; type?: 'image' | 'video'; videoSrc?: 
 
 const COLORS = ['#c8cfc4', '#b8c4b4', '#d0cdc0', '#c4cfc9', '#cbc4af'];
 
-const isVideoInput = (i: ImageInput) =>
-  typeof i !== 'string' && i.type === 'video';
-
 const Thumb = ({ m, size = 48 }: { m: Media; size?: number }) => (
   <>
     <img src={m.src} alt="Property media" className="w-full h-full object-cover" />

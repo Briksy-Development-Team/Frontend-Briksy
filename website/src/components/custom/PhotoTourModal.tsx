@@ -101,7 +101,7 @@ function NotAvailable({ label }: { label: string }) {
 }
 
 // ── Media viewer (swiper + thumbs) ────────────────────────────────────────────
-function MediaViewer({ items }: { items: Media[] }) {
+function MediaViewer({ items, initialIndex = 0 }: { items: Media[]; initialIndex?: number }) {
   const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [active, setActive] = useState(0);
@@ -124,7 +124,7 @@ function MediaViewer({ items }: { items: Media[] }) {
           mousewheel={{ forceToAxis: true }}
           slidesPerView="auto"
           spaceBetween={12}
-          initialSlide={0}
+          initialSlide={initialIndex}
           onSwiper={setMainSwiper}
           onSlideChange={(s) => setActive(s.activeIndex)}
           className="h-full w-full"
@@ -257,7 +257,14 @@ export function PhotoTourModal({
     return 'photos';
   })();
 
-  const [activeTab, setActiveTab] = useState<Tab>(defaultTab);
+  const initialMedia = useLegacy ? media?.[initialIndex] : undefined;
+  const initialTab = initialMedia ? (isVideo(initialMedia) ? 'videos' : 'photos') : defaultTab;
+  const initialMediaIndex = initialMedia
+    ? (isVideo(initialMedia)
+      ? resolvedVideos.findIndex((item) => item === initialMedia)
+      : resolvedPhotos.findIndex((item) => item === initialMedia))
+    : 0;
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
 
   const handleShare = async () => {
     try {
@@ -350,13 +357,13 @@ export function PhotoTourModal({
           <div className="flex-1 min-h-0 flex flex-col px-3 sm:px-[3%] pt-3 pb-4 gap-3">
             {activeTab === 'photos' && (
               resolvedPhotos.length > 0
-                ? <MediaViewer key="photos" items={resolvedPhotos} />
+                ? <MediaViewer key="photos" items={resolvedPhotos} initialIndex={initialTab === 'photos' ? initialMediaIndex : 0} />
                 : <NotAvailable label="Photos" />
             )}
 
             {activeTab === 'videos' && (
               resolvedVideos.length > 0
-                ? <MediaViewer key="videos" items={resolvedVideos} />
+                ? <MediaViewer key="videos" items={resolvedVideos} initialIndex={initialTab === 'videos' ? initialMediaIndex : 0} />
                 : <NotAvailable label="Videos" />
             )}
 

@@ -9,7 +9,7 @@ import { AgentMobileHeader } from "./components/AgentMobileHeader";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { SimilarSection } from "../shared";
+import { DetailShorts, marketingReelsToItems, SimilarSection } from "../shared";
 import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";

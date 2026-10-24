@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import Breadcrumb from "../../../components/nav/Breadcrumb";
 import { PropertyGallery } from "../property/components/PropertyGallery";
 import { PropertyMap } from "../property/components/PropertyInfo";
-import { DetailShorts, HostProfileCard } from "../shared";
+import { DetailShorts, HostProfileCard, marketingReelsToItems } from "../shared";
 import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { getBuilderProject, type PublicBuilderProject } from "../../../api/seeker/organization.api";
 import ProjectPlaceholder from "../../../assets/place holder/builderbg.svg";
