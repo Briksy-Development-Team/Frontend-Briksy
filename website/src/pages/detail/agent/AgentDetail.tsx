@@ -9,7 +9,8 @@ import { AgentMobileHeader } from "./components/AgentMobileHeader";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
+import { SimilarSection } from "../shared";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import defaultBanner from "../../../assets/agent/agent_banner.png";
 import defaultAvatar from "../../../assets/agent/agent_avatar.png";
@@ -125,11 +126,7 @@ export const AgentDetail = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">
-        Loading agent profile...
-      </div>
-    );
+    return <DetailSkeleton gallery={false} />;
   }
 
   if (error || !organization) {
@@ -161,7 +158,7 @@ export const AgentDetail = () => {
 
   return (
     <div className="min-h-screen  font-helvetica md:pt-20">
-      <main className="flex-1 max-w-[2000px] w-full mx-auto  sm:px-8 lg:px-20 pb-12  md:py-6">
+      <main className="flex-1 w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 pb-12 md:py-6">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[

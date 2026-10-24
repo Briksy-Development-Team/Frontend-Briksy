@@ -9,6 +9,7 @@ import {
   type CollectionItem,
   type SeekerCollection,
 } from "../../../api/seeker/collections.api";
+import ResultsSkeleton from "../../skeletons/ResultsSkeleton";
 import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../../api/public.mappers";
 import PropertyGridCard from "../../cards/property/PropertyGridCard";
 import PropertyListCard from "../../cards/property/PropertyListCard";
@@ -48,12 +49,7 @@ export default function CollectionDetailPage({ showBack = true }: { showBack?: b
     setItems((cur) => cur.filter((i) => i.id !== item.id));
   };
 
-  if (loading) return (
-    <div className="py-16 text-center text-primary-light-brown">
-      <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-brown border-t-transparent mb-3" />
-      <p className="text-sm">Loading Collection...</p>
-    </div>
-  );
+  if (loading) return <ResultsSkeleton count={8} showHeader={false} />;
   if (error) return <p className="text-red-700 font-medium">{error}</p>;
   if (!collection) return <p className="text-primary-light-brown">This Collection was not found.</p>;
 
@@ -83,7 +79,7 @@ export default function CollectionDetailPage({ showBack = true }: { showBack?: b
   if (professionals.length) parts.push(`${String(professionals.length).padStart(2, "0")} ${professionals.length === 1 ? "trader" : "traders"}`);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full max-w-[1530px] mx-auto space-y-8">
       {/* Header — centered name, back arrow left (optional) */}
       <div className="flex items-center justify-between gap-4">
         {showBack ? (

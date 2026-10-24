@@ -10,6 +10,7 @@ import {
   renameCollection,
   type SeekerCollection,
 } from "../../../api/seeker/collections.api";
+import ResultsSkeleton from "../../skeletons/ResultsSkeleton";
 
 type Form = { id?: string; name: string };
 
@@ -63,7 +64,7 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
   const isSavedRoute = location.pathname === "/saved";
 
   return (
-    <div className={`w-full space-y-8 ${isSavedRoute ? "min-h-screen px-3 py-4 md:px-5 md:py-6 max-w-7xl mx-auto" : ""}`}>
+    <div className={`w-full space-y-8 ${isSavedRoute ? "min-h-screen px-3 py-4 md:px-5 md:py-6 max-w-[1530px] mx-auto" : ""}`}>
       {createdMessage && (
         <div role="status" className="fixed right-5 top-5 z-[120] rounded-2xl bg-primary-brown px-5 py-4 text-sm font-medium text-white shadow-2xl animate-fade-in">
           {createdMessage}
@@ -128,10 +129,11 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
         )}
 
         {loading ? (
-          <div className="py-16 text-center text-primary-light-brown">
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary-brown border-t-transparent mb-3" />
-            <p className="text-sm">Loading Collections...</p>
-          </div>
+          <ResultsSkeleton
+            count={8}
+            cardClassName="aspect-square h-auto rounded-2xl"
+            gridClassName="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4"
+          />
         ) : collections.length === 0 ? (
           <div className="py-16 text-center text-primary-light-brown max-w-sm mx-auto">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F8F4EE] text-primary-brown mb-4">

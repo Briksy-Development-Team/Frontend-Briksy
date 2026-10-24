@@ -121,7 +121,9 @@ export function SwiperSection<T = any>({
     variant === "search" ? "mb-3" : variant === "detail" ? "mb-6" : "mb-10";
 
   const defaultContainerClass =
-    variant === "home" ? "lg:w-full pl-[5%] lg:px-0 lg:ml-10" : "w-full";
+    variant === "home"
+      ? "lg:w-full pl-[5%] lg:px-0 lg:ml-10 min-[1530px]:ml-0 min-[1530px]:pl-0"
+      : "w-full max-w-[1530px] mx-auto";
 
   const innerContainerClass = containerClassName ?? defaultContainerClass;
 
@@ -130,7 +132,9 @@ export function SwiperSection<T = any>({
       <div className={innerContainerClass}>
         <div
           className={`relative ${headerMargin} ${
-            variant === "home" ? "lg:mr-14" : ""
+            variant === "home"
+              ? "max-w-[1530px] mx-auto pr-4 md:pr-8 xl:pr-14"
+              : ""
           } flex flex-col text-primary-brown items-start justify-end lg:justify-center ${headerClassName}`}
         >
           <div className="flex w-full items-center justify-between">
@@ -160,7 +164,7 @@ export function SwiperSection<T = any>({
         </div>
 
         {categories && categories.length > 0 && (
-          <div className="flex flex-wrap justify-center hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start">
+          <div className="flex flex-wrap justify-center hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start max-w-[1530px] mx-auto">
             {categories.map((tab, i) => (
               <button
                 type="button"
@@ -180,7 +184,14 @@ export function SwiperSection<T = any>({
         )}
 
         {/* Swiper Cards */}
-        <div key={activeIdx} className="animate-fade-in gap-3">
+        <div
+          key={activeIdx}
+          className={`animate-fade-in gap-3 ${
+            variant === "home"
+              ? "min-[1530px]:pl-[calc((100vw-1530px)/2)]"
+              : ""
+          }`}
+        >
           <SwiperScroll
             items={displayItems}
             renderItem={renderItem}

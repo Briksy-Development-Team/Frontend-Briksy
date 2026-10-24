@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getOrganization, type PublicOrganization } from "../../../api/seeker/organization.api";
 import { getService, type PublicService } from "../../../api/service/service.api";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { OrganizationView } from "./components/OrganizationView";
 import { ServiceOnlyView } from "./components/ServiceOnlyView";
 
@@ -40,7 +41,7 @@ const ServiceDetail = () => {
     return () => { active = false; };
   }, [id]);
 
-  if (loading) return <div className="min-h-screen  px-[3%] pt-32">Loading professional...</div>;
+  if (loading) return <DetailSkeleton gallery={false} />;
   if (error || (!organization && !service)) {
     return <div className="min-h-screen  px-[3%] pt-32 text-primary-brown">{error || "Professional or service not found."}</div>;
   }

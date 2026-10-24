@@ -178,7 +178,7 @@ const SearchPage = () => {
           </button>
         </div>
       )}
-      <div className="mx-auto pl-[3%] pt-6 md:px-[3%] ">
+      <div className="mx-auto w-full max-w-[1530px] pl-[3%] pt-6 md:px-[3%]">
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar
           activeCategoryId={activeCategoryId}
@@ -191,7 +191,7 @@ const SearchPage = () => {
           query={queryParam}
           onQueryChange={handleQueryChange}
         />
-        <div className="mt-3 flex flex-col ">{content}</div>
+        <div className="mt-3 flex flex-col">{content}</div>
       </div>
     </div>
   );

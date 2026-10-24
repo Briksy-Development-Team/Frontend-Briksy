@@ -1,6 +1,7 @@
 import { Clock, Mail, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSeekerInquiries, type InquiryItem } from "../../../api/seeker/seeker.api";
+import ListSkeleton from "../../../components/skeletons/ListSkeleton";
 
 const labels: Record<string, string> = {
   inspection: "Booking an inspection",
@@ -35,7 +36,11 @@ export default function AppEnquiries() {
   return <div className="min-h-screen bg-[#F8F4EE] px-4 pb-28 pt-2 font-helvetica md:px-0">
     <div className="mx-auto max-w-4xl">
       <h1 className="pb-5 text-xl font-medium text-[#342511]">Enquiries</h1>
-      {loading ? <p className="text-sm text-[#7C5F42]">Loading enquiries…</p> : items.length === 0 ? <div className="rounded-2xl bg-white p-10 text-center text-sm text-[#7C5F42]">You have no enquiries yet.</div> : groups.map(([key, title]) => {
+      {loading ? (
+        <ListSkeleton count={4} />
+      ) : items.length === 0 ? (
+        <div className="rounded-2xl bg-white p-10 text-center text-sm text-[#7C5F42]">You have no enquiries yet.</div>
+      ) : groups.map(([key, title]) => {
         const group = items.filter((item) => statusGroup(item.status) === key);
         return group.length ? <section key={key} className="mb-7"><h2 className="mb-3 text-sm font-medium text-[#342511]">{title}</h2><div className="space-y-2">{group.map((item) => <button key={item.id} type="button" onClick={() => setSelected(item)} className="flex w-full items-start gap-3 rounded-2xl bg-white p-4 text-left shadow-sm hover:shadow-md"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#EDE8E4] text-[#7C5F42]"><Mail size={18} /></span><span className="min-w-0 flex-1"><span className="block font-medium text-[#342511]">{item.name}</span><span className="mt-1 block truncate text-sm text-[#7C5F42]">{item.latest}</span><span className="mt-2 flex items-center gap-1 text-xs text-[#9B8067]"><Clock size={12} />{item.created_at ? new Date(item.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }) : ""}</span></span><span className="rounded-full bg-[#F8F4EE] px-2 py-1 text-xs text-[#7C5F42]">{item.status.replaceAll("_", " ")}</span></button>)}</div></section> : null;
       })}

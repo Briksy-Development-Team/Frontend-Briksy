@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ArrowLeft, Share, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Share, Play, Pause, Volume2, VolumeX, ImageIcon, Video, LayoutTemplate } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel, Thumbs } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
@@ -20,6 +20,8 @@ interface GalleryImage {
 }
 
 export type Media = GalleryImage;
+
+type Tab = 'photos' | 'videos' | 'floorplans';
 
 const isVideo = (m: Media) => !!(m.videoUrl || m.videoSrc || m.type === 'video');
 
@@ -88,15 +90,142 @@ function VideoCard({ m }: { m: Media }) {
   );
 }
 
+// ── Not available state ───────────────────────────────────────────────────────
+function NotAvailable({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-full gap-3 text-primary-brown/40 select-none">
+      <span className="text-4xl font-light">—</span>
+      <span className="text-sm font-medium">{label} not available</span>
+    </div>
+  );
+}
+
+// ── Media viewer (swiper + thumbs) ────────────────────────────────────────────
+function MediaViewer({ items }: { items: Media[] }) {
+  const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [active, setActive] = useState(0);
+
+  const thumbW = typeof window !== 'undefined' && window.innerWidth < 640 ? 76 : 110;
+  const thumbH = typeof window !== 'undefined' && window.innerWidth < 640 ? 56 : 79;
+
+  const goTo = (index: number) => {
+    mainSwiper?.slideTo(index);
+    setActive(index);
+  };
+
+  return (
+    <div className="flex-1 min-h-0 flex flex-col gap-3">
+      {/* Main slider */}
+      <div className="flex-1 min-h-0">
+        <Swiper
+          modules={[Mousewheel, Thumbs]}
+          thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+          mousewheel={{ forceToAxis: true }}
+          slidesPerView="auto"
+          spaceBetween={12}
+          initialSlide={0}
+          onSwiper={setMainSwiper}
+          onSlideChange={(s) => setActive(s.activeIndex)}
+          className="h-full w-full"
+          style={{ touchAction: 'pan-y' }}
+        >
+          {items.map((m, i) => (
+            <SwiperSlide key={i} style={{ width: '85%', height: '100%' }}>
+              <div className="w-full h-full rounded-xl sm:rounded-[1.25rem] overflow-hidden bg-black/5 shadow-sm">
+                {isVideo(m)
+                  ? <VideoCard m={m} />
+                  : <img src={m.src} alt="Property media" draggable={false} className="w-full h-full object-cover" />
+                }
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* Thumbnail strip */}
+      {items.length > 1 && (
+        <div className="shrink-0">
+          <Swiper
+            onSwiper={setThumbsSwiper}
+            modules={[FreeMode, Mousewheel, Thumbs]}
+            freeMode
+            watchSlidesProgress
+            mousewheel={{ forceToAxis: true }}
+            slidesPerView="auto"
+            spaceBetween={8}
+          >
+            {items.map((m, i) => (
+              <SwiperSlide key={i} style={{ width: thumbW, height: thumbH }}>
+                <button
+                  type="button"
+                  aria-label={`Go to ${isVideo(m) ? 'video' : 'photo'} ${i + 1}`}
+                  onClick={() => goTo(i)}
+                  className={`relative w-full h-full rounded-md overflow-hidden border-2 transition-colors ${
+                    active === i ? 'border-primary-brown' : 'border-transparent'
+                  }`}
+                >
+                  {isVideo(m) ? (
+                    <video
+                      src={getVideoSrc(m)}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      draggable={false}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <img src={m.src} alt="" draggable={false} className="w-full h-full object-cover" />
+                  )}
+
+                  {active !== i && (
+                    <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+                  )}
+
+                  {isVideo(m) && (
+                    <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <Play size={14} className="text-white ml-0.5" fill="currentColor" />
+                    </span>
+                  )}
+                </button>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Floorplan viewer ──────────────────────────────────────────────────────────
+function FloorplanViewer({ src }: { src: string }) {
+  return (
+    <div className="flex-1 min-h-0 flex items-center justify-center">
+      <div className="w-full h-full rounded-xl sm:rounded-[1.25rem] overflow-hidden bg-[#F8F4EE]">
+        <img src={src} alt="Floor plan" draggable={false} className="w-full h-full object-contain" />
+      </div>
+    </div>
+  );
+}
+
 // ── Main modal ────────────────────────────────────────────────────────────────
 export function PhotoTourModal({
-  media = [],
+  // New tabbed props
+  photos,
+  videos,
+  floorplan,
+  // Legacy fallback (ServiceDetails uses this)
+  media,
   initialIndex = 0,
   onClose,
   title = 'Photo tour',
   targetId,
   initialIsFavourite = false,
 }: {
+  photos?: Media[];
+  videos?: Media[];
+  floorplan?: string | null;
+  /** @deprecated pass photos/videos/floorplan instead */
   media?: Media[];
   initialIndex?: number;
   onClose: () => void;
@@ -105,17 +234,37 @@ export function PhotoTourModal({
   targetId?: string | number;
   initialIsFavourite?: boolean;
 }) {
-  const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
-  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
-  const [active, setActive] = useState(initialIndex);
+  // If the new tabbed props aren't provided, fall back to the legacy media array
+  const useLegacy = !photos && !videos && !floorplan;
+  const resolvedPhotos = useLegacy
+    ? (media ?? []).filter((m) => !isVideo(m))
+    : (photos ?? []);
+  const resolvedVideos = useLegacy
+    ? (media ?? []).filter((m) => isVideo(m))
+    : (videos ?? []);
+  const resolvedFloorplan = floorplan ?? null;
 
-  // Thumbnail thumb size — smaller on mobile
-  const thumbW = typeof window !== 'undefined' && window.innerWidth < 640 ? 76 : 110;
-  const thumbH = typeof window !== 'undefined' && window.innerWidth < 640 ? 56 : 79;
+  const tabs: { id: Tab; label: string; icon: React.ReactNode; count: number }[] = [
+    { id: 'photos', label: 'Photos', icon: <ImageIcon size={15} />, count: resolvedPhotos.length },
+    { id: 'videos', label: 'Videos', icon: <Video size={15} />, count: resolvedVideos.length },
+    { id: 'floorplans', label: 'Floor Plans', icon: <LayoutTemplate size={15} />, count: resolvedFloorplan ? 1 : 0 },
+  ];
 
-  const goTo = (index: number) => {
-    mainSwiper?.slideTo(index);
-    setActive(index);
+  // Default to the first tab that has content, or 'photos'
+  const defaultTab: Tab = (() => {
+    if (resolvedPhotos.length > 0) return 'photos';
+    if (resolvedVideos.length > 0) return 'videos';
+    return 'photos';
+  })();
+
+  const [activeTab, setActiveTab] = useState<Tab>(defaultTab);
+
+  const handleShare = async () => {
+    try {
+      await navigator.share({ title, url: window.location.href });
+    } catch {
+      await navigator.clipboard.writeText(window.location.href);
+    }
   };
 
   return (
@@ -135,7 +284,7 @@ export function PhotoTourModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* ── Header ── */}
-          <div className="grid grid-cols-3 items-center px-4 sm:px-6 py-3 sm:py-5 shrink-0 border-b border-black/5">
+          <div className="grid grid-cols-3 items-center px-4 sm:px-6 py-3 sm:py-4 shrink-0 border-b border-black/5">
             <button
               type="button"
               onClick={onClose}
@@ -151,7 +300,9 @@ export function PhotoTourModal({
             <div className="flex items-center gap-1 sm:gap-1.5 text-primary-brown text-sm justify-self-end">
               <button
                 type="button"
-                className="hidden sm:flex items-center gap-2 h-10 px-1.5 rounded-lg hover:bg-black/5 transition"
+                onClick={() => void handleShare()}
+                aria-label="Share"
+                className="flex items-center gap-2 h-10 px-1.5 rounded-lg hover:bg-black/5 transition"
               >
                 <Share size={20} />
                 <span className="hidden md:inline">Share</span>
@@ -169,93 +320,51 @@ export function PhotoTourModal({
             </div>
           </div>
 
-          {/* ── Body: main viewer + thumbnails ── */}
+          {/* ── Tabs ── */}
+          <div className="shrink-0 flex justify-center px-4 pt-3 pb-1">
+            <div className="inline-flex items-center rounded-full border border-[#E7E1D8] bg-white p-1 gap-0.5">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-150 ${
+                    activeTab === tab.id
+                      ? 'bg-primary-brown text-white'
+                      : 'text-primary-brown hover:bg-black/5'
+                  }`}
+                >
+                  {tab.icon}
+                  {tab.label}
+                  {tab.count === 0 && (
+                    <span className={`text-xs ${activeTab === tab.id ? 'text-white/60' : 'text-primary-brown/40'}`}>
+                      —
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Body ── */}
           <div className="flex-1 min-h-0 flex flex-col px-3 sm:px-[3%] pt-3 pb-4 gap-3">
+            {activeTab === 'photos' && (
+              resolvedPhotos.length > 0
+                ? <MediaViewer key="photos" items={resolvedPhotos} />
+                : <NotAvailable label="Photos" />
+            )}
 
-            {/* Main image/video slider */}
-            {/* NOTE: Swiper slidesPerView="auto" REQUIRES inline width on slides — Tailwind responsive classes are ignored */}
-            <div className="flex-1 min-h-0">
-              <Swiper
-                modules={[Mousewheel, Thumbs]}
-                thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                mousewheel={{ forceToAxis: true }}
-                slidesPerView="auto"
-                spaceBetween={12}
-                initialSlide={initialIndex}
-                onSwiper={setMainSwiper}
-                onSlideChange={(s) => setActive(s.activeIndex)}
-                className="h-full w-full"
-                style={{ touchAction: 'pan-y' }}
-              >
-                {media.map((m, i) => (
-                  <SwiperSlide
-                    key={i}
-                    // Must use inline style — Tailwind w-[] is ignored by Swiper's layout engine
-                    style={{ width: '85%', height: '100%' }}
-                  >
-                    <div className="w-full h-full rounded-xl sm:rounded-[1.25rem] overflow-hidden bg-black/5 shadow-sm">
-                      {isVideo(m)
-                        ? <VideoCard m={m} />
-                        : <img src={m.src} alt="Property media" draggable={false} className="w-full h-full object-cover" />
-                      }
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
+            {activeTab === 'videos' && (
+              resolvedVideos.length > 0
+                ? <MediaViewer key="videos" items={resolvedVideos} />
+                : <NotAvailable label="Videos" />
+            )}
 
-            {/* Thumbnail strip */}
-            <div className="shrink-0">
-              <Swiper
-                onSwiper={setThumbsSwiper}
-                modules={[FreeMode, Mousewheel, Thumbs]}
-                freeMode
-                watchSlidesProgress
-                mousewheel={{ forceToAxis: true }}
-                slidesPerView="auto"
-                spaceBetween={8}
-              >
-                {media.map((m, i) => (
-                  <SwiperSlide
-                    key={i}
-                    style={{ width: thumbW, height: thumbH }}
-                  >
-                    <button
-                      type="button"
-                      aria-label={`Go to ${isVideo(m) ? 'video' : 'photo'} ${i + 1}`}
-                      onClick={() => goTo(i)}
-                      className={`relative w-full h-full rounded-md overflow-hidden border-2 transition-colors ${
-                        active === i ? 'border-primary-brown' : 'border-transparent'
-                      }`}
-                    >
-                      {isVideo(m) ? (
-                        <video
-                          src={getVideoSrc(m)}
-                          muted
-                          playsInline
-                          preload="metadata"
-                          draggable={false}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img src={m.src} alt="" draggable={false} className="w-full h-full object-cover" />
-                      )}
-
-                      {active !== i && (
-                        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-                      )}
-
-                      {isVideo(m) && (
-                        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <Play size={14} className="text-white ml-0.5" fill="currentColor" />
-                        </span>
-                      )}
-                    </button>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-
+            {activeTab === 'floorplans' && (
+              resolvedFloorplan
+                ? <FloorplanViewer src={resolvedFloorplan} />
+                : <NotAvailable label="Floor plans" />
+            )}
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { SwiperSection } from "../../../components/swiper";
 import PropertyGridCard from "../../../components/cards/property/PropertyGridCard";
 import BuilderGridCard from "../../../components/cards/builder/BuilderGridCard";
 import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
+import ResultsSkeleton from "../../../components/skeletons/ResultsSkeleton";
 import { getProperties } from "../../../api/property/property.api";
 import { getOrganizations } from "../../../api/seeker/organization.api";
 import {
@@ -146,6 +147,14 @@ export default function SimilarSection<T = any>({
   }, [type, currentId, propItems]);
 
   const items = propItems ?? fetchedItems;
+
+  if (loading && items.length === 0) {
+    return (
+      <div className={`mt-10 overflow-hidden ${className}`}>
+        <ResultsSkeleton count={4} showHeader={false} />
+      </div>
+    );
+  }
 
   if (!loading && items.length === 0) {
     return null;

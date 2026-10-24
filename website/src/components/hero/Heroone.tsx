@@ -61,9 +61,9 @@ const Heroone = () => {
         <>
             <section
                 ref={sectionRef}
-                className="relative h-screen overflow-clip bg-[#C2B4AA]  lg:px-0 font-helvetica"
+                className="relative h-screen min-[1442px]:h-[clamp(900px,40.8vw,1044px)] overflow-clip bg-[#C2B4AA] lg:px-0 font-helvetica"
             >
-                <div className="relative z-20 flex flex-col items-center pt-10 lg:pt-28">
+                <div className="relative z-20 mx-auto flex w-full max-w-[1530px] flex-col items-center pt-10 lg:pt-28">
                     <div className="mb-6 flex items-center gap-2">
                         <div ref={avatarsRef} className="flex -space-x-3">
                             {AVATARS.map((src, i) => (
@@ -80,7 +80,7 @@ const Heroone = () => {
                         </span>
                     </div>
 
-                    <h1 className="max-w-4xl text-center mt-5 lg:mt-0  text-[2.5rem] sm:text-[4rem] lg:text-[3.25rem] font-medium leading-[0.9] text-primary-brown">
+                    <h1 className="max-w-4xl min-[1442px]:max-w-[720px] text-center mt-5 lg:mt-0  text-[2.5rem] sm:text-[4rem] lg:text-[3.25rem] font-medium leading-[0.9] text-primary-brown">
                         Find your place for
                         <br />
                         you and yours
@@ -92,7 +92,7 @@ const Heroone = () => {
                 </div>
 
                 <div className="absolute  inset-x-0 bottom-0 z-10 pointer-events-none overflow-visible">
-                    <img ref={houseRef} src={House} alt="" className="hidden sm:block w-full" />
+                    <img ref={houseRef} src={House} alt="" className="hidden sm:block w-full min-[1442px]:object-cover min-[1442px]:object-center" />
                     <img src={HeroM} alt="" className="block sm:hidden w-full" />
 
                     <div
@@ -107,7 +107,7 @@ const Heroone = () => {
         "
                     />
                 </div>
-                <div className="absolute left-1/2 bottom-1/3 sm:bottom-36 lg:bottom-25  z-30 w-full max-w-5xl -translate-x-1/2 px-6">
+                <div className="absolute left-1/2 bottom-1/3 sm:bottom-36 lg:bottom-25  z-30 w-full max-w-5xl min-[1442px]:max-w-[1013px] -translate-x-1/2 px-6">
                     <HeroSearchBar mode={mode} setMode={setMode} />
                 </div>
             </section>

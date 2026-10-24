@@ -43,7 +43,7 @@ export function OrganizationView({ organization, service }: { organization: Publ
 
   return (
     <div className="min-h-screen   font-helvetica md:pt-20">
-      <div className="max-w-[2000px] mx-auto  sm:px-8 lg:px-20  md:py-6">
+      <div className="w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },

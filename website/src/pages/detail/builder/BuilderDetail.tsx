@@ -18,7 +18,8 @@ import BuilderBackground from "../../../assets/place holder/builderbg.svg";
 import BusinessPlaceholder from "../../../assets/place holder/bussinessholder.svg";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
 import { EnquiryModal } from "../shared/EnquiryModal";
-import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
+import { DetailShorts, SimilarSection } from "../shared";
+import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 
@@ -84,11 +85,7 @@ const BuilderDetail = () => {
   }, [id]);
 
   if (loading)
-    return (
-      <div className="min-h-screen px-[5%] pt-32 text-primary-brown">
-        Loading organisation...
-      </div>
-    );
+    return <DetailSkeleton gallery={false} />;
   if (error || !builder)
     return (
       <div className="min-h-screen px-[5%] pt-32 text-primary-brown">
@@ -129,7 +126,7 @@ const BuilderDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 mt-0 font-helvetica flex flex-col  md:pb-0">
-      <main className="flex-1 max-w-[2000px] w-full mx-auto sm:px-8 lg:px-20 pb-6  md:py-6">
+      <main className="flex-1 w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 pb-6 md:py-6">
         <div className="hidden sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb
             items={[
