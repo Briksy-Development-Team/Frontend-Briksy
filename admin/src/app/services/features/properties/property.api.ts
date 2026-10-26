@@ -9,6 +9,7 @@ import type {
   PropertyFeatureGroup,
 } from "./property.types";
 import { uploadMarketingReelsApi } from "../marketing/marketingReels.api";
+import { normalizeAuctionTime } from "./auctionTime";
 
 const toFormData = (payload: PropertyFormValues) => {
   const formData = new FormData();
@@ -20,7 +21,8 @@ const toFormData = (payload: PropertyFormValues) => {
   if (payload.transaction_status) formData.append("transaction_status", payload.transaction_status);
   formData.append("is_auction", payload.is_auction ? "1" : "0");
   if (payload.is_auction && payload.auction_date) formData.append("auction_date", payload.auction_date);
-  if (payload.is_auction && payload.auction_time) formData.append("auction_time", payload.auction_time);
+  const auctionTime = normalizeAuctionTime(payload.auction_time);
+  if (payload.is_auction && auctionTime) formData.append("auction_time", auctionTime);
   if (payload.is_auction && payload.auction_venue) formData.append("auction_venue", payload.auction_venue);
   if (payload.is_auction && payload.auctioneer) formData.append("auctioneer", payload.auctioneer);
   if (payload.is_auction && payload.auction_contact) formData.append("auction_contact", payload.auction_contact);

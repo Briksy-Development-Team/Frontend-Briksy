@@ -1,4 +1,5 @@
 import type { Property, PropertyList } from "./property.types";
+import { normalizeAuctionTime } from "./auctionTime";
 
 type PropertyApi = {
   id: string;
@@ -119,7 +120,7 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   transaction_status: item.transaction_status ?? null,
   is_auction: Boolean(item.is_auction),
   auction_date: item.auction_date ?? null,
-  auction_time: item.auction_time ?? null,
+  auction_time: normalizeAuctionTime(item.auction_time) || null,
   auction_venue: item.auction_venue ?? null,
   auctioneer: item.auctioneer ?? null,
   auction_contact: item.auction_contact ?? null,
@@ -178,7 +179,7 @@ export const mapProperty = (item: PropertyApi): Property => ({
   transaction_status: item.transaction_status ?? null,
   is_auction: Boolean(item.is_auction),
   auction_date: item.auction_date ?? null,
-  auction_time: item.auction_time ?? null,
+  auction_time: normalizeAuctionTime(item.auction_time) || null,
   auction_venue: item.auction_venue ?? null,
   auctioneer: item.auctioneer ?? null,
   auction_contact: item.auction_contact ?? null,
