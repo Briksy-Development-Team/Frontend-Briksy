@@ -31,7 +31,7 @@ export default function MapSplitView({
   return (
     <div className="flex flex-col lg:flex-row gap-6 w-full">
       {/* Cards Column */}
-      <div className="w-full lg:w-[420px] xl:w-[480px] shrink-0 flex flex-col gap-4">
+      <div className="w-full lg:w-[480px] xl:w-[550px] shrink-0 flex flex-col gap-4">
         <p className="text-[0.8125rem] text-[#8B6F54] font-medium">
           Showing {visibleItems.length} of {items.length} results
         </p>

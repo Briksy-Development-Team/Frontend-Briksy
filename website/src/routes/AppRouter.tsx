@@ -2,8 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from '../pages/home/Home'
 import MainLayout from './MainLayout'
 import Register from '../pages/auth/register/Register'
-
-
 import Terms from "../pages/home/terms/Terms";
 import Pricing from "../pages/home/subscription/Pricing";
 import CheckoutInvitationPage from "../pages/checkout/CheckoutInvitationPage";
@@ -30,6 +28,7 @@ import CollectionsPage from "../components/profile-options/collections/Collectio
 import CollectionDetailPage from "../components/profile-options/collections/CollectionDetailPage";
 import MyCalendar from "../components/profile-options/calendar/MyCalendar";
 import AppEnquiries from "../mobile_app/pages/enquiries/AppEnquiries";
+
 const AppRouter = () => {
   return (
     <Routes>

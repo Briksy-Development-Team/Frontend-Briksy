@@ -4,7 +4,7 @@ import MobileCommunity from "./MobileCommunity";
 const Community = () => {
   return (
     <>
-      <div className="hidden md:block">
+      <div className="hidden md:block ">
         <DesktopCommunity />
       </div>
 

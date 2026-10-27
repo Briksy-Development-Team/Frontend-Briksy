@@ -50,7 +50,7 @@ const socialLinks = [
 const Footer = () => {
     return (
         <footer className="font-helvetica  mt-10">
-            <div className="relative border-t border-[#C2B4AA] py-3 md:py-5">
+            <div className="relative border-t border-[#C2B4AA] py-3  md:py-5">
                 {/* tiles first = behind the text and logo */}
                 <FooterTiles />
 

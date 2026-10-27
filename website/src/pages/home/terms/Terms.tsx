@@ -9,7 +9,6 @@ import FraudBanner from '../../../components/custom/FraudBanner';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-// ── Data — swap/add sections from here ───────────────────────────────────────
 const LAST_UPDATED = 'April 2026';
 
 const SECTIONS = [
@@ -108,7 +107,6 @@ const LEGAL_LINKS = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 const Terms = () => {
   const container = useRef<HTMLDivElement>(null);
