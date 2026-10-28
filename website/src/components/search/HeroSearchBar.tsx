@@ -262,8 +262,21 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     </div>
   );
 
+  useEffect(() => {
+    const handleSelectTab = (e: Event) => {
+      const customEvent = e as CustomEvent<{ categoryId: string }>;
+      const targetId = customEvent.detail?.categoryId;
+      const cat = SEARCH_CATEGORIES.find((c) => c.id === targetId);
+      if (cat) {
+        selectCategory(cat);
+      }
+    };
+    window.addEventListener("briksy:select-hero-tab", handleSelectTab);
+    return () => window.removeEventListener("briksy:select-hero-tab", handleSelectTab);
+  }, []);
+
   return (
-    <div ref={rootRef} className="mx-auto w-full max-w-5xl relative">
+    <div ref={rootRef} id="hero-search-bar" className="mx-auto w-full max-w-5xl relative">
       {/* ── Mobile layout (< md) ── */}
       <div className="md:hidden bg-white border border-[#ede8e4] rounded-xl shadow-lg overflow-visible">
         <div className="flex items-center gap-2 px-4 py-[18px]">

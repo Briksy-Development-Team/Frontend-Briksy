@@ -38,7 +38,7 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
 
   return (
     <div className="min-h-screen  pb-16 pt-24 font-helvetica">
-      <div className="w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 md:py-6">
+      <div className="w-full max-w-[2000px] mx-auto sm:px-8 lg:px-20 md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },

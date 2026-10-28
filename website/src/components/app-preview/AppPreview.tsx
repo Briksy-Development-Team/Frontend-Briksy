@@ -65,7 +65,7 @@ const AppPreview = () => {
         <StoreButtons />
       </div>
 
-      <div className="mx-auto hidden sm:flex w-full max-w-[1530px] px-[3%] justify-center items-center">
+      <div className="mx-auto hidden sm:flex w-full max-w-[2000px] px-[3%] justify-center items-center">
         <div className="relative w-full h-[300px] lg:h-[20rem] xl:h-[30rem] rounded-3xl border border-[#e2cbb3] overflow-hidden">
           <div
             className="absolute inset-y-[10%] left-[5%] lg:left-[10%] right-[15%] rounded-3xl bg-cover bg-center flex flex-col justify-center gap-6 md:gap-8 px-6 md:px-10 lg:px-14 py-6 z-0"

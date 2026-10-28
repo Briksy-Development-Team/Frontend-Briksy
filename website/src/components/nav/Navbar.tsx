@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, ChevronDown, Globe, Menu, X } from "lucide-react";
+import { ChevronDown, Globe, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NavSearchButton, SearchOverlay } from "./NavSearchBar";
 import LanguageModal from "./LanguageModal.tsx";
@@ -8,7 +8,7 @@ import Briskybrown from "../../assets/logo/briskybrown.svg";
 import { useAuth } from "../../auth/AuthContext";
 import NavDropdown from "./NavDropdown";
 import { useNavMenu } from "../../hooks/useNavMenu";
-import { getSeekerNotificationUnreadCount } from "../../api/seeker/seeker.api";
+// import { getSeekerNotificationUnreadCount } from "../../api/seeker/seeker.api";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
@@ -34,7 +34,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  // const [unreadNotifications, setUnreadNotifications] = useState(0);
   const isSearchOpen = mode !== "collapsed";
 
   // Hover helpers: small delay so the dropdown doesn't flicker when the mouse moves between tab and panel
@@ -60,15 +60,15 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
     };
   }, [mobileOpen]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setUnreadNotifications(0);
-      return;
-    }
-    getSeekerNotificationUnreadCount()
-      .then((response) => setUnreadNotifications(response.data?.count ?? 0))
-      .catch(() => setUnreadNotifications(0));
-  }, [isAuthenticated, location.pathname]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     setUnreadNotifications(0);
+  //     return;
+  //   }
+  //   getSeekerNotificationUnreadCount()
+  //     .then((response) => setUnreadNotifications(response.data?.count ?? 0))
+  //     .catch(() => setUnreadNotifications(0));
+  // }, [isAuthenticated, location.pathname]);
 
   const isNavItemActive = (to: string) => {
     const url = new URL(to, window.location.origin);
@@ -91,7 +91,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
         className={`fixed left-0 right-0 top-0 z-50 h-20 border-b w-full border-[#d8d8d8] bg-primary-brown text-white ${visibilityClass ?? (hideOnMobile ? "hidden md:block" : "")
           }`}
       >
-        <div className="mx-auto flex h-20 w-full max-w-[1530px] items-center justify-between px-2 sm:px-4 lg:px-6">
+        <div className="mx-auto flex h-20 w-full max-w-[2000px] items-center justify-between px-2 sm:px-4 lg:px-6">
           <Link to="/" onClick={() => openMenu(null)} className="shrink-0 lg:w-[13.75rem]">
             <img loading="eager" src={Briskybrown} alt="Briksy" className="h-12 w-auto" />
           </Link>

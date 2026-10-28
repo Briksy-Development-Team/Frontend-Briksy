@@ -79,7 +79,7 @@ export default function CollectionDetailPage({ showBack = true }: { showBack?: b
   if (professionals.length) parts.push(`${String(professionals.length).padStart(2, "0")} ${professionals.length === 1 ? "trader" : "traders"}`);
 
   return (
-    <div className="w-full max-w-[1530px] mx-auto space-y-8">
+    <div className="w-full max-w-[2000px] mx-auto space-y-8">
       {/* Header — centered name, back arrow left (optional) */}
       <div className="flex items-center justify-between gap-4">
         {showBack ? (

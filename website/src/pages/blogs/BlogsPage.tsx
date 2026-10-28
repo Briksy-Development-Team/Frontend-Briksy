@@ -6,7 +6,7 @@ const BlogsPage = ({ isLoading = false }: { isLoading?: boolean }) => {
 
   return (
     <div className="min-h-screen bg-[#F8F4EE] pt-28 pb-20 font-helvetica">
-      <div className="mx-auto w-full max-w-[1530px] px-[3%]">
+      <div className="mx-auto w-full max-w-[2000px] px-[3%]">
         <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Blogs" }]} />
         <h1 className="mt-6 text-3xl font-medium text-primary-brown">
           Latest articles

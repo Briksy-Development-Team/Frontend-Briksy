@@ -38,7 +38,7 @@ const blogCards: BlogCard[] = [
 const Blogs = () => {
   return (
     <section className="w-full font-helvetica">
-      <div className="mx-auto w-full max-w-[1530px] px-4 md:px-8 xl:px-14">
+      <div className="mx-auto w-full max-w-[2000px] px-4 md:px-8 xl:px-14">
         <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-[18px]">
           {/* Left Header Block (Figma node 4604:915) */}
           <div className="flex flex-col justify-between py-2 lg:py-6 lg:pl-4 w-full lg:w-[310px] shrink-0 gap-6">

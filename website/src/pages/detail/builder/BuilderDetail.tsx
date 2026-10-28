@@ -126,7 +126,7 @@ const BuilderDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 mt-0 font-helvetica flex flex-col  md:pb-0">
-      <main className="flex-1 w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 pb-6 md:py-6">
+      <main className="flex-1 w-full max-w-[2000px] mx-auto sm:px-8 lg:px-20 pb-6 md:py-6">
         <div className="hidden sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb
             items={[
