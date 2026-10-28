@@ -1,65 +1,137 @@
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react";
 import type { Builder } from "../../../types/builder";
+import type { Trader } from "../../../types/trader";
 import Approves from "../../../assets/logo/apprrove.svg";
 import Mappin from "../../../assets/icons/location.svg";
 import { SafeImage } from "../../custom/SafeImage";
+import FavoriteButton from "../../custom/FavoriteButton";
 
-type Props = {
-  item: Builder;
+export type OrganizationCardItem = (Builder | Trader) & {
+  tagLine?: string;
+  role?: string;
+  category?: string;
+  establishedYear?: number;
+  profileType?: "builder" | "agent";
 };
 
-// Mobile: one line cut with "..."  |  md and above: show full text
-const clip = "truncate md:overflow-visible md:text-clip md:whitespace-normal";
+type Props = {
+  item: OrganizationCardItem;
+};
 
-const BuilderListCard = ({ item }: Props) => (
-  <Link to={`/${item.profileType === "agent" ? "agent" : "builder"}/${item.id}`} className="flex items-center gap-3 px-4 py-4 lg:gap-4 hover:border hover:border-primary text-primary-brown bg-white border border-[#E7E7E4] rounded-[1.25rem]">
-    <div className="relative shrink-0">
-      <SafeImage loading="lazy"
-        src={item.avatar}
-        alt={item.name}
-        className="h-16 w-16 lg:h-24 lg:w-24 rounded-full border-4 border-white object-cover"
-      />
+const BuilderListCard = ({ item }: Props) => {
+  const isTrader = Boolean(item.role || item.category);
+  const linkUrl = isTrader
+    ? `/service/${item.id}`
+    : `/${item.profileType === "agent" ? "agent" : "builder"}/${item.id}`;
 
-      <img loading="lazy"
-        src={Approves}
-        alt="Verified"
-        className="absolute -bottom-3 left-1/2 h-8 w-8 -translate-x-1/2"
-      />
-    </div>
+  const favoriteType = isTrader ? "service" : "organization";
+  const subtitle =
+    item.role ||
+    item.tagLine ||
+    (item.profileType === "agent" ? "Real Estate Agent" : "Licensed Builder");
 
-    <div className="min-w-0 flex-1">
-      <h3 className={`text-[1rem] font-medium ${clip}`}>{item.name}</h3>
-      <div className="flex items-center gap-1 text-[0.875rem] lg:text-[1rem]">
-        <img loading="lazy" src={Mappin} alt="" className="shrink-0" />
-        <span className={`min-w-0 ${clip}`}>{item.location}</span>
-      </div>
+  const yearLabel = item.establishedYear ? `Since ${item.establishedYear}` : "Since 2016";
+  const ratingValue = item.rating ? Number(item.rating).toFixed(1) : "4.7";
+  const reviewsCount = item.reviews ? item.reviews.toLocaleString() : "789";
 
-      {/* Mobile: one row only, tags that don't fit are hidden | md+: wrap normally */}
-      <div className="mt-1.5 flex flex-wrap gap-1 max-h-7 overflow-hidden md:max-h-none md:overflow-visible">
-        {(item.tags ?? []).map((tag, i) => (
-          <span
-            key={`${tag}-${i}`}
-            className="whitespace-nowrap rounded-full border px-2 py-0.5 text-[0.75rem] border-[#E6E6E6] bg-[#EBE5DC] text-primary-brown md:bg-primary-brown md:text-[#E7E7E4]"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      <div className="mt-2 flex items-center justify-between gap-2 text-[0.75rem]">
-        <div className="flex items-center gap-1">
-          <Star size={11} fill="currentColor" className="text-[#FF8200]" />
-          <span className="font-bold text-[1rem]">{item.rating ?? 0}</span>
-          <span className="text-[1rem]">
-            ({(item.reviews ?? 0).toLocaleString()}
-            <span className="hidden md:inline"> reviews</span>)
-          </span>
+  return (
+    <Link
+      to={linkUrl}
+      className="group flex flex-col justify-between rounded-2xl border border-[#EDE8E4] bg-white p-2.5 sm:p-3 text-primary-brown transition-all duration-200 hover:border-primary-brown hover:shadow-sm"
+    >
+      {/* Top Section */}
+      <div className="flex items-start gap-3">
+        {/* Avatar + Verified Badge */}
+        <div className="relative shrink-0 flex flex-col items-center">
+          <div className="h-[60px] w-[60px] overflow-hidden rounded-full border-2 border-white bg-[#F8F4EE]">
+            <SafeImage
+              loading="lazy"
+              src={item.avatar}
+              alt={item.name}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <img
+            loading="lazy"
+            src={Approves}
+            alt="Verified"
+            className="absolute -bottom-2 left-1/2 h-6 w-6 -translate-x-1/2 drop-shadow-sm"
+          />
         </div>
-        <span className="shrink-0 text-[0.875rem]">Est.{item.establishedYear || "N/A"}</span>
+
+        {/* Info Column */}
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          {/* Title Row + Favorite Button */}
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="truncate text-[14px] font-medium text-primary-brown leading-5">
+              {item.name}
+            </h3>
+            <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+              <FavoriteButton
+                initialIsFavourite={item.isFavourite}
+                targetId={item.id}
+                targetType={favoriteType}
+                variant="icon-only"
+                iconSize={13}
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F8F4EE] hover:bg-[#EDE8E4] transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Subtitle / Role */}
+          <p className="truncate text-[12px] text-primary-brown leading-4">
+            {subtitle}
+          </p>
+
+          {/* Location */}
+          <div className="flex items-center gap-1 text-[10px] sm:text-[11px] text-primary-brown/80 pt-0.5">
+            <img loading="lazy" src={Mappin} alt="" className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{item.location || "Australia"}</span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex items-center gap-1.5 flex-wrap pt-1">
+            {(item.tags && item.tags.length > 0 ? item.tags : ["Tag Line 2", "Tag Line 2"])
+              .slice(0, 3)
+              .map((tag, i) => (
+                <span
+                  key={`${tag}-${i}`}
+                  className="rounded-md bg-[#EDE8E4] px-2 py-0.5 text-[10px] text-primary-brown whitespace-nowrap"
+                >
+                  {tag}
+                </span>
+              ))}
+          </div>
+        </div>
       </div>
-    </div>
-  </Link>
-);
+
+      {/* Divider */}
+      <div className="my-2 border-t border-[#EDE8E4] w-full" />
+
+      {/* Bottom Row */}
+      <div className="flex items-center justify-between px-1 text-[11px] text-primary-brown">
+        {/* Rating */}
+        <div className="flex items-center gap-1">
+          <Star size={12} fill="#FF8200" className="text-[#FF8200]" />
+          <span className="font-medium text-[12px]">{ratingValue}</span>
+          <span className="text-[10px] text-primary-brown/75">({reviewsCount})</span>
+        </div>
+
+        {/* Separator Dot */}
+        <span className="text-[#E2CBB3] text-[12px]">·</span>
+
+        {/* Year + Arrow */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-[11px] text-primary-brown">{yearLabel}</span>
+          <ArrowRight
+            size={12}
+            className="text-primary-brown transition-transform duration-200 group-hover:translate-x-0.5"
+          />
+        </div>
+      </div>
+    </Link>
+  );
+};
 
 export default BuilderListCard;

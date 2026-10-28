@@ -1,12 +1,16 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { SEARCH_CATEGORIES, type Category } from "../../../constants/searchCategories";
-import { useListingData } from "../../../pages/search/useListingData";
+import { useListingDataWithLoading } from "../../../pages/search/useListingData";
 import type { FilterTab } from "../../../components/filter/filterTypes";
 import TraderListCard from "../../../components/cards/trader/TraderListCard";
 import BuilderListCard from "../../../components/cards/builder/BuilderListCard";
 import PropertyListCard from "../../../components/cards/property/PropertyListCard";
+import {
+  PropertyListCardSkeleton,
+  BuilderListCardSkeleton,
+} from "../../../components/skeletons";
 
 // Exclude the raw address category since it's a search input mode rather than a catalog category
 const CATEGORIES = SEARCH_CATEGORIES.filter((c) => c.id !== "address");
@@ -20,19 +24,65 @@ export default function AppPopularNearYou({
   initialCategoryId = "real-estate",
   maxItems = 6,
 }: AppPopularNearYouProps) {
-  const [activeCategoryId, setActiveCategoryId] = useState<string>(initialCategoryId);
-  const [activeSubTab, setActiveSubTab] = useState<FilterTab | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const urlTab = searchParams.get("tab");
+  const urlSub = searchParams.get("sub");
+
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(() => {
+    if (urlTab && CATEGORIES.some((c) => c.id === urlTab)) {
+      return urlTab;
+    }
+    return initialCategoryId;
+  });
+
+  const [activeSubTab, setActiveSubTab] = useState<FilterTab | null>(() => {
+    return urlSub ? (urlSub as FilterTab) : null;
+  });
+
+  // Sync state if URL changes externally
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam && CATEGORIES.some((c) => c.id === tabParam)) {
+      setActiveCategoryId(tabParam);
+    } else if (!tabParam) {
+      setActiveCategoryId(initialCategoryId);
+    }
+
+    const subParam = searchParams.get("sub");
+    setActiveSubTab(subParam ? (subParam as FilterTab) : null);
+  }, [searchParams, initialCategoryId]);
 
   const activeCategory: Category = useMemo(
     () => CATEGORIES.find((c) => c.id === activeCategoryId) || CATEGORIES[0],
     [activeCategoryId]
   );
 
-  const items = useListingData(activeCategory.resultType, "", activeSubTab, "popular");
+  const { items, isLoading } = useListingDataWithLoading(
+    activeCategory.resultType,
+    "",
+    activeSubTab,
+    "popular"
+  );
 
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategoryId(categoryId);
     setActiveSubTab(null);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("tab", categoryId);
+    newParams.delete("sub");
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const handleSubTabChange = (subTab: FilterTab | null) => {
+    setActiveSubTab(subTab);
+    const newParams = new URLSearchParams(searchParams);
+    if (subTab) {
+      newParams.set("sub", subTab);
+    } else {
+      newParams.delete("sub");
+    }
+    setSearchParams(newParams, { replace: true });
   };
 
   const getSeeAllUrl = () => {
@@ -86,7 +136,7 @@ export default function AppPopularNearYou({
               <button
                 key={prop.id}
                 type="button"
-                onClick={() => setActiveSubTab(isAll ? null : (prop.label as FilterTab))}
+                onClick={() => handleSubTabChange(isAll ? null : (prop.label as FilterTab))}
                 className={`py-1 px-3 text-[11px] rounded-full transition-all whitespace-nowrap cursor-pointer shrink-0 ${isSelected
                   ? "bg-[#8B6F54] text-white font-medium"
                   : "bg-[#EBE5DC] text-[#7C5F42] hover:bg-[#dfd7cc] font-normal"
@@ -101,10 +151,16 @@ export default function AppPopularNearYou({
 
       {/* Vertical Cards Scroller */}
       <div className="flex flex-col gap-3 pt-1">
-        {items.length === 0 ? (
-          <div className="py-8 flex flex-col items-center justify-center text-[#7C5F42] gap-2">
-            <Loader2 size={24} className="animate-spin text-[#8B6F54]" />
-            <span className="text-xs">Loading {activeCategory.label.toLowerCase()}...</span>
+        {isLoading ? (
+          activeCategory.resultType === "trader" || activeCategory.resultType === "builder" ? (
+            <BuilderListCardSkeleton count={3} />
+          ) : (
+            <PropertyListCardSkeleton count={3} />
+          )
+        ) : items.length === 0 ? (
+          <div className="py-8 flex flex-col items-center justify-center text-[#7C5F42] gap-1">
+            <span className="text-sm font-medium">No results found</span>
+            <span className="text-xs text-[#8B6F54]">Try selecting another tab or category</span>
           </div>
         ) : (
           items.slice(0, maxItems).map((item) => {

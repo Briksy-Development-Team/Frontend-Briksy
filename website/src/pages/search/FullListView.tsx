@@ -5,7 +5,8 @@ import TraderGridCard from "../../components/cards/trader/TraderGridCard";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useListingData } from "./useListingData";
+import { useListingDataWithLoading } from "./useListingData";
+import { PropertyGridCardSkeleton } from "../../components/skeletons";
 
 const GRID =
   "grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6"; 
@@ -22,7 +23,7 @@ export default function FullListView({
   tab?: FilterTab | null;
 }) {
   const [page, setPage] = useState(1);
-  const allItems = useListingData(resultType, "", tab, section);
+  const { items: allItems, isLoading } = useListingDataWithLoading(resultType, "", tab, section);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -49,13 +50,17 @@ export default function FullListView({
         <h2 className="text-[1.5rem] font-medium text-[#342511] tracking-tight">{getTitle()}</h2>
       </div>
 
-      <div className={GRID}>
-        {currentItems.map((item) => (
-          resultType === "trader" ? <TraderGridCard key={item.id} item={item} /> :
-            resultType === "builder" ? <BuilderGridCard key={item.id} item={item} /> :
-              <PropertyGridCard key={item.id} item={item} />
-        ))}
-      </div>
+      {isLoading ? (
+        <PropertyGridCardSkeleton count={8} gridClassName={GRID} />
+      ) : (
+        <div className={GRID}>
+          {currentItems.map((item) => (
+            resultType === "trader" ? <TraderGridCard key={item.id} item={item} /> :
+              resultType === "builder" ? <BuilderGridCard key={item.id} item={item} /> :
+                <PropertyGridCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
 
       {totalPages >= 1 && (
         <div className="mt-8 flex items-center justify-center gap-2">

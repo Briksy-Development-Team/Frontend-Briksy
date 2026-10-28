@@ -42,7 +42,7 @@ const transactionStatusFor = (tab?: FilterTab | null) =>
     ? tab.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED"
     : undefined;
 
-export function useListingData(
+export function useListingDataWithLoading(
   resultType: ResultType,
   filter = "",
   tab: FilterTab | null = null,
@@ -50,11 +50,14 @@ export function useListingData(
 ) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [items, setItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchParams] = useResultSearchParams();
   const organizationSlug = searchParams.get("organization_slug") || undefined;
   const serviceSlugParam = searchParams.get("service_slug") || undefined;
 
   useEffect(() => {
+    setItems([]);
+    setIsLoading(true);
     if (isPropertyType(resultType)) {
       getProperties({
         verified_only: 1,
@@ -67,7 +70,8 @@ export function useListingData(
         ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),
       })
         .then((res) => setItems(res.data.map(propertyToCard)))
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => setIsLoading(false));
       return;
     }
 
@@ -88,8 +92,19 @@ export function useListingData(
 
         setItems(res.data.map(organizationToTrader));
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, [resultType, filter, tab, section, organizationSlug, serviceSlugParam, searchParams.toString()]);
 
+  return { items, isLoading };
+}
+
+export function useListingData(
+  resultType: ResultType,
+  filter = "",
+  tab: FilterTab | null = null,
+  section: "popular" | "newly" = "popular",
+) {
+  const { items } = useListingDataWithLoading(resultType, filter, tab, section);
   return items;
 }

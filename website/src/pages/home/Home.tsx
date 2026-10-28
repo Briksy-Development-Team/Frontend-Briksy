@@ -12,6 +12,7 @@ import AppPreview from "../../components/app-preview/AppPreview";
 import Heroone from "../../components/hero/Heroone";
 import { useIsMobileApp } from "../../utils/platform";
 import AppHome from "../../mobile_app/pages/home/AppHome";
+import { ShortsSection } from "../../components/shorts";
 
 const Home = () => {
   const isApp = useIsMobileApp();
@@ -31,6 +32,7 @@ const Home = () => {
       <PropertyListSection />
       <AgentListSection />
       <ServiceListSection />
+      <ShortsSection />
       <Blogs />
       <Contact />
       <AppPreview />
