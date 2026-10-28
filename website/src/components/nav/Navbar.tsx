@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, ChevronDown, Globe, Menu, X } from "lucide-react";
+import { ChevronDown, Globe, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NavSearchButton, SearchOverlay } from "./NavSearchBar";
 import LanguageModal from "./LanguageModal.tsx";
@@ -8,7 +8,6 @@ import Briskybrown from "../../assets/logo/briskybrown.svg";
 import { useAuth } from "../../auth/AuthContext";
 import NavDropdown from "./NavDropdown";
 import { useNavMenu } from "../../hooks/useNavMenu";
-import { getSeekerNotificationUnreadCount } from "../../api/seeker/seeker.api";
 
 type NavbarProps = {
   mode: "collapsed" | "search" | "ai";
@@ -34,7 +33,6 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const isSearchOpen = mode !== "collapsed";
 
   // Hover helpers: small delay so the dropdown doesn't flicker when the mouse moves between tab and panel
@@ -59,16 +57,6 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setUnreadNotifications(0);
-      return;
-    }
-    getSeekerNotificationUnreadCount()
-      .then((response) => setUnreadNotifications(response.data?.count ?? 0))
-      .catch(() => setUnreadNotifications(0));
-  }, [isAuthenticated, location.pathname]);
 
   const isNavItemActive = (to: string) => {
     const url = new URL(to, window.location.origin);
