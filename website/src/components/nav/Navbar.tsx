@@ -157,12 +157,12 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
             <div className="hidden lg:block">
               <ProfileDropdown />
             </div>
-            {isAuthenticated && (
+            {/* {isAuthenticated && (
               <button type="button" onClick={() => navigate("/profile/notifications")} className="relative hidden lg:block text-white transition hover:opacity-70" aria-label="Notifications">
                 <Bell size={18} />
                 {unreadNotifications > 0 && <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#E86749] px-1 text-[10px] font-bold text-white">{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}
               </button>
-            )}
+            )} */}
             <button
               onClick={() => setMobileOpen((v) => !v)}
               className="p-1.5 text-white transition hover:opacity-70 lg:hidden"
