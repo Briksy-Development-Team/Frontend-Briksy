@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
 
-import { SEARCH_CATEGORIES, type Category, type PropType } from "../../constants/searchCategories";
+import { SEARCH_CATEGORIES, type Category, type PropType } from "../../constants/categories";
 
 
 

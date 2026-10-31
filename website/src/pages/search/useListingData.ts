@@ -9,7 +9,7 @@ import {
   propertyToCard,
 } from "../../api/public.mappers";
 import { useResultSearchParams } from "./useResultSearchParams";
-import { serviceSlugForLabel } from "../../constants/serviceCategories";
+import { serviceSlugForLabel } from "../../constants/categories";
 
 const isPropertyType = (resultType: ResultType) =>
   resultType === "property" || resultType === "commercial" || resultType === "auction";

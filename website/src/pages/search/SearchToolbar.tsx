@@ -5,7 +5,7 @@ import Filter from "../../components/filter/Filter";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import MapIcon from "../../assets/icons/search/map.svg?react";
-import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
+import { SEARCH_CATEGORIES } from "../../constants/categories";
 
 const SORT_OPTIONS = [
   { label: "Recommended", value: "featured" },

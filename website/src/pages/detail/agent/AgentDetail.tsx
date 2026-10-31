@@ -163,7 +163,7 @@ export const AgentDetail = () => {
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: "Find an agent", href: "/agents", isBack: true },
+            { label: "Agents", href: "/result?type=agents" },
             { label: agentName },
           ]}
         />

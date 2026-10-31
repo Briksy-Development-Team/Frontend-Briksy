@@ -283,12 +283,15 @@ const PropertyDetail = () => {
   const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";
   const suburb = suburbStateZip.slice(0, -2).join(" ") || "Toorak";
 
+  // ponytail: each crumb is a real link filtering search — no isBack/navigate(-1)
+  const catType = isAuction ? "auction" : "real-estate";
+  const subTab = isAuction ? "" : "&tab=buy";
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: isAuction ? "Auctions" : "Buy", isBack: true },
-    { label: isAuction ? "Auction property" : "New property" },
-    { label: state },
-    { label: suburb },
+    { label: isAuction ? "Auctions" : "Real Estate", href: `/result?type=${catType}` },
+    { label: isAuction ? "Auction property" : "Buy", href: `/result?type=${catType}${subTab}` },
+    { label: state, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(state)}` },
+    { label: suburb, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(suburb)}` },
     { label: property.title },
   ];
 

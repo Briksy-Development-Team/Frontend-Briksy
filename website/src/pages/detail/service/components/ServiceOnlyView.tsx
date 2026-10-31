@@ -42,7 +42,7 @@ export function ServiceOnlyView({ service }: { service: PublicService }) {
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: "Services", isBack: true },
+            { label: "Traders", href: "/result?type=traders" },
             { label: service.name },
           ]}
         />

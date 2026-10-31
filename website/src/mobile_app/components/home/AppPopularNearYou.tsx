@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { SEARCH_CATEGORIES, type Category } from "../../../constants/searchCategories";
+import { SEARCH_CATEGORIES, type Category } from "../../../constants/categories";
 import { useListingDataWithLoading } from "../../../pages/search/useListingData";
 import type { FilterTab } from "../../../components/filter/filterTypes";
 import TraderListCard from "../../../components/cards/trader/TraderListCard";

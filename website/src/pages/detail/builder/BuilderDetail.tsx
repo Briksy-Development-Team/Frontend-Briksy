@@ -132,9 +132,8 @@ const BuilderDetail = () => {
             items={[
               { label: "Home", href: "/" },
               {
-                label: isBuyerAgent ? "Find a buyer agent" : isAgent ? "Find an agent" : "Find a builder",
-                href: isBuyerAgent ? "/agents?tab=buyer" : isAgent ? "/agents" : "/builders",
-                isBack: true,
+                label: isBuyerAgent ? "Buyer Agents" : isAgent ? "Agents" : "Builders",
+                href: isBuyerAgent ? "/result?type=agents&tab=buyer" : isAgent ? "/result?type=agents" : "/result?type=builders",
               },
               { label: builder.name },
             ]}

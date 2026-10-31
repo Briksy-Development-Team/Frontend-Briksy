@@ -6,46 +6,13 @@ import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
 import Breadcrumb, { type BreadcrumbItem } from "../../components/nav/Breadcrumb";
 import SearchToolbar from "./SearchToolbar";
-import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
+import { SEARCH_CATEGORIES, CRUMBS, TAB_MAP, serviceSlugForLabel } from "../../constants/categories";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 import FullListView from "./FullListView";
 import { useResultSearchParams } from "./useResultSearchParams";
-import { serviceSlugForLabel } from "../../constants/serviceCategories";
 
 type BrowseSection = "all" | "popular" | "newly";
-
-const CRUMBS: Record<string, string> = {
-  all: "Search",
-  "real-estate": "Find real estate",
-  agents: "Find an agent",
-  traders: "Find a professional",
-  builders: "Find a builder",
-  address: "Address",
-  commercial: "Commercial",
-  auction: "Auctions",
-};
-
-const TAB_MAP: Record<string, FilterTab> = {
-  all: "All",
-  buy: "Buy",
-  rent: "Rent",
-  sold: "Sold",
-  lease: "Lease",
-  leased: "Leased",
-  "real-estate": "Real Estate Agents",
-  buyer: "Buyer Agents",
-  landscaper: "Landscapers",
-  landscapers: "Landscapers",
-  concreter: "Concreter",
-  fencing: "Fencing",
-  mortgage: "Mortgage Brokers",
-  "mortgage-brokers": "Mortgage Brokers",
-  conveyancer: "Conveyancers",
-  conveyancers: "Conveyancers",
-  "building-pest": "Building & Pest",
-  "building-and-pest": "Building & Pest",
-};
 
 const SORTS = ["featured", "newest", "oldest", "price-low", "price-high"];
 
@@ -137,17 +104,20 @@ const SearchPage = () => {
   };
 
   const sectionLabel = browseSection === "popular" ? "Popular" : "Newly Listed";
+  // ponytail: href-only crumbs — no onClick state mutation, URL is source of truth
+  const baseUrl = `/result?type=${activeCategoryId}`;
   const breadcrumbs: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
   if (activeTab && activeTab !== "All") {
-    breadcrumbs.push({ label: crumb, onClick: () => { setActiveTab(null); setBrowseSection("all"); } });
+    const tabKey = Object.keys(TAB_MAP).find((k) => TAB_MAP[k] === activeTab) ?? activeTab.toLowerCase();
+    breadcrumbs.push({ label: crumb, href: baseUrl });
     if (browseSection !== "all") {
-      breadcrumbs.push({ label: activeTab, onClick: () => setBrowseSection("all") }, { label: sectionLabel });
+      breadcrumbs.push({ label: activeTab, href: `${baseUrl}&tab=${tabKey}` }, { label: sectionLabel });
     } else {
       breadcrumbs.push({ label: activeTab });
     }
   } else if (browseSection !== "all") {
     const noun = crumb.split(" ").pop() || "Results";
-    breadcrumbs.push({ label: crumb, onClick: () => setBrowseSection("all") }, { label: `${sectionLabel} ${noun}` });
+    breadcrumbs.push({ label: crumb, href: baseUrl }, { label: `${sectionLabel} ${noun}` });
   } else {
     breadcrumbs.push({ label: crumb });
   }
