@@ -150,7 +150,7 @@ export default function AppPopularNearYou({
       )}
 
       {/* Vertical Cards Scroller */}
-      <div className="flex flex-col gap-3 pt-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
         {isLoading ? (
           activeCategory.resultType === "trader" || activeCategory.resultType === "builder" ? (
             <BuilderListCardSkeleton count={3} />
