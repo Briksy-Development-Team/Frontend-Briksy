@@ -57,10 +57,10 @@ export default function SearchToolbar({
       {/* Top Row: Search Input on Left, Action Controls (Filters, Sort, Map) on Right */}
       <div className="flex flex-col lg:items-center lg:flex-row gap-y-2 justify-between flex-wrap py-1">
         <div
-          className="flex-1 max-w-[30rem] pr-[3%] gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-8 md:pr-2 
+          className="flex-1 max-w-[30rem] pr-[3%] gap-x-2 md:gap-x-0 h-12 md:bg-white rounded-xl md:border md:border-[#EDE8E4] md:pl-2 md:pr-2 
          flex items-center justify-between text-left transition-colors shrink-0"
         >
-          <div className="flex items-center w-full bg-white h-full rounded-[6.25rem] px-2 gap-x-[6px] overflow-hidden">
+          <div className="flex items-center w-full bg-white h-full rounded-[6.25rem] px-2 gap-x-3 overflow-hidden">
             <Search className="md:w-5 md:h-5 h-4 w-4 text-gray-100 shrink-0" />
             <input
               type="text"

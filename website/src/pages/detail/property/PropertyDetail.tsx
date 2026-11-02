@@ -283,7 +283,7 @@ const PropertyDetail = () => {
   const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";
   const suburb = suburbStateZip.slice(0, -2).join(" ") || "Toorak";
 
-  // ponytail: each crumb is a real link filtering search — no isBack/navigate(-1)
+  // ponytail: state uses q= (text search, shows in input); suburb uses suburb= (API filter) + q= (shows in input)
   const catType = isAuction ? "auction" : "real-estate";
   const subTab = isAuction ? "" : "&tab=buy";
   const breadcrumbs = [
@@ -291,7 +291,7 @@ const PropertyDetail = () => {
     { label: isAuction ? "Auctions" : "Real Estate", href: `/result?type=${catType}` },
     { label: isAuction ? "Auction property" : "Buy", href: `/result?type=${catType}${subTab}` },
     { label: state, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(state)}` },
-    { label: suburb, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(suburb)}` },
+    { label: suburb, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(suburb)}&suburb=${encodeURIComponent(suburb)}` },
     { label: property.title },
   ];
 

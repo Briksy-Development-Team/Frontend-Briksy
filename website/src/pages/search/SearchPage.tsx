@@ -23,7 +23,8 @@ const SearchPage = () => {
   const navigate = useNavigate();
 
   const typeParam = searchParams.get("type");
-  const queryParam = searchParams.get("q") || "";
+  // ponytail: show suburb/q in search input — suburb takes priority for display
+  const queryParam = searchParams.get("q") || searchParams.get("suburb") || "";
   const sortParam = searchParams.get("sort_by") ?? "";
   const sort = (SORTS.includes(sortParam) ? sortParam : "featured") as SortType;
   const showMap = searchParams.get("map") === "1";

@@ -164,9 +164,3 @@ export const TAB_MAP: Record<string, string> = {
   "building-pest": "Building & Pest",
   "building-and-pest": "Building & Pest",
 };
-
-export const getCategoryById = (id?: string) =>
-  CATEGORIES.find((c) => c.id === id) || CATEGORIES[0];
-
-export const getCategoryByResultType = (resultType?: string) =>
-  CATEGORIES.find((c) => c.resultType === resultType);
