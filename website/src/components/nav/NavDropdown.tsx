@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
+import RollText from "../../utils/RollText";
 import type { NavCard, NavItem } from "../../hooks/useNavMenu";
 
 const zoom = (e: MouseEvent<HTMLElement>, scale: number) =>
@@ -16,7 +17,7 @@ function ImageCard({ label, to, bg }: NavCard) {
     >
       <img src={bg} alt={label} className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-      <span className="absolute bottom-4 left-4 right-4 text-[15.3px] font-medium leading-[22px] text-white drop-shadow">
+      <span className="absolute bottom-4 left-4 right-4 text-[15.3px] xl:text-md font-medium leading-[22px] text-white drop-shadow">
         {label}
       </span>
     </Link>
@@ -99,18 +100,18 @@ export default function NavDropdown({ item, onClose, onMouseEnter, onMouseLeave 
         <div className="flex items-start gap-6">
           {columns.map((links, i) => (
             <div key={i} className="flex w-[215px] flex-col">
-              <p className="dd-item mb-3 text-sm font-medium uppercase tracking-wider text-primary-light-brown">
+              <p className="dd-item mb-3 text-sm xl:text-md font-medium uppercase tracking-wider text-primary-light-brown">
                 {content.label}
               </p>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 ">
                 {links.map((l) => (
                   <Link
                     key={l.label}
                     to={l.to}
                     onClick={onClose}
-                    className="dd-item py-1 text-base font-normal leading-5 text-black transition-colors duration-150 hover:text-[#8B6F54]"
+                    className="group dd-item py-1 text-base xl:text-md font-normal leading-5 text-black transition-colors duration-150 hover:text-[#8B6F54]"
                   >
-                    {l.label}
+                    <RollText text={l.label} />
                   </Link>
                 ))}
               </div>

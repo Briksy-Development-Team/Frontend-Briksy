@@ -137,14 +137,14 @@ const Terms = () => {
     <main ref={container} className="min-h-screen md:mt-20 font-helvetica  text-primary-brown">
 
       {/* ── Last updated bar ── */}
-      <div className="w-full max-w-[1530px] mx-auto px-[3%] py-3 border-b border-white-100">
+      <div className="w-full max-w-[2000px] mx-auto px-[3%] py-3 border-b border-white-100">
         <p className="text-[0.75rem] text-primary-light-brown">
           Last Updated: {LAST_UPDATED}
         </p>
       </div>
 
       {/* ── Body: left content + right sidebar ── */}
-      <div className="w-full max-w-[1530px] mx-auto flex gap-12 px-[5%] pt-8 pb-20">
+      <div className="w-full max-w-[2000px] mx-auto flex gap-12 px-[5%] pt-8 pb-20">
 
         {/* ── Main content ── */}
         <div className="flex-1 min-w-0">

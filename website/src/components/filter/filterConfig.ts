@@ -1,5 +1,5 @@
 import type { PriceRangeTab } from "./primitives/PriceRange";
-import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
+import { SEARCH_CATEGORIES } from "../../constants/categories";
 
 import { Building2, Home, Landmark, Factory, Warehouse, Trees, Castle, Tent } from "lucide-react";
 

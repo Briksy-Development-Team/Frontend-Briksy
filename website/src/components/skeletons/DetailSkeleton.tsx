@@ -4,7 +4,7 @@ import GallerySkeleton from "./GallerySkeleton";
 export default function DetailSkeleton({ gallery = true }: { gallery?: boolean }) {
   return (
     <div className="min-h-screen md:mt-20 font-helvetica flex flex-col md:pb-0">
-      <main className="flex-1 w-full max-w-[1530px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
+      <main className="flex-1 w-full max-w-[2000px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
         {/* Breadcrumb row */}
         <div className="hidden md:flex justify-between items-center mb-6">
           <Skeleton className="h-5 w-64 rounded-md" />

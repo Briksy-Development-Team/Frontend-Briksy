@@ -10,6 +10,7 @@ export interface Property {
   priceMax?: number | null;
   beds?: number;
   baths?: number;
+  cars?: number;
   sqm?: number;
   
   posterName: string;

@@ -79,7 +79,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
         className={`fixed left-0 right-0 top-0 z-50 h-20 border-b w-full border-[#d8d8d8] bg-primary-brown text-white ${visibilityClass ?? (hideOnMobile ? "hidden md:block" : "")
           }`}
       >
-        <div className="mx-auto flex h-20 w-full max-w-[1530px] items-center justify-between px-2 sm:px-4 lg:px-6">
+        <div className="mx-auto flex h-20 w-full max-w-[2000px] items-center justify-between px-2 sm:px-4 lg:px-6">
           <Link to="/" onClick={() => openMenu(null)} className="shrink-0 lg:w-[13.75rem]">
             <img loading="eager" src={Briskybrown} alt="Briksy" className="h-12 w-auto" />
           </Link>

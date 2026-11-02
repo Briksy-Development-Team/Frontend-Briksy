@@ -5,8 +5,7 @@ import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
 // import { getFieldsForMode } from "./filterConfig";
 import type { FilterMode } from "./filterConfig";
-import { serviceSlugForLabel } from "../../constants/serviceCategories";
-import { SEARCH_CATEGORIES } from "../../constants/searchCategories";
+import { SEARCH_CATEGORIES, serviceSlugForLabel } from "../../constants/categories";
 
 const FILTER_PARAM_KEYS: Record<string, string> = {
   keyword: "q",

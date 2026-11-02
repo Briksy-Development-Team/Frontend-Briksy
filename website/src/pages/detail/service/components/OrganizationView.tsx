@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Breadcrumb from "../../../../components/nav/Breadcrumb";
+import { serviceSlugForLabel } from "../../../../constants/categories";
 import ServicePlaceholder from "../../../../assets/place holder/serviceholder.svg";
 import type { PublicService } from "../../../../api/service/service.api";
 import type { PublicOrganization } from "../../../../api/seeker/organization.api";
@@ -43,12 +44,15 @@ export function OrganizationView({ organization, service }: { organization: Publ
 
   return (
     <div className="min-h-screen   font-helvetica md:pt-20">
-      <div className="w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 md:py-6">
+      <div className="w-full max-w-[2000px] mx-auto sm:px-8 lg:px-20 md:py-6">
         <Breadcrumb
           items={[
             { label: "Home", href: "/" },
-            { label: "Find a professional", isBack: true },
-            { label: organization.type?.name || "Trades and repairs" },
+            { label: "Traders", href: "/result?type=traders" },
+            {
+              label: organization.type?.name || "Trades",
+              href: `/result?type=traders&tab=${serviceSlugForLabel(organization.type?.name || "") || "all"}`,
+            },
             { label: organization.name },
           ]}
         />

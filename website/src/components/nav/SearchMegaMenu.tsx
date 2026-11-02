@@ -4,7 +4,7 @@ import type { ResultType } from "../../types/search";
 
 import Category from "../../assets/hero/category.svg"
 import { getServices } from "../../api/service/service.api";
-import { SERVICE_CATEGORIES } from "../../constants/serviceCategories";
+import { SERVICE_CATEGORIES } from "../../constants/categories";
 import { getServiceCategories, type PublicServiceCategory } from "../../api/serviceCategories.api";
 type CategoryData = { id: string; label: string; groups: { title: string; items: string[] }[]; image: string }[];
 

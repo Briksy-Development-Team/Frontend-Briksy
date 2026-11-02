@@ -1,7 +1,7 @@
 import Randomone from "../assets/navbar/randomone.svg";
 import Randomtwo from "../assets/navbar/Randomtwo.svg";
 import { useAgentTypes, useServiceCategories } from "./useTaxonomy";
-import { SEARCH_CATEGORIES } from "../constants/searchCategories";
+import { SEARCH_CATEGORIES } from "../constants/categories";
 
 export type NavLink = { label: string; to: string };
 export type NavCard = NavLink & { bg: string };

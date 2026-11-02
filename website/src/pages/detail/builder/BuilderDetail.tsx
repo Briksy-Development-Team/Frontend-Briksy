@@ -126,15 +126,14 @@ const BuilderDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 mt-0 font-helvetica flex flex-col  md:pb-0">
-      <main className="flex-1 w-full max-w-[1530px] mx-auto sm:px-8 lg:px-20 pb-6 md:py-6">
+      <main className="flex-1 w-full max-w-[2000px] mx-auto sm:px-8 lg:px-20 pb-6 md:py-6">
         <div className="hidden sm:flex-row justify-between sm:items-center mb-6 gap-4">
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
               {
-                label: isBuyerAgent ? "Find a buyer agent" : isAgent ? "Find an agent" : "Find a builder",
-                href: isBuyerAgent ? "/agents?tab=buyer" : isAgent ? "/agents" : "/builders",
-                isBack: true,
+                label: isBuyerAgent ? "Buyer Agents" : isAgent ? "Agents" : "Builders",
+                href: isBuyerAgent ? "/result?type=agents&tab=buyer" : isAgent ? "/result?type=agents" : "/result?type=builders",
               },
               { label: builder.name },
             ]}

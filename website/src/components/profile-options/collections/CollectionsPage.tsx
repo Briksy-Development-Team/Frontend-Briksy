@@ -64,7 +64,7 @@ export default function CollectionsPage({ showBack = true }: { showBack?: boolea
   const isSavedRoute = location.pathname === "/saved";
 
   return (
-    <div className={`w-full space-y-8 ${isSavedRoute ? "min-h-screen px-3 py-4 md:px-5 md:py-6 max-w-[1530px] mx-auto" : ""}`}>
+    <div className={`w-full space-y-8 ${isSavedRoute ? "min-h-screen px-3 py-4 md:px-5 md:py-6 max-w-[2000px] mx-auto" : ""}`}>
       {createdMessage && (
         <div role="status" className="fixed right-5 top-5 z-[120] rounded-2xl bg-primary-brown px-5 py-4 text-sm font-medium text-white shadow-2xl animate-fade-in">
           {createdMessage}

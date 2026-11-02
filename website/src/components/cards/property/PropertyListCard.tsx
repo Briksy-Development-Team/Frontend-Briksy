@@ -1,141 +1,134 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight, LoaderCircle } from 'lucide-react'
-import { HugeiconsIcon } from '@hugeicons/react'
-import { Bookmark02Icon } from '@hugeicons/core-free-icons'
-import type { Property } from '../../../types/property'
-import Mappin from '../../../assets/icons/location.svg'
-import { SafeImage } from '../../custom/SafeImage'
-import { useAuth } from '../../../auth/AuthContext'
-import { toggleSeekerFavorite } from '../../../api/seeker/seeker.api'
-import CollectionModal from '../../collections/CollectionModal'
-import AuthPromptToast from '../../custom/AuthPromptToast'
-import { propertyStatusLabel } from '../../../utils/propertyStatus'
-import { formatPropertyPrice } from '../../../utils/propertyPrice'
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bathtub01Icon,
+  BedDoubleIcon,
+  Car01Icon,
+  House01Icon,
+} from "@hugeicons/core-free-icons";
+import type { Property } from "../../../types/property";
+import { SafeImage } from "../../custom/SafeImage";
+import FavoriteButton from "../../custom/FavoriteButton";
+import { propertyStatusLabel } from "../../../utils/propertyStatus";
+import { formatPropertyPrice } from "../../../utils/propertyPrice";
 
 type Props = {
-  item: Property
-}
-
-// Mobile: one line cut with "..."  |  md and above: show full text
-const clip = 'truncate md:overflow-visible md:text-clip md:whitespace-normal'
+  item: Property;
+};
 
 const PropertyListCard = ({ item }: Props) => {
-  const { isAuthenticated, isSeeker } = useAuth();
-  const [isFavourite, setIsFavourite] = useState(item.isFavourite);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [collectionPromptOpen, setCollectionPromptOpen] = useState(false);
-  const [showAuthToast, setShowAuthToast] = useState(false);
+  const targetUrl = item.isAuction ? `/auction/${item.id}` : `/property/${item.id}`;
 
-  const handleFavouriteClick = async () => {
-    if (isProcessing) {
-      return
-    }
+  const badgeText = item.isAuction
+    ? "Auction"
+    : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge) || "Open Home";
 
-    if (!isAuthenticated || !isSeeker) {
-      setShowAuthToast(true);
-      return
-    }
+  const priceDisplay = formatPropertyPrice({
+    pricing_type: item.pricingType,
+    price: item.price,
+    price_min: item.priceMin,
+    price_max: item.priceMax,
+  });
 
-    try {
-      setIsProcessing(true)
-      const result = await toggleSeekerFavorite(String(item.id), 'property')
-      setIsFavourite(result.data.action === 'added')
-      if (result.data.action === 'added' && result.data.collection_selection_required) {
-        setCollectionPromptOpen(true)
-      }
-    } catch (error) {
-      console.error('Failed to toggle favourite.', error)
-    } finally {
-      setIsProcessing(false)
-    }
-  }
+  const baths = item.baths ?? 2;
+  const beds = item.beds ?? 2;
+  const cars = item.cars ?? 2;
+  const sqm = item.sqm ? `${item.sqm}m²` : "103m²";
 
   return (
-    <>
-      <Link to={`/property/${item.id}`} className="flex items-center gap-3 rounded-[1.25rem] border border-[#E7E7E4] bg-white px-2 py-2 font-helvetica lg:gap-4 hover:border hover:border-primary">
-        <div className="relative w-[100px] aspect-4/5 shrink-0 overflow-hidden rounded-2xl">
-          <SafeImage loading="lazy"
-            src={item.image}
-            alt={item.title}
-            className="h-full w-full object-cover"
-          />
-          <span className="absolute right-2 top-2 rounded-full bg-white/80 px-2 py-0.5 text-[0.625rem] font-medium">
-            {item.isAuction ? "Auction" : propertyStatusLabel(item.purpose, item.transactionStatus, item.badge)}
+    <Link
+      to={targetUrl}
+      className="group flex items-stretch gap-2.5 sm:gap-3 rounded-2xl border border-[#EDE8E4] bg-white p-2 font-helvetica text-primary-brown transition-all duration-200 hover:border-primary-brown hover:shadow-sm"
+    >
+      {/* Left Photo + Badge */}
+      <div className="relative w-[130px] sm:w-[137px] shrink-0 overflow-hidden rounded-lg bg-[#E2CBB3]">
+        <SafeImage
+          loading="lazy"
+          src={item.image}
+          alt={item.title}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        {badgeText && (
+          <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-normal text-primary-brown shadow-sm backdrop-blur-xs">
+            {badgeText}
           </span>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.preventDefault()
-              event.stopPropagation()
-              void handleFavouriteClick()
-            }}
-            className="absolute left-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/85"
-            aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
-          >
-            {isProcessing ? (
-              <LoaderCircle className="h-3 w-3 animate-spin text-primary-brown" />
-            ) : (
-              <HugeiconsIcon
-                icon={Bookmark02Icon}
-                size={14}
-                className={isFavourite ? 'fill-primary-brown text-primary-brown' : 'fill-transparent text-primary-brown stroke-[1.5]'}
+        )}
+      </div>
+
+      {/* Right Info Column */}
+      <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
+        {/* Top Header & Specs */}
+        <div className="flex flex-col gap-1">
+          {/* Title & Bookmark Button */}
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="truncate text-[14px] font-medium text-primary-brown leading-tight">
+              {item.title}
+            </h3>
+            <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+              <FavoriteButton
+                initialIsFavourite={item.isFavourite}
+                targetId={item.id}
+                targetType="property"
+                variant="icon-only"
+                iconSize={13}
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F8F4EE] hover:bg-[#EDE8E4] transition-colors"
               />
-            )}
-          </button>
-        </div>
-
-        <div className="flex min-w-0 flex-1 flex-col text-primary-brown">
-          <h3 className="line-clamp-1 md:line-clamp-2 text-[0.875rem] font-medium">
-            {item.title}
-          </h3>
-
-          <div className="flex items-center gap-1 text-[0.75rem] ">
-            <img loading="lazy" src={Mappin} alt="" className="shrink-0" />
-            <span className={`min-w-0 ${clip}`}>{item.address}</span>
+            </div>
           </div>
 
-          <p className={`text-[1rem] font-medium ${clip}`}>
-            {formatPropertyPrice({ pricing_type: item.pricingType, price: item.price, price_min: item.priceMin, price_max: item.priceMax })}
+          {/* Price */}
+          <p className="text-[12px] font-bold text-primary-brown leading-tight">
+            {priceDisplay}
           </p>
 
-          <p className={`text-[0.75rem] ${clip}`}>
-            {item.propertyType && `${item.propertyType} • `}
-            {item.beds} Bed&nbsp;&nbsp;•&nbsp;&nbsp;{item.baths} Bath&nbsp;&nbsp;•&nbsp;&nbsp;{item.sqm} sqm
-          </p>
+          {/* Specs / Amenities */}
+          <div className="flex items-center gap-2.5 sm:gap-3 pt-0.5">
+            <div className="flex items-center gap-1">
+              <HugeiconsIcon icon={Bathtub01Icon} size={13} className="text-primary-brown/70" />
+              <span className="text-[10px] text-primary-brown/70">{baths}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <HugeiconsIcon icon={BedDoubleIcon} size={13} className="text-primary-brown/70" />
+              <span className="text-[10px] text-primary-brown/70">{beds}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <HugeiconsIcon icon={Car01Icon} size={13} className="text-primary-brown/70" />
+              <span className="text-[10px] text-primary-brown/70">{cars}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <HugeiconsIcon icon={House01Icon} size={13} className="text-primary-brown/70" />
+              <span className="text-[10px] text-primary-brown/70">{sqm}</span>
+            </div>
+          </div>
+        </div>
 
-          <div className="w-full my-2 border-t border-primary-light-brown/70" />
-
-          <div className="flex w-full items-center justify-between ">
-            <div className="flex min-w-0 items-center gap-1">
-              <SafeImage loading="lazy"
-                src={item.posterAvatar}
-                alt={item.posterName}
-                className="h-7 w-7 shrink-0 rounded-full object-cover"
-              />
-              <span className={`text-[0.75rem] ${clip}`}>
-                Listed by <span className="font-medium">{item.posterName}</span>
+        {/* Bottom Poster Row & Divider */}
+        <div className="flex flex-col gap-1.5 pt-1.5">
+          <div className="border-t border-[#EDE8E4] w-full" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full bg-[#F8F4EE]">
+                <SafeImage
+                  loading="lazy"
+                  src={item.posterAvatar}
+                  alt={item.posterName || "Sunrise"}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <span className="truncate text-[12px] text-primary-brown">
+                By {item.posterName || "Sunrise"}
               </span>
             </div>
-            <ArrowRight size={18} className="shrink-0 text-primary-light-brown/70" />
+            <ArrowRight
+              size={12}
+              className="shrink-0 text-primary-brown transition-transform duration-200 group-hover:translate-x-0.5"
+            />
           </div>
         </div>
-      </Link>
-      {collectionPromptOpen && (
-        <CollectionModal
-          propertyId={String(item.id)}
-          targetType="property"
-          onClose={() => setCollectionPromptOpen(false)}
-        />
-      )}
-      <AuthPromptToast
-        isOpen={showAuthToast}
-        onClose={() => setShowAuthToast(false)}
-        targetId={item.id}
-        targetType="property"
-      />
-    </>
-  )
-}
+      </div>
+    </Link>
+  );
+};
 
-export default PropertyListCard
+export default PropertyListCard;

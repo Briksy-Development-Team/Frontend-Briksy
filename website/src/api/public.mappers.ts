@@ -29,7 +29,7 @@ export const propertyToCard = (p: PublicProperty): Property => ({
   location: [p.location.suburb, p.location.postcode].filter(Boolean).join(", "),
   image: p.media?.find((m) => m.is_primary)?.url || p.media?.[0]?.url || PropertyPlaceholder,
   price: p.price || 0, pricingType: p.pricing_type ?? "fixed", priceMin: p.price_min ?? null, priceMax: p.price_max ?? null, beds: p.bedroom_option === "studio" ? 0 : Number(p.bedroom_option?.replace("_plus", "+") || 0),
-  baths: p.bathroom_option === "3_plus" ? 3 : Number(p.bathroom_option || 0), sqm: p.floor_area_sqm || 0, posterName: p.organization?.name || "Briksy member",
+  baths: p.bathroom_option === "3_plus" ? 3 : Number(p.bathroom_option || 0), cars: p.car_space_option === "3_plus" ? 3 : Number(p.car_space_option || 0), sqm: p.floor_area_sqm || 0, posterName: p.organization?.name || "Briksy member",
   posterAvatar: p.organization?.logo_url || BusinessPlaceholder, badge: p.status || "Verified listing", lat: p.location.latitude || 0,
   lng: p.location.longitude || 0, isFavourite: Boolean(p.is_favourite),
   purpose: p.listing_purpose,
