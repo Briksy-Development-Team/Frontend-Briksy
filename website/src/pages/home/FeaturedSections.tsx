@@ -1,4 +1,4 @@
-import { SwiperSection, type SwiperSectionProps, type SubCategory } from "../../components/swiper";
+import { SwiperSection, type SubCategory } from "../../components/swiper";
 import BuilderGridCard from "../../components/cards/builder/BuilderGridCard";
 import PropertyGridCard from "../../components/cards/property/PropertyGridCard";
 import TraderGridCard from "../../components/cards/trader/TraderGridCard";
@@ -6,11 +6,6 @@ import { getOrganizations, type PublicOrganization } from "../../api/seeker/orga
 import { getProperties, type PublicProperty } from "../../api/property/property.api";
 import { organizationToBuilder, organizationToTrader, propertyToCard } from "../../api/public.mappers";
 import { useAgentTypes, useServiceCategories } from "../../hooks/useTaxonomy";
-
-export type { SubCategory, SwiperSectionProps as HomeListSwiperProps };
-export const HomeListSwiper = SwiperSection;
-
-// ─── Pre-configured section components for Home page ─────────────────────────
 
 export const BuilderListSection = () => (
   <SwiperSection<PublicOrganization>
@@ -97,5 +92,3 @@ export const ServiceListSection = () => {
     />
   );
 };
-
-export default SwiperSection;

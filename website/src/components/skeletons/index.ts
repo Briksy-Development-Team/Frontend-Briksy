@@ -7,5 +7,4 @@ export { default as ListSkeleton } from "./ListSkeleton";
 export { default as PropertyListCardSkeleton } from "./PropertyListCardSkeleton";
 export { default as PropertyGridCardSkeleton } from "./PropertyGridCardSkeleton";
 export { default as BuilderListCardSkeleton } from "./BuilderListCardSkeleton";
-export { default as TraderListCardSkeleton } from "./TraderListCardSkeleton";
 export { default as ShortCardSkeleton } from "./ShortCardSkeleton";

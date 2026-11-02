@@ -7,7 +7,7 @@ import {
   PropertyListSection,
   AgentListSection,
   ServiceListSection,
-} from "../v2/HomeListSwiper";
+} from "./FeaturedSections";
 import AppPreview from "../../components/app-preview/AppPreview";
 import Heroone from "../../components/hero/Heroone";
 import { useIsMobileApp } from "../../utils/platform";

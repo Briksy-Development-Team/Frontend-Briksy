@@ -1,80 +1,56 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type ConsentStatus = "accepted" | "declined" | null;
+export type ConsentPrefs = { essential: true; analytics: boolean; personalisation: boolean; marketing: boolean };
+export type ConsentStatus = "accepted" | "declined" | "custom" | null;
 
-interface CookieConsentContextType {
-  consent: ConsentStatus;
-  acceptConsent: () => void;
-  declineConsent: () => void;
-  resetConsent: () => void;
+interface Ctx {
+  consent: ConsentStatus; prefs: ConsentPrefs;
+  acceptConsent: () => void; declineConsent: () => void;
+  saveConsent: (p: ConsentPrefs) => void; resetConsent: () => void;
 }
 
-const STORAGE_KEY = "briksy_cookie_consent";
+const KEY = "briksy_cookie_consent";
+const OFF: ConsentPrefs = { essential: true, analytics: false, personalisation: false, marketing: false };
+const ALL: ConsentPrefs = { essential: true, analytics: true, personalisation: true, marketing: true };
 
-const CookieConsentContext = createContext<CookieConsentContextType | undefined>(undefined);
+function load(): { status: ConsentStatus; prefs: ConsentPrefs } {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return { status: null, prefs: OFF };
+    if (raw === "accepted") return { status: "accepted", prefs: ALL };
+    if (raw === "declined") return { status: "declined", prefs: OFF };
+    const p = JSON.parse(raw);
+    return { status: p.status ?? null, prefs: { ...OFF, ...p.prefs, essential: true } };
+  } catch { return { status: null, prefs: OFF }; }
+}
 
-export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [consent, setConsent] = useState<ConsentStatus>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === "accepted" || saved === "declined") {
-        return saved;
-      }
-    } catch {
-      // localStorage might be unavailable or disabled
-    }
-    return null;
-  });
+function save(status: ConsentStatus, prefs: ConsentPrefs) {
+  try { localStorage.setItem(KEY, JSON.stringify({ status, prefs })); } catch {}
+}
 
-  const acceptConsent = () => {
-    setConsent("accepted");
-    try {
-      localStorage.setItem(STORAGE_KEY, "accepted");
-    } catch {
-      // ignore storage error
-    }
-  };
+const CookieConsentContext = createContext<Ctx | undefined>(undefined);
 
-  const declineConsent = () => {
-    setConsent("declined");
-    try {
-      localStorage.setItem(STORAGE_KEY, "declined");
-    } catch {
-      // ignore storage error
-    }
-  };
+export const CookieConsentProvider = ({ children }: { children: ReactNode }) => {
+  const init = load();
+  const [consent, setConsent] = useState<ConsentStatus>(init.status);
+  const [prefs, setPrefs] = useState<ConsentPrefs>(init.prefs);
 
-  const resetConsent = () => {
-    setConsent(null);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // ignore storage error
-    }
-  };
+  const set = (status: ConsentStatus, p: ConsentPrefs) => { setConsent(status); setPrefs(p); save(status, p); };
 
-  // Dispatch custom event for optional analytics initialization when consent status changes
+  const acceptConsent = () => set("accepted", ALL);
+  const declineConsent = () => set("declined", OFF);
+  const saveConsent = (p: ConsentPrefs) => set(p.analytics && p.personalisation && p.marketing ? "accepted" : "custom", { ...p, essential: true });
+  const resetConsent = () => { setConsent(null); setPrefs(OFF); try { localStorage.removeItem(KEY); } catch {} };
+
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (consent === "accepted") {
-      window.dispatchEvent(new CustomEvent("briksy_consent_accepted"));
-    } else if (consent === "declined") {
-      window.dispatchEvent(new CustomEvent("briksy_consent_declined"));
-    }
+    if (consent) window.dispatchEvent(new CustomEvent(`briksy_consent_${consent}`, { detail: prefs }));
   }, [consent]);
 
-  return (
-    <CookieConsentContext.Provider value={{ consent, acceptConsent, declineConsent, resetConsent }}>
-      {children}
-    </CookieConsentContext.Provider>
-  );
+  return <CookieConsentContext.Provider value={{ consent, prefs, acceptConsent, declineConsent, saveConsent, resetConsent }}>{children}</CookieConsentContext.Provider>;
 };
 
-export const useCookieConsent = (): CookieConsentContextType => {
-  const context = useContext(CookieConsentContext);
-  if (!context) {
-    throw new Error("useCookieConsent must be used within a CookieConsentProvider");
-  }
-  return context;
+export const useCookieConsent = () => {
+  const ctx = useContext(CookieConsentContext);
+  if (!ctx) throw new Error("useCookieConsent must be used within CookieConsentProvider");
+  return ctx;
 };
