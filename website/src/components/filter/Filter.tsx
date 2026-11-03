@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import FilterPanel from "./panels/FilterPanel";
 // import { getFieldsForMode } from "./filterConfig";
 import type { FilterMode } from "./filterConfig";
-import { SEARCH_CATEGORIES, serviceSlugForLabel } from "../../constants/categories";
+import { SEARCH_CATEGORIES, SEARCH_TAB_CATEGORIES, serviceSlugForLabel } from "../../constants/categories";
 
 const FILTER_PARAM_KEYS: Record<string, string> = {
   keyword: "q",
@@ -35,7 +35,7 @@ type FilterProps = {
 };
 
 const getVisibleTabs = () => {
-  return SEARCH_CATEGORIES.filter(c => c.id !== "address").map(c => ({
+  return SEARCH_TAB_CATEGORIES.map(c => ({
     label: c.label,
     value: c.id
   }));
@@ -45,7 +45,7 @@ const Filter = ({
   isOpen,
   onClose,
   initialTab,
-  category = "real-estate",
+  category = "buy",
 }: FilterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,8 +70,17 @@ const Filter = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setActiveTab(category !== "all" && category !== "address" ? category : "real-estate");
-  }, [isOpen, category]);
+    const initialLower = (initialTab || "").toLowerCase();
+    if (category === "real-estate" || category === "buy" || category === "rent" || category === "sold") {
+      if (initialLower === "rent" || category === "rent") setActiveTab("rent");
+      else if (initialLower === "sold" || category === "sold") setActiveTab("sold");
+      else setActiveTab("buy");
+    } else if (category && category !== "all" && category !== "address") {
+      setActiveTab(category);
+    } else {
+      setActiveTab("buy");
+    }
+  }, [isOpen, category, initialTab]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -89,14 +98,17 @@ const Filter = ({
       }
     });
 
-    // Handle initializing propertyFor from URL tab param or initialTab prop
-    const tabParam = params.get("tab");
-    if (tabParam) {
-      const catConfig = SEARCH_CATEGORIES.find(c => c.id === activeTab);
-      const match = catConfig?.propTypes.find(p => p.id.toLowerCase() === tabParam.toLowerCase() || p.label.toLowerCase() === tabParam.toLowerCase());
-      if (match) initial.propertyFor = match.id;
-    } else if (initialTab) {
-      initial.propertyFor = initialTab.toLowerCase();
+    // Handle initializing propertyFor from URL tab param or initialTab prop (for agents, traders, commercial)
+    const isPropertyTab = activeTab === "buy" || activeTab === "rent" || activeTab === "sold";
+    if (!isPropertyTab) {
+      const tabParam = params.get("tab");
+      if (tabParam) {
+        const catConfig = SEARCH_CATEGORIES.find(c => c.id === activeTab);
+        const match = catConfig?.propTypes.find(p => p.id.toLowerCase() === tabParam.toLowerCase() || p.label.toLowerCase() === tabParam.toLowerCase());
+        if (match) initial.propertyFor = match.id;
+      } else if (initialTab) {
+        initial.propertyFor = initialTab.toLowerCase();
+      }
     }
 
     if (initial.property_types && !initial.propertyTypes) {
@@ -125,32 +137,41 @@ const Filter = ({
 
   const handleApply = () => {
     const params = new URLSearchParams();
-    const categoryConfig = SEARCH_CATEGORIES.find((category) => category.id === activeTab);
+    const isPropertyTab = activeTab === "buy" || activeTab === "rent" || activeTab === "sold";
+    const targetType = isPropertyTab ? "real-estate" : activeTab;
+    const categoryConfig = SEARCH_CATEGORIES.find((category) => category.id === targetType);
 
     params.set("page", "1");
-    params.set("type", activeTab);
+    params.set("type", targetType);
 
-    // Extract propertyFor from currentValues if it's there
-    const selectedPropType = currentValues.propertyFor;
+    if (isPropertyTab) {
+      params.set("tab", activeTab);
+      if (activeTab === "buy") params.set("purpose", "sell");
+      if (activeTab === "rent") params.set("purpose", "rent");
+      if (activeTab === "sold") params.set("transaction_status", "SOLD");
+    } else {
+      // Extract propertyFor from currentValues if it's there
+      const selectedPropType = currentValues.propertyFor;
 
-    if (selectedPropType && selectedPropType !== "all" && selectedPropType.length > 0) {
-      const propTypeValue = String(Array.isArray(selectedPropType) ? selectedPropType[0] : selectedPropType);
-      params.set("tab", propTypeValue.toLowerCase());
-      if (propTypeValue.toLowerCase() === "buy") params.set("purpose", "sell");
-      if (propTypeValue.toLowerCase() === "rent") params.set("purpose", "rent");
+      if (selectedPropType && selectedPropType !== "all" && selectedPropType.length > 0) {
+        const propTypeValue = String(Array.isArray(selectedPropType) ? selectedPropType[0] : selectedPropType);
+        params.set("tab", propTypeValue.toLowerCase());
+        if (propTypeValue.toLowerCase() === "buy") params.set("purpose", "sell");
+        if (propTypeValue.toLowerCase() === "rent") params.set("purpose", "rent");
 
-      const serviceLabel = categoryConfig?.propTypes.find((propType) =>
-        propType.id.toLowerCase() === propTypeValue.toLowerCase() ||
-        propType.label.toLowerCase() === propTypeValue.toLowerCase(),
-      )?.label;
-      const serviceSlug = serviceSlugForLabel(serviceLabel || propTypeValue);
-      if (serviceSlug) params.set("service_slug", serviceSlug);
+        const serviceLabel = categoryConfig?.propTypes.find((propType) =>
+          propType.id.toLowerCase() === propTypeValue.toLowerCase() ||
+          propType.label.toLowerCase() === propTypeValue.toLowerCase(),
+        )?.label;
+        const serviceSlug = serviceSlugForLabel(serviceLabel || propTypeValue);
+        if (serviceSlug) params.set("service_slug", serviceSlug);
 
-      if (activeTab === "commercial" && ["buy", "lease", "sold", "leased"].includes(propTypeValue.toLowerCase())) {
-        params.set("transaction_status", propTypeValue.toUpperCase());
+        if (activeTab === "commercial" && ["buy", "lease", "sold", "leased"].includes(propTypeValue.toLowerCase())) {
+          params.set("transaction_status", propTypeValue.toUpperCase());
+        }
+      } else if (categoryConfig && categoryConfig.propTypes.length > 0) {
+        params.set("tab", "all");
       }
-    } else if (categoryConfig && categoryConfig.propTypes.length > 0) {
-      params.set("tab", "all");
     }
 
     Object.entries(currentValues).forEach(([key, value]) => {
