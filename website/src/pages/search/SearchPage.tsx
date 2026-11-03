@@ -29,15 +29,20 @@ const SearchPage = () => {
   const sort = (SORTS.includes(sortParam) ? sortParam : "featured") as SortType;
   const showMap = searchParams.get("map") === "1";
 
+  // ponytail: support direct shortcut types (buy, rent, sold) by mapping to real-estate + matching tab
+  const isPropertyShortcut = typeParam === "buy" || typeParam === "rent" || typeParam === "sold";
+  const resolvedType = isPropertyShortcut ? "real-estate" : typeParam;
+
   const activeCategoryId =
-    SEARCH_CATEGORIES.find((c) => c.id === typeParam)?.id ||
-    (typeParam !== "all" ? SEARCH_CATEGORIES.find((c) => c.resultType === typeParam)?.id : undefined) ||
+    SEARCH_CATEGORIES.find((c) => c.id === resolvedType)?.id ||
+    (resolvedType !== "all" ? SEARCH_CATEGORIES.find((c) => c.resultType === resolvedType)?.id : undefined) ||
     "all";
   const activeCategory = SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
   const resultType = activeCategory.resultType;
   const crumb = CRUMBS[activeCategoryId] ?? CRUMBS.all;
 
-  const tabParam = TAB_MAP[searchParams.get("tab") ?? ""] ?? null;
+  const rawTab = searchParams.get("tab") || (isPropertyShortcut ? typeParam : "");
+  const tabParam = TAB_MAP[rawTab ?? ""] ?? null;
   const defaultTab = (activeCategory.propTypes[0]?.label as FilterTab) || null;
   const [activeTab, setActiveTab] = useState<FilterTab | null>(tabParam ?? defaultTab);
 

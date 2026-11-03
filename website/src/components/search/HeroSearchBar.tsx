@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
 
-import { SEARCH_CATEGORIES, type Category, type PropType } from "../../constants/categories";
+import { SEARCH_TAB_CATEGORIES, TAB_MAP, type Category, type PropType } from "../../constants/categories";
 
 
 
@@ -23,9 +23,9 @@ const LIST_MAX_HEIGHT = 172;
 
 const HeroSearchBar = ({ mode, setMode }: Props) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(SEARCH_CATEGORIES[0]);
+  const [selected, setSelected] = useState(SEARCH_TAB_CATEGORIES[0]);
   const [propType, setPropType] = useState<PropType | undefined>(
-    SEARCH_CATEGORIES[0].propTypes[0],
+    SEARCH_TAB_CATEGORIES[0].propTypes[0],
   );
   const [typeOpen, setTypeOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); // mobile category picker
@@ -72,7 +72,8 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     // Address search requires input
     if (selected.id === "address" && !query.trim()) return;
 
-    const params = new URLSearchParams({ type: selected.id });
+    const targetType = selected.defaultTab ? "real-estate" : selected.id;
+    const params = new URLSearchParams({ type: targetType });
 
     if (query) {
       if (selected.id === "address") {
@@ -83,8 +84,11 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     }
 
     const activePropType = overridePropType || propType;
-    if (activePropType && activePropType.id !== "all")
+    if (selected.defaultTab) {
+      params.set("tab", selected.defaultTab);
+    } else if (activePropType && activePropType.id !== "all") {
       params.set("tab", activePropType.id);
+    }
 
     navigate(`/result?${params.toString()}`);
   };
@@ -106,7 +110,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
             Categories options
           </h3>
           <div className="flex flex-col gap-1">
-            {SEARCH_CATEGORIES.map((cat) => (
+            {SEARCH_TAB_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
@@ -137,7 +141,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
 
   const desktopTabs = (
     <div className="flex items-center gap-1 w-full">
-      {SEARCH_CATEGORIES.map((cat) => (
+      {SEARCH_TAB_CATEGORIES.map((cat) => (
         <button
           key={cat.id}
           type="button"
@@ -266,7 +270,9 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     const handleSelectTab = (e: Event) => {
       const customEvent = e as CustomEvent<{ categoryId: string }>;
       const targetId = customEvent.detail?.categoryId;
-      const cat = SEARCH_CATEGORIES.find((c) => c.id === targetId);
+      const cat = SEARCH_TAB_CATEGORIES.find(
+        (c) => c.id === targetId || (targetId === "real-estate" && c.id === "buy")
+      );
       if (cat) {
         selectCategory(cat);
       }
@@ -322,8 +328,8 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       <Filter
         isOpen={filterOpen}
         onClose={() => setFilterOpen(false)}
-        category={selected.id}
-        initialTab={propType?.label || "All"}
+        category={selected.defaultTab ? "real-estate" : selected.id}
+        initialTab={selected.defaultTab ? (TAB_MAP[selected.defaultTab] || "All") : (propType?.label || "All")}
       />
     </div>
   );

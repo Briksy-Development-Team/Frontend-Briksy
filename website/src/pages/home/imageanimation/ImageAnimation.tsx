@@ -17,7 +17,7 @@ const JOURNEY_STEPS: JourneyStep[] = [
     title: "Find your place.",
     desc: "Search properties that match your next move.",
     action: "Start Searching",
-    categoryId: "real-estate",
+    categoryId: "buy",
   },
   {
     key: "BUILD",

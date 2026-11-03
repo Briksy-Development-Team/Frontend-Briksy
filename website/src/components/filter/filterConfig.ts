@@ -139,18 +139,21 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
   };
 
   switch (mode) {
+    case "buy":
+    case "rent":
+    case "sold":
     case "real-estate": {
-      const isRent = subCategory === "rent";
-      const isSold = subCategory === "sold";
+      const isRent = mode === "rent" || subCategory === "rent";
+      const isSold = mode === "sold" || subCategory === "sold";
       const priceLabel = isSold ? "Sold Price" : isRent ? "Weekly Rent" : "Price";
       const priceTabs = isRent ? WEEKLY_PRICE_RANGE_TABS : PRICE_RANGE_TABS;
       const priceStep = isRent ? 10 : 50;
 
       const fields: FilterField[] = [
-        { key: "propertyTypes", label: "Real Estate Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
-        typeField,
+        { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        ...(mode === "real-estate" && typeOptions.length > 0 ? [typeField] : []),
         { key: "price", label: priceLabel, type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: priceTabs, step: priceStep, bucketCount: 42, column: "right" },
-        { key: "showPriceOnly", label: "Only show real estate with price", type: "singleCheckbox", column: "right" },
+        { key: "showPriceOnly", label: isSold ? "Only show sold properties with price" : "Only show properties with price", type: "singleCheckbox", column: "right" },
         { key: "bedrooms", label: "Bedroom", type: "pillSelect", options: BEDROOM_OPTIONS, column: "right" },
         { key: "bathrooms", label: "Bathrooms", type: "pillSelect", options: BATHROOM_OPTIONS, column: "right" },
         { key: "carSpaces", label: "Car spaces", type: "pillSelect", options: CAR_SPACE_OPTIONS, column: "right" },
@@ -159,7 +162,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
       ];
       
       if (isSold) {
-        fields.splice(3, 0, { key: "soldWithin", label: "Sold within", type: "pillSelect", options: SOLD_WITHIN_OPTIONS, column: "right" });
+        fields.splice(mode === "real-estate" ? 3 : 2, 0, { key: "soldWithin", label: "Sold within", type: "pillSelect", options: SOLD_WITHIN_OPTIONS, column: "right" });
       }
       return fields;
     }
