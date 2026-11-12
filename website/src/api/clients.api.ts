@@ -125,4 +125,21 @@ export const testConnection = async () => {
   }
 };
 
+export type AiRecommendation = {
+  type: "property" | "service";
+  id: string;
+  title?: string;
+  name?: string;
+  suburb?: string;
+  state?: string;
+  price?: number | string | null;
+  category?: string;
+  organization?: string | null;
+};
+
+export const askBriksyAi = async (question: string) => {
+  const response = await api.post<{ success: boolean; data: { answer: string; recommendations: AiRecommendation[] } }>("/seeker/ai/search", { question });
+  return response.data.data;
+};
+
 export default api;

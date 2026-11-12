@@ -3,6 +3,7 @@ import { ArrowRight, Search, Sparkles, X } from "lucide-react";
 import ModalWrapper from "../wrapper/ModalWrapper";
 import BriksyLogo from "../../assets/logo/loaderbg.svg";
 import HelpIcon from "../../assets/icons/help/help.svg";
+import { askBriksyAi, type AiRecommendation } from "../../api/clients.api";
 
 type Props = { isOpen: boolean; onClose: () => void };
 
@@ -19,16 +20,28 @@ const QUICK_PROMPTS = [
 export default function AiModeModal({ isOpen, onClose }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [input, setInput] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [recommendations, setRecommendations] = useState<AiRecommendation[]>([]);
+  const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const submit = (query = input) => {
+  const submit = async (query = input) => {
     if (!query.trim()) return;
     setInput(query.trim());
     setPhase("searching");
-    // ponytail: wire backend AI call here — set phase "answered" and inject content from response
+    setError("");
+    try {
+      const result = await askBriksyAi(query.trim());
+      setAnswer(result.answer);
+      setRecommendations(result.recommendations ?? []);
+      setPhase("answered");
+    } catch {
+      setError("Briksy AI is temporarily unavailable. Please try again.");
+      setPhase("idle");
+    }
   };
 
-  const reset = () => { setPhase("idle"); setInput(""); };
+  const reset = () => { setPhase("idle"); setInput(""); setAnswer(""); setRecommendations([]); setError(""); };
 
   // ModalWrapper handles scroll-lock + createPortal(document.body)
   return (
@@ -111,8 +124,8 @@ export default function AiModeModal({ isOpen, onClose }: Props) {
                   {/* Answered: backend fills headline + body here */}
                   {phase === "answered" && (
                     <>
-                      <h2 className="text-[20px] font-medium leading-7 tracking-tight" />
-                      <p className="text-[16px] leading-7" />
+                      <h2 className="text-[20px] font-medium leading-7 tracking-tight">Here’s what I found on Briksy</h2>
+                      <p className="whitespace-pre-wrap text-[16px] leading-7">{answer}</p>
                       <div className="flex flex-wrap items-center gap-3 pt-1">
                         <button className="inline-flex items-center gap-1.5 rounded-[6px] border border-white-100 bg-white px-4 py-2 text-[14px] font-medium hover:border-primary-brown/40 cursor-pointer">
                           <img src={HelpIcon} alt="" className="h-[18px] w-[18px]" />
@@ -148,6 +161,7 @@ export default function AiModeModal({ isOpen, onClose }: Props) {
                   {phase === "searching" ? "Searching…" : "Search"}
                 </button>
               </form>
+              {error && <p className="text-center text-sm text-red-600">{error}</p>}
               <p className="text-center text-[12px] text-primary-light-brown">
                 AI answers are built from verified profile data and public licence records. Prices are indicative — always confirm with the provider.
               </p>
@@ -161,8 +175,18 @@ export default function AiModeModal({ isOpen, onClose }: Props) {
               <span className="text-[12px] text-primary-light-brown">{phase === "idle" ? "Top-rated" : "Matched results"}</span>
             </div>
             <div data-lenis-prevent className="scrollbar-custom min-h-0 flex-1 space-y-4 pb-4 lg:overflow-y-auto lg:pr-1">
-              <div className="h-[28rem] w-full animate-pulse rounded-[20px] bg-white/80" />
-              <div className="h-[28rem] w-full animate-pulse rounded-[20px] bg-white/80" />
+              {phase === "idle" && <>
+                <div className="h-40 w-full animate-pulse rounded-[20px] bg-white/80" />
+                <div className="h-40 w-full animate-pulse rounded-[20px] bg-white/80" />
+              </>}
+              {phase !== "idle" && recommendations.map((item) => (
+                <div key={`${item.type}-${item.id}`} className="rounded-[20px] border border-white-100 bg-white p-4">
+                  <p className="text-xs uppercase tracking-wide text-primary-light-brown">{item.type}</p>
+                  <p className="mt-1 font-medium">{item.title || item.name}</p>
+                  <p className="mt-1 text-sm text-primary-light-brown">{[item.suburb, item.state, item.category, item.organization].filter(Boolean).join(" · ")}</p>
+                </div>
+              ))}
+              {phase !== "idle" && recommendations.length === 0 && <p className="rounded-[20px] bg-white p-4 text-sm text-primary-light-brown">No matching public Briksy records yet.</p>}
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import type { FilterTab } from "../../components/filter/filterTypes";
 import Breadcrumb, { type BreadcrumbItem } from "../../components/nav/Breadcrumb";
 import SearchToolbar from "./SearchToolbar";
 import { SEARCH_CATEGORIES, CRUMBS, TAB_MAP, serviceSlugForLabel } from "../../constants/categories";
+import { useServiceCategories } from "../../hooks/useTaxonomy";
 import BrowseView from "./BrowseView";
 import ResultsView from "./ResultsView";
 import FullListView from "./FullListView";
@@ -22,6 +23,7 @@ const SearchPage = () => {
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
   const navigate = useNavigate();
   const outletCtx = useOutletContext<{ setMode?: (m: "collapsed" | "search" | "ai") => void } | null>();
+  const { data: serviceCategories = [] } = useServiceCategories();
 
   const typeParam = searchParams.get("type");
   // ponytail: show suburb/q in search input — suburb takes priority for display
@@ -38,18 +40,31 @@ const SearchPage = () => {
     SEARCH_CATEGORIES.find((c) => c.id === resolvedType)?.id ||
     (resolvedType !== "all" ? SEARCH_CATEGORIES.find((c) => c.resultType === resolvedType)?.id : undefined) ||
     "all";
-  const activeCategory = SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
+  const baseCategory = SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) || SEARCH_CATEGORIES[0];
+  // The API is the source of truth for professional services. Keep the static
+  // list as a fast fallback while the taxonomy request is loading.
+  const activeCategory = activeCategoryId === "traders" && serviceCategories.length > 0
+    ? {
+        ...baseCategory,
+        propTypes: [
+          { id: "all", label: "All" },
+          ...serviceCategories.map((category) => ({ id: category.slug, label: category.label })),
+        ],
+      }
+    : baseCategory;
   const resultType = activeCategory.resultType;
   const crumb = CRUMBS[activeCategoryId] ?? CRUMBS.all;
 
   const rawTab = searchParams.get("tab") || (isPropertyShortcut ? typeParam : "");
-  const tabParam = TAB_MAP[rawTab ?? ""] ?? null;
+  const dynamicTab = serviceCategories.find((category) =>
+    category.slug === rawTab || category.label.toLowerCase() === rawTab.toLowerCase()
+  )?.label;
+  const tabParam = TAB_MAP[rawTab ?? ""] ?? dynamicTab ?? null;
   const defaultTab = (activeCategory.propTypes[0]?.label as FilterTab) || null;
-  const [activeTab, setActiveTab] = useState<FilterTab | null>(tabParam ?? defaultTab);
-
-  useEffect(() => {
-    setActiveTab(tabParam ?? defaultTab);
-  }, [tabParam, defaultTab]);
+  // The URL is the single source of truth. Keeping a second local tab state
+  // creates a race on slow deployments: the button can show the new tab while
+  // child requests still read the previous query string.
+  const activeTab = (tabParam ?? defaultTab) as FilterTab | null;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -63,9 +78,8 @@ const SearchPage = () => {
   };
 
   const handleTabChange = (tab: FilterTab | null) => {
-    setActiveTab(tab);
     updateSearchParams((next) => {
-      ["page", "intent", "purpose", "transaction_status", "service_slug"].forEach((k) => next.delete(k));
+      ["page", "intent", "purpose", "transaction_status", "service_slug", "auction_only"].forEach((k) => next.delete(k));
       next.set("type", activeCategoryId);
 
       if (!tab) {
@@ -73,7 +87,11 @@ const SearchPage = () => {
         return;
       }
 
-      next.set("tab", Object.keys(TAB_MAP).find((key) => TAB_MAP[key] === tab) || tab.toLowerCase());
+      const serviceCategory = serviceCategories.find((category) => category.label === tab);
+      next.set(
+        "tab",
+        serviceCategory?.slug || Object.keys(TAB_MAP).find((key) => TAB_MAP[key] === tab) || tab.toLowerCase(),
+      );
 
       if (tab === "Buy") next.set("purpose", "sell");
       else if (tab === "Rent" || tab === "Lease") next.set("purpose", "rent");
@@ -82,7 +100,11 @@ const SearchPage = () => {
         next.set("transaction_status", tab.toUpperCase());
       }
 
-      const serviceSlug = serviceSlugForLabel(tab);
+      if (activeCategoryId === "commercial" && tab === "Auction") {
+        next.set("auction_only", "1");
+      }
+
+      const serviceSlug = serviceSlugForLabel(tab, serviceCategories);
       if (serviceSlug) next.set("service_slug", serviceSlug);
     });
   };
@@ -159,6 +181,7 @@ const SearchPage = () => {
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar
           activeCategoryId={activeCategoryId}
+          propTypes={activeCategory.propTypes}
           activeTab={activeTab}
           onTabChange={handleTabChange}
           sort={sort}

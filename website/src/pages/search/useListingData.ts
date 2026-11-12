@@ -10,6 +10,7 @@ import {
 } from "../../api/public.mappers";
 import { useResultSearchParams } from "./useResultSearchParams";
 import { serviceSlugForLabel } from "../../constants/categories";
+import { useServiceCategories } from "../../hooks/useTaxonomy";
 
 const isPropertyType = (resultType: ResultType) =>
   resultType === "property" || resultType === "commercial" || resultType === "auction";
@@ -54,8 +55,10 @@ export function useListingDataWithLoading(
   const [searchParams] = useResultSearchParams();
   const organizationSlug = searchParams.get("organization_slug") || undefined;
   const serviceSlugParam = searchParams.get("service_slug") || undefined;
+  const { data: serviceCategories = [] } = useServiceCategories();
 
   useEffect(() => {
+    let active = true;
     setItems([]);
     setIsLoading(true);
     if (isPropertyType(resultType)) {
@@ -64,27 +67,34 @@ export function useListingDataWithLoading(
         category: resultType === "commercial" ? "commercial" : undefined,
         purpose: resultType === "commercial" ? undefined : purposeFor(tab),
         transaction_status: resultType === "commercial" || resultType === "property" ? transactionStatusFor(tab) : undefined,
-        auction_only: resultType === "auction" ? 1 : undefined,
+        auction_only: resultType === "auction" || tab === "Auction" ? 1 : undefined,
         search: filter || undefined,
         organization_slug: organizationSlug,
         ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),
       })
-        .then((res) => setItems(res.data.map(propertyToCard)))
+        .then((res) => {
+          if (active) setItems(res.data.map(propertyToCard));
+        })
         .catch(console.error)
-        .finally(() => setIsLoading(false));
-      return;
+        .finally(() => {
+          if (active) setIsLoading(false);
+        });
+      return () => { active = false; };
     }
 
     getOrganizations({
       type: searchParams.get("agent_type") || organizationTypeFor(resultType, tab),
       service_slug:
         resultType === "trader"
-          ? serviceSlugParam || serviceSlugForLabel(tab || "") || (filter ? slugify(filter) : undefined)
+          ? tab
+            ? serviceSlugForLabel(tab, serviceCategories) || serviceSlugParam || (filter ? slugify(filter) : undefined)
+            : undefined
           : undefined,
       verified_only: 1,
       ...(section === "newly" ? { sort: "created_at", direction: "desc" } : {}),
     })
       .then((res) => {
+        if (!active) return;
         if (resultType === "builder") {
           setItems(res.data.map(organizationToBuilder));
           return;
@@ -93,8 +103,11 @@ export function useListingDataWithLoading(
         setItems(res.data.map(organizationToTrader));
       })
       .catch(console.error)
-      .finally(() => setIsLoading(false));
-  }, [resultType, filter, tab, section, organizationSlug, serviceSlugParam, searchParams.toString()]);
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => { active = false; };
+  }, [resultType, filter, tab, section, organizationSlug, serviceSlugParam, serviceCategories, searchParams.toString()]);
 
   return { items, isLoading };
 }

@@ -70,8 +70,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: "traders",
-    label: "Traders",
-    title: "TRADERS",
+    label: "Trades",
+    title: "TRADES",
     desc: "Connect with skilled trades professionals",
     icon: Trader,
     resultType: "trader",
@@ -110,6 +110,7 @@ export const CATEGORIES: Category[] = [
       { id: "lease", label: "Lease" },
       { id: "sold", label: "Sold" },
       { id: "leased", label: "Leased" },
+      { id: "auction", label: "Auction" },
     ],
   },
 ];
@@ -168,8 +169,8 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
   },
   {
     id: "traders",
-    label: "Traders",
-    title: "TRADERS",
+    label: "Trades",
+    title: "TRADES",
     desc: "Connect with skilled trades professionals",
     icon: Trader,
     resultType: "trader",
@@ -208,6 +209,7 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
       { id: "lease", label: "Lease" },
       { id: "sold", label: "Sold" },
       { id: "leased", label: "Leased" },
+      { id: "auction", label: "Auction" },
     ],
   },
 ];
@@ -250,6 +252,7 @@ export const TAB_MAP: Record<string, string> = {
   sold: "Sold",
   lease: "Lease",
   leased: "Leased",
+  auction: "Auction",
   "real-estate": "Real Estate Agents",
   buyer: "Buyer Agents",
   landscaper: "Landscapers",

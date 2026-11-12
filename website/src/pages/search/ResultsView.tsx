@@ -11,6 +11,8 @@ import { propertyQueryToParams } from "../../api/property/propertySearch";
 import MapSplitView from "./MapSplitView";
 import ResultsLoadingSkeleton from "./ResultsLoadingSkeleton";
 import { SwiperSection } from "../../components/swiper";
+import { serviceSlugForLabel } from "../../constants/categories";
+import { useServiceCategories } from "../../hooks/useTaxonomy";
 
 const organizationTypeForResult = (resultType: ResultType, tab?: string | null, agentType?: string | null) => {
   if (resultType === "builder" && agentType) return agentType;
@@ -60,6 +62,7 @@ export default function ResultsView({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const { data: serviceCategories = [] } = useServiceCategories();
 
   const isAgents = resultType === "builder" && (Boolean(searchParams.get("agent_type")) || !["", "builders", "agents"].includes(searchParams.get("tab") || ""));
 
@@ -68,18 +71,24 @@ export default function ResultsView({
     setLoading(true);
     setError(null);
     const query = propertyQueryToParams(searchParams);
-    const serviceSlug = searchParams.get("service_slug") || undefined;
+    // During a slow navigation the URL can still contain the previous tab
+    // for one render. Prefer the tab that was just clicked so the request
+    // cannot accidentally reuse the previous service slug.
+    const serviceSlug = selectedSub
+      ? serviceSlugForLabel(selectedSub, serviceCategories) || searchParams.get("service_slug") || undefined
+      : undefined;
     const categoryId = searchParams.get("type");
     const organizationType = categoryId === "agents"
       ? agentOrganizationType(searchParams.get("tab"))
       : organizationTypeForResult(resultType, selectedSub.toLowerCase(), searchParams.get("agent_type") || searchParams.get("tab"));
     const intent = query.purpose || (selectedSub === "Buy" ? "sell" : selectedSub === "Rent" || selectedSub === "Lease" ? "rent" : undefined);
+    const isCommercialAuction = resultType === "commercial" && selectedSub === "Auction";
     const commercialStatus = query.transaction_status || (resultType === "commercial" && ["Buy", "Lease", "Sold", "Leased"].includes(selectedSub) ? (selectedSub.toUpperCase() as "BUY" | "LEASE" | "SOLD" | "LEASED") : undefined);
     const propertyStatus = query.transaction_status || (resultType === "property" && selectedSub === "Sold" ? "SOLD" : undefined);
     const request = resultType === "property" || resultType === "commercial" || resultType === "auction"
       ? Promise.all([
-          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, verified_only: 1 }),
-          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
+          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" || isCommercialAuction ? 1 : undefined, verified_only: 1 }),
+          getProperties({ ...query, purpose: intent, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: resultType === "property" ? propertyStatus : commercialStatus, auction_only: resultType === "auction" || isCommercialAuction ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
         ])
       : getOrganizations({ type: organizationType, search: query.search, service_slug: categoryId === "traders" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
     request.then((r: any) => {
@@ -101,7 +110,7 @@ export default function ResultsView({
     }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [resultType, selectedSub, searchParams.toString()]);
+  }, [resultType, selectedSub, serviceCategories, searchParams.toString()]);
 
   const traders = organizations.map(organizationToTrader);
   const builders = organizations.map(organizationToBuilder);

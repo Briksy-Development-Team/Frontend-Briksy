@@ -26,6 +26,7 @@ const SORT_LABELS = SORT_OPTIONS.reduce<Record<string, string>>(
 export default function SearchToolbar({
   activeCategoryId,
   activeTab,
+  propTypes,
   onTabChange,
   sort,
   onSortChange,
@@ -37,6 +38,7 @@ export default function SearchToolbar({
 }: {
   activeCategoryId: string;
   activeTab: FilterTab | null;
+  propTypes?: { id: string; label: string }[];
   onTabChange: (tab: FilterTab | null) => void;
   sort: SortType;
   onSortChange: (sort: SortType) => void;
@@ -51,6 +53,8 @@ export default function SearchToolbar({
   const activeCategory =
     SEARCH_CATEGORIES.find((c) => c.id === activeCategoryId) ||
     SEARCH_CATEGORIES[0];
+
+  const tabs = propTypes ?? activeCategory.propTypes;
 
   return (
     <div className="flex flex-col gap-3">
@@ -114,9 +118,9 @@ export default function SearchToolbar({
         </div>
       </div>
 
-      {activeCategory.propTypes.length > 0 && (
+      {tabs.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 shrink-0">
-          {activeCategory.propTypes.map((propType) => {
+          {tabs.map((propType) => {
             const tab = propType.label as FilterTab;
             const isSelected = activeTab === tab;
             return (
