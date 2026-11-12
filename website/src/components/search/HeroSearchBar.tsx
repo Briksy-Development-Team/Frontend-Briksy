@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
 
-import { SEARCH_TAB_CATEGORIES, TAB_MAP, type Category, type PropType } from "../../constants/categories";
+import { SEARCH_TAB_CATEGORIES, type Category, type PropType } from "../../constants/categories";
 
 
 
@@ -329,7 +329,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         isOpen={filterOpen}
         onClose={() => setFilterOpen(false)}
         category={selected.defaultTab ? "real-estate" : selected.id}
-        initialTab={selected.defaultTab ? (TAB_MAP[selected.defaultTab] || "All") : (propType?.label || "All")}
+        initialTab={selected.defaultTab ? selected.label : (propType?.label || "All")}
       />
     </div>
   );

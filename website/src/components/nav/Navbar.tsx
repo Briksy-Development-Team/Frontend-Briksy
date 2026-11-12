@@ -33,7 +33,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const isSearchOpen = mode !== "collapsed";
+  const isSearchOpen = mode === "search";
 
   // Hover helpers: small delay so the dropdown doesn't flicker when the mouse moves between tab and panel
   const cancelClose = () => clearTimeout(closeTimer.current);
@@ -271,7 +271,7 @@ const Navbar = ({ mode, setMode, hideOnMobile = false, visibilityClass }: Navbar
         </nav>
       </div>
 
-      <SearchOverlay open={isSearchOpen} onClose={() => setMode("collapsed")} />
+      <SearchOverlay open={isSearchOpen} onClose={() => setMode("collapsed")} onAskAi={() => setMode("ai")} />
       <LanguageModal
         isOpen={langModalOpen}
         onClose={() => setLangModalOpen(false)}

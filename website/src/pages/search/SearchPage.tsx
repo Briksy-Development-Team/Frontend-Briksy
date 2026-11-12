@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useIsMobileApp } from "../../utils/platform";
 import type { SortType } from "../../types/search";
 import type { FilterTab } from "../../components/filter/filterTypes";
@@ -21,6 +21,7 @@ const SearchPage = () => {
   const [searchParams, setSearchParams] = useResultSearchParams();
   const [browseSection, setBrowseSection] = useState<BrowseSection>("all");
   const navigate = useNavigate();
+  const outletCtx = useOutletContext<{ setMode?: (m: "collapsed" | "search" | "ai") => void } | null>();
 
   const typeParam = searchParams.get("type");
   // ponytail: show suburb/q in search input — suburb takes priority for display
@@ -166,6 +167,7 @@ const SearchPage = () => {
           onToggleMap={handleToggleMap}
           query={queryParam}
           onQueryChange={handleQueryChange}
+          onAskAi={() => outletCtx?.setMode?.("ai")}
         />
         <div className="mt-3 flex flex-col">{content}</div>
       </div>
