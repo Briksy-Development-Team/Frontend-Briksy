@@ -7,6 +7,7 @@ import LocationPermissionPrompt from '../components/location/LocationPermissionP
 import { useIsMobileApp } from '../utils/platform';
 import { useMobileWelcome } from '../utils/welcome';
 import AppWelcome from '../mobile_app/pages/welcome/AppWelcome';
+import AiModeModal from '../components/search/AiModeModal';
 
 import { getNavbarVisibilityClass, isNavbarHiddenBelowMd, isBottomNavHidden } from './navConfig';
 
@@ -45,6 +46,7 @@ const MainLayout = () => {
                 </div>
                 {!hideBottomNav && <BottomNav />}
                 <LocationPermissionPrompt />
+                <AiModeModal isOpen={mode === "ai"} onClose={() => setMode("collapsed")} />
             </div>
         );
     }
@@ -57,6 +59,7 @@ const MainLayout = () => {
             </div>
             <Footer />
             <LocationPermissionPrompt />
+            <AiModeModal isOpen={mode === "ai"} onClose={() => setMode("collapsed")} />
         </div>
     );
 };

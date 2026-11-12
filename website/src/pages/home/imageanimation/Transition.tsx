@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
+import { useOutletContext } from "react-router-dom";
 import gsap from "gsap";
 import { Loader, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
 import CARD_IMAGE from "../../../assets/about/electrician.svg";
@@ -81,6 +82,7 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
   const stageRef = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.85);
+  const outletCtx = useOutletContext<{ setMode?: (m: "collapsed" | "search" | "ai") => void } | null>();
 
   // ── Viewport Locked Scaling ──
   useEffect(() => {
@@ -268,6 +270,7 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
 
           <button
             type="button"
+            onClick={() => outletCtx?.setMode?.("ai")}
             data-z={ASK_BUTTON_Z}
             className="float-layer absolute -right-10 bottom-24 flex items-center gap-1.5 whitespace-nowrap rounded-full border-[3px] border-[#F5551A] bg-white px-5 py-2.5 text-sm leading-none font-semibold text-[#F5551A] shadow-[0_12px_24px_rgba(245,85,26,0.22),inset_0_0_16px_rgba(245,85,26,0.35)] cursor-pointer"
           >

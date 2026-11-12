@@ -11,7 +11,7 @@ export const NavSearchButton = ({ onClick }: { onClick: () => void }) => (
   </button>
 );
 
-export const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+export const SearchOverlay = ({ open, onClose, onAskAi }: { open: boolean; onClose: () => void; onAskAi?: () => void }) => {
   const [query, setQuery] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useState<string[]>([]);
@@ -65,7 +65,7 @@ export const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () =>
               </div>
             </div>
 
-            <button onClick={() => { }} className="flex h-[54px] shrink-0 items-center gap-2 rounded-[12px] bg-gradient-to-tr from-[#79241D] to-[#DF4235] px-5 text-[15px] font-semibold text-white hover:opacity-90">
+            <button onClick={() => onAskAi?.()} className="flex h-[54px] shrink-0 items-center gap-2 rounded-[12px] bg-gradient-to-tr from-[#79241D] to-[#DF4235] px-5 text-[15px] font-semibold text-white hover:opacity-90">
               <Sparkles size={17} /> Ask Ai
             </button>
           </div>
