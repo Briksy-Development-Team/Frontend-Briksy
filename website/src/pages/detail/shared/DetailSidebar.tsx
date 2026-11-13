@@ -413,17 +413,10 @@ export interface TraderAboveProps {
 }
 
 export function TraderAboveCard({
-  price = "$850k",
-  pricePrefix = "From ",
-  priceLabel = "fixed price",
   buttonText = "Send a enquiry",
   onEnquiry,
   className = "",
 }: TraderAboveProps) {
-  const formattedPrice =
-    typeof price === "number"
-      ? `$${(price / 1000).toFixed(0)}k`
-      : price || "$850k";
 
   return (
     <div
