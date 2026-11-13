@@ -1,4 +1,4 @@
-import { ArrowLeft, Bell, Check } from "lucide-react";
+import { Bell, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Placeholderproperty from "../../assets/profile/placeholderproperty.svg";
@@ -30,7 +30,7 @@ const Notification = () => {
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-8 md:py-20">
       <div className="mb-6 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3"><button type="button" onClick={() => navigate(-1)} aria-label="Back" className="md:hidden"><ArrowLeft size={20} /></button><h1 className="text-2xl font-medium text-primary-brown">Notifications</h1></div>
+        <div className="flex items-center gap-3"><h1 className="text-2xl font-medium text-primary-brown">Notifications</h1></div>
         {items.some((item) => !item.read_at) && <button type="button" onClick={markAll} className="flex items-center gap-1 text-sm text-primary-light-brown hover:text-primary-brown"><Check size={16} /> Mark all as read</button>}
       </div>
       {loading ? (
