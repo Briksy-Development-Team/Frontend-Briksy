@@ -1,11 +1,4 @@
-/**
- * RecommendationSection.tsx — contextual inline recommendation cards per AI response.
- *
- * Implements the Gemini layout:
- *   • Briksy ListCard on top (PropertyListCard, TraderListCard, BuilderListCard)
- *   • Description in short/medium details directly below each card
- *   • Structured bullet highlights: Key Drivers, Highlights / Specialisation, Best Suited For
- */
+
 import type { AiRecommendation } from "../../api/clients.api";
 import type { Property } from "../../types/property";
 import type { Trader } from "../../types/trader";

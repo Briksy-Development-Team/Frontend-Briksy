@@ -1,7 +1,4 @@
-/**
- * AiModeModal.tsx — Gemini & ChatGPT-style full-screen AI chat modal.
- * ponytail: Lean session state management, minimal boilerplate, auto-persistence.
- */
+
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PanelLeft, Search, Sparkles, SquarePen, X } from "lucide-react";
