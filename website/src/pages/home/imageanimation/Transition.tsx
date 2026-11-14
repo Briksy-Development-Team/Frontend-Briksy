@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useOutletContext } from "react-router-dom";
 import gsap from "gsap";
-import { Loader, ShieldCheck, Sparkles, type LucideIcon } from "lucide-react";
+import { ShieldCheck, Sparkles, Building2, FileText, MapPin, type LucideIcon } from "lucide-react";
 import CARD_IMAGE from "../../../assets/about/electrician.svg";
 import ImageBigone from "../../../assets/about/imagebigone.svg";
 import ImageBigTwo from "../../../assets/about/imagebigtwo.svg";
@@ -18,17 +18,17 @@ const ORBIT_IMAGES = [
 type Row = { icon: LucideIcon; iconClass?: string; label: string; meta?: string };
 
 const VERIFIED_CARD: { title: string; rows: Row[] } = {
-  title: "Electrician in Footscray",
-  rows: [{ icon: ShieldCheck, iconClass: "text-[#342511]", label: "Licence verified", meta: "Doyle Electrical" }],
+  title: "Meet your local electrician",
+  rows: [{ icon: ShieldCheck, iconClass: "text-[#342511]", label: "Licence verified", meta: "Local electrician" }],
 };
 
 const CHECKS_CARD: { title: string; rows: Row[] } = {
-  title: "Electrician in Footscray",
-  rows: ["ABN verified", "Licence current — REC 18422", "Insurance current"].map((label) => ({
-    icon: Loader,
-    iconClass: "spin-icon text-[#07172a]/50",
-    label,
-  })),
+  title: "Know who you're connecting with",
+  rows: [
+    { icon: Building2, iconClass: "text-[#07172a]/50", label: "Business name listed" },
+    { icon: FileText, iconClass: "text-[#07172a]/50", label: "ABN information available" },
+    { icon: MapPin, iconClass: "text-[#07172a]/50", label: "Local business details" },
+  ].map((row) => ({ ...row, iconClass: "text-[#07172a]/50" })),
 };
 
 const STAGE_W = 620;
@@ -92,7 +92,7 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       let newScale = 1;
 
       if (vw >= 1024) {
-      
+
         const targetW = vw * 0.35; // Target 35% of screen width
         const targetH = vh * 0.65; // Target 65% of screen height
 

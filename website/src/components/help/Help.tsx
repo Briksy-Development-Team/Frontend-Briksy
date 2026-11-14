@@ -15,8 +15,6 @@ import {
 } from 'lucide-react';
 import Helps from "../../assets/icons/help/help.svg"
 import ContactModal from './ContactModal';
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from 'react-router-dom';
 
 
 const FAQ_DATA = [
@@ -78,7 +76,6 @@ const Help = () => {
     const headerRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
 
     const toggleAccordion = (id: number) => {
         setExpandedId(expandedId === id ? 0 : id);
@@ -119,21 +116,6 @@ const Help = () => {
 
     return (
         <div className="min-h-screen mx-auto md:w-full font-helvetica pb-10 md:pb-20 relative  md:mt-28  md:px-0">
-            <div className="flex bg-white md:hidden items-center mb-4 gap-3 px-5 py-5 ">
-                <button
-                    onClick={() => {
-                        if (window.history.length > 1) {
-                            navigate(-1);
-                        } else {
-                            navigate("/profile");
-                        }
-                    }}
-                    className="flex items-center gap-2  text-[#342511] text-[1.25rem] font-medium"
-                >
-                    <ArrowLeft className=" w-5 h-5" />
-                    Help
-                </button>
-            </div>
             <div className="absolute top-6 hidden md:flex md:top-0 right-4 md:right-8 z-10">
                 <button
                     onClick={() => setIsModalOpen(true)}

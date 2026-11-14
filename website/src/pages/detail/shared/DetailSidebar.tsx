@@ -413,23 +413,16 @@ export interface TraderAboveProps {
 }
 
 export function TraderAboveCard({
-  price = "$850k",
-  pricePrefix = "From ",
-  priceLabel = "fixed price",
   buttonText = "Send a enquiry",
   onEnquiry,
   className = "",
 }: TraderAboveProps) {
-  const formattedPrice =
-    typeof price === "number"
-      ? `$${(price / 1000).toFixed(0)}k`
-      : price || "$850k";
 
   return (
     <div
       className={`w-full bg-white rounded-[16px] border border-[#EDE8E4] p-[26px] flex flex-col gap-3.5 shadow-xs ${className}`}
     >
-      <div className="flex items-baseline gap-1.5">
+      {/* <div className="flex items-baseline gap-1.5">
         <span className="text-[14px] font-medium text-[#342511]">{pricePrefix}</span>
         <span className="text-[24px] font-medium leading-[32px] tracking-[-0.006em] text-[#342511]">
           {formattedPrice}
@@ -437,7 +430,7 @@ export function TraderAboveCard({
         {priceLabel && (
           <span className="text-[14px] font-normal text-black ml-1">{priceLabel}</span>
         )}
-      </div>
+      </div> */}
 
       <button
         type="button"

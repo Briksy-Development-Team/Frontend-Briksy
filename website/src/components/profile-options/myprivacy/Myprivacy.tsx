@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 
 const Toggle = ({
     active,
@@ -25,15 +23,6 @@ const Myprivacy = () => {
     const [suggested, setSuggested] = useState(true);
     const [updates, setUpdates] = useState(true);
     const [marketing, setMarketing] = useState(false);
-    const navigate = useNavigate();
-
-    const handleBack = () => {
-        if (window.history.length > 1) {
-            navigate(-1);
-        } else {
-            navigate("/profile");
-        }
-    };
 
     return (
         <div className="w-full space-y-10 ">
@@ -47,15 +36,6 @@ const Myprivacy = () => {
             </div>
 
 
-            <div className="flex bg-white md:hidden items-center mb-4 gap-3 px-5 py-5 ">
-                <button
-                    onClick={handleBack}
-                    className="flex items-center gap-2  text-[#342511] text-[15px] font-medium"
-                >
-                    <ArrowLeft className=" w-5 h-5" />
-                    Notifications
-                </button>
-            </div>
 
             <p className="text-[1rem] flex md:hidden px-[3%] text-primary-light-brown">
                 Control how your activity is used to personalise Briksy.
