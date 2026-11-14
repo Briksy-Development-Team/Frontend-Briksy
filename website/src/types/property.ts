@@ -12,6 +12,13 @@ export interface Property {
   baths?: number;
   cars?: number;
   sqm?: number;
+  areaUnit?: "sqm" | "sqft" | null;
+  carpetArea?: number | null;
+  carpetAreaUnit?: "sqm" | "sqft" | null;
+  landArea?: number | null;
+  landAreaUnit?: "sqm" | "sqft" | null;
+  floorAreaUnit?: "sqm" | "sqft" | null;
+  amenities?: Array<{ name: string; slug?: string; quantity?: number | null; value_type?: "boolean" | "number" }>;
   
   posterName: string;
   posterAvatar: string;

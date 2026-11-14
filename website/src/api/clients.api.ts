@@ -130,11 +130,14 @@ export type AiRecommendation = {
   id: string;
   title?: string;
   name?: string;
+  description?: string | null;
   suburb?: string;
   state?: string;
   price?: number | string | null;
   category?: string;
   organization?: string | null;
+  [key: string]: unknown;
+  amenities?: Array<{ name: string; slug?: string; quantity?: number | null; value_type?: "boolean" | "number" }>;
 };
 
 export const askBriksyAi = async (question: string) => {

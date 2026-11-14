@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShieldCheck, ListTree, Star } from "lucide-react";
+import { ShieldCheck, Star } from "lucide-react";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { SafeImage } from "../../../../components/custom/SafeImage";
 import NearbySchools from "../../shared/NearbySchools";
@@ -10,6 +10,10 @@ import {
   Car01Icon,
   House01Icon,
 } from "@hugeicons/core-free-icons";
+import { getPropertyAmenityIcon } from "../../../../utils/propertyAmenityIcons";
+
+type PropertyAgent = { name?: string | null; avatar?: string | null; verified?: string | null; role?: string | null; since?: number | null };
+type PropertyAmenity = { name: string; slug?: string; quantity?: number | string | null; value_type?: "boolean" | "number" };
 
 export const PropertyTitle = ({
   title,
@@ -17,6 +21,11 @@ export const PropertyTitle = ({
   baths,
   car,
   sqm,
+  carpetArea,
+  carpetAreaUnit,
+  landArea,
+  landAreaUnit,
+  floorAreaUnit,
   rating,
   ratingCount,
   reviewsCount,
@@ -27,17 +36,25 @@ export const PropertyTitle = ({
   baths?: string | number | null;
   car?: string | number | null;
   sqm?: string | number | null;
+  carpetArea?: number | null;
+  carpetAreaUnit?: "sqm" | "sqft" | null;
+  landArea?: number | null;
+  landAreaUnit?: "sqm" | "sqft" | null;
+  floorAreaUnit?: "sqm" | "sqft" | null;
   rating?: number | null;
   ratingCount?: number | null;
   reviewsCount?: number | null;
   organizationName?: string | null;
 }) => {
+  const displayCount = (value: string | number | null | undefined) => value === "studio" ? "0" : String(value ?? "").replace("_plus", "+");
   const specs = [
-    { icon: Bathtub01Icon, value: baths },
-    { icon: BedDoubleIcon, value: beds },
-    { icon: Car01Icon, value: car },
-    { icon: House01Icon, value: sqm ? `${sqm}m²` : null },
-  ].filter(({ value }) => value != null && value !== "" && value !== 0);
+    { icon: Bathtub01Icon, value: displayCount(baths) },
+    { icon: BedDoubleIcon, value: displayCount(beds) },
+    { icon: Car01Icon, value: displayCount(car) },
+    { icon: House01Icon, value: sqm ? `${sqm} ${floorAreaUnit || "sqm"}` : null, label: "Floor Area" },
+    { icon: House01Icon, value: landArea ? `${landArea} ${landAreaUnit || "sqm"}` : null, label: "Land Area" },
+    { icon: House01Icon, value: carpetArea ? `${carpetArea} ${carpetAreaUnit || "sqm"}` : null, label: "Carpet Area" },
+  ].filter(({ value }) => value != null && value !== "" && value !== "0");
 
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -49,7 +66,7 @@ export const PropertyTitle = ({
         {specs.map(({ icon, value }, index) => (
           <div key={index} className="flex items-center gap-2">
             <HugeiconsIcon icon={icon} size={23} strokeWidth={1.7} />
-            <span className="text-base font-medium">{value}</span>
+            <span className="text-base font-medium">{value}{"label" in specs[index] && specs[index].label ? ` ${specs[index].label}` : ""}</span>
           </div>
         ))}
 
@@ -87,7 +104,7 @@ export const PropertyTitle = ({
   );
 };
 
-export const PropertyAgentCard = ({ agent }: { agent: any }) => {
+export const PropertyAgentCard = ({ agent }: { agent: PropertyAgent | null }) => {
   if (!agent || !agent.name) return null;
 
   return (
@@ -95,7 +112,7 @@ export const PropertyAgentCard = ({ agent }: { agent: any }) => {
       <div className="flex items-center gap-3 min-w-0">
         <div className="relative shrink-0">
           <SafeImage
-            src={agent.avatar}
+            src={agent.avatar ?? undefined}
             className="w-12 h-12 rounded-full object-cover border border-[#EDE8E4]"
             alt={agent.name}
           />
@@ -169,14 +186,16 @@ export const PropertyAbout = ({ about }: { about?: string | null }) => {
   );
 };
 
-export const PropertyAmenities = ({ amenities }: { amenities?: any[] }) => {
+export const PropertyAmenities = ({ amenities }: { amenities?: PropertyAmenity[] }) => {
   const [showAll, setShowAll] = useState(false);
 
   if (!amenities || amenities.length === 0) {
     return null;
   }
 
-  const displayed = showAll ? amenities : amenities.slice(0, 12);
+  const visibleAmenities = amenities.filter((item) => item.quantity == null || Number(item.quantity) > 0);
+  if (visibleAmenities.length === 0) return null;
+  const displayed = showAll ? visibleAmenities : visibleAmenities.slice(0, 12);
 
   return (
     <div className="flex flex-col gap-3.5 w-full">
@@ -190,13 +209,14 @@ export const PropertyAmenities = ({ amenities }: { amenities?: any[] }) => {
             key={`${item.name}-${idx}`}
             className="flex items-center gap-2.5 text-[#000000] text-[14px] font-medium"
           >
-            <ListTree size={16} className="text-[#342511] shrink-0" />
+            {(() => { const Icon = getPropertyAmenityIcon(item.slug); return <HugeiconsIcon icon={Icon} size={18} className="text-[#342511] shrink-0" />; })()}
+            {item.quantity != null ? <span className="font-semibold">{item.quantity}</span> : null}
             <span className="truncate">{item.name}</span>
           </div>
         ))}
       </div>
 
-      {amenities.length > 12 && (
+      {visibleAmenities.length > 12 && (
         <button
           type="button"
           onClick={() => setShowAll(!showAll)}

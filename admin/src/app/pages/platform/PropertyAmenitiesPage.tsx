@@ -5,10 +5,10 @@ import { PageHeader } from "../../modules/apps/shared_table/entity-list/componen
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import axiosInstance from "../../services/api/axiosInstance";
 
-type Amenity = { id: string; group_id: string; name: string; slug: string; sort_order: number; is_active: boolean };
+type Amenity = { id: string; group_id: string; name: string; slug: string; sort_order: number; is_active: boolean; value_type: "boolean" | "number" };
 type Group = { id: string; name: string; features: Amenity[] };
 type Envelope = { data: Group[] };
-const blank = { group_id: "", name: "", slug: "", sort_order: 0, is_active: true };
+const blank = { group_id: "", name: "", slug: "", sort_order: 0, is_active: true, value_type: "boolean" as "boolean" | "number" };
 
 const PropertyAmenitiesPage = () => {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -27,7 +27,7 @@ const PropertyAmenitiesPage = () => {
   };
   useEffect(() => { void load(); }, []);
   const openCreate = (groupId = groups[0]?.id ?? "") => { setEditing(null); setForm({ ...blank, group_id: groupId }); setOpen(true); };
-  const openEdit = (amenity: Amenity) => { setEditing(amenity); setForm({ group_id: amenity.group_id, name: amenity.name, slug: amenity.slug, sort_order: amenity.sort_order, is_active: amenity.is_active }); setOpen(true); };
+  const openEdit = (amenity: Amenity) => { setEditing(amenity); setForm({ group_id: amenity.group_id, name: amenity.name, slug: amenity.slug, sort_order: amenity.sort_order, is_active: amenity.is_active, value_type: amenity.value_type ?? "boolean" }); setOpen(true); };
   const save = async () => { setSaving(true); try { const payload = { ...form, sort_order: Number(form.sort_order) || 0 }; if (editing) await axiosInstance.put(`/super-admin/property-amenities/${editing.id}`, payload); else await axiosInstance.post("/super-admin/property-amenities", payload); setOpen(false); await load(); } finally { setSaving(false); } };
   const remove = async (amenity: Amenity) => { if (!window.confirm(`Delete or deactivate ${amenity.name}?`)) return; await axiosInstance.delete(`/super-admin/property-amenities/${amenity.id}`); await load(); };
 
@@ -41,6 +41,7 @@ const PropertyAmenitiesPage = () => {
       <div className="mb-5"><label className="form-label">Category</label><select className="form-select" value={form.group_id} onChange={(event) => setForm({ ...form, group_id: event.target.value })}>{groups.map((group) => <option key={group.id} value={group.id}>{group.name}</option>)}</select></div>
       <div className="mb-5"><label className="form-label">Name</label><input className="form-control" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
       <div className="row"><div className="col-md-6 mb-5"><label className="form-label">Slug <span className="text-muted">(optional)</span></label><input className="form-control" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} /></div><div className="col-md-6 mb-5"><label className="form-label">Sort order</label><input type="number" min="0" className="form-control" value={form.sort_order} onChange={(event) => setForm({ ...form, sort_order: Number(event.target.value) })} /></div></div>
+      <div className="mb-5"><label className="form-label">Input type</label><select className="form-select" value={form.value_type} onChange={(event) => setForm({ ...form, value_type: event.target.value as "boolean" | "number" })}><option value="boolean">Checkbox</option><option value="number">Quantity</option></select></div>
       <label className="form-check form-switch form-check-custom form-check-solid"><input className="form-check-input" type="checkbox" checked={form.is_active} onChange={(event) => setForm({ ...form, is_active: event.target.checked })} /><span className="form-check-label">Active</span></label>
     </ModalShell>}
   </Content>;

@@ -1,4 +1,5 @@
 import placeholder from '../../assets/place holder/place.svg';
+import { resolveMediaUrl } from '../../utils/mediaUrl';
 
 /**
  * Drop-in replacement for <img> that falls back to place.svg when the src
@@ -22,7 +23,7 @@ export function SafeImage({
 
   return (
     <img
-      src={src || fallback}
+      src={resolveMediaUrl(src) || fallback}
       alt={alt}
       loading={loading}
       draggable={draggable}

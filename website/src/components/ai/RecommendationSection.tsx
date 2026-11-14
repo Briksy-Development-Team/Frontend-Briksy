@@ -2,11 +2,9 @@
 import type { AiRecommendation } from "../../api/clients.api";
 import type { Property } from "../../types/property";
 import type { Trader } from "../../types/trader";
-import type { Builder } from "../../types/builder";
 
 import PropertyListCard from "../cards/property/PropertyListCard";
 import TraderListCard from "../cards/trader/TraderListCard";
-import BuilderListCard from "../cards/builder/BuilderListCard";
 
 import BusinessPlaceholder from "../../assets/place holder/bussinessholder.svg";
 import ServicePlaceholder from "../../assets/place holder/serviceholder.svg";
@@ -16,6 +14,7 @@ import PropertyPlaceholder from "../../assets/place holder/propertyimages.svg";
 interface Props {
   items: AiRecommendation[];
   visible: boolean;
+  onNavigate?: () => void;
 }
 
 const isBuilder = (cat = "", role = "") =>
@@ -24,29 +23,35 @@ const isBuilder = (cat = "", role = "") =>
 const loc = (item: AiRecommendation, raw: Record<string, unknown>) =>
   [item.suburb, item.state].filter(Boolean).join(", ") || (raw.location as string) || "Australia";
 
+const countValue = (value: unknown) => typeof value === "string" ? (value === "studio" ? 0 : Number(value.replace("_plus", "")) || undefined) : typeof value === "number" ? value : undefined;
+
 function toProperty(item: AiRecommendation): Property {
   const r = item as Record<string, unknown>;
   const location = loc(item, r);
   return {
     id: item.id,
-    title: item.title || item.name || `Property in ${location}`,
+    title: item.title || item.name || "Briksy property",
     address: (r.address as string) || location,
     location,
     image: (r.image as string) || (r.image_url as string) || PropertyPlaceholder,
-    price: Number(item.price) || 0,
-    pricingType: (r.pricingType as Property["pricingType"]) ?? "fixed",
-    priceMin: (r.priceMin as number) ?? null,
-    priceMax: (r.priceMax as number) ?? null,
-    beds: (r.beds as number) ?? 2,
-    baths: (r.baths as number) ?? 2,
-    cars: (r.cars as number) ?? 1,
-    sqm: (r.sqm as number) ?? 120,
+    price: item.price == null ? undefined : Number(item.price),
+    pricingType: (r.pricingType ?? r.pricing_type) as Property["pricingType"],
+    priceMin: (r.priceMin ?? r.price_min) as number | null,
+    priceMax: (r.priceMax ?? r.price_max) as number | null,
+    beds: countValue(r.beds),
+    baths: countValue(r.baths),
+    cars: countValue(r.cars),
+    sqm: r.sqm as number | undefined,
+    areaUnit: (r.floor_area_unit as Property["areaUnit"]) ?? "sqm",
+    carpetArea: (r.carpet_area as number) ?? null,
+    carpetAreaUnit: (r.carpet_area_unit as Property["carpetAreaUnit"]) ?? "sqm",
+    amenities: Array.isArray(r.amenities) ? r.amenities as Property["amenities"] : [],
     posterName: item.organization || (r.posterName as string) || "Briksy Member",
     posterAvatar: (r.posterAvatar as string) || (r.avatar as string) || BusinessPlaceholder,
     badge: (r.badge as string) || "Verified",
-    purpose: (r.purpose as Property["purpose"]) ?? "SELL",
+    purpose: r.purpose as Property["purpose"],
     transactionStatus: (r.transactionStatus as Property["transactionStatus"]) ?? "BUY",
-    isAuction: Boolean(r.isAuction),
+    isAuction: Boolean(r.isAuction ?? r.is_auction),
     propertyCategory: item.category || null,
     propertyType: (r.propertyType as string) || item.category || "Residential",
     lat: (r.lat as number) ?? 0,
@@ -74,70 +79,35 @@ function toTrader(item: AiRecommendation): Trader {
   };
 }
 
-function toBuilder(item: AiRecommendation): Builder {
-  const r = item as Record<string, unknown>;
-  const isAgent = (item.category ?? "").toLowerCase().includes("agent") || r.profileType === "agent";
-  return {
-    id: item.id,
-    name: item.name || item.title || "Briksy Partner",
-    location: loc(item, r),
-    avatar: (r.avatar as string) || (r.logo_url as string) || BusinessPlaceholder,
-    bannerImage: (r.bannerImage as string) || (r.banner_url as string) || BuilderBackground,
-    rating: Number(r.rating) || 4.9,
-    reviews: Number(r.reviews) || 28,
-    tags: Array.isArray(r.tags) && r.tags.length > 0 ? (r.tags as string[]) : [item.category || "Builder", "Licensed"],
-    establishedYear: (r.establishedYear as number) || 2018,
-    isFavourite: Boolean(r.isFavourite),
-    favoriteId: String(item.id),
-    profileType: isAgent ? "agent" : "builder",
-  };
-}
-
 // ─── Gemini Details & Bullets Block ──────────────────────────────────────────
 
 function RecommendationDetailsBlock({ item }: { item: AiRecommendation }) {
   const r = item as Record<string, unknown>;
-  const location = loc(item, r);
   const isProp = item.type === "property";
   const isBld = isBuilder(item.category);
 
   // Summary description
-  const summary =
-    ((r.summary || r.description) as string) ||
-    (isProp
-      ? `${item.title || "This property"} is located in ${location}, offering a sought-after residential opportunity with quality construction and convenient access to local infrastructure.`
-      : `${item.name || "This professional"} provides verified ${item.category || "property"} services in ${location}, known for dependable project delivery and licensed standards.`);
+  const summary = (r.description || r.summary) as string | undefined;
 
   // Key Drivers
   const keyDrivers =
-    ((r.keyDrivers || r.key_drivers) as string) ||
-    (isProp
-      ? `Strong local demand in ${item.suburb || "the area"}, established neighbourhood amenities, and ongoing value retention.`
-      : "Verified structural licensing, end-to-end site management, and dependable project timelines.");
+    (r.keyDrivers || r.key_drivers) as string | undefined;
 
   // Highlights / Features / Services
   const highlights =
     (Array.isArray(r.highlights) ? r.highlights.join(" · ") : (r.highlights as string)) ||
-    (isProp
-      ? `${r.beds ?? 2} Bed · ${r.baths ?? 2} Bath · ${r.cars ?? 1} Car Space · ${r.sqm ? `${r.sqm}m² layout` : "Spacious floor plan"}`
-      : Array.isArray(r.tags) && r.tags.length > 0
-      ? (r.tags as string[]).join(" · ")
-      : isBld
-      ? "Custom residential homes, extensions, and modern builds."
-      : `${item.category || "Specialist trade"} maintenance, repairs, and installations.`);
+    (Array.isArray(r.tags) && r.tags.length > 0 ? (r.tags as string[]).join(" · ") : undefined);
 
   // Best Suited For
   const bestSuited =
-    ((r.bestSuitedFor || r.best_suited_for) as string) ||
-    (isProp
-      ? "Buyers seeking long-term capital appreciation, prime connectivity, and verified property quality."
-      : "Homeowners and investors seeking vetted, licensed professionals for reliable project execution.");
+    (r.bestSuitedFor || r.best_suited_for) as string | undefined;
 
   const bullets = [
     { label: "Key Drivers", value: keyDrivers },
     { label: isProp ? "Highlights" : isBld ? "Specialisation" : "Core Services", value: highlights },
     { label: "Best Suited For", value: bestSuited },
-  ];
+  ].filter((bullet): bullet is { label: string; value: string } => Boolean(bullet.value));
+  if (!summary && bullets.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2 px-1 pt-1 text-primary-brown">
@@ -157,7 +127,7 @@ function RecommendationDetailsBlock({ item }: { item: AiRecommendation }) {
   );
 }
 
-export default function RecommendationSection({ items, visible }: Props) {
+export default function RecommendationSection({ items, visible, onNavigate }: Props) {
   if (!items?.length) return null;
 
   return (
@@ -181,11 +151,9 @@ export default function RecommendationSection({ items, visible }: Props) {
           <div key={`rec-${item.type}-${item.id}`} className="flex flex-col gap-2.5">
             <div className="w-full">
               {item.type === "property" ? (
-                <PropertyListCard item={toProperty(item)} />
-              ) : isBuilder(item.category) ? (
-                <BuilderListCard item={toBuilder(item)} />
+                <div onClick={() => window.setTimeout(() => onNavigate?.(), 0)}><PropertyListCard item={toProperty(item)} /></div>
               ) : (
-                <TraderListCard item={toTrader(item)} />
+                <div onClick={() => window.setTimeout(() => onNavigate?.(), 0)}><TraderListCard item={toTrader(item)} /></div>
               )}
             </div>
             <RecommendationDetailsBlock item={item} />

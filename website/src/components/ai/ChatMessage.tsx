@@ -45,9 +45,11 @@ export function ThinkingSkeleton() {
 export function AssistantMessage({
   msg,
   onNeedHelp,
+  onNavigate,
 }: {
   msg: ChatMessageItem;
   onNeedHelp?: () => void;
+  onNavigate?: () => void;
 }) {
   if (msg.thinking) {
     return <ThinkingSkeleton />;
@@ -66,6 +68,7 @@ export function AssistantMessage({
         <RecommendationSection
           items={msg.recommendations}
           visible={msg.recsVisible ?? true}
+          onNavigate={onNavigate}
         />
         <MessageActions content={msg.content} onNeedHelp={onNeedHelp} />
       </div>
@@ -76,12 +79,14 @@ export function AssistantMessage({
 export default function ChatMessage({
   msg,
   onNeedHelp,
+  onNavigate,
 }: {
   msg: ChatMessageItem;
   onNeedHelp?: () => void;
+  onNavigate?: () => void;
 }) {
   if (msg.role === "user") {
     return <UserMessage content={msg.content} />;
   }
-  return <AssistantMessage msg={msg} onNeedHelp={onNeedHelp} />;
+  return <AssistantMessage msg={msg} onNeedHelp={onNeedHelp} onNavigate={onNavigate} />;
 }

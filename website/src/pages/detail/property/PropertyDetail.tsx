@@ -23,23 +23,28 @@ import {
   type PublicProperty,
 } from "../../../api/property/property.api";
 import { createInquiry } from "../../../api/seeker/inquiry.api";
+
+const errorMessage = (reason: unknown): string | undefined => {
+  if (typeof reason !== "object" || reason === null) return undefined;
+  const response = (reason as { response?: { data?: { message?: unknown }; status?: number } }).response;
+  return typeof response?.data?.message === "string" ? response.data.message : undefined;
+};
+const errorStatus = (reason: unknown): number | undefined => {
+  if (typeof reason !== "object" || reason === null) return undefined;
+  return (reason as { response?: { status?: number } }).response?.status;
+};
 import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
 import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
-import { SwiperSection } from "../../../components/swiper";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
 import CollectionModal from "../../../components/collections/CollectionModal";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
-import TraderGridCard from "../../../components/cards/trader/TraderGridCard";
 import {
-  organizationToTrader,
   propertyToCard,
 } from "../../../api/public.mappers";
-import type { Trader } from "../../../types/trader";
 import type { Property } from "../../../types/property";
-import ServicePlaceholder from "../../../assets/place holder/serviceholder.svg";
-import BuilderBackground from "../../../assets/place holder/builderbg.svg";
+import { resolveMediaUrl } from "../../../utils/mediaUrl";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,10 +73,10 @@ const PropertyDetail = () => {
       .then(({ data }) => {
         if (active) setPropertyData(data);
       })
-      .catch((reason: any) => {
+      .catch((reason: unknown) => {
         if (active)
           setError(
-            reason?.response?.status === 404
+            errorStatus(reason) === 404
               ? "This property was not found."
               : "Unable to load this property.",
           );
@@ -131,7 +136,7 @@ const PropertyDetail = () => {
               type: "video" as const,
             })),
           ];
-      let formattedMedia = media
+      const formattedMedia = media
         .filter(
           (item, index, all) =>
             item.url &&
@@ -143,9 +148,9 @@ const PropertyDetail = () => {
         )
         .map((item) => ({
           id: item.id,
-          src: item.url ?? undefined,
+          src: resolveMediaUrl(item.url),
           type: item.type,
-          videoSrc: item.type === "video" ? (item.url ?? undefined) : undefined,
+          videoSrc: item.type === "video" ? resolveMediaUrl(item.url) : undefined,
         }));
 
       return formattedMedia;
@@ -157,12 +162,15 @@ const PropertyDetail = () => {
           verified: propertyData.organization.is_verified ? "Verified" : "",
           avatar: propertyData.organization.logo_url || "",
           since:
-            (propertyData.organization as any).established_year || undefined,
+            propertyData.organization.established_year || undefined,
         }
       : null,
     about: propertyData.description || "",
     amenities: (propertyData.features || []).map((feature) => ({
       name: feature.name,
+      slug: feature.slug,
+      quantity: feature.quantity,
+      value_type: feature.value_type,
     })),
     mapSrc:
       (propertyData.location?.latitude && propertyData.location?.longitude) ||
@@ -186,7 +194,7 @@ const PropertyDetail = () => {
           rating: propertyData.rating || 0,
           reviews: 0,
           since:
-            (propertyData.organization as any).established_year || undefined,
+            propertyData.organization.established_year || undefined,
           logo: propertyData.organization.logo_url || "",
         }
       : null,
@@ -208,29 +216,6 @@ const PropertyDetail = () => {
         undefined,
     },
   };
-
-  const traderHost: Trader | null = propertyData.organization
-    ? organizationToTrader({
-        ...propertyData.organization,
-        address: propertyData.full_address || propertyData.address,
-      } as any)
-    : propertyData.creator
-      ? {
-          id: propertyData.creator.id,
-          name: propertyData.creator.name,
-          tagLine: "Property Host",
-          role: "Host",
-          location:
-            propertyData.full_address || propertyData.address || "Australia",
-          avatar: ServicePlaceholder,
-          bannerImage: BuilderBackground,
-          rating: propertyData.rating || 0,
-          reviews: 0,
-          tags: [],
-          isFavourite: false,
-          favoriteId: propertyData.creator.id,
-        }
-      : null;
 
   const submitEnquiry = async (values: {
     seeker_name: string;
@@ -266,9 +251,9 @@ const PropertyDetail = () => {
           ? `${result.message} Our team can still view it.`
           : "Your enquiry has been sent successfully.",
       );
-    } catch (reason: any) {
+    } catch (reason: unknown) {
       setEnquiryError(
-        reason?.response?.data?.message ||
+        errorMessage(reason) ||
           "Unable to send enquiry. Please try again.",
       );
     } finally {
@@ -278,20 +263,39 @@ const PropertyDetail = () => {
 
   const isAuction = Boolean(propertyData.is_auction);
 
-  const addressParts = property.address.split(", ");
-  const suburbStateZip = addressParts[addressParts.length - 1].split(" ");
-  const state = suburbStateZip[suburbStateZip.length - 2] || "Victoria";
-  const suburb = suburbStateZip.slice(0, -2).join(" ") || "Toorak";
-
-  // ponytail: state uses q= (text search, shows in input); suburb uses suburb= (API filter) + q= (shows in input)
-  const catType = isAuction ? "auction" : "real-estate";
-  const subTab = isAuction ? "" : "&tab=buy";
+  const categoryType = propertyData.property_category === "commercial" ? "commercial" : "real-estate";
+  const purpose = propertyData.listing_purpose;
+  const transactionStatus = propertyData.transaction_status;
+  const tab = isAuction
+    ? null
+    : transactionStatus === "SOLD"
+      ? "sold"
+      : transactionStatus === "LEASED"
+        ? "leased"
+        : purpose === "RENT"
+          ? "rent"
+          : "buy";
+  const baseSearchParams = new URLSearchParams({ type: isAuction ? "auction" : categoryType });
+  if (tab) baseSearchParams.set("tab", tab);
+  if (purpose === "RENT") baseSearchParams.set("purpose", "rent");
+  if (purpose === "SELL" || purpose === "BOTH") baseSearchParams.set("purpose", "sell");
+  if (transactionStatus && transactionStatus !== "BUY") baseSearchParams.set("transaction_status", transactionStatus);
+  const resultHref = `/result?${baseSearchParams.toString()}`;
+  const state = propertyData.location?.state?.trim() || "";
+  const suburb = propertyData.location?.suburb?.trim() || "";
+  const stateParams = new URLSearchParams(baseSearchParams);
+  if (state) stateParams.set("q", state);
+  const suburbParams = new URLSearchParams(stateParams);
+  if (suburb) {
+    suburbParams.set("q", suburb);
+    suburbParams.set("suburb", suburb);
+  }
   const breadcrumbs = [
     { label: "Home", href: "/" },
-    { label: isAuction ? "Auctions" : "Real Estate", href: `/result?type=${catType}` },
-    { label: isAuction ? "Auction property" : "Buy", href: `/result?type=${catType}${subTab}` },
-    { label: state, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(state)}` },
-    { label: suburb, href: `/result?type=${catType}${subTab}&q=${encodeURIComponent(suburb)}&suburb=${encodeURIComponent(suburb)}` },
+    { label: isAuction ? "Auctions" : categoryType === "commercial" ? "Commercial" : "Real Estate", href: resultHref },
+    ...(tab ? [{ label: tab === "buy" ? "Buy" : tab.charAt(0).toUpperCase() + tab.slice(1), href: resultHref }] : []),
+    ...(state ? [{ label: state, href: `/result?${stateParams.toString()}` }] : []),
+    ...(suburb ? [{ label: suburb, href: `/result?${suburbParams.toString()}` }] : []),
     { label: property.title },
   ];
 
@@ -377,7 +381,12 @@ const PropertyDetail = () => {
               beds={propertyData.bedroom_option}
               baths={propertyData.bathroom_option}
               car={propertyData.car_space_option}
-              sqm={propertyData.floor_area_sqm || propertyData.land_area_sqm}
+              sqm={propertyData.floor_area_sqm}
+              floorAreaUnit={propertyData.floor_area_unit}
+              landArea={propertyData.land_area_sqm}
+              landAreaUnit={propertyData.land_area_unit}
+              carpetArea={propertyData.carpet_area}
+              carpetAreaUnit={propertyData.carpet_area_unit}
               rating={property.company?.rating}
               ratingCount={property.reviews?.count || 0}
               reviewsCount={property.company?.reviews}
@@ -481,19 +490,6 @@ const PropertyDetail = () => {
             {property.company && (
               <div id="company">
                 <PropertyCompanyDetails company={property.company} />
-              </div>
-            )}
-
-            {traderHost && (
-              <div id="host" className="w-full">
-                <SwiperSection
-                  title="Meet The Host"
-                  showViewAll={false}
-                  items={[traderHost]}
-                  spaceBetween={14}
-                  variant="detail"
-                  renderItem={(host) => <TraderGridCard item={host} />}
-                />
               </div>
             )}
 

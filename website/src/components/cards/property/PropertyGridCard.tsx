@@ -7,10 +7,11 @@ import { propertyStatusLabel } from "../../../utils/propertyStatus";
 import { formatPropertyPrice } from "../../../utils/propertyPrice";
 
 type Props = {
-  item: Property
+  item: Property;
+  targetUrl?: string;
 }
 
-const PropertyGridCard = ({ item }: Props) => {
+const PropertyGridCard = ({ item, targetUrl: suppliedTargetUrl }: Props) => {
   const location = useLocation();
   const isAuction =
     location.pathname.includes("/auction") ||
@@ -18,7 +19,7 @@ const PropertyGridCard = ({ item }: Props) => {
     item.purpose?.toUpperCase() === "AUCTION" ||
     item.propertyCategory === "auction";
 
-  const targetUrl = isAuction ? `/auction/${item.id}` : `/property/${item.id}`;
+  const targetUrl = suppliedTargetUrl || (isAuction ? `/auction/${item.id}` : `/property/${item.id}`);
 
   const truncateText = (text: string, maxLength = 30) =>
     text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;

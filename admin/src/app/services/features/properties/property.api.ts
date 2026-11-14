@@ -33,6 +33,19 @@ const toFormData = (payload: PropertyFormValues) => {
     if (payload.price_min !== undefined && payload.price_min !== null && payload.price_min !== "") formData.append("price_min", String(payload.price_min));
     if (payload.price_max !== undefined && payload.price_max !== null && payload.price_max !== "") formData.append("price_max", String(payload.price_max));
   }
+  for (const [field, value] of Object.entries({
+    land_area_sqm: payload.land_area_sqm,
+    land_area_unit: payload.land_area_unit,
+    floor_area_sqm: payload.floor_area_sqm,
+    floor_area_unit: payload.floor_area_unit,
+    carpet_area: payload.carpet_area,
+    carpet_area_unit: payload.carpet_area_unit,
+    bedroom_option: payload.bedroom_option,
+    bathroom_option: payload.bathroom_option,
+    car_space_option: payload.car_space_option,
+  })) {
+    if (value !== undefined && value !== null && value !== "") formData.append(field, String(value));
+  }
 
   if (payload.description) {
     formData.append("description", payload.description);
@@ -91,6 +104,9 @@ const toFormData = (payload: PropertyFormValues) => {
   }
 
   payload.features?.forEach((featureId) => formData.append("features[]", featureId));
+  Object.entries(payload.feature_values ?? {}).forEach(([featureId, value]) => {
+    if (value !== undefined && value !== null && value !== "") formData.append(`feature_values[${featureId}]`, String(value));
+  });
 
   if (payload.location_verified !== undefined && payload.location_verified !== null) {
     formData.append("location_verified", payload.location_verified ? "1" : "0");

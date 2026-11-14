@@ -2,6 +2,8 @@ import { List, Play } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PhotoTourModal, type Media } from '../../../../components/custom/PhotoTourModal';
 import GallerySkeleton from '../../../../components/skeletons/GallerySkeleton';
+import { SafeImage } from '../../../../components/custom/SafeImage';
+import { resolveMediaUrl } from '../../../../utils/mediaUrl';
 
 type ImageInput = string | { src?: string; type?: 'image' | 'video'; videoSrc?: string };
 
@@ -9,7 +11,7 @@ const COLORS = ['#c8cfc4', '#b8c4b4', '#d0cdc0', '#c4cfc9', '#cbc4af'];
 
 const Thumb = ({ m, size = 48 }: { m: Media; size?: number }) => (
   <>
-    <img src={m.src} alt="Property media" className="w-full h-full object-cover" />
+    <SafeImage src={m.src} alt="Property media" className="w-full h-full object-cover" />
     {m.videoUrl && (
       <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <span className="flex items-center justify-center rounded-full bg-white/90 shadow-sm" style={{ width: size, height: size }}>
@@ -36,8 +38,8 @@ export const PropertyGallery = ({
     const all = images
       .map((i) =>
         typeof i === 'string'
-          ? { src: i }
-          : { src: i.src, videoUrl: i.type === 'video' ? (i.videoSrc ?? i.src) : undefined }
+          ? { src: resolveMediaUrl(i) }
+          : { src: resolveMediaUrl(i.src), videoUrl: i.type === 'video' ? resolveMediaUrl(i.videoSrc ?? i.src) : undefined }
       )
       .filter((m): m is { src: string; videoUrl?: string } => !!m.src);
 

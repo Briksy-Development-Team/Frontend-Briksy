@@ -20,6 +20,16 @@ type Props = {
     onSubmit: (values: PropertyFormValues) => void;
 };
 
+const countInputValue = (value?: string | null) => value === "studio" ? "0" : (value ?? "").replace("_plus", "");
+type MeasurementField = "bedroom_option" | "bathroom_option" | "car_space_option" | "land_area_sqm" | "floor_area_sqm";
+const measurementFields: Array<[MeasurementField, string, string]> = [
+    ["bedroom_option", "Bedrooms", "0"],
+    ["bathroom_option", "Bathrooms", "0"],
+    ["car_space_option", "Car spaces", "0"],
+    ["land_area_sqm", "Land area (sqm)", "0.01"],
+    ["floor_area_sqm", "Building / floor area (sqm)", "0.01"],
+];
+
 const PropertyModal = ({
     initialValues,
     isSubmitting,
@@ -59,6 +69,15 @@ const PropertyModal = ({
         pricing_type: initialValues?.pricing_type ?? "fixed",
         price_min: initialValues?.price_min ?? "",
         price_max: initialValues?.price_max ?? "",
+        land_area_sqm: initialValues?.land_area_sqm ?? "",
+        land_area_unit: initialValues?.land_area_unit ?? "sqm",
+        floor_area_sqm: initialValues?.floor_area_sqm ?? "",
+        floor_area_unit: initialValues?.floor_area_unit ?? "sqm",
+        carpet_area: initialValues?.carpet_area ?? "",
+        carpet_area_unit: initialValues?.carpet_area_unit ?? "sqm",
+        bedroom_option: countInputValue(initialValues?.bedroom_option),
+        bathroom_option: countInputValue(initialValues?.bathroom_option),
+        car_space_option: countInputValue(initialValues?.car_space_option),
         address: initialValues?.address ?? "",
         address_line_1: initialValues?.address_line_1 ?? initialValues?.address ?? "",
         address_line_2: initialValues?.address_line_2 ?? "",
@@ -74,6 +93,7 @@ const PropertyModal = ({
         property_type_id: initialValues?.property_type_id ?? "",
         location_verified: initialValues?.location_verified ?? false,
         features: initialValues?.features?.map((feature) => feature.id) ?? [],
+        feature_values: Object.fromEntries((initialValues?.features ?? []).filter((feature) => feature.value_type === "number" && feature.quantity !== null && feature.quantity !== undefined).map((feature) => [feature.id, feature.quantity as number])),
         images: [],
         videos: [],
     });
@@ -161,6 +181,15 @@ const PropertyModal = ({
                 pricing_type: "fixed",
                 price_min: "",
                 price_max: "",
+                land_area_sqm: "",
+                land_area_unit: "sqm",
+                floor_area_sqm: "",
+                floor_area_unit: "sqm",
+                carpet_area: "",
+                carpet_area_unit: "sqm",
+                bedroom_option: "",
+                bathroom_option: "",
+                car_space_option: "",
                 address: "",
                 address_line_1: "",
                 address_line_2: "",
@@ -176,6 +205,7 @@ const PropertyModal = ({
                 property_type_id: "",
                 location_verified: false,
                 features: [],
+                feature_values: {},
                 images: [],
                 videos: [],
         marketing_reels: [],
@@ -210,6 +240,15 @@ const PropertyModal = ({
             pricing_type: initialValues.pricing_type ?? "fixed",
             price_min: initialValues.price_min ?? "",
             price_max: initialValues.price_max ?? "",
+            land_area_sqm: initialValues.land_area_sqm ?? "",
+            land_area_unit: initialValues.land_area_unit ?? "sqm",
+            floor_area_sqm: initialValues.floor_area_sqm ?? "",
+            floor_area_unit: initialValues.floor_area_unit ?? "sqm",
+            carpet_area: initialValues.carpet_area ?? "",
+            carpet_area_unit: initialValues.carpet_area_unit ?? "sqm",
+            bedroom_option: countInputValue(initialValues.bedroom_option),
+            bathroom_option: countInputValue(initialValues.bathroom_option),
+            car_space_option: countInputValue(initialValues.car_space_option),
             address: initialValues.address ?? "",
             address_line_1: initialValues.address_line_1 ?? initialValues.address ?? "",
             address_line_2: initialValues.address_line_2 ?? "",
@@ -225,6 +264,7 @@ const PropertyModal = ({
             property_type_id: initialValues.property_type_id ?? "",
             location_verified: initialValues.location_verified ?? false,
             features: initialValues.features?.map((feature) => feature.id) ?? [],
+            feature_values: Object.fromEntries((initialValues.features ?? []).filter((feature) => feature.value_type === "number" && feature.quantity !== null && feature.quantity !== undefined).map((feature) => [feature.id, feature.quantity as number])),
             images: [],
             videos: [],
         });
@@ -390,6 +430,10 @@ const PropertyModal = ({
         }));
     };
 
+    const updateFeatureQuantity = (featureId: string, value: string) => {
+        setForm((prev) => ({ ...prev, feature_values: { ...(prev.feature_values ?? {}), [featureId]: value } }));
+    };
+
     return (
         <ModalShell
             title={initialValues ? "Edit Property" : "Add Property"}
@@ -499,6 +543,29 @@ const PropertyModal = ({
                 />
             </div>
 
+            <div className="fv-row mb-7">
+                <label className="form-label">Property measurements</label>
+                <div className="row g-3">
+                    {measurementFields.map(([field, label, step]) => (
+                        <div className="col-md-4" key={field}>
+                            <label className="form-label fs-7">{label}</label>
+                            <input type="number" min="0" step={step} className="form-control form-control-solid" value={form[field] ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))} />
+                            {(field === "land_area_sqm" || field === "floor_area_sqm") ? <select className="form-select form-select-solid mt-2" value={form[field === "land_area_sqm" ? "land_area_unit" : "floor_area_unit"] ?? "sqm"} onChange={(e) => setForm((prev) => ({ ...prev, [field === "land_area_sqm" ? "land_area_unit" : "floor_area_unit"]: e.target.value as "sqm" | "sqft" }))}><option value="sqm">sqm</option><option value="sqft">sqft</option></select> : null}
+                        </div>
+                    ))}
+                    <div className="col-md-4">
+                        <label className="form-label fs-7">Carpet area</label>
+                        <div className="input-group">
+                            <input type="number" min="0" step="0.01" className="form-control form-control-solid" value={form.carpet_area ?? ""} onChange={(e) => setForm((prev) => ({ ...prev, carpet_area: e.target.value }))} />
+                            <select className="form-select form-select-solid" value={form.carpet_area_unit ?? "sqm"} onChange={(e) => setForm((prev) => ({ ...prev, carpet_area_unit: e.target.value as "sqm" | "sqft" }))}>
+                                <option value="sqm">sqm</option>
+                                <option value="sqft">sqft</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="row">
                 <div className="col-md-6 fv-row mb-7">
                     <label className={`${propertyCategory === "commercial" ? "required " : ""}form-label`}>
@@ -589,8 +656,10 @@ const PropertyModal = ({
                             <div className="fw-semibold mb-2">{group.name}</div>
                             <div className="row g-2">
                                 {group.features.map((feature) => (
+                                    ['bedrooms', 'bathrooms', 'car_spaces'].includes(feature.slug) ? null :
                                     <div className="col-md-6" key={feature.id}>
-                                        <label className="form-check form-check-custom form-check-solid">
+                                        <div className="d-flex align-items-center gap-3">
+                                        <label className="form-check form-check-custom form-check-solid flex-grow-1">
                                             <input
                                                 className="form-check-input"
                                                 type="checkbox"
@@ -599,6 +668,8 @@ const PropertyModal = ({
                                             />
                                             <span className="form-check-label">{feature.name}</span>
                                         </label>
+                                        {feature.value_type === "number" && form.features?.includes(feature.id) ? <input type="number" min="0" step="1" className="form-control form-control-solid" style={{ maxWidth: 110 }} value={form.feature_values?.[feature.id] ?? ""} onChange={(e) => updateFeatureQuantity(feature.id, e.target.value)} aria-label={`${feature.name} quantity`} /> : null}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

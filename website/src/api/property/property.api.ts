@@ -34,11 +34,15 @@ export type PublicProperty = {
   } | null;
 
   land_area_sqm?: number | null;
+  land_area_unit?: "sqm" | "sqft" | null;
   car_space_option?: string | null;
 
   features?: {
     name: string;
     slug: string;
+    id?: string;
+    value_type?: "boolean" | "number";
+    quantity?: number | null;
     category?: string | null;
     category_slug?: string | null;
   }[];
@@ -48,6 +52,9 @@ export type PublicProperty = {
   bedroom_option?: string | null;
   bathroom_option?: string | null;
   floor_area_sqm?: number | null;
+  floor_area_unit?: "sqm" | "sqft" | null;
+  carpet_area?: number | null;
+  carpet_area_unit?: "sqm" | "sqft" | null;
 
   location: {
     suburb: string | null;
@@ -64,6 +71,7 @@ export type PublicProperty = {
     logo_url?: string | null;
     banner_url?: string | null;
     is_verified: boolean;
+    established_year?: number | null;
   } | null;
   creator?: {
     id: string;

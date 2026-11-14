@@ -108,7 +108,7 @@ export function BuilderProjects({ projects, builderName, builderLogo }: { projec
   });
 
   const renderProjectCard = (project: PublicBuilderProject) => {
-    return <PropertyGridCard item={builderProjectToProperty(project)} />;
+    return <PropertyGridCard item={builderProjectToProperty(project)} targetUrl={`/builder-project/${project.id}`} />;
   };
 
   return (

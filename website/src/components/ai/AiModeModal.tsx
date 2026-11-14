@@ -7,6 +7,7 @@ import BriksyLogo from "../../assets/logo/loaderbg.svg";
 import { askBriksyAi } from "../../api/clients.api";
 import ChatMessage, { type ChatMessageItem } from "./ChatMessage";
 import AiSidebar, { type ChatSession } from "./AiSidebar";
+import { useAuth } from "../../auth/AuthContext";
 
 const STORAGE_KEY = "briksy_ai_chat_sessions_v1";
 let _id = 0;
@@ -38,9 +39,10 @@ const writeSessions = (s: ChatSession[]) => {
 export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, isBootstrapping } = useAuth();
   const openedPath = useRef(location.pathname);
 
-  const [sessions, setSessions] = useState<ChatSession[]>(readSessions);
+  const [sessions, setSessions] = useState<ChatSession[]>(() => isAuthenticated ? readSessions() : []);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -53,6 +55,17 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isBootstrapping) return;
+    if (!isAuthenticated) {
+      setSessions([]);
+      setActiveId(null);
+      try { localStorage.removeItem(STORAGE_KEY); } catch { /* privacy boundary */ }
+      return;
+    }
+    setSessions(readSessions());
+  }, [isAuthenticated, isBootstrapping]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 1024) setSidebarOpen(false);
@@ -77,7 +90,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
   const updateSessions = (fn: (prev: ChatSession[]) => ChatSession[]) => {
     setSessions((prev) => {
       const next = fn(prev);
-      writeSessions(next);
+      if (isAuthenticated) writeSessions(next);
       return next;
     });
   };
@@ -241,7 +254,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
               ) : (
                 <div className="flex flex-col gap-6">
                   {messages.map((m) => (
-                    <ChatMessage key={m.id} msg={m} onNeedHelp={() => { onClose(); navigate("/help"); }} />
+                    <ChatMessage key={m.id} msg={m} onNeedHelp={() => { onClose(); navigate("/help"); }} onNavigate={onClose} />
                   ))}
                 </div>
               )}

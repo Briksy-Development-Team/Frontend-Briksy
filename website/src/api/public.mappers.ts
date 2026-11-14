@@ -7,6 +7,7 @@ import BusinessPlaceholder from "../assets/place holder/bussinessholder.svg";
 import ServicePlaceholder from "../assets/place holder/serviceholder.svg";
 import BuilderBackground from "../assets/place holder/builderbg.svg";
 import PropertyPlaceholder from "../assets/place holder/propertyimages.svg";
+import { resolveMediaUrl } from "../utils/mediaUrl";
 
 const locationOf = (o: PublicOrganization) => [o.address, o.state, o.postcode].filter(Boolean).join(", ") || "Australia";
 const tagsOf = (o: PublicOrganization) => (o.services ?? []).slice(0, 5).map((s) => s.name);
@@ -27,8 +28,12 @@ export const organizationToTrader = (o: PublicOrganization): Trader => ({
 export const propertyToCard = (p: PublicProperty): Property => ({
   id: p.id, title: p.title, address: p.full_address || p.address || "Australia",
   location: [p.location.suburb, p.location.postcode].filter(Boolean).join(", "),
-  image: p.media?.find((m) => m.is_primary)?.url || p.media?.[0]?.url || PropertyPlaceholder,
+  image: resolveMediaUrl(p.media?.find((m) => m.is_primary)?.url || p.media?.[0]?.url) || PropertyPlaceholder,
   price: p.price || 0, pricingType: p.pricing_type ?? "fixed", priceMin: p.price_min ?? null, priceMax: p.price_max ?? null, beds: p.bedroom_option === "studio" ? 0 : Number(p.bedroom_option?.replace("_plus", "+") || 0),
+  carpetArea: p.carpet_area ?? null, carpetAreaUnit: p.carpet_area_unit ?? "sqm",
+  landArea: p.land_area_sqm ?? null, landAreaUnit: p.land_area_unit ?? "sqm", floorAreaUnit: p.floor_area_unit ?? "sqm",
+  areaUnit: p.floor_area_unit ?? "sqm",
+  amenities: (p.features ?? []).map((feature) => ({ name: feature.name, slug: feature.slug, quantity: feature.quantity, value_type: feature.value_type })),
   baths: p.bathroom_option === "3_plus" ? 3 : Number(p.bathroom_option || 0), cars: p.car_space_option === "3_plus" ? 3 : Number(p.car_space_option || 0), sqm: p.floor_area_sqm || 0, posterName: p.organization?.name || "Briksy member",
   posterAvatar: p.organization?.logo_url || BusinessPlaceholder, badge: p.status || "Verified listing", lat: p.location.latitude || 0,
   lng: p.location.longitude || 0, isFavourite: Boolean(p.is_favourite),

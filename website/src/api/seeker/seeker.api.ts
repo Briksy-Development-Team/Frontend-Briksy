@@ -45,6 +45,13 @@ export interface FavoritePropertyTarget {
   address?: string | null
   full_address?: string | null
   status?: string | null
+  land_area?: number | string | null
+  land_area_unit?: string | null
+  floor_area?: number | string | null
+  floor_area_unit?: string | null
+  carpet_area?: number | string | null
+  carpet_area_unit?: string | null
+  features?: Array<{ id?: string; name: string; slug?: string; quantity?: number | string | null; value_type?: 'boolean' | 'number' }>
   rating?: number
   location?: {
     suburb: string | null

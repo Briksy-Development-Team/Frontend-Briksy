@@ -12,6 +12,7 @@ import { SafeImage } from "../../custom/SafeImage";
 import FavoriteButton from "../../custom/FavoriteButton";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
 import { formatPropertyPrice } from "../../../utils/propertyPrice";
+import { getPropertyAmenityIcon } from "../../../utils/propertyAmenityIcons";
 
 type Props = {
   item: Property;
@@ -34,7 +35,7 @@ const PropertyListCard = ({ item }: Props) => {
   const baths = item.baths ?? 2;
   const beds = item.beds ?? 2;
   const cars = item.cars ?? 2;
-  const sqm = item.sqm ? `${item.sqm}m²` : "103m²";
+  const sqm = item.sqm ? `${item.sqm}${item.areaUnit || "sqm"}` : null;
 
   return (
     <Link
@@ -98,10 +99,12 @@ const PropertyListCard = ({ item }: Props) => {
             </div>
             <div className="flex items-center gap-1">
               <HugeiconsIcon icon={House01Icon} size={13} className="text-primary-brown/70" />
-              <span className="text-[10px] text-primary-brown/70">{sqm}</span>
+              {sqm ? <span className="text-[10px] text-primary-brown/70">{sqm}</span> : null}
             </div>
           </div>
         </div>
+
+        {(item.carpetArea != null || item.amenities?.length) ? <div className="mt-1 flex flex-wrap gap-2 text-[10px] text-primary-brown/70">{item.carpetArea != null ? <span>{item.carpetArea}{item.carpetAreaUnit || "sqm"} carpet</span> : null}{item.amenities?.filter((amenity) => amenity.quantity == null || amenity.quantity > 0).slice(0, 3).map((amenity) => { const Icon = getPropertyAmenityIcon(amenity.slug); return <span key={amenity.slug || amenity.name} className="inline-flex items-center gap-1"><HugeiconsIcon icon={Icon} size={12} />{amenity.quantity != null ? `${amenity.quantity} ` : ""}{amenity.name}</span>; })}</div> : null}
 
         {/* Bottom Poster Row & Divider */}
         <div className="flex flex-col gap-1.5 pt-1.5">

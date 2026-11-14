@@ -3,6 +3,8 @@ import { normalizeAuctionTime } from "./auctionTime";
 
 type PropertyApi = {
   id: string;
+  generated_id?: string | null;
+  display_id?: string | null;
   title: string;
   status: "Draft" | "Pending Review" | "Approved" | "Rejected" | "Published" | "Archived";
   listing_purpose?: "SELL" | "RENT" | "BOTH" | null;
@@ -19,6 +21,15 @@ type PropertyApi = {
   pricing_type?: "fixed" | "estimated" | null;
   price_min?: number | null;
   price_max?: number | null;
+  land_area_sqm?: number | null;
+  land_area_unit?: "sqm" | "sqft" | null;
+  floor_area_sqm?: number | null;
+  floor_area_unit?: "sqm" | "sqft" | null;
+  carpet_area?: number | null;
+  carpet_area_unit?: "sqm" | "sqft" | null;
+  bedroom_option?: string | null;
+  bathroom_option?: string | null;
+  car_space_option?: string | null;
   floorplan?: { id?: string; url: string } | null;
   description?: string | null;
   address?: string | null;
@@ -84,6 +95,8 @@ type PropertyApi = {
     name: string;
     slug: string;
     group_id?: string;
+    value_type?: "boolean" | "number";
+    quantity?: number | null;
   }[];
   organization?: {
     id: string;
@@ -112,8 +125,8 @@ type PropertyApi = {
 
 export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   id: item.id,
-  generated_id: (item as any).generated_id ?? null,
-  display_id: (item as any).display_id ?? (item as any).generated_id ?? null,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? null,
   title: item.title ?? "",
   status: item.status,
   listing_purpose: item.listing_purpose ?? null,
@@ -130,6 +143,15 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
   pricing_type: item.pricing_type ?? "fixed",
   price_min: item.price_min ?? null,
   price_max: item.price_max ?? null,
+  land_area_sqm: item.land_area_sqm ?? null,
+  land_area_unit: item.land_area_unit ?? "sqm",
+  floor_area_sqm: item.floor_area_sqm ?? null,
+  floor_area_unit: item.floor_area_unit ?? "sqm",
+  carpet_area: item.carpet_area ?? null,
+  carpet_area_unit: item.carpet_area_unit ?? "sqm",
+  bedroom_option: item.bedroom_option ?? null,
+  bathroom_option: item.bathroom_option ?? null,
+  car_space_option: item.car_space_option ?? null,
   floorplan: item.floorplan ?? null,
   description: item.description ?? null,
   rating: item.rating ?? undefined,
@@ -171,8 +193,8 @@ export const mapPropertyGroup = (item: PropertyApi): PropertyList => ({
 
 export const mapProperty = (item: PropertyApi): Property => ({
   id: item.id,
-  generated_id: (item as any).generated_id ?? null,
-  display_id: (item as any).display_id ?? (item as any).generated_id ?? null,
+  generated_id: item.generated_id ?? null,
+  display_id: item.display_id ?? item.generated_id ?? null,
   title: item.title ?? "",
   status: item.status,
   listing_purpose: item.listing_purpose ?? null,
@@ -189,6 +211,15 @@ export const mapProperty = (item: PropertyApi): Property => ({
   pricing_type: item.pricing_type ?? "fixed",
   price_min: item.price_min ?? null,
   price_max: item.price_max ?? null,
+  land_area_sqm: item.land_area_sqm ?? null,
+  land_area_unit: item.land_area_unit ?? "sqm",
+  floor_area_sqm: item.floor_area_sqm ?? null,
+  floor_area_unit: item.floor_area_unit ?? "sqm",
+  carpet_area: item.carpet_area ?? null,
+  carpet_area_unit: item.carpet_area_unit ?? "sqm",
+  bedroom_option: item.bedroom_option ?? null,
+  bathroom_option: item.bathroom_option ?? null,
+  car_space_option: item.car_space_option ?? null,
   floorplan: item.floorplan ?? null,
   description: item.description ?? null,
   address: item.address ?? null,

@@ -17,6 +17,8 @@ export type PropertyFeature = {
   name: string;
   slug: string;
   group_id?: string;
+  value_type?: "boolean" | "number";
+  quantity?: number | null;
 };
 
 export type PropertyFeatureGroup = {
@@ -77,6 +79,15 @@ export type Property = {
   pricing_type?: "fixed" | "estimated" | null;
   price_min?: number | null;
   price_max?: number | null;
+  land_area_sqm?: number | null;
+  land_area_unit?: "sqm" | "sqft" | null;
+  floor_area_sqm?: number | null;
+  floor_area_unit?: "sqm" | "sqft" | null;
+  carpet_area?: number | null;
+  carpet_area_unit?: "sqm" | "sqft" | null;
+  bedroom_option?: string | null;
+  bathroom_option?: string | null;
+  car_space_option?: string | null;
   floorplan?: PropertyImage | null;
   address?: string | null;
   address_line_1?: string | null;
@@ -195,11 +206,21 @@ export type PropertyFormValues = {
   pricing_type?: "fixed" | "estimated";
   price_min?: string | number | null;
   price_max?: string | number | null;
+  land_area_sqm?: string | number | null;
+  land_area_unit?: "sqm" | "sqft";
+  floor_area_sqm?: string | number | null;
+  floor_area_unit?: "sqm" | "sqft";
+  carpet_area?: string | number | null;
+  carpet_area_unit?: "sqm" | "sqft";
+  bedroom_option?: string | number | null;
+  bathroom_option?: string | number | null;
+  car_space_option?: string | number | null;
 
   images?: (File | string)[];
   videos?: (File | string)[];
   marketing_reels?: File[];
   features?: string[];
+  feature_values?: Record<string, string | number | null>;
   floorplan?: File | string | null;
 };
 
@@ -225,6 +246,15 @@ export type PropertyList = {
   pricing_type?: "fixed" | "estimated" | null;
   price_min?: number | null;
   price_max?: number | null;
+  land_area_sqm?: number | null;
+  land_area_unit?: "sqm" | "sqft" | null;
+  floor_area_sqm?: number | null;
+  floor_area_unit?: "sqm" | "sqft" | null;
+  carpet_area?: number | null;
+  carpet_area_unit?: "sqm" | "sqft" | null;
+  bedroom_option?: string | null;
+  bathroom_option?: string | null;
+  car_space_option?: string | null;
   floorplan?: PropertyImage | null;
 
   description?: string | null;
