@@ -64,10 +64,10 @@ const Heroone = () => {
     <>
       <section
         ref={sectionRef}
-        className="relative h-screen min-[1442px]:h-[clamp(900px,40.8vw,1044px)] overflow-clip bg-[#C2B4AA] lg:px-0 font-helvetica"
+        className="relative h-screen  overflow-clip bg-[#C2B4AA] lg:px-0 font-helvetica"
       >
-        <div className="relative z-20 mx-auto flex w-full max-w-[2000px] flex-col items-center pt-10 lg:pt-28">
-          <div className="mb-6 flex items-center gap-2">
+        <div className="relative z-20 mx-auto flex w-full max-w-[2000px] flex-col items-center top-[20%]">
+          {/* <div className="mb-6 flex items-center gap-2">
             <div ref={avatarsRef} className="flex -space-x-3">
               {AVATARS.map((src, i) => (
                 <img
@@ -81,15 +81,18 @@ const Heroone = () => {
             <span className="lg:text-[0.875rem] text-[0.75rem]   ">
               Trusted by 108+ clients across industries
             </span>
-          </div>
+          </div> */}
 
-          <h1 className="max-w-4xl min-[1442px]:max-w-[720px] text-center mt-5 lg:mt-0  text-[2.5rem] sm:text-[4rem] lg:text-[3.25rem] font-medium leading-[0.9] text-primary-brown">
+          <h1 className="max-w-8xl text-center mt-5 lg:mt-0
+  text-[2.5rem] sm:text-[4rem] lg:text-[3.5rem]
+  xl:text-[4rem] 2xl:text-[5rem]
+  font-medium leading-[0.9] text-primary-brown">
             YOUR PROPERTY JOURNEY
             <br />
             STARTS HERE.
           </h1>
 
-          <p className="mt-6 max-w-2xl text-center text-[0.875rem] lg:text-[1rem]  text-black">
+          <p className="mt-6 max-w-2xl text-center text-[0.875rem] lg:text-[1rem]  xl:text-[1.3rem]  text-black">
             Buy, sell or build — and connect with the right{" "}
             <br className="block md:hidden" /> property professionals across
             Australia.
