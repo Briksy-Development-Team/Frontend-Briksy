@@ -82,7 +82,7 @@ export default function BrowseView({
   const [total, setTotal] = useState(0);
 
   const tab = searchParams.get("tab");
-  const isAgents = resultType === "builder" && (Boolean(searchParams.get("agent_type")) || !["", "builders", "agents"].includes(tab || ""));
+  const isAgents = searchParams.get("type") === "agents" || (resultType === "builder" && (Boolean(searchParams.get("agent_type")) || !["", "builders", "agents"].includes(tab || "")));
 
   const resetFilters = () => {
     const next = new URLSearchParams(searchParams);
@@ -128,7 +128,7 @@ export default function BrowseView({
             getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, verified_only: 1 }),
             getProperties({ ...query, purpose: query.purpose, category: resultType === "commercial" ? "commercial" : query.category, transaction_status: commercialStatus, auction_only: resultType === "auction" ? 1 : undefined, sort: "created_at", direction: "desc", verified_only: 1 }),
           ])
-        : getOrganizations({ type: organizationTypeForResult(resultType, tab, searchParams.get("agent_type") || tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
+      : getOrganizations({ type: isAgents ? undefined : organizationTypeForResult(resultType, tab, searchParams.get("agent_type") || tab), search: query.search, service_slug: resultType === "trader" ? serviceSlug : undefined, sort: organizationSort(query.sort), direction: query.direction, verified_only: 1 });
       request.then((r: any) => {
         if (!active) return;
         if (resultType === "property" || resultType === "commercial" || resultType === "auction") {
@@ -137,7 +137,15 @@ export default function BrowseView({
           else setNewlyProperties(r[1].data);
           setTotal(r[0].meta?.pagination?.total ?? r[0].data.length);
         }
-        else setOrganizations(r.data);
+        else {
+          const agentOrganizations = isAgents
+            ? r.data.filter((organization: PublicOrganization) =>
+                organization.type?.module === "Agents" ||
+                ["buyers-agent", "real-estate-agent"].includes(organization.type?.slug || ""),
+              )
+            : r.data;
+          setOrganizations(agentOrganizations);
+        }
       }).catch((reason: any) => { if (active) setError(reason?.message || "Unable to load results."); })
         .finally(() => { if (active) setLoading(false); });
     }

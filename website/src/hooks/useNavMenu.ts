@@ -11,8 +11,6 @@ const realEstateLinks: NavLink[] = (SEARCH_CATEGORIES.find((c) => c.id === "real
   label: p.label,
   to: p.id === "all" ? "/result?type=real-estate" : `/${encodeURIComponent(p.id)}`,
 }));
-realEstateLinks.push({ label: "Auction", to: "/auctions" });
-
 const commercialLinks: NavLink[] = (SEARCH_CATEGORIES.find((c) => c.id === "commercial")?.propTypes ?? []).map((p) => ({
   label: p.label,
   to: p.id === "all" ? "/commercials" : `/commercials?tab=${encodeURIComponent(p.id)}`,

@@ -50,7 +50,7 @@ export const CATEGORIES: Category[] = [
     title: "AGENTS",
     desc: "Find a buyer, seller or leasing agent",
     icon: Trader,
-    resultType: "trader",
+    resultType: "builder",
     placeholder: "Search your Agent...",
     propTypes: [
       { id: "all", label: "All" },
@@ -110,7 +110,6 @@ export const CATEGORIES: Category[] = [
       { id: "lease", label: "Lease" },
       { id: "sold", label: "Sold" },
       { id: "leased", label: "Leased" },
-      { id: "auction", label: "Auction" },
     ],
   },
 ];
@@ -159,7 +158,7 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
     title: "AGENTS",
     desc: "Find a buyer, seller or leasing agent",
     icon: Trader,
-    resultType: "trader",
+    resultType: "builder",
     placeholder: "Search your Agent...",
     propTypes: [
       { id: "all", label: "All" },
@@ -209,7 +208,6 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
       { id: "lease", label: "Lease" },
       { id: "sold", label: "Sold" },
       { id: "leased", label: "Leased" },
-      { id: "auction", label: "Auction" },
     ],
   },
 ];
