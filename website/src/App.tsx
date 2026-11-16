@@ -82,7 +82,7 @@ const AppContent = () => {
       <AndroidBackButtonHandler />
       <AppRouter />
       <CookieConsent />
-      <DevPlatformSwitcher />
+      {/* <DevPlatformSwitcher /> */}
     </>
   );
 };

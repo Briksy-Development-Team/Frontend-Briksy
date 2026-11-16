@@ -26,7 +26,7 @@ export const CATEGORIES: Category[] = [
     desc: "Find real estate to buy or rent",
     icon: Prop,
     resultType: "property",
-    placeholder: "Try '3-bedroom house in Richmond...",
+    placeholder: "Try '3-bedroom house in Richmond'...",
     propTypes: [
       { id: "all", label: "All" },
       { id: "buy", label: "Buy" },
@@ -51,7 +51,7 @@ export const CATEGORIES: Category[] = [
     desc: "Find a buyer, seller or leasing agent",
     icon: Trader,
     resultType: "builder",
-    placeholder: "Search your Agent...",
+    placeholder: "Search for a real estate agent or buyer's agent...",
     propTypes: [
       { id: "all", label: "All" },
       { id: "real-estate", label: "Real Estate Agents" },
@@ -65,7 +65,7 @@ export const CATEGORIES: Category[] = [
     desc: "Search by exact address or suburb",
     icon: Prop,
     resultType: "all",
-    placeholder: "Search with Address, Suburs, Postcode...",
+    placeholder: "Search with address, suburb or postcode...",
     propTypes: [],
   },
   {
@@ -75,7 +75,7 @@ export const CATEGORIES: Category[] = [
     desc: "Connect with skilled trades professionals",
     icon: Trader,
     resultType: "trader",
-    placeholder: "Search with Where ...",
+    placeholder: "Search for trades and professionals...",
     propTypes: [
       { id: "all", label: "All" },
       { id: "landscaper", label: "Landscapers" },
@@ -93,7 +93,7 @@ export const CATEGORIES: Category[] = [
     desc: "Discover trusted builders and developers",
     icon: Build,
     resultType: "builder",
-    placeholder: "Search your Builder...",
+    placeholder: "Search for your dream builder...",
     propTypes: [],
   },
   {
@@ -103,7 +103,7 @@ export const CATEGORIES: Category[] = [
     desc: "Find commercial properties to buy or rent",
     icon: Prop,
     resultType: "commercial",
-    placeholder: "Try '3-bedroom house in Richmond...",
+    placeholder: "Search for retail, offices or warehouses...",
     propTypes: [
       { id: "all", label: "All" },
       { id: "buy", label: "Buy" },
@@ -118,6 +118,9 @@ export const CATEGORIES: Category[] = [
 export const SEARCH_CATEGORIES = CATEGORIES;
 
 // ponytail: Search tabs specifically for hero search bar — separate so CATEGORIES/Navbar remains untouched
+const pick = (...ids: string[]) =>
+  ids.map((id) => CATEGORIES.find((c) => c.id === id)!);
+
 export const SEARCH_TAB_CATEGORIES: Category[] = [
   {
     id: "buy",
@@ -126,7 +129,7 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
     desc: "Find properties to buy",
     icon: Prop,
     resultType: "property",
-    placeholder: "Try '3-bedroom house in Richmond...",
+    placeholder: "Try '3-bedroom house in Richmond'...",
     defaultTab: "buy",
     propTypes: [],
   },
@@ -137,7 +140,7 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
     desc: "Find rental properties",
     icon: Prop,
     resultType: "property",
-    placeholder: "Try '2-bedroom apartment in Melbourne...",
+    placeholder: "Try '2-bedroom apartment in Melbourne'...",
     defaultTab: "rent",
     propTypes: [],
   },
@@ -152,64 +155,7 @@ export const SEARCH_TAB_CATEGORIES: Category[] = [
     defaultTab: "sold",
     propTypes: [],
   },
-  {
-    id: "agents",
-    label: "Agents",
-    title: "AGENTS",
-    desc: "Find a buyer, seller or leasing agent",
-    icon: Trader,
-    resultType: "builder",
-    placeholder: "Search your Agent...",
-    propTypes: [
-      { id: "all", label: "All" },
-      { id: "real-estate", label: "Real Estate Agents" },
-      { id: "buyer", label: "Buyer Agents" },
-    ],
-  },
-  {
-    id: "traders",
-    label: "Trades",
-    title: "TRADES",
-    desc: "Connect with skilled trades professionals",
-    icon: Trader,
-    resultType: "trader",
-    placeholder: "Search with Where ...",
-    propTypes: [
-      { id: "all", label: "All" },
-      { id: "landscaper", label: "Landscapers" },
-      { id: "concreter", label: "Concreter" },
-      { id: "fencing", label: "Fencing" },
-      { id: "mortgage", label: "Mortgage Brokers" },
-      { id: "conveyancer", label: "Conveyancers" },
-      { id: "building-pest", label: "Building & Pest" },
-    ],
-  },
-  {
-    id: "builders",
-    label: "Builders",
-    title: "BUILDERS",
-    desc: "Discover trusted builders and developers",
-    icon: Build,
-    resultType: "builder",
-    placeholder: "Search your Builder...",
-    propTypes: [],
-  },
-  {
-    id: "commercial",
-    label: "Commercial",
-    title: "Commercial",
-    desc: "Find commercial properties to buy or rent",
-    icon: Prop,
-    resultType: "commercial",
-    placeholder: "Try '3-bedroom house in Richmond...",
-    propTypes: [
-      { id: "all", label: "All" },
-      { id: "buy", label: "Buy" },
-      { id: "lease", label: "Lease" },
-      { id: "sold", label: "Sold" },
-      { id: "leased", label: "Leased" },
-    ],
-  },
+  ...pick("agents", "traders", "builders", "commercial"),
 ];
 
 export const SERVICE_CATEGORIES = [
@@ -222,12 +168,16 @@ export const SERVICE_CATEGORIES = [
 ] as const;
 
 export type ServiceCategory = { slug: string; label: string; name?: string };
-export type ProfessionalCategoryLabel = (typeof SERVICE_CATEGORIES)[number]["label"];
+export type ProfessionalCategoryLabel =
+  (typeof SERVICE_CATEGORIES)[number]["label"];
 
 export const serviceSlugForLabel = (
   label: string,
-  categories: readonly ServiceCategory[] = SERVICE_CATEGORIES
-) => categories.find((category) => category.label.toLowerCase() === label.toLowerCase())?.slug;
+  categories: readonly ServiceCategory[] = SERVICE_CATEGORIES,
+) =>
+  categories.find(
+    (category) => category.label.toLowerCase() === label.toLowerCase(),
+  )?.slug;
 
 export const CRUMBS: Record<string, string> = {
   all: "Search",
