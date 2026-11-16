@@ -9,7 +9,7 @@ import { CalendarDays, MessageSquare } from "lucide-react";
 
 const ProfileDesktop = () => {
     const location = useLocation();
-    
+
     const currentSection = location.pathname.replace('/profile', '').replace('/', '') || 'personal-info';
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const ProfileDesktop = () => {
     ];
 
     return (
-        <div className="mt-28 w-full max-w-[2000px] mx-auto font-helvetica px-8 pb-16">
+        <div className="mt-28 w-full max-w-[1374px] mx-auto font-helvetica px-8 pb-16">
             <div className="flex w-full justify-around items-start">
                 <div className="sticky top-32 w-[20%] pb-8">
                     <h1 className="pb-5 text-[1.875rem] font-medium text-primary-brown">
@@ -40,9 +40,8 @@ const ProfileDesktop = () => {
                                 <Link
                                     key={item.id}
                                     to={`/profile/${item.id}`}
-                                    className={`flex w-full gap-4 rounded-xl border border-[#EDE8E4] px-4 py-5 transition-colors ${
-                                        isActive ? "bg-primary-brown text-white" : "text-primary-brown hover:bg-[#EDE8E4]/50"
-                                    }`}
+                                    className={`flex w-full gap-4 rounded-xl border border-[#EDE8E4] px-4 py-5 transition-colors ${isActive ? "bg-primary-brown text-white" : "text-primary-brown hover:bg-[#EDE8E4]/50"
+                                        }`}
                                 >
                                     <Icon />
                                     <p>{item.label}</p>

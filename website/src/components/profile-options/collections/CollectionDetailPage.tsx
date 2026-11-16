@@ -79,7 +79,7 @@ export default function CollectionDetailPage({ showBack = true }: { showBack?: b
   if (professionals.length) parts.push(`${String(professionals.length).padStart(2, "0")} ${professionals.length === 1 ? "trader" : "traders"}`);
 
   return (
-    <div className="w-full max-w-[2000px] mx-auto space-y-8">
+    <div className="w-full max-w-[1374px] mx-auto space-y-8">
       {/* Header — centered name, back arrow left (optional) */}
       <div className="flex items-center justify-between gap-4">
         {showBack ? (
@@ -166,9 +166,8 @@ function RemoveBtn({ onClick, className }: { onClick: () => void; className?: st
         e.stopPropagation();
         onClick();
       }}
-      className={`absolute z-10 rounded-full bg-white/90 p-1.5 text-primary-brown shadow-md hover:bg-red-50 hover:text-red-600 transition-all ${
-        className ?? "bottom-[4.5rem] right-3 opacity-0 group-hover:opacity-100"
-      }`}
+      className={`absolute z-10 rounded-full bg-white/90 p-1.5 text-primary-brown shadow-md hover:bg-red-50 hover:text-red-600 transition-all ${className ?? "bottom-[4.5rem] right-3 opacity-0 group-hover:opacity-100"
+        }`}
     >
       <X size={15} />
     </button>

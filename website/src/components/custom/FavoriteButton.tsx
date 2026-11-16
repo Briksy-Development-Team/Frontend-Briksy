@@ -124,7 +124,7 @@ export default function FavoriteButton({
           strokeWidth={variant === "overlay" ? 2.5 : 2}
           className={`transition-colors duration-200 ${iconColor}`}
         />
-        {showText && <span className="ml-2 font-medium">{isFavourite ? "Liked" : "Like"}</span>}
+        {showText && <span className="ml-2 font-medium">{isFavourite ? "Saved" : "Save"}</span>}
       </button>
 
       {showCollections && targetId && (

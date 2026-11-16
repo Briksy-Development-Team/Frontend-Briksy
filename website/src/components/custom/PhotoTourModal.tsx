@@ -217,6 +217,7 @@ export function PhotoTourModal({
   // Legacy fallback (ServiceDetails uses this)
   media,
   initialIndex = 0,
+  initialTab,
   onClose,
   title = 'Photo tour',
   targetId,
@@ -228,6 +229,7 @@ export function PhotoTourModal({
   /** @deprecated pass photos/videos/floorplan instead */
   media?: Media[];
   initialIndex?: number;
+  initialTab?: Tab;
   onClose: () => void;
   title?: string;
   subtitle?: string;
@@ -258,13 +260,8 @@ export function PhotoTourModal({
   })();
 
   const initialMedia = useLegacy ? media?.[initialIndex] : undefined;
-  const initialTab = initialMedia ? (isVideo(initialMedia) ? 'videos' : 'photos') : defaultTab;
-  const initialMediaIndex = initialMedia
-    ? (isVideo(initialMedia)
-      ? resolvedVideos.findIndex((item) => item === initialMedia)
-      : resolvedPhotos.findIndex((item) => item === initialMedia))
-    : 0;
-  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+  const resolvedTab = initialTab ?? (initialMedia ? (isVideo(initialMedia) ? 'videos' : 'photos') : defaultTab);
+  const [activeTab, setActiveTab] = useState<Tab>(resolvedTab);
 
   const handleShare = async () => {
     try {
@@ -300,56 +297,56 @@ export function PhotoTourModal({
               <ArrowLeft size={20} />
             </button>
 
-            <h3 className="text-base sm:text-[1.125rem] font-medium text-primary-brown text-center truncate">
-              {title}
-            </h3>
+            {/* Center: Tabs */}
+            <div className="flex items-center justify-center gap-1 sm:gap-2">
+              {tabs.map((t) => {
+                const isActive = activeTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setActiveTab(t.id)}
+                    className={`
+                      flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition
+                      ${isActive
+                        ? 'bg-primary-brown text-white shadow-sm'
+                        : 'text-primary-brown/70 hover:text-primary-brown hover:bg-black/5'
+                      }
+                    `}
+                  >
+                    {t.icon}
+                    <span>{t.label}</span>
+                    {t.count > 0 && (
+                      <span className={`text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full ${
+                        isActive ? 'bg-white/20 text-white' : 'bg-black/5 text-primary-brown/60'
+                      }`}>
+                        {t.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-            <div className="flex items-center gap-1 sm:gap-1.5 text-primary-brown text-sm justify-self-end">
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2 justify-self-end">
               <button
                 type="button"
-                onClick={() => void handleShare()}
-                aria-label="Share"
-                className="flex items-center gap-2 h-10 px-1.5 rounded-lg hover:bg-black/5 transition"
+                onClick={handleShare}
+                aria-label="Share property"
+                className="w-10 h-10 flex items-center justify-center text-primary-brown hover:bg-black/5 rounded-full"
               >
-                <Share size={20} />
-                <span className="hidden md:inline">Share</span>
+                <Share size={18} />
               </button>
-
-              <FavoriteButton
-                variant="inline"
-                showText
-                iconSize={20}
-                className="flex items-center gap-2 h-10 px-1.5 rounded-lg hover:bg-black/5 transition text-primary-brown"
-                targetId={targetId}
-                targetType="property"
-                initialIsFavourite={initialIsFavourite}
-              />
-            </div>
-          </div>
-
-          {/* ── Tabs ── */}
-          <div className="shrink-0 flex justify-center px-4 pt-3 pb-1">
-            <div className="inline-flex items-center rounded-full border border-[#E7E1D8] bg-white p-1 gap-0.5">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-150 ${
-                    activeTab === tab.id
-                      ? 'bg-primary-brown text-white'
-                      : 'text-primary-brown hover:bg-black/5'
-                  }`}
-                >
-                  {tab.icon}
-                  {tab.label}
-                  {tab.count === 0 && (
-                    <span className={`text-xs ${activeTab === tab.id ? 'text-white/60' : 'text-primary-brown/40'}`}>
-                      —
-                    </span>
-                  )}
-                </button>
-              ))}
+              {targetId && (
+                <FavoriteButton
+                  targetId={targetId}
+                  targetType="property"
+                  initialIsFavourite={initialIsFavourite}
+                  variant="icon-only"
+                  iconSize={18}
+                />
+              )}
             </div>
           </div>
 
@@ -357,13 +354,13 @@ export function PhotoTourModal({
           <div className="flex-1 min-h-0 flex flex-col px-3 sm:px-[3%] pt-3 pb-4 gap-3">
             {activeTab === 'photos' && (
               resolvedPhotos.length > 0
-                ? <MediaViewer key="photos" items={resolvedPhotos} initialIndex={initialTab === 'photos' ? initialMediaIndex : 0} />
+                ? <MediaViewer key="photos" items={resolvedPhotos} initialIndex={initialIndex} />
                 : <NotAvailable label="Photos" />
             )}
 
             {activeTab === 'videos' && (
               resolvedVideos.length > 0
-                ? <MediaViewer key="videos" items={resolvedVideos} initialIndex={initialTab === 'videos' ? initialMediaIndex : 0} />
+                ? <MediaViewer key="videos" items={resolvedVideos} initialIndex={initialIndex} />
                 : <NotAvailable label="Videos" />
             )}
 

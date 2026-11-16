@@ -2,17 +2,19 @@ import Breadcrumb from "../../../components/nav/Breadcrumb";
 import Reviews from "../../../components/reviews/Reviews";
 import { PropertyGallery } from "./components/PropertyGallery";
 import {
-  PropertyTitle,
+  PropertyHeader,
+  BriksyQuickView,
+  PropertyAboutAndSpecs,
   PropertyAgentCard,
-  PropertyAbout,
   PropertyAmenities,
   PropertyMap,
 } from "./components/PropertyInfo";
+import { formatPropertyPrice } from "../../../utils/propertyPrice";
 import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 import AuctionSidebar from "./components/AuctionSidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
-import { Share, ChevronLeft, FolderPlus } from "lucide-react";
+import { Share, ChevronLeft } from "lucide-react";
 import FavoriteButton from "../../../components/custom/FavoriteButton";
 import DetailSkeleton from "../../../components/skeletons/DetailSkeleton";
 import { useEffect, useState } from "react";
@@ -38,7 +40,6 @@ import { EnquiryModal } from "../shared/EnquiryModal";
 import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
 import FraudBanner from "../../../components/custom/FraudBanner";
-import CollectionModal from "../../../components/collections/CollectionModal";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
 import {
   propertyToCard,
@@ -57,7 +58,6 @@ const PropertyDetail = () => {
   const [enquirySubmitting, setEnquirySubmitting] = useState(false);
   const [enquiryError, setEnquiryError] = useState<string | null>(null);
   const [enquirySuccess, setEnquirySuccess] = useState<string | null>(null);
-  const [collectionOpen, setCollectionOpen] = useState(false);
   const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
 
   const openGeneralEnquiry = () => {
@@ -313,7 +313,7 @@ const PropertyDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 font-helvetica flex   md:pb-0 flex-col">
-      <main className="flex-1 w-full max-w-[2000px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
+      <main className="flex-1 w-full max-w-[1374px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
         {/* Desktop Header */}
         <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center  mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
@@ -331,21 +331,8 @@ const PropertyDetail = () => {
               targetType="property"
               initialIsFavourite={Boolean(propertyData.is_favourite)}
             />
-            <button
-              type="button"
-              onClick={() => setCollectionOpen(true)}
-              className="flex items-center gap-2 hover:opacity-70 transition text-primary-brown cursor-pointer"
-            >
-              <FolderPlus size={18} /> Add to Collection
-            </button>
           </div>
         </div>
-        {collectionOpen && (
-          <CollectionModal
-            propertyId={property.id}
-            onClose={() => setCollectionOpen(false)}
-          />
-        )}
 
         <div className="mb-10 w-full relative">
           {/* Mobile Overlay Header */}
@@ -387,38 +374,48 @@ const PropertyDetail = () => {
         {/* Main Body Grid matching Figma gap: 48px (gap-12) */}
         <div className="flex flex-col lg:flex-row gap-12 items-start relative">
           {/* Left Column matching Figma gap: 32px (gap-8) */}
-          <div className="flex-1 min-w-0 flex flex-col gap-8 w-full">
-            <PropertyTitle
+          <div className="flex-1 min-w-0 flex flex-col gap-8 w-full font-helvetica">
+            {/* 1. Header: Status Tag, Title, Price */}
+            <PropertyHeader
               title={property.title}
-              beds={propertyData.bedroom_option}
-              baths={propertyData.bathroom_option}
-              car={propertyData.car_space_option}
-              sqm={propertyData.floor_area_sqm}
-              floorAreaUnit={propertyData.floor_area_unit}
-              landArea={propertyData.land_area_sqm}
-              landAreaUnit={propertyData.land_area_unit}
-              carpetArea={propertyData.carpet_area}
-              carpetAreaUnit={propertyData.carpet_area_unit}
-              rating={property.company?.rating}
-              ratingCount={property.reviews?.count || 0}
-              reviewsCount={property.company?.reviews}
-              organizationName={property.company?.name}
+              price={formatPropertyPrice({
+                pricing_type: propertyData.pricing_type,
+                price: propertyData.price,
+                price_min: propertyData.price_min,
+                price_max: propertyData.price_max,
+              })}
+              statusLabel={
+                propertyData.transaction_status
+                  ? propertyStatusLabel(
+                      propertyData.listing_purpose,
+                      propertyData.transaction_status,
+                    )
+                  : "SOLD"
+              }
+              isAuction={isAuction}
             />
 
-            {propertyData.transaction_status ? (
-              <span className="inline-flex w-fit rounded-full bg-primary-brown px-3 py-1 text-xs font-medium text-white">
-                {propertyStatusLabel(
-                  propertyData.listing_purpose,
-                  propertyData.transaction_status,
-                )}
-              </span>
-            ) : null}
-            {isAuction ? (
-              <span className="inline-flex w-fit rounded-full bg-[#8A5A2B] px-3 py-1 text-xs font-medium text-white">
-                Auction
-              </span>
-            ) : null}
+            {/* 2. Briksy Quick View */}
+            <BriksyQuickView />
 
+            {/* 3. About this property + Specs Card Side-by-Side */}
+            <div id="about">
+              <PropertyAboutAndSpecs
+                about={property.about}
+                baths={propertyData.bathroom_option}
+                beds={propertyData.bedroom_option}
+                car={propertyData.car_space_option}
+                sqm={propertyData.floor_area_sqm}
+                floorAreaUnit={propertyData.floor_area_unit}
+              />
+            </div>
+
+            {/* 4. What this place offers */}
+            <div id="amenities">
+              <PropertyAmenities amenities={property.amenities} />
+            </div>
+
+            {/* Mobile auction sidebar if needed */}
             {isAuction ? (
               <div className="md:hidden">
                 <AuctionSidebar
@@ -443,32 +440,6 @@ const PropertyDetail = () => {
               </div>
             ) : null}
 
-            {isAuction ? (
-              <div className="md:hidden">
-                <AuctionSidebar
-                  sidebar={property.sidebar}
-                  venueAddress={propertyData.auction_details?.venue || propertyData.full_address || propertyData.address || undefined}
-                  auctionVenue={propertyData.auction_details?.venue}
-                  auctionDate={propertyData.auction_details?.date}
-                  auctionTime={propertyData.auction_details?.time}
-                  auctioneer={propertyData.auction_details?.auctioneer}
-                  auctionContact={propertyData.auction_details?.contact}
-                  auctionDescription={propertyData.auction_details?.description}
-                  propertyId={propertyData.id}
-                  propertyTitle={propertyData.title}
-                  organizationId={propertyData.organization?.id || undefined}
-                  onEnquiry={openGeneralEnquiry}
-                />
-              </div>
-            ) : null}
-
-            {property.agent && <PropertyAgentCard agent={property.agent} />}
-
-            {property.about && (
-              <div id="about">
-                <PropertyAbout about={property.about} />
-              </div>
-            )}
             {propertyData.transaction_status !== "SOLD" &&
               propertyData.transaction_status !== "LEASED" && (
                 <button
@@ -477,17 +448,15 @@ const PropertyDetail = () => {
                     setInitialInterestedIn(["inspection"]);
                     setIsEnquiryOpen(true);
                   }}
-                  className="w-full rounded-full bg-primary-brown px-6 py-4 text-center text-sm font-medium text-white hover:opacity-90 transition-opacity cursor-pointer"
+                  className="w-full rounded-full bg-primary-brown px-6 py-3.5 text-center text-sm font-medium text-white hover:opacity-90 transition-opacity cursor-pointer lg:hidden"
                 >
                   Request an Inspection
                 </button>
               )}
 
-            {property.amenities && property.amenities.length > 0 && (
-              <div id="amenities">
-                <PropertyAmenities amenities={property.amenities} />
-              </div>
-            )}
+            <div className="lg:hidden">
+              {property.agent && <PropertyAgentCard agent={property.agent} />}
+            </div>
 
             {property.mapSrc && (
               <div id="map">
@@ -499,11 +468,7 @@ const PropertyDetail = () => {
               <DetailShorts reels={marketingReelsToItems(propertyData.shorts)} />
             </div>
 
-            {property.company && (
-              <div id="company">
-                <PropertyCompanyDetails company={property.company} />
-              </div>
-            )}
+           
 
             {property.reviews &&
               (property.reviews.count > 0 ||
@@ -522,7 +487,6 @@ const PropertyDetail = () => {
           <aside className="w-full lg:w-[360px] hidden lg:flex shrink-0 lg:sticky lg:top-28">
             <PropertySidebar
               sidebar={property.sidebar}
-              listingPurpose={propertyData.listing_purpose}
               isAuction={isAuction}
               venueAddress={
                 propertyData.full_address || propertyData.address || undefined
@@ -536,21 +500,12 @@ const PropertyDetail = () => {
               propertyId={propertyData.id}
               propertyTitle={propertyData.title}
               organizationId={propertyData.organization?.id || undefined}
-              statusTag={
-                propertyData.transaction_status
-                  ? propertyStatusLabel(
-                      propertyData.listing_purpose,
-                      propertyData.transaction_status,
-                    )
-                  : undefined
-              }
-              statusDate={
-                propertyData.transaction_status === "SOLD"
-                  ? "Sold on 18 Sep 2026"
-                  : undefined
-              }
-              address={property.address}
               organizationName={propertyData.organization?.name || undefined}
+              organizationLogo={propertyData.organization?.logo_url || undefined}
+              organizationCategory={propertyData.organization ? "Property Management" : undefined}
+              agent={property.agent}
+              creator={propertyData.creator}
+              rating={propertyData.rating}
               onEnquiry={openGeneralEnquiry}
             />
           </aside>
@@ -563,9 +518,9 @@ const PropertyDetail = () => {
           items={similarProperties}
         />
       </main>
-      <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
+      {/* <div className="my-10 px-[3%]  w-full flex items-center justify-center ">
         <FraudBanner />
-      </div>
+      </div> */}
       <div className="sticky bottom-0 z-20">
         <MobileStickyAction
           price={
