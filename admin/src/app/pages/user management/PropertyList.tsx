@@ -393,7 +393,11 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
               dispatch(fetchPropertyList(params));
               toast.success(editingProperty ? "Property updated." : "Property created.");
             } catch (error: any) {
-              toast.danger(error?.response?.data?.message ?? error?.message ?? "Unable to save property.");
+              const apiError = error?.payload ?? error?.response?.data;
+              const message = apiError?.code === "PLAN_IMAGE_LIMIT_REACHED"
+                ? "Maximum image upload limit reached. Delete an existing image or upgrade your plan."
+                : apiError?.message ?? error?.message ?? "Unable to save property.";
+              toast.danger(message);
             }
           }}
         />

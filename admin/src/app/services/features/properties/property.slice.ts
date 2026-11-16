@@ -66,12 +66,19 @@ export const fetchPropertyList = createAsyncThunk(
 
 export const saveProperty = createAsyncThunk(
   "properties/save",
-  async (payload: { id?: string; values: PropertyFormValues }) => {
-    if (payload.id) {
-      return await updatePropertyApi(payload.id, payload.values);
-    }
+  async (payload: { id?: string; values: PropertyFormValues }, { rejectWithValue }) => {
+    try {
+      if (payload.id) {
+        return await updatePropertyApi(payload.id, payload.values);
+      }
 
-    return await createPropertyApi(payload.values);
+      return await createPropertyApi(payload.values);
+    } catch (error: any) {
+      return rejectWithValue({
+        code: error?.response?.data?.code,
+        message: error?.response?.data?.message,
+      });
+    }
   },
 );
 
