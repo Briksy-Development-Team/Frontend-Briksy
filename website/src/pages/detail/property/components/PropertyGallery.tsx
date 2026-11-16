@@ -1,4 +1,4 @@
-import { List, Play } from 'lucide-react';
+import { List, Play, TvMinimalPlay, LayoutTemplate } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PhotoTourModal, type Media } from '../../../../components/custom/PhotoTourModal';
 import GallerySkeleton from '../../../../components/skeletons/GallerySkeleton';
@@ -32,6 +32,7 @@ export const PropertyGallery = ({
   isLoading?: boolean;
 }) => {
   const [tour, setTour] = useState<boolean>(false);
+  const [initialTab, setInitialTab] = useState<'photos' | 'videos' | 'floorplans'>('photos');
 
   // Separate photos and videos for the tabbed modal
   const { photos, videos, heroMedia } = useMemo(() => {
@@ -57,19 +58,53 @@ export const PropertyGallery = ({
     return <GallerySkeleton />;
   }
 
+  const hasVideos = videos.length > 0;
+  const hasFloorplan = Boolean(floorplan);
+
+  const openTour = (tab: 'photos' | 'videos' | 'floorplans') => {
+    setInitialTab(tab);
+    setTour(true);
+  };
+
   const tiles = [1, 2, 3, 4].map((i) => heroMedia[i]);
 
   return (
     <>
+      {/* Top tabs: Videos & Floor Plan (hidden if neither available) */}
+      {(hasVideos || hasFloorplan) && (
+        <div className="flex items-center justify-center gap-2 mb-3">
+          {hasVideos && (
+            <button
+              type="button"
+              onClick={() => openTour('videos')}
+              className="h-10 px-3.5 rounded-lg flex items-center gap-2 text-[14px] font-normal text-primary-brown bg-white shadow-2xs hover:bg-white-50 transition cursor-pointer"
+            >
+              <TvMinimalPlay size={18} />
+              <span>Videos</span>
+            </button>
+          )}
+          {hasFloorplan && (
+            <button
+              type="button"
+              onClick={() => openTour('floorplans')}
+              className="h-10 px-3.5 rounded-lg flex items-center gap-2 text-[14px] font-normal text-primary-brown hover:bg-white/60 transition cursor-pointer"
+            >
+              <LayoutTemplate size={18} />
+              <span>Floor Plan</span>
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="flex gap-2 h-[300px] md:h-[300px] xl:h-[480px] -mx-[5%] md:mx-0 md:rounded-2xl overflow-hidden md:overflow-visible">
         {/* Hero: the only box on mobile */}
         <div className="relative flex-1 min-w-0 h-full md:rounded-xl overflow-hidden" style={{ backgroundColor: COLORS[0] }}>
-          <button type="button" aria-label="Open property media" className="relative block w-full h-full" onClick={() => heroMedia[0] && setTour(true)}>
+          <button type="button" aria-label="Open property media" className="relative block w-full h-full" onClick={() => heroMedia[0] && openTour('photos')}>
             {heroMedia[0] && <Thumb m={heroMedia[0]} size={64} />}
           </button>
           <button
             type="button"
-            onClick={() => setTour(true)}
+            onClick={() => openTour('photos')}
             className="absolute bottom-4 right-4 md:hidden inline-flex items-center gap-2 rounded-lg bg-white px-3.5 py-2.5 text-[14px] font-medium text-primary-brown shadow-md"
           >
             <List size={20} /> All photos
@@ -88,7 +123,7 @@ export const PropertyGallery = ({
                 aria-label={`Open property media ${i + 1}`}
                 className="relative w-[150px] lg:w-[250px] xl:w-[240px] h-[145px] xl:h-[236px] rounded-xl overflow-hidden"
                 style={{ backgroundColor: COLORS[i + 1] }}
-                onClick={() => setTour(true)}
+                onClick={() => openTour(isVid ? 'videos' : 'photos')}
               >
                 {tile && <Thumb m={tile} />}
                 {isVid && (
@@ -114,6 +149,7 @@ export const PropertyGallery = ({
           photos={photos}
           videos={videos}
           floorplan={floorplan}
+          initialTab={initialTab}
           onClose={() => setTour(false)}
         />
       )}

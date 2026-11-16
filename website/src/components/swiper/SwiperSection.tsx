@@ -112,18 +112,18 @@ export function SwiperSection<T = any>({
   // Typography & layout classes by variant
   const titleClasses =
     variant === "detail"
-      ? "text-[24px] md:text-[30px] font-medium leading-[36px] tracking-[-0.03em] text-primary-brown"
+      ? "text-[24px] md:text-[1.25rem] font-medium leading-[36px] tracking-[-0.03em] text-primary-brown"
       : variant === "search"
-        ? "text-[1.2rem] md:text-[1.5rem] font-medium tracking-tight text-primary-brown"
-        : "text-[30px] font-medium lg:text-[44px] text-primary-brown";
+        ? "text-[1.2rem] md:text-[1.25rem] font-medium tracking-tight text-primary-brown"
+        : "text-[30px] font-medium lg:text-[1.25rem] text-primary-brown";
 
   const headerMargin =
     variant === "search" ? "mb-3" : variant === "detail" ? "mb-6" : "mb-10";
 
   const defaultContainerClass =
     variant === "home"
-      ? "lg:w-full pl-[5%] lg:px-0 lg:ml-10 min-[2000px]:ml-0 min-[2000px]:pl-0"
-      : "w-full max-w-[2000px] mx-auto";
+      ? "lg:w-full pl-[5%] lg:px-0 lg:ml-10 min-[1374px]:ml-0 min-[1374px]:pl-0"
+      : "w-full max-w-[1374px] mx-auto";
 
   const innerContainerClass = containerClassName ?? defaultContainerClass;
 
@@ -132,8 +132,8 @@ export function SwiperSection<T = any>({
       <div className={innerContainerClass}>
         <div
           className={`relative ${headerMargin} ${variant === "home"
-              ? "max-w-[2000px] mx-auto pr-4 md:pr-8 xl:pr-14"
-              : ""
+            ? "max-w-[1374px] mx-auto pr-4 md:pr-8 xl:pr-14"
+            : ""
             } flex flex-col text-primary-brown items-start justify-end lg:justify-center ${headerClassName}`}
         >
           <div className="flex w-full items-center justify-between">
@@ -163,7 +163,7 @@ export function SwiperSection<T = any>({
         </div>
 
         {categories && categories.length > 0 && (
-          <div className="flex flex-wrap justify-center hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start max-w-[2000px] mx-auto">
+          <div className="flex flex-wrap justify-center hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start max-w-[1374px] mx-auto">
             {categories.map((tab, i) => (
               <button
                 type="button"
@@ -185,8 +185,8 @@ export function SwiperSection<T = any>({
         <div
           key={activeIdx}
           className={`animate-fade-in gap-3 ${variant === "home"
-              ? "min-[2000px]:pl-[calc((100vw-2000px)/2)]"
-              : ""
+            ? "min-[1374px]:pl-[calc((100vw-1374px)/2)]"
+            : ""
             }`}
         >
           <SwiperScroll

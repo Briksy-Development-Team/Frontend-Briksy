@@ -90,13 +90,13 @@ const Pricing = () => {
   return (
     <main className="min-h-screen pt-20 md:pt-24 font-helvetica text-primary-brown">
 
-      <section className="w-full max-w-[2000px] mx-auto pt-12 pb-8 px-[5%] text-center">
+      <section className="w-full max-w-[1374px] mx-auto pt-12 pb-8 px-[5%] text-center">
         <h1 className="text-[2rem] md:text-[3rem] font-normal tracking-tight leading-tight text-primary-brown">
           Pricing for professionals and businesses
         </h1>
       </section>
 
-      <section className="w-full max-w-[2000px] mx-auto px-[5%] pb-8">
+      <section className="w-full max-w-[1374px] mx-auto px-[5%] pb-8">
         <SubscriptionTabs
           tabs={tabs}
           activeId={activeTabId}
@@ -106,13 +106,13 @@ const Pricing = () => {
 
       <section
         key={activeTabId}
-        className="w-full max-w-[2000px] mx-auto px-[5%] pb-12 animate-fade-in"
+        className="w-full max-w-[1374px] mx-auto px-[5%] pb-12 animate-fade-in"
       >
         <PricingCards plans={activeTab.plans} stats={activeTab.stats} onContact={openContact} isLoading={!plansLoaded} />
       </section>
 
-      <section className="w-full max-w-[2000px] mx-auto px-[4%] md:px-[5%] pb-20">
-      <FeatureTable plans={activeTab.plans} sections={activeTab.sections} />
+      <section className="w-full max-w-[1374px] mx-auto px-[4%] md:px-[5%] pb-20">
+        <FeatureTable plans={activeTab.plans} sections={activeTab.sections} />
       </section>
 
       {contactPlan && (
@@ -159,12 +159,12 @@ const buildLiveTab = (tab: TabData, plans: PublicPlan[]): TabData => {
   const featureNames = Array.from(new Set(livePlans.flatMap((plan) => plan.features.map((feature) => feature.name))));
   const sections: FeatureSection[] = featureNames.length
     ? [{
-        title: 'Plan Features',
-        rows: featureNames.map((name) => ({
-          label: name,
-          values: livePlans.map((plan) => toFeatureValue(plan.features.find((feature) => feature.name === name) ?? { name, enabled: false, value: null })),
-        })),
-      }]
+      title: 'Plan Features',
+      rows: featureNames.map((name) => ({
+        label: name,
+        values: livePlans.map((plan) => toFeatureValue(plan.features.find((feature) => feature.name === name) ?? { name, enabled: false, value: null })),
+      })),
+    }]
     : tab.sections;
 
   const mappedPlans: Plan[] = livePlans.map((plan, index) => ({

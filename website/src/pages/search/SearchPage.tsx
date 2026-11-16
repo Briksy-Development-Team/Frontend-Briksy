@@ -45,12 +45,12 @@ const SearchPage = () => {
   // list as a fast fallback while the taxonomy request is loading.
   const activeCategory = activeCategoryId === "traders" && serviceCategories.length > 0
     ? {
-        ...baseCategory,
-        propTypes: [
-          { id: "all", label: "All" },
-          ...serviceCategories.map((category) => ({ id: category.slug, label: category.label })),
-        ],
-      }
+      ...baseCategory,
+      propTypes: [
+        { id: "all", label: "All" },
+        ...serviceCategories.map((category) => ({ id: category.slug, label: category.label })),
+      ],
+    }
     : baseCategory;
   const resultType = activeCategory.resultType;
   const crumb = CRUMBS[activeCategoryId] ?? CRUMBS.all;
@@ -177,7 +177,7 @@ const SearchPage = () => {
           </button>
         </div>
       )}
-      <div className="mx-auto w-full max-w-[2000px] pl-[3%] pt-6 md:px-[3%]">
+      <div className="mx-auto w-full max-w-[1374px] pl-[3%] pt-6 md:px-[3%]">
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar
           activeCategoryId={activeCategoryId}
