@@ -153,7 +153,19 @@ const PropertyDetail = () => {
           videoSrc: item.type === "video" ? resolveMediaUrl(item.url) : undefined,
         }));
 
-      return formattedMedia;
+      const floorplanUrl = resolveMediaUrl(propertyData.floorplan?.url);
+      if (!floorplanUrl) return formattedMedia;
+
+      const floorplanMedia = {
+        id: propertyData.floorplan?.id || "floorplan",
+        src: floorplanUrl,
+        type: "image" as const,
+      };
+      const withoutDuplicateFloorplan = formattedMedia.filter((item) => item.id !== floorplanMedia.id && item.src !== floorplanMedia.src);
+
+      return withoutDuplicateFloorplan.length > 0
+        ? [withoutDuplicateFloorplan[0], floorplanMedia, ...withoutDuplicateFloorplan.slice(1)]
+        : [floorplanMedia];
     })(),
     agent: propertyData.organization
       ? {

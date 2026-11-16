@@ -10,12 +10,6 @@ import HeroM from "../../assets/hero/HeroM.svg";
 
 gsap.registerPlugin(useGSAP);
 
-const AVATARS = [
-  "https://randomuser.me/api/portraits/women/44.jpg",
-  "https://randomuser.me/api/portraits/men/32.jpg",
-  "https://randomuser.me/api/portraits/women/68.jpg",
-];
-
 const Heroone = () => {
   const { mode, setMode } = useOutletContext<{
     mode: "collapsed" | "search" | "ai";

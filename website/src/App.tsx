@@ -15,7 +15,6 @@ import { ReadyProvider, useReady } from "./components/utils/ReadyContext";
 
 import { CookieConsentProvider } from "./context/CookieConsentContext";
 import CookieConsent from "./components/consent/CookieConsent";
-import DevPlatformSwitcher from "./components/dev/DevPlatformSwitcher";
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });

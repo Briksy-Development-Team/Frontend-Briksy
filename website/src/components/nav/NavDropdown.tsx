@@ -98,25 +98,29 @@ export default function NavDropdown({ item, onClose, onMouseEnter, onMouseLeave 
         <div className="absolute -top-3 left-0 right-0 h-3" />
 
         <div className="flex items-start gap-6">
-          {columns.map((links, i) => (
-            <div key={i} className="flex w-[215px] flex-col">
-              <p className="dd-item mb-3 text-sm xl:text-md font-medium uppercase tracking-wider text-primary-light-brown">
-                {content.label}
-              </p>
-              <div className="flex flex-col gap-1 ">
-                {links.map((l) => (
-                  <Link
-                    key={l.label}
-                    to={l.to}
-                    onClick={onClose}
-                    className="group dd-item py-1 text-base xl:text-md font-normal leading-5 text-black transition-colors duration-150 hover:text-[#8B6F54]"
-                  >
-                    <RollText text={l.label} />
-                  </Link>
-                ))}
-              </div>
+          <div className="flex flex-col">
+            <p className="dd-item mb-3 text-sm xl:text-md font-medium uppercase tracking-wider text-primary-light-brown">
+              {content.label}
+            </p>
+            <div className="flex items-start gap-6">
+              {columns.map((links, i) => (
+                <div key={i} className="flex w-[215px] flex-col">
+                  <div className="flex flex-col gap-1 ">
+                    {links.map((l) => (
+                      <Link
+                        key={l.label}
+                        to={l.to}
+                        onClick={onClose}
+                        className="group dd-item py-1 text-base xl:text-md font-normal leading-5 text-black transition-colors duration-150 hover:text-[#8B6F54]"
+                      >
+                        <RollText text={l.label} />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
         {hasCards && (

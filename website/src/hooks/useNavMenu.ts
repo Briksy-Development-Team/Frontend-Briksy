@@ -60,7 +60,7 @@ export const useNavMenu = (): NavItem[] => {
         { label: "List Your Business", to: "/subs", bg: Randomtwo },
       ],
     ),
-    item("Commercials", "/commercials", commercialLinks, [
+    item("Commercial", "/commercials", commercialLinks, [
       { label: "Find Commercial Property", to: "/commercials", bg: Randomone },
       { label: "List Your Property", to: "/subs", bg: Randomtwo },
     ]),

@@ -1,6 +1,7 @@
 import PriceRange from "../primitives/PriceRange";
 import { Divider } from "../primitives/Section";
 import { getFieldsForMode } from "../filterConfig";
+import { usePropertyTypes } from "../../../hooks/useTaxonomy";
 import type {
   FilterMode, FilterField, RangeField, MinMaxField, InputField,
   GridSelectField, PillSelectField, SingleCheckboxField, ToggleField
@@ -34,7 +35,7 @@ function GridSelectSection({ field, values, set }: { field: GridSelectField; val
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
       {field.options.map((opt) => {
         const isSelected = currentValues.includes(opt.id);
-        const Icon = opt.icon;
+        const icon = opt.icon;
         return (
           <button
             key={opt.id}
@@ -44,7 +45,11 @@ function GridSelectSection({ field, values, set }: { field: GridSelectField; val
                 : "bg-white border-[#EDE8E4] text-[#3D2C1D] hover:bg-[#F8F4EE]"
               }`}
           >
-            <Icon className=" w-4 h-4 xl:w-5 xl:h-5 mb-2" strokeWidth={1.5} />
+            <img
+              src={icon}
+              alt=""
+              className={`w-4 h-4 xl:w-5 xl:h-5 mb-2 object-contain ${isSelected ? "brightness-0 invert" : ""}`}
+            />
             <span className="text-xs lg:text-[0.875rem] font-medium text-center leading-tight">{opt.label}</span>
           </button>
         );
@@ -219,7 +224,8 @@ function renderField(field: FilterField, values: Values, set: (k: string, v: unk
 
 export default function FilterPanel({ mode, values, onChange }: FilterPanelProps) {
   const selectedSub = (values.propertyFor as string) || "all";
-  const fields = getFieldsForMode(mode, selectedSub);
+  const { data: propertyTypes = [] } = usePropertyTypes();
+  const fields = getFieldsForMode(mode, selectedSub, propertyTypes);
 
   const set = (key: string, value: unknown) => {
     onChange({ ...values, [key]: value });

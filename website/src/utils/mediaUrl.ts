@@ -8,7 +8,11 @@ export function resolveMediaUrl(value?: string | null): string | undefined {
   const configuredApi = import.meta.env.VITE_APP_API_URL?.trim().replace(/\/$/, "");
   const apiOrigin = configuredApi && /^https?:\/\//i.test(configuredApi)
     ? configuredApi.replace(/\/api\/?$/, "")
-    : typeof window !== "undefined" ? window.location.origin : "";
+    : typeof window !== "undefined"
+      ? LOOPBACK_HOST_PATTERN.test(window.location.hostname)
+        ? `${window.location.protocol}//${window.location.hostname === "0.0.0.0" ? "localhost" : window.location.hostname}:8000`
+        : window.location.origin
+      : "";
 
   try {
     const parsed = new URL(value, typeof window !== "undefined" ? window.location.origin : "http://localhost");

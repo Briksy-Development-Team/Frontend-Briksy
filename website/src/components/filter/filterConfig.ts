@@ -1,7 +1,21 @@
 import type { PriceRangeTab } from "./primitives/PriceRange";
 import { SEARCH_CATEGORIES } from "../../constants/categories";
-
-import { Building2, Home, Landmark, Factory, Warehouse, Trees, Castle, Tent } from "lucide-react";
+import type { PublicPropertyType } from "../../api/propertyTypes.api";
+import AcreageRural from "../../assets/search/Acreage - Rural.png";
+import Apartment from "../../assets/search/Apartment.png";
+import BlockOfUnits from "../../assets/search/Block of units.png";
+import Duplex from "../../assets/search/Duplex.png";
+import House from "../../assets/search/House.png";
+import Industrial from "../../assets/search/Industrial.png";
+import LandPlot from "../../assets/search/Land - Plot.png";
+import Office from "../../assets/search/Office.png";
+import Penthouse from "../../assets/search/Penthouse.png";
+import RetirementLiving from "../../assets/search/Retirement living.png";
+import Studio from "../../assets/search/Studio.png";
+import Townhouse from "../../assets/search/Townhouse.png";
+import Unit from "../../assets/search/Unit.png";
+import Villa from "../../assets/search/Villa.png";
+import Warehouse from "../../assets/search/Warehouse.png";
 
 /* ─── field type definitions ─── */
 
@@ -39,7 +53,7 @@ export type InputField = FieldBase & {
 
 export type GridSelectField = FieldBase & {
   type: "gridSelect";
-  options: { id: string; label: string; icon: any }[];
+  options: { id: string; label: string; icon: string }[];
   multiSelect?: boolean;
 };
 
@@ -60,18 +74,30 @@ export type ToggleField = FieldBase & {
 export type FilterField = CheckboxField | RangeField | MinMaxField | InputField | GridSelectField | PillSelectField | SingleCheckboxField | ToggleField;
 
 
-const PROPERTY_TYPES_GRID = [
-  { id: "apartment", label: "Apartment", icon: Building2 },
-  { id: "villa", label: "Villa", icon: Home },
-  { id: "duplex", label: "Duplex", icon: Castle },
-  { id: "townhouse", label: "Townhouse", icon: Home },
-  { id: "penthouse", label: "Penthouse", icon: Landmark },
-  { id: "studio", label: "Studio", icon: Tent },
-  { id: "land", label: "Land / Plot", icon: Trees },
-  { id: "office", label: "Office", icon: Building2 },
-  { id: "warehouse", label: "Warehouse", icon: Warehouse },
-  { id: "industrial", label: "Industrial", icon: Factory },
-];
+const PROPERTY_TYPE_ICONS: Record<string, string> = {
+  acreage: AcreageRural,
+  "apartment-unit": Apartment,
+  "block-of-units": BlockOfUnits,
+  duplex: Duplex,
+  house: House,
+  industrial: Industrial,
+  land: LandPlot,
+  office: Office,
+  penthouse: Penthouse,
+  "retirement-living": RetirementLiving,
+  studio: Studio,
+  townhouse: Townhouse,
+  unit: Unit,
+  villa: Villa,
+  warehouse: Warehouse,
+};
+
+const getPropertyTypeOptions = (propertyTypes: PublicPropertyType[]) =>
+  propertyTypes.map((propertyType) => ({
+    id: propertyType.slug,
+    label: propertyType.name,
+    icon: PROPERTY_TYPE_ICONS[propertyType.slug] ?? House,
+  }));
 
 const BEDROOM_OPTIONS = [
   { id: "any", label: "Any" },
@@ -121,9 +147,17 @@ const WEEKLY_PRICE_RANGE_TABS: PriceRangeTab[] = [
 
 export type FilterMode = string;
 
-export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"): FilterField[] => {
+export const getFieldsForMode = (
+  mode: FilterMode,
+  subCategory: string = "all",
+  propertyTypes: PublicPropertyType[] = [],
+): FilterField[] => {
   const category = SEARCH_CATEGORIES.find(c => c.id === mode);
   const typeOptions = category?.propTypes.map(p => ({ id: p.id, label: p.label })) || [];
+  const propertyTypeCategory = mode === "commercial" ? "commercial" : "residential";
+  const modePropertyTypeOptions = getPropertyTypeOptions(
+    propertyTypes.filter((propertyType) => propertyType.category === propertyTypeCategory),
+  );
 
   const typeLabel = mode === "real-estate" ? "Real Estate For" :
                     mode === "commercial" ? "Commercial For" :
@@ -150,7 +184,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
       const priceStep = isRent ? 10 : 50;
 
       const fields: FilterField[] = [
-        { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: modePropertyTypeOptions, multiSelect: true, column: "left" },
         ...(mode === "real-estate" && typeOptions.length > 0 ? [typeField] : []),
         { key: "price", label: priceLabel, type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: priceTabs, step: priceStep, bucketCount: 42, column: "right" },
         { key: "showPriceOnly", label: isSold ? "Only show sold properties with price" : "Only show properties with price", type: "singleCheckbox", column: "right" },
@@ -175,7 +209,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
       const priceStep = isLease ? 10 : 50;
 
       const fields: FilterField[] = [
-        { key: "propertyTypes", label: "Commercial Type", type: "gridSelect", options: PROPERTY_TYPES_GRID.filter(t => ["office", "warehouse", "industrial", "land", "studio"].includes(t.id)), multiSelect: true, column: "left" },
+        { key: "propertyTypes", label: "Commercial Type", type: "gridSelect", options: modePropertyTypeOptions, multiSelect: true, column: "left" },
         typeField,
         { key: "price", label: priceLabel, type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: priceTabs, step: priceStep, bucketCount: 42, column: "right" },
         { key: "showPriceOnly", label: "Only show commercial with price", type: "singleCheckbox", column: "right" },
@@ -192,7 +226,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
 
     case "builders":
       return [
-        { key: "propertyTypes", label: "Specializes In", type: "gridSelect", options: PROPERTY_TYPES_GRID.filter(t => ["apartment", "villa", "duplex", "townhouse", "penthouse", "studio"].includes(t.id)), multiSelect: true, column: "left" },
+        { key: "propertyTypes", label: "Specializes In", type: "gridSelect", options: modePropertyTypeOptions, multiSelect: true, column: "left" },
         typeField,
         { key: "price", label: "Project Budget", type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
         { key: "keyword", label: "Keywords", type: "input", placeholder: "Search by builder name or location", column: "right" },
@@ -203,7 +237,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
 
     case "traders":
       return [
-        { key: "propertyTypes", label: "Works On", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        { key: "propertyTypes", label: "Works On", type: "gridSelect", options: modePropertyTypeOptions, multiSelect: true, column: "left" },
         typeField,
         { key: "keyword", label: "Keywords", type: "input", placeholder: "Search by trade name, service, or location", column: "right" },
         { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
@@ -214,7 +248,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
 
     case "agents":
       return [
-        { key: "propertyTypes", label: "Specializes In", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        { key: "propertyTypes", label: "Specializes In", type: "gridSelect", options: modePropertyTypeOptions, multiSelect: true, column: "left" },
         typeField,
         { key: "keyword", label: "Keywords", type: "input", placeholder: "Search by agent name, agency, or location", column: "right" },
         { key: "languages", label: "Languages spoken", type: "input", placeholder: "e.g. Mandarin, Vietnamese, Greek", column: "right" },
@@ -224,7 +258,7 @@ export const getFieldsForMode = (mode: FilterMode, subCategory: string = "all"):
 
     case "auction":
       return [
-        { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: PROPERTY_TYPES_GRID, multiSelect: true, column: "left" },
+        { key: "propertyTypes", label: "Property Type", type: "gridSelect", options: modePropertyTypeOptions, multiSelect: true, column: "left" },
         { key: "price", label: "Guide Price", type: "range", minKey: "priceMin", maxKey: "priceMax", tabs: PRICE_RANGE_TABS, step: 50, bucketCount: 42, column: "right" },
         { key: "showPriceOnly", label: "Only show properties with price guide", type: "singleCheckbox", column: "right" },
         { key: "bedrooms", label: "Bedroom", type: "pillSelect", options: BEDROOM_OPTIONS, column: "right" },
