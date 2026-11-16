@@ -87,12 +87,12 @@ export default function NavDropdown({ item, onClose, onMouseEnter, onMouseLeave 
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`fixed left-0 right-0 top-20 z-50 hidden lg:flex justify-center pt-2.5 px-4 pointer-events-none ${item ? "pointer-events-auto" : ""
+      className={`fixed left-0 right-0 top-20 z-50 hidden lg:flex justify-center pt-2.5 px-4 ${item ? "pointer-events-auto" : "pointer-events-none"
         }`}
     >
       <div
         ref={panelRef}
-        className="pointer-events-auto relative flex items-start justify-between gap-20 rounded-2xl bg-[#F8F4EE] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-[#EDE8E4]/70"
+        className="relative flex items-start justify-between gap-20 rounded-2xl bg-[#F8F4EE] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-[#EDE8E4]/70"
         style={{ opacity: 0, transform: "translateY(-6px) scale(0.98)" }}
       >
         <div className="absolute -top-3 left-0 right-0 h-3" />
