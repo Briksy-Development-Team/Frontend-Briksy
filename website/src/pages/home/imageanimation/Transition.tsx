@@ -1,88 +1,147 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useOutletContext } from "react-router-dom";
 import gsap from "gsap";
-import { ShieldCheck, Sparkles, Building2, FileText, MapPin, type LucideIcon } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Sparkles,
+  Building2,
+  FileText,
+  MapPin,
+  type LucideIcon,
+} from "lucide-react";
 import CARD_IMAGE from "../../../assets/about/electrician.svg";
 import ImageBigone from "../../../assets/about/imagebigone.svg";
 import ImageBigTwo from "../../../assets/about/imagebigtwo.svg";
 import ImageSmallOne from "../../../assets/about/imagesmallone.svg";
 import ImageSmallTwo from "../../../assets/about/imagesmalltwo.svg";
 
-const ORBIT_IMAGES = [
-  ImageBigone,
-  ImageBigTwo,
-  ImageSmallOne,
-  ImageSmallTwo,
-];
+const ORBIT_IMAGES = [ImageBigone, ImageBigTwo, ImageSmallOne, ImageSmallTwo];
 
-type Row = { icon: LucideIcon; iconClass?: string; label: string; meta?: string };
+type Row = {
+  icon: LucideIcon;
+  iconClass?: string;
+  label: string;
+  meta?: string;
+};
 
 const VERIFIED_CARD: { title: string; rows: Row[] } = {
-  title: "Meet your local electrician",
-  rows: [{ icon: ShieldCheck, iconClass: "text-[#342511]", label: "Licence verified", meta: "Local electrician" }],
+  title: "Find local professionals",
+  rows: [
+    {
+      icon: BriefcaseBusiness,
+      iconClass: "text-[#342511]",
+      label: "Multiple services",
+      meta: "Local experts",
+    },
+  ],
 };
 
 const CHECKS_CARD: { title: string; rows: Row[] } = {
   title: "Know who you're connecting with",
   rows: [
-    { icon: Building2, iconClass: "text-[#07172a]/50", label: "Business name listed" },
-    { icon: FileText, iconClass: "text-[#07172a]/50", label: "ABN information available" },
-    { icon: MapPin, iconClass: "text-[#07172a]/50", label: "Local business details" },
+    {
+      icon: Building2,
+      iconClass: "text-[#07172a]/50",
+      label: "Business name listed",
+    },
+    {
+      icon: FileText,
+      iconClass: "text-[#07172a]/50",
+      label: "ABN information available",
+    },
+    {
+      icon: MapPin,
+      iconClass: "text-[#07172a]/50",
+      label: "Local business details",
+    },
   ].map((row) => ({ ...row, iconClass: "text-[#07172a]/50" })),
 };
 
 const STAGE_W = 620;
 const STAGE_H = 720;
 
-
 const PERSPECTIVE = 1000; // Slightly higher than 900 to flatten the distortion just a bit
-const MAX_TILT_Y = 13;    // Down from 22 (a gentle reduction in left/right tilt)
-const MAX_TILT_X = 6;    // Down from 14 (a gentle reduction in up/down tilt)
-const MAX_TILT_Z = 1.6;   // Down from 2.5
+const MAX_TILT_Y = 13; // Down from 22 (a gentle reduction in left/right tilt)
+const MAX_TILT_X = 6; // Down from 14 (a gentle reduction in up/down tilt)
+const MAX_TILT_Z = 1.6; // Down from 2.5
 const RANGE_X = 0.6;
-const RANGE_Y = 0.50;
+const RANGE_Y = 0.5;
 const SMOOTHING_MS = 120;
-const PARALLAX = 0.08;    // Down from 0.08 (keeps the floating tags closer to their anchors)
-const INFO_CARD_Z = 150;  // Down from 150
-const ASK_BUTTON_Z = 100;  // Down from 110
+const PARALLAX = 0.08; // Down from 0.08 (keeps the floating tags closer to their anchors)
+const INFO_CARD_Z = 150; // Down from 150
+const ASK_BUTTON_Z = 100; // Down from 110
 
 const RINGS = [
-  { rx: 360, ry: 380, seconds: 24, tiles: [{ w: 150, phase: 0 }, { w: 150, phase: Math.PI }] },
-  { rx: 240, ry: 260, seconds: 38, tiles: [{ w: 40, phase: 0.9 }, { w: 40, phase: Math.PI + 0.9 }] },
+  {
+    rx: 360,
+    ry: 380,
+    seconds: 24,
+    tiles: [
+      { w: 150, phase: 0 },
+      { w: 150, phase: Math.PI },
+    ],
+  },
+  {
+    rx: 240,
+    ry: 260,
+    seconds: 38,
+    tiles: [
+      { w: 40, phase: 0.9 },
+      { w: 40, phase: Math.PI + 0.9 },
+    ],
+  },
 ];
 
-const ORBIT_TILES = RINGS.flatMap(({ tiles, ...ring }) => tiles.map((tile) => ({ ...ring, ...tile })));
+const ORBIT_TILES = RINGS.flatMap(({ tiles, ...ring }) =>
+  tiles.map((tile) => ({ ...ring, ...tile })),
+);
 
-function InfoCard({ title, rows, className }: { title: string; rows: Row[]; className: string }) {
+function InfoCard({
+  title,
+  rows,
+  className,
+}: {
+  title: string;
+  rows: Row[];
+  className: string;
+}) {
   return (
     <div
       data-z={INFO_CARD_Z}
       className={`float-layer absolute w-[215px] overflow-hidden rounded-[10px] border border-[#07172a]/10 bg-[#fffefa]/90 text-[#07172a]
          shadow-[0_12px_28px_rgba(7,23,42,0.1),inset_0_1px_0_rgba(255 ,255,255,0.7)] backdrop-blur-md ${className}`}
     >
-      <p className="px-3 py-2 text-[12px] font-medium leading-tight">{title}</p>
+      <p className="px-2 py-2 text-[12px] font-medium leading-tight">{title}</p>
       {rows.map(({ icon: Icon, iconClass, label, meta }) => (
         <div
           key={label}
           className="flex items-center justify-between border-t border-[#07172a]/5 bg-[#07172a]/[0.02] px-3 py-2 text-[10.5px] leading-tight"
         >
-          <span className="flex items-center gap-1.5 text-[#07172a]/85">
+          <span className="flex items-center gap-1.5 text-[#07172a]/85 text-nowrap">
             <Icon size={14} strokeWidth={1.8} className={iconClass} />
             {label}
           </span>
-          {meta && <span className="text-[#07172a]/45 text-[10px]">{meta}</span>}
+          {meta && (
+            <span className="text-[#07172a]/45 text-[10px] text-nowrap">{meta}</span>
+          )}
         </div>
       ))}
     </div>
   );
 }
 
-export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivElement | null> }) {
+export default function LeftVisual({
+  trackRef,
+}: {
+  trackRef: RefObject<HTMLDivElement | null>;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const tiltRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.85);
-  const outletCtx = useOutletContext<{ setMode?: (m: "collapsed" | "search" | "ai") => void } | null>();
+  const outletCtx = useOutletContext<{
+    setMode?: (m: "collapsed" | "search" | "ai") => void;
+  } | null>();
 
   // ── Viewport Locked Scaling ──
   useEffect(() => {
@@ -92,7 +151,6 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       let newScale = 1;
 
       if (vw >= 1024) {
-
         const targetW = vw * 0.35; // Target 35% of screen width
         const targetH = vh * 0.65; // Target 65% of screen height
 
@@ -101,7 +159,7 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
 
         newScale = Math.min(scaleW, scaleH);
       } else {
-        const targetW = vw * 0.90;
+        const targetW = vw * 0.9;
         newScale = targetW / STAGE_W;
       }
 
@@ -149,7 +207,12 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       orbit(startTime);
       gsap.ticker.add(orbit);
 
-      gsap.to(q(".spin-icon"), { rotation: 360, duration: 1.2, ease: "steps(8)", repeat: -1 });
+      gsap.to(q(".spin-icon"), {
+        rotation: 360,
+        duration: 1.2,
+        ease: "steps(8)",
+        repeat: -1,
+      });
 
       const clamp = gsap.utils.clamp(-1, 1);
       const pointer = { x: 0, y: 0, active: false };
@@ -160,8 +223,12 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
       const updateTarget = () => {
         if (!tracking || !pointer.active) return;
         const s = stage.getBoundingClientRect();
-        target.x = clamp((pointer.x - (s.left + s.width / 2)) / (s.width * RANGE_X));
-        target.y = clamp((pointer.y - (s.top + s.height / 2)) / (s.height * RANGE_Y));
+        target.x = clamp(
+          (pointer.x - (s.left + s.width / 2)) / (s.width * RANGE_X),
+        );
+        target.y = clamp(
+          (pointer.y - (s.top + s.height / 2)) / (s.height * RANGE_Y),
+        );
       };
 
       const onMove = (e: PointerEvent) => {
@@ -170,7 +237,12 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
         pointer.y = e.clientY;
 
         const a = area.getBoundingClientRect();
-        if (e.clientX >= a.left && e.clientX <= a.right && e.clientY >= a.top && e.clientY <= a.bottom) {
+        if (
+          e.clientX >= a.left &&
+          e.clientX <= a.right &&
+          e.clientY >= a.top &&
+          e.clientY <= a.bottom
+        ) {
           tracking = true;
         }
 
@@ -191,7 +263,10 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
           rotationZ: current.x * MAX_TILT_Z,
         });
         layers.forEach(({ el, z }) =>
-          gsap.set(el, { x: current.x * z * PARALLAX, y: current.y * z * PARALLAX })
+          gsap.set(el, {
+            x: current.x * z * PARALLAX,
+            y: current.y * z * PARALLAX,
+          }),
         );
       };
 
@@ -249,9 +324,18 @@ export default function LeftVisual({ trackRef }: { trackRef: RefObject<HTMLDivEl
           <div
             key={i}
             className="orbit-tile absolute left-1/2 top-1/2 overflow-hidden rounded-xl  shadow-lg pointer-events-none"
-            style={{ width: t.w, height: t.w * 0.75, marginLeft: -t.w / 2, marginTop: -(t.w * 0.75) / 2 }}
+            style={{
+              width: t.w,
+              height: t.w * 0.75,
+              marginLeft: -t.w / 2,
+              marginTop: -(t.w * 0.75) / 2,
+            }}
           >
-            <img src={ORBIT_IMAGES[i % ORBIT_IMAGES.length]} alt="" className="h-full w-full object-cover" />
+            <img
+              src={ORBIT_IMAGES[i % ORBIT_IMAGES.length]}
+              alt=""
+              className="h-full w-full object-cover"
+            />
           </div>
         ))}
 
