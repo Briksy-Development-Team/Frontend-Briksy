@@ -10,9 +10,8 @@ type ReviewsModalProps = {
 
 export default function ReviewsModal({ isOpen, onClose, data, name }: ReviewsModalProps) {
   return (
-    <ModalWrapper isOpen={isOpen}>
-      <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-        <div className="w-full max-w-3xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+    <ModalWrapper isOpen={isOpen} onClose={onClose}>
+      <div className="w-full max-w-3xl h-[85vh] bg-white rounded-2xl overflow-hidden flex flex-col relative">
           <div className="px-6 py-4 flex items-center justify-between border-b border-gray-50">
             <h3 className="text-[1.25rem] font-medium text-primary-brown">
               {name ? `${name}'s reviews` : 'Reviews'}
@@ -51,7 +50,6 @@ export default function ReviewsModal({ isOpen, onClose, data, name }: ReviewsMod
             </div>
           </div>
         </div>
-      </div>
     </ModalWrapper>
   );
 }

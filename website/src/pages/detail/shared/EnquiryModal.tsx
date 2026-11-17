@@ -102,12 +102,11 @@ export function EnquiryModal({
   const shownError = formError || error;
 
   return (
-    <ModalWrapper isOpen={open}>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4">
-        <div
-          className="max-h-[95vh] w-full max-w-[55rem] flex flex-col rounded-3xl bg-white p-4 shadow-2xl"
-          data-lenis-prevent
-        >
+    <ModalWrapper isOpen={open} onClose={onClose}>
+      <div
+        className="max-h-[95vh] w-full max-w-[55rem] flex flex-col rounded-3xl bg-white p-4 shadow-2xl my-auto"
+        data-lenis-prevent
+      >
           <button
             type="button"
             onClick={onClose}
@@ -239,7 +238,6 @@ export function EnquiryModal({
             </form>
           </div>
         </div>
-      </div>
     </ModalWrapper>
   );
 }

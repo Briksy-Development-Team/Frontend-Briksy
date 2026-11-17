@@ -4,7 +4,6 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import HeroSearchBar from "../search/HeroSearchBar";
 import { useReady } from "../utils/ReadyContext"; // adjust path if needed
-import RollText from "../../utils/RollText";
 
 import House from "../../assets/hero/houses.svg";
 import HeroM from "../../assets/hero/HeroM.svg";

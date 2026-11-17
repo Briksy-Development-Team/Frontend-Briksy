@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { PanelLeft, Search, Sparkles, SquarePen, X } from "lucide-react";
+import { Search, Sparkles, X } from "lucide-react";
 import ModalWrapper from "../wrapper/ModalWrapper";
 import BriksyLogo from "../../assets/logo/loaderbg.svg";
 import { askBriksyAi } from "../../api/clients.api";
@@ -163,19 +163,21 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
   const idle = messages.length === 0;
 
   return (
-    <ModalWrapper isOpen={isOpen}>
+    <ModalWrapper isOpen={isOpen} onClose={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Briksy AI Chat"
         data-lenis-prevent
-        className="fixed inset-0 z-[90] flex overflow-hidden bg-white-50 font-helvetica text-primary-brown animate-in fade-in duration-200"
+        className="relative flex overflow-hidden h-[90vh] w-[90vw] max-w-7xl rounded-3xl bg-white-50 font-helvetica text-primary-brown shadow-2xl my-auto"
       >
         <AiSidebar
           sessions={sessions}
           activeSessionId={activeId}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          onOpen={() => setSidebarOpen(true)}
+          onToggle={() => setSidebarOpen((p) => !p)}
           onNewChat={handleNewChat}
           onSelectSession={setActiveId}
           onTogglePin={(id) => updateSessions((p) => p.map((s) => (s.id === id ? { ...s, pinned: !s.pinned } : s)))}
@@ -187,28 +189,12 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
         />
 
         <div className="relative flex h-full min-w-0 flex-1 flex-col bg-white-50">
-          <header className="flex shrink-0 items-center justify-between border-b border-white-100/70 px-4 py-3 md:px-8">
+          <header className="flex h-14 shrink-0 items-center justify-between border-b border-white-100/70 px-4 md:px-6">
             <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={() => setSidebarOpen((p) => !p)}
-                aria-label="Toggle sidebar"
-                className="rounded-lg p-1.5 text-primary-light-brown hover:bg-white-100 hover:text-primary-brown cursor-pointer"
-              >
-                <PanelLeft size={19} />
-              </button>
-              <button
-                type="button"
-                onClick={handleNewChat}
-                aria-label="New chat"
-                className="rounded-lg p-1.5 text-primary-light-brown hover:bg-white-100 md:hidden cursor-pointer"
-              >
-                <SquarePen size={18} />
-              </button>
-              <span className="truncate max-w-[200px] sm:max-w-[320px] text-[13.5px] font-semibold text-primary-brown">
-                {activeSession?.title || "Briksy AI"}
+              <span className="text-[15px] font-bold tracking-tight text-primary-brown">
+                Briksy AI
               </span>
-              <span className="rounded-full bg-primary-bleach px-[7px] py-[2px] text-[10.5px] font-medium text-primary-brown">
+              <span className="rounded-full bg-primary-bleach/60 px-2.5 py-0.5 text-[11px] font-medium text-primary-brown">
                 Beta
               </span>
             </div>
@@ -216,7 +202,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
               type="button"
               onClick={onClose}
               aria-label="Close Briksy AI"
-              className="rounded-full p-2 text-primary-light-brown hover:bg-primary-bleach/40 hover:text-primary-brown cursor-pointer"
+              className="rounded-lg p-1.5 text-primary-brown hover:bg-white-100 transition-colors cursor-pointer"
             >
               <X size={20} strokeWidth={1.75} />
             </button>

@@ -210,6 +210,7 @@ function FloorplanViewer({ src }: { src: string }) {
 
 // ── Main modal ────────────────────────────────────────────────────────────────
 export function PhotoTourModal({
+  isOpen = true,
   // New tabbed props
   photos,
   videos,
@@ -223,6 +224,7 @@ export function PhotoTourModal({
   targetId,
   initialIsFavourite = false,
 }: {
+  isOpen?: boolean;
   photos?: Media[];
   videos?: Media[];
   floorplan?: string | null;
@@ -272,21 +274,16 @@ export function PhotoTourModal({
   };
 
   return (
-    <ModalWrapper isOpen>
-      {/* Backdrop */}
+    <ModalWrapper isOpen={isOpen} onClose={onClose}>
+      {/* Modal card */}
       <div
-        className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-2 sm:p-4 lg:p-6"
-        onClick={onClose}
+        className="
+          relative w-full max-w-7xl bg-[#F8F4EE] rounded-2xl shadow-2xl
+          flex flex-col overflow-hidden
+          h-[92svh] sm:h-[90svh] lg:h-[88svh] my-auto
+        "
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal card */}
-        <div
-          className="
-            relative w-full max-w-7xl bg-[#F8F4EE] rounded-2xl shadow-2xl
-            flex flex-col overflow-hidden
-            h-[92svh] sm:h-[90svh] lg:h-[88svh]
-          "
-          onClick={(e) => e.stopPropagation()}
-        >
           {/* ── Header ── */}
           <div className="grid grid-cols-3 items-center px-4 sm:px-6 py-3 sm:py-4 shrink-0 border-b border-black/5">
             <button
@@ -371,7 +368,6 @@ export function PhotoTourModal({
             )}
           </div>
         </div>
-      </div>
     </ModalWrapper>
   );
 }

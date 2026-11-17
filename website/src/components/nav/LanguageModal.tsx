@@ -56,18 +56,11 @@ const LanguageModal = ({
     };
 
     return (
-        <ModalWrapper isOpen={isOpen}>
+        <ModalWrapper isOpen={isOpen} onClose={onClose}>
             <div
-                className="fixed inset-0 z-[100] flex items-start sm:items-center justify-center p-4 pt-10 sm:pt-4 overflow-y-auto"
-                onClick={onClose}
-                onWheel={(e) => e.stopPropagation()}
-                onTouchMove={(e) => e.stopPropagation()}
+                className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[560px] max-h-[85vh] sm:max-h-[70vh] p-5 sm:p-6 overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
             >
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
-                <div
-                    className="relative bg-white rounded-2xl shadow-2xl w-full max-w-[560px] max-h-[85vh] sm:max-h-[70vh] p-5 sm:p-6 overflow-y-auto"
-                    onClick={(e) => e.stopPropagation()}
-                >
                     <button
                         onClick={onClose}
                         className="absolute top-4 left-4 text-gray-500 hover:text-gray-800 transition-colors"
@@ -110,7 +103,6 @@ const LanguageModal = ({
                         ))}
                     </div>
                 </div>
-            </div>
         </ModalWrapper>
     );
 };
