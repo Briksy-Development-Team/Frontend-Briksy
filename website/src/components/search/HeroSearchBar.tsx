@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
+import RollText from "../../utils/RollText";
 
 import { SEARCH_TAB_CATEGORIES, type Category, type PropType } from "../../constants/categories";
 
@@ -86,12 +87,12 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
           key={cat.id}
           type="button"
           onClick={() => selectCategory(cat)}
-          className={`flex-1 min-w-0 flex items-center justify-center rounded-xl font-medium whitespace-nowrap transition-all duration-200 ${className} ${selected.id === cat.id
+          className={`group flex-1 min-w-0 flex items-center justify-center rounded-xl font-medium whitespace-nowrap transition-all duration-200 ${className} ${selected.id === cat.id
             ? "bg-[#342511] text-white shadow-sm"
             : "text-[#342511] bg-[#f0ebe4] hover:bg-[#e8e0d8]"
             }`}
         >
-          <span className="truncate">{cat.label}</span>
+          <RollText text={cat.label} />
         </button>
       ))}
     </div>
@@ -194,10 +195,10 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       <button
         type="button"
         onClick={() => setMode("ai")}
-        className="flex shrink-0 items-center gap-2 px-5 py-3 rounded-full bg-white border border-[#F5551A]/40 shadow-[inset_0_0_20px_rgba(245,85,26,0.35)] text-[15px] text-[#F5551A] whitespace-nowrap transition hover:opacity-90"
+        className="group flex shrink-0 items-center gap-2 px-5 py-3 rounded-full bg-white border border-[#F5551A]/40 shadow-[inset_0_0_20px_rgba(245,85,26,0.35)] text-[15px] text-[#F5551A] whitespace-nowrap transition  hover:scale-105 hover:opacity-90"
       >
         <Sparkles size={17} />
-        Ask AI
+        <RollText text="Ask Ai" />
       </button>
     </div>
   );
@@ -254,7 +255,6 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
                 text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition"
             >
               <Sparkles size={18} fill="#FBF8F3" />
-            
             </button>
           </div>
         </div>

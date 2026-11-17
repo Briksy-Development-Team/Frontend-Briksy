@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { SwiperScroll } from "./SwiperScroll";
+import RollText from "../../utils/RollText";
 
 export interface SubCategory {
   id?: string | number;
@@ -127,6 +128,8 @@ export function SwiperSection<T = any>({
 
   const innerContainerClass = containerClassName ?? defaultContainerClass;
 
+  const arrowRoll = "block transition-transform duration-300 ease-out group-hover:-translate-y-full";
+
   return (
     <section className={`font-helvetica ${className}`}>
       <div className={innerContainerClass}>
@@ -146,10 +149,13 @@ export function SwiperSection<T = any>({
                 <button
                   type="button"
                   onClick={handleViewAll}
-                  className="cursor-pointer hidden md:flex items-center gap-1.5 text-[14px] md:text-[16px] font-medium text-[#8B6F54] hover:text-[#562F00] transition-colors"
+                  className="group cursor-pointer hidden md:flex items-center gap-1.5 text-[14px] md:text-[16px] font-medium text-[#8B6F54] hover:text-[#562F00] transition-colors"
                 >
-                  <span>{resolvedViewAllText}</span>
-                  <ArrowUpRight size={18} />
+                  <RollText text={resolvedViewAllText} />
+                  <span className="relative block overflow-hidden">
+                    <ArrowUpRight size={18} className={arrowRoll} />
+                    <ArrowUpRight size={18} className={`${arrowRoll} absolute left-0 top-full`} />
+                  </span>
                 </button>
               )}
             </div>

@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import Contacts from "../../assets/videos/Contact.mp4";
+import RollText from "../../utils/RollText";
 
 const badges = ["ABN verification required", "No setup fees", "Cancel anytime"];
 
@@ -33,15 +34,15 @@ const Contact = () => {
           </p>
 
           <div className="flex flex-col md:flex-row items-center gap-4 mt-10">
-            <button onClick={() => navigate("/register")} className="sm:px-6 sm:py-3 px-3 py-5 w-full md:w-auto text-center bg-primary-brown text-white rounded-xl text-[1rem] font-medium cursor-pointer">
-              List Your Business
+            <button onClick={() => navigate("/register")} className="sm:px-6 group sm:py-3 px-3 py-5 w-full md:w-auto text-center bg-primary-brown text-white rounded-xl text-[1rem] font-medium cursor-pointer">
+            <RollText text="List Your Business"  />  
             </button>
 
             <Link
               to="/subs"
-              className="sm:px-6 sm:py-3 border w-full md:w-auto px-3 py-5 border-primary-brown text-center text-primary-brown rounded-xl text-[1rem] font-medium bg-white"
+              className="sm:px-6 sm:py-3 border w-full md:w-auto px-3 py-5 group border-primary-brown text-center text-primary-brown rounded-xl text-[1rem] font-medium bg-white"
             >
-              View Subscription Plans
+           <RollText text="View Subscription Plans" />    
             </Link>
           </div>
         </div>
