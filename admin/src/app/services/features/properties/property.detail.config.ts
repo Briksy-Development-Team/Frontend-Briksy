@@ -132,13 +132,13 @@ export const propertyDetailConfig: DetailConfig<any> = {
       gridColumnSpan: 12,
       imagesAccessor: (data) => (Array.isArray(data?.images) ? data.images.map((image: any) => image.url).filter(Boolean) : []),
     },
-    {
-      id: "floorplan_gallery",
-      type: "gallery",
-      title: "Floor Plan",
-      gridColumnSpan: 12,
-      imagesAccessor: (data) => (data?.floorplan?.url ? [data.floorplan.url] : []),
-    },
+    // {
+    //   id: "floorplan_gallery",
+    //   type: "gallery",
+    //   title: "Floor Plan",
+    //   gridColumnSpan: 12,
+    //   imagesAccessor: (data) => (data?.floorplan?.url ? [data.floorplan.url] : []),
+    // },
     {
       id: "video_gallery",
       type: "gallery",
