@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Blog1 from "../../../assets/reviews/blog1.png";
 import Blog2 from "../../../assets/reviews/blog2.png";
 import Blog3 from "../../../assets/reviews/blog3.png";
+import RollText from "../../../utils/RollText";
 
 type BlogCard = {
   image: string;
@@ -53,9 +54,9 @@ const Blogs = () => {
 
             <Link
               to="/blogs"
-              className="inline-flex items-center justify-center h-[44px] px-5 rounded-lg bg-primary-brown text-white text-[14px] font-normal hover:opacity-90 transition-opacity w-fit"
+              className="inline-flex group items-center justify-center h-[44px] px-5 rounded-lg bg-primary-brown text-white text-[14px] font-normal hover:opacity-90 transition-opacity w-fit"
             >
-              View All Articles
+              <RollText text="View All Articles" />
             </Link>
           </div>
 
@@ -68,8 +69,8 @@ const Blogs = () => {
                   src={card.image}
                   alt={card.name}
                   className={`h-[232px] w-full object-cover ${card.imagePosition === "top"
-                      ? "rounded-t-[12px]"
-                      : "rounded-b-[12px]"
+                    ? "rounded-t-[12px]"
+                    : "rounded-b-[12px]"
                     }`}
                 />
               );
