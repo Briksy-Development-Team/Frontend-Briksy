@@ -10,7 +10,6 @@ import {
   PropertyMap,
 } from "./components/PropertyInfo";
 import { formatPropertyPrice } from "../../../utils/propertyPrice";
-import { PropertyCompanyDetails } from "./components/PropertyHost";
 import { PropertySidebar } from "./components/PropertySidebar";
 import AuctionSidebar from "./components/AuctionSidebar";
 // import StaffGrid from "../../../components/grids/StaffGrid";
@@ -39,7 +38,6 @@ import { buildGoogleMapsEmbedUrl } from "../../../utils/googleMaps";
 import { EnquiryModal } from "../shared/EnquiryModal";
 import { DetailShorts, SimilarSection, marketingReelsToItems } from "../shared";
 import MobileStickyAction from "../../../components/custom/MobileStickyAction";
-import FraudBanner from "../../../components/custom/FraudBanner";
 import { propertyStatusLabel } from "../../../utils/propertyStatus";
 import {
   propertyToCard,

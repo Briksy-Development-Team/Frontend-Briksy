@@ -144,15 +144,14 @@ export const PropertyGallery = ({
         </div>
       </div>
 
-      {tour && (
-        <PhotoTourModal
-          photos={photos}
-          videos={videos}
-          floorplan={floorplan}
-          initialTab={initialTab}
-          onClose={() => setTour(false)}
-        />
-      )}
+      <PhotoTourModal
+        isOpen={tour}
+        photos={photos}
+        videos={videos}
+        floorplan={floorplan}
+        initialTab={initialTab}
+        onClose={() => setTour(false)}
+      />
     </>
   );
 };

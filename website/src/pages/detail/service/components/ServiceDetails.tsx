@@ -271,15 +271,14 @@ export function ServiceRecentWork({
         </div>
       </div>
 
-      {modalOpen && (
-        <PhotoTourModal
-          media={allMedia}
-          initialIndex={initialGalleryIndex}
-          onClose={() => setModalOpen(false)}
-          title={`Gallery · ${recentWork.totalPhotos} photos${recentWork.totalVideos ? `, ${recentWork.totalVideos} videos` : ""}`}
-          subtitle="My gallery"
-        />
-      )}
+      <PhotoTourModal
+        isOpen={modalOpen}
+        media={allMedia}
+        initialIndex={initialGalleryIndex}
+        onClose={() => setModalOpen(false)}
+        title={`Gallery · ${recentWork.totalPhotos} photos${recentWork.totalVideos ? `, ${recentWork.totalVideos} videos` : ""}`}
+        subtitle="My gallery"
+      />
     </div>
   );
 }

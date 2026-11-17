@@ -8,9 +8,8 @@ interface ContactModalProps {
 
 const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
     return (
-        <ModalWrapper isOpen={isOpen}>
-            <div className="fixed inset-0 z-50 flex items-center justify-center  p-3 md:p-4 font-helvetica">
-                <div className=" flex w-full max-w-[55rem]  max-h-[95vh] flex-col rounded-[1.5rem] md:rounded-[2rem] bg-white shadow-xl">
+        <ModalWrapper isOpen={isOpen} onClose={onClose}>
+            <div className="flex w-full max-w-[55rem] max-h-[95vh] flex-col rounded-[1.5rem] md:rounded-[2rem] bg-white shadow-xl font-helvetica overflow-hidden">
                     <div className=" w-full h-[5rem] px-5 pt-5  rounded-[1.5rem] md:rounded-[2rem]  ">
                         <button
                             onClick={onClose}
@@ -121,7 +120,6 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
                         </div>
                     </div>
                 </div>
-            </div>
         </ModalWrapper>
     );
 };
