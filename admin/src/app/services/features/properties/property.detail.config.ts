@@ -55,7 +55,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
     {
       id: "gallery",
       label: "Gallery",
-      sections: ["property_gallery", "video_gallery"],
+      sections: ["property_gallery", "floorplan_gallery", "video_gallery"],
     },
     {
       id: "inquiries",
@@ -131,6 +131,13 @@ export const propertyDetailConfig: DetailConfig<any> = {
       title: "Image Gallery",
       gridColumnSpan: 12,
       imagesAccessor: (data) => (Array.isArray(data?.images) ? data.images.map((image: any) => image.url).filter(Boolean) : []),
+    },
+    {
+      id: "floorplan_gallery",
+      type: "gallery",
+      title: "Floor Plan",
+      gridColumnSpan: 12,
+      imagesAccessor: (data) => (data?.floorplan?.url ? [data.floorplan.url] : []),
     },
     {
       id: "video_gallery",
