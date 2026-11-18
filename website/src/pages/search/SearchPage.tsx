@@ -177,7 +177,7 @@ const SearchPage = () => {
           </button>
         </div>
       )}
-      <div className="mx-auto w-full max-w-[1374px] pl-[3%] pt-6 md:px-[3%]">
+      <div className="mx-auto w-full max-w-[1400px] pl-[3%] pt-6 md:px-[3%]">
         <Breadcrumb items={breadcrumbs} />
         <SearchToolbar
           activeCategoryId={activeCategoryId}

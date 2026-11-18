@@ -138,7 +138,7 @@ export interface NearbySchoolsProps {
 }
 
 export default function NearbySchools({
-  title = "Nearby schools & child care",
+  // title = "Nearby schools & child care",
   schools = DEFAULT_NEARBY_SCHOOLS,
   className = "",
 }: NearbySchoolsProps) {
@@ -147,10 +147,10 @@ export default function NearbySchools({
   const filteredSchools = schools.filter((item) => item.category === activeTab);
 
   return (
-    <section className={`flex flex-col gap-4 w-full font-helvetica ${className}`} aria-label={title}>
-      <h3 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
+    <section className={`flex flex-col gap-4 w-full font-helvetica ${className}`} >
+      {/* <h3 className="text-[20px] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
         {title}
-      </h3>
+      </h3> */}
 
       {/* Tabs matching Figma Node 4539:3911 */}
       <div className="flex items-center gap-2 flex-wrap">

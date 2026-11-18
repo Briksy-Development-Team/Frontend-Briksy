@@ -222,7 +222,7 @@ export const PropertySidebar = ({
       </div>
 
       {/* ─── 2. LISTED BY AGENCY ────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 w-full">
+      {/* <div className="flex flex-col gap-2 w-full">
         <span className="text-[0.875rem] font-bold uppercase tracking-wider text-primary-brown px-1">
           Listed by Agency
         </span>
@@ -254,7 +254,7 @@ export const PropertySidebar = ({
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ─── 3. INSPECTION TIME ─────────────────────────────────────────── */}
       <div className="flex flex-col gap-2 w-full">

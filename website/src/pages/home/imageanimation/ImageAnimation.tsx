@@ -69,7 +69,7 @@ const ImageAnimation = () => {
   return (
     <div
       ref={sectionRef}
-      className="relative flex flex-col lg:flex-row min-h-screen mx-auto w-full max-w-[1374px] items-center font-helvetica overflow-hidden"
+      className="relative flex flex-col lg:flex-row min-h-screen mx-auto w-full max-w-[1400px] items-center font-helvetica overflow-hidden"
     >
       <div className="mt-10 lg:mt-0 flex w-full lg:w-1/2 items-center justify-center px-4 lg:px-8">
         <div className="w-full flex justify-center">

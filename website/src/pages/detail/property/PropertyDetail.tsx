@@ -98,7 +98,7 @@ const PropertyDetail = () => {
           .map(propertyToCard);
         setSimilarProperties(filtered);
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       active = false;
     };
@@ -123,17 +123,17 @@ const PropertyDetail = () => {
       const media = propertyData.media?.length
         ? propertyData.media
         : [
-            ...(propertyData.images || []).map((item, index) => ({
-              ...item,
-              id: `image-${index}`,
-              type: "image" as const,
-            })),
-            ...(propertyData.videos || []).map((item, index) => ({
-              ...item,
-              id: `video-${index}`,
-              type: "video" as const,
-            })),
-          ];
+          ...(propertyData.images || []).map((item, index) => ({
+            ...item,
+            id: `image-${index}`,
+            type: "image" as const,
+          })),
+          ...(propertyData.videos || []).map((item, index) => ({
+            ...item,
+            id: `video-${index}`,
+            type: "video" as const,
+          })),
+        ];
       const formattedMedia = media
         .filter(
           (item, index, all) =>
@@ -167,13 +167,13 @@ const PropertyDetail = () => {
     })(),
     agent: propertyData.organization
       ? {
-          name: propertyData.organization.name || "Property Management",
-          role: "Property Management",
-          verified: propertyData.organization.is_verified ? "Verified" : "",
-          avatar: propertyData.organization.logo_url || "",
-          since:
-            propertyData.organization.established_year || undefined,
-        }
+        name: propertyData.organization.name || "Property Management",
+        role: "Property Management",
+        verified: propertyData.organization.is_verified ? "Verified" : "",
+        avatar: propertyData.organization.logo_url || "",
+        since:
+          propertyData.organization.established_year || undefined,
+      }
       : null,
     about: propertyData.description || "",
     amenities: (propertyData.features || []).map((feature) => ({
@@ -184,29 +184,29 @@ const PropertyDetail = () => {
     })),
     mapSrc:
       (propertyData.location?.latitude && propertyData.location?.longitude) ||
-      propertyData.full_address ||
-      propertyData.address
+        propertyData.full_address ||
+        propertyData.address
         ? buildGoogleMapsEmbedUrl({
-            lat: propertyData.location?.latitude,
-            lng: propertyData.location?.longitude,
-            address: propertyData.full_address || propertyData.address,
-          })
+          lat: propertyData.location?.latitude,
+          lng: propertyData.location?.longitude,
+          address: propertyData.full_address || propertyData.address,
+        })
         : null,
     company: propertyData.organization
       ? {
-          id:
-            propertyData.organization.slug ||
-            propertyData.organization.id ||
-            "",
-          name: propertyData.organization.name || "",
-          location: propertyData.address || "",
-          tags: [],
-          rating: propertyData.rating || 0,
-          reviews: 0,
-          since:
-            propertyData.organization.established_year || undefined,
-          logo: propertyData.organization.logo_url || "",
-        }
+        id:
+          propertyData.organization.slug ||
+          propertyData.organization.id ||
+          "",
+        name: propertyData.organization.name || "",
+        location: propertyData.address || "",
+        tags: [],
+        rating: propertyData.rating || 0,
+        reviews: 0,
+        since:
+          propertyData.organization.established_year || undefined,
+        logo: propertyData.organization.logo_url || "",
+      }
       : null,
     reviews: {
       overall: propertyData.rating || 0,
@@ -264,7 +264,7 @@ const PropertyDetail = () => {
     } catch (reason: unknown) {
       setEnquiryError(
         errorMessage(reason) ||
-          "Unable to send enquiry. Please try again.",
+        "Unable to send enquiry. Please try again.",
       );
     } finally {
       setEnquirySubmitting(false);
@@ -311,7 +311,7 @@ const PropertyDetail = () => {
 
   return (
     <div className="min-h-screen  md:mt-20 font-helvetica flex   md:pb-0 flex-col">
-      <main className="flex-1 w-full max-w-[1374px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-20 pb-12 md:py-6">
         {/* Desktop Header */}
         <div className="hidden md:flex flex-col sm:flex-row justify-between sm:items-center  mb-6 gap-4">
           <Breadcrumb items={breadcrumbs} />
@@ -370,10 +370,10 @@ const PropertyDetail = () => {
         </div>
 
         {/* Main Body Grid matching Figma gap: 48px (gap-12) */}
-        <div className="flex flex-col lg:flex-row gap-12 items-start relative">
+        <div className="flex flex-col lg:flex-row gap-6 items-start relative">
           {/* Left Column matching Figma gap: 32px (gap-8) */}
           <div className="flex-1 min-w-0 flex flex-col gap-8 w-full font-helvetica">
-            {/* 1. Header: Status Tag, Title, Price */}
+            {/* 1. Header: Status Tag, Title, Price & Inline Specs */}
             <PropertyHeader
               title={property.title}
               price={formatPropertyPrice({
@@ -385,27 +385,25 @@ const PropertyDetail = () => {
               statusLabel={
                 propertyData.transaction_status
                   ? propertyStatusLabel(
-                      propertyData.listing_purpose,
-                      propertyData.transaction_status,
-                    )
+                    propertyData.listing_purpose,
+                    propertyData.transaction_status,
+                  )
                   : "SOLD"
               }
               isAuction={isAuction}
+              baths={propertyData.bathroom_option}
+              beds={propertyData.bedroom_option}
+              car={propertyData.car_space_option}
+              sqm={propertyData.floor_area_sqm}
+              floorAreaUnit={propertyData.floor_area_unit}
             />
 
             {/* 2. Briksy Quick View */}
             <BriksyQuickView />
 
-            {/* 3. About this property + Specs Card Side-by-Side */}
+            {/* 3. About this property */}
             <div id="about">
-              <PropertyAboutAndSpecs
-                about={property.about}
-                baths={propertyData.bathroom_option}
-                beds={propertyData.bedroom_option}
-                car={propertyData.car_space_option}
-                sqm={propertyData.floor_area_sqm}
-                floorAreaUnit={propertyData.floor_area_unit}
-              />
+              <PropertyAboutAndSpecs about={property.about} />
             </div>
 
             {/* 4. What this place offers */}
@@ -466,7 +464,7 @@ const PropertyDetail = () => {
               <DetailShorts reels={marketingReelsToItems(propertyData.shorts)} />
             </div>
 
-           
+
 
             {property.reviews &&
               (property.reviews.count > 0 ||
