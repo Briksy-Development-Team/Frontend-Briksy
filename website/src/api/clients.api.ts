@@ -140,8 +140,12 @@ export type AiRecommendation = {
   amenities?: Array<{ name: string; slug?: string; quantity?: number | null; value_type?: "boolean" | "number" }>;
 };
 
-export const askBriksyAi = async (question: string) => {
-  const response = await api.post<{ success: boolean; data: { answer: string; recommendations: AiRecommendation[] } }>("/seeker/ai/search", { question });
+export const askBriksyAi = async (question: string, signal?: AbortSignal) => {
+  const response = await api.post<{ success: boolean; data: { answer: string; recommendations: AiRecommendation[] } }>(
+    "/seeker/ai/search",
+    { question },
+    { signal },
+  );
   return response.data.data;
 };
 
