@@ -42,8 +42,11 @@ const SeekerList = () => {
 
   return (
     <Content>
-      <PageHeader title="End Users" subtitle="All registered end users" />
       <EntityList
+        title="End Users"
+        subtitle="All registered end users"
+        entityName="users"
+        profileType="avatar"
         data={data}
         total={total}
         params={params}

@@ -6,17 +6,17 @@ type Range = { min?: number; max?: number };
 type DateRange = { from?: string; to?: string };
 type FilterValue = (string | number)[] | Range | DateRange | string | boolean;
 
-type FilterConfig =
-  | {
-      key: string;
-      label: string;
-      type: "select";
-      options: string[] | { label: string; value: string | number }[];
-    }
-  | { key: string; label: string; type: "range" }
-  | { key: string; label: string; type: "dateRange" }
-  | { key: string; label: string; type: "text" }
-  | { key: string; label: string; type: "boolean" };
+export type FilterOption = string | number | { label: string; value: string | number };
+
+export type FilterConfig = {
+  key: string;
+  label: string;
+  type?: string;
+  options?: FilterOption[] | unknown;
+  [key: string]: unknown;
+};
+
+export type { FilterValue };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
@@ -109,7 +109,7 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
     setValues((prev) => ({
       ...prev,
       [key]: {
-        ...(prev[key] as any),
+        ...(typeof prev[key] === "object" && prev[key] !== null ? (prev[key] as Record<string, unknown>) : {}),
         [field]:
           val === ""
             ? undefined
@@ -172,13 +172,25 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
       <button
         ref={triggerRef}
         type="button"
-        className={`btn d-flex align-items-center gap-2 ${activeFiltersCount > 0 ? "btn-primary" : "btn-light-primary"}`}
+        className={`briksy-pill-btn ${activeFiltersCount > 0 ? "briksy-pill-btn--active" : ""}`}
         data-kt-menu-trigger="click"
         data-kt-menu-placement="bottom-end"
       >
-        <KTIcon iconName="filter" className="fs-2" />
-        Filter
-        {activeFiltersCount > 0 && <span className="ms-1">{activeFiltersCount}</span>}
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        <span>Filter</span>
+        {activeFiltersCount > 0 && <span className="badge bg-secondary ms-1">{activeFiltersCount}</span>}
       </button>
 
       <div
@@ -215,19 +227,21 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
                 <div className="pb-6 px-5">
                   {f.type === "select" && (
                     <div className="mh-200px overflow-auto pe-2">
-                      {f.options.map((opt) => {
-                        const label = typeof opt === "object" ? opt.label : opt;
-                        const value = typeof opt === "object" ? opt.value : opt;
-                        return (
-                          <label key={String(value)} className="form-check form-check-custom form-check-solid mb-4 mt-2">
-                            <input
-                              type="checkbox"
-                              className="form-check-input"
-                              checked={(
-                                (values[f.key] as (string | number)[]) || []
-                              ).includes(value)}
-                              onChange={() => toggleValue(f.key, value)}
-                            />
+                      {Array.isArray(f.options) &&
+                        (f.options as FilterOption[]).map((opt) => {
+                          const isObj = typeof opt === "object" && opt !== null;
+                          const label = isObj && "label" in opt ? (opt as { label: string }).label : String(opt);
+                          const value = isObj && "value" in opt ? (opt as { value: string | number }).value : (opt as string | number);
+                          return (
+                            <label key={String(value)} className="form-check form-check-custom form-check-solid mb-4 mt-2">
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                checked={(
+                                  (values[f.key] as (string | number)[]) || []
+                                ).includes(value)}
+                                onChange={() => toggleValue(f.key, value)}
+                              />
                             <span className="mx-3 form-check-label text-gray-800">{label}</span>
                           </label>
                         );

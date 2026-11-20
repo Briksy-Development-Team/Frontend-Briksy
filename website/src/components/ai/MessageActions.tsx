@@ -1,99 +1,89 @@
-/**
- * MessageActions.tsx — Gemini-style actions bar below assistant responses.
- * Provides: Copy response, Like / Dislike rating, and Still Need Help trigger.
- * Uses Briksy design tokens and Lucide icons without external libraries.
- */
 import { useState } from "react";
-import { Check, Copy, ThumbsDown, ThumbsUp } from "lucide-react";
-import HelpIcon from "../../assets/icons/help/help.svg";
+import { Check, Copy, RotateCw, ThumbsDown, ThumbsUp } from "lucide-react";
 
 interface Props {
   content: string;
-  onNeedHelp?: () => void;
+  feedback?: "like" | "dislike";
+  onFeedback?: (val: "like" | "dislike") => void;
+  onRefresh?: () => void;
+  disabled?: boolean;
 }
 
-export default function MessageActions({ content, onNeedHelp }: Props) {
+export default function MessageActions({ content, feedback, onFeedback, onRefresh, disabled }: Props) {
   const [copied, setCopied] = useState(false);
-  const [liked, setLiked] = useState<boolean | null>(null);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // ponytail: fallback if clipboard API is restricted
-      const textarea = document.createElement("textarea");
-      textarea.value = content;
-      document.body.appendChild(textarea);
-      textarea.select();
+  const handleCopy = () => {
+    navigator.clipboard?.writeText(content).catch(() => {
+      const ta = document.createElement("textarea");
+      ta.value = content;
+      document.body.appendChild(ta);
+      ta.select();
       document.execCommand("copy");
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+      document.body.removeChild(ta);
+    });
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
+  const isLiked = feedback === "like";
+  const isDisliked = feedback === "dislike";
+
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-1 text-primary-light-brown">
-      {/* Copy button */}
+    <div className="mt-3 flex items-center gap-1.5 text-[#7C5F42]">
+      {/* 1. Copy button */}
       <button
         type="button"
         onClick={handleCopy}
         aria-label="Copy response"
-        title="Copy response"
-        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition-colors hover:bg-white-100/70 hover:text-primary-brown cursor-pointer"
+        title={copied ? "Copied to clipboard" : "Copy response"}
+        className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors cursor-pointer ${
+          copied ? "text-emerald-700 bg-emerald-50" : "text-[#7C5F42] hover:bg-black/5 hover:text-[#342511]"
+        }`}
       >
-        {copied ? (
-          <>
-            <Check size={14} className="text-emerald-700" />
-            <span className="text-emerald-700 font-medium">Copied</span>
-          </>
-        ) : (
-          <>
-            <Copy size={14} />
-            <span>Copy</span>
-          </>
-        )}
+        {copied ? <Check size={16} strokeWidth={2.5} /> : <Copy size={16} />}
       </button>
 
-      {/* Helpful / Not helpful */}
-      <div className="flex items-center">
-        <button
-          type="button"
-          onClick={() => setLiked((prev) => (prev === true ? null : true))}
-          aria-label="Good response"
-          title="Good response"
-          className={`rounded-lg p-1 transition-colors hover:bg-white-100/70 hover:text-primary-brown cursor-pointer ${
-            liked === true ? "text-primary-brown bg-primary-bleach/30" : ""
-          }`}
-        >
-          <ThumbsUp size={14} />
-        </button>
-        <button
-          type="button"
-          onClick={() => setLiked((prev) => (prev === false ? null : false))}
-          aria-label="Bad response"
-          title="Bad response"
-          className={`rounded-lg p-1 transition-colors hover:bg-white-100/70 hover:text-primary-brown cursor-pointer ${
-            liked === false ? "text-primary-brown bg-primary-bleach/30" : ""
-          }`}
-        >
-          <ThumbsDown size={14} />
-        </button>
-      </div>
+      {/* 2. Retry / Regenerate whole message again */}
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onRefresh}
+        aria-label="Retry response"
+        title="Retry whole message"
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-[#7C5F42] hover:bg-black/5 hover:text-[#342511] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+      >
+        <RotateCw size={16} className={disabled ? "animate-spin" : ""} />
+      </button>
 
-      {/* Still need help */}
-      {onNeedHelp && (
-        <button
-          type="button"
-          onClick={onNeedHelp}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-white-100 bg-white px-2.5 py-1 text-xs font-medium text-primary-brown transition-colors hover:border-primary-brown/40 cursor-pointer"
-        >
-          <img src={HelpIcon} alt="" className="h-3.5 w-3.5" />
-          <span>Still need help?</span>
-        </button>
-      )}
+      {/* 3. Like (Good response) */}
+      <button
+        type="button"
+        onClick={() => onFeedback?.("like")}
+        aria-label="Good response"
+        title="Good response"
+        className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors cursor-pointer ${
+          isLiked
+            ? "bg-[#342511] text-white shadow-2xs"
+            : "text-[#7C5F42] hover:bg-black/5 hover:text-[#342511]"
+        }`}
+      >
+        <ThumbsUp size={16} fill={isLiked ? "currentColor" : "none"} />
+      </button>
+
+      {/* 4. Dislike (Bad response) */}
+      <button
+        type="button"
+        onClick={() => onFeedback?.("dislike")}
+        aria-label="Bad response"
+        title="Bad response"
+        className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors cursor-pointer ${
+          isDisliked
+            ? "bg-[#342511] text-white shadow-2xs"
+            : "text-[#7C5F42] hover:bg-black/5 hover:text-[#342511]"
+        }`}
+      >
+        <ThumbsDown size={16} fill={isDisliked ? "currentColor" : "none"} />
+      </button>
     </div>
   );
 }

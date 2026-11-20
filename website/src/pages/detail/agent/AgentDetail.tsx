@@ -158,7 +158,7 @@ export const AgentDetail = () => {
 
   return (
     <div className="min-h-screen  font-helvetica md:pt-20">
-      <main className="flex-1 w-full max-w-[1374px] mx-auto sm:px-8 lg:px-20 pb-12 md:py-6">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto sm:px-8 lg:px-20 pb-12 md:py-6">
         {/* Breadcrumb */}
         <Breadcrumb
           items={[

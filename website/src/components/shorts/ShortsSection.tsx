@@ -35,7 +35,7 @@ export default function ShortsSection({
 
   return (
     <section className={`font-helvetica ${pwa ? "pt-2" : "w-full py-4"}`}>
-      <div className={pwa ? "space-y-3.5" : "mx-auto w-full max-w-[1374px] px-4 md:px-8 xl:px-14"}>
+      <div className={pwa ? "space-y-3.5" : "mx-auto w-full max-w-[1400px] px-4 md:px-8 xl:px-14"}>
         {/* Header */}
         <div className={`flex justify-between ${pwa ? "items-center" : "mb-6 md:mb-8 flex-col md:flex-row md:items-end gap-4"}`}>
           <div className="flex flex-col gap-1">

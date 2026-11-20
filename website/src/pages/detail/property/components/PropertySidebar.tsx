@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { SafeImage } from "../../../../components/custom/SafeImage";
 import AgentAvatar from "../../../../assets/agent/agent_avatar.png";
-import BusinessPlaceholder from "../../../../assets/place holder/bussinessholder.svg";
+// import BusinessPlaceholder from "../../../../assets/place holder/bussinessholder.svg";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import ExistingAuctionSidebar from "./AuctionSidebar";
 
@@ -130,9 +130,9 @@ export const PropertySidebar = ({
   const displayReviews = reviewsCount && reviewsCount > 0 ? reviewsCount : 123;
 
   // Resolving Agency details with Figma defaults
-  const agencyTitle = organizationName || "Sunrise Property Group";
-  const agencyTag = organizationCategory || "Property Management";
-  const agencyLogoSrc = organizationLogo || BusinessPlaceholder;
+  // const agencyTitle = organizationName || "Sunrise Property Group";
+  // const agencyTag = organizationCategory || "Property Management";
+  // const agencyLogoSrc = organizationLogo || BusinessPlaceholder;
 
   const handleCall = () => {
     if (agentPhone) {
@@ -222,7 +222,7 @@ export const PropertySidebar = ({
       </div>
 
       {/* ─── 2. LISTED BY AGENCY ────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 w-full">
+      {/* <div className="flex flex-col gap-2 w-full">
         <span className="text-[0.875rem] font-bold uppercase tracking-wider text-primary-brown px-1">
           Listed by Agency
         </span>
@@ -254,7 +254,7 @@ export const PropertySidebar = ({
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ─── 3. INSPECTION TIME ─────────────────────────────────────────── */}
       <div className="flex flex-col gap-2 w-full">
@@ -280,12 +280,12 @@ export const PropertySidebar = ({
           <button
             type="button"
             onClick={onEnquiry}
-            className="w-full p-4 flex items-center justify-between text-left hover:bg-white-50 transition cursor-pointer"
+            className="w-full p-4 flex items-center justify-between text-left bg-primary-brown transition cursor-pointer"
           >
-            <span className="text-[0.875rem] font-medium text-primary-brown">
+            <span className="text-[0.875rem] font-medium text-white">
               View Inspection Time
             </span>
-            <ChevronRight size={16} className="text-primary-brown" />
+            <ChevronRight size={16} className="text-white" />
           </button>
         </div>
       </div>
