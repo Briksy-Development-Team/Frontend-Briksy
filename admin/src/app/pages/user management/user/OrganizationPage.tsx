@@ -82,10 +82,17 @@ const OrganizationPage = ({
         </Content>
     );
 
+    const isTradesProfessional = typeSlugs?.includes("trades-professionals") || businessTypes?.includes("solo_trader");
+    const entityName = isTradesProfessional ? "professionals" : typeSlugs?.includes("builders") ? "builders" : "agencies";
+
     return (
         <Content>
-            <PageHeader title={resolvedTitle} subtitle={resolvedSubtitle} />
             <EntityList
+                title={resolvedTitle}
+                subtitle={resolvedSubtitle}
+                breadcrumbs={["Organisations", "Agents", resolvedTitle]}
+                entityName={entityName}
+                profileType={isTradesProfessional ? "avatar" : "duo"}
                 data={data}
                 total={total}
                 params={params}
