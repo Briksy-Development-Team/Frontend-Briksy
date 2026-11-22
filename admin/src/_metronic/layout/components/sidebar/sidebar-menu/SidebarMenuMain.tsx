@@ -11,6 +11,107 @@ import { SidebarMenuItem } from "./SidebarMenuItem";
 import { getRolePortalBaseRoute } from "../../../../../app/modules/auth/core/roleRoutes";
 import axiosInstance from "../../../../../app/services/api/axiosInstance";
 
+type MarketplaceLink = { title: string; to: string };
+type MarketplaceCategory = { title: string; icon: string; children: MarketplaceLink[] };
+
+const buildMarketplaceMenu = ({
+  portalBase,
+  agentTypes,
+  canViewProperties,
+  canViewCompanies,
+  canViewServices,
+  canViewBuilderProjects,
+}: {
+  portalBase: string;
+  agentTypes: Array<{ slug: string; label?: string; name: string }>;
+  canViewProperties: boolean;
+  canViewCompanies: boolean;
+  canViewServices: boolean;
+  canViewBuilderProjects: boolean;
+}): MarketplaceCategory[] => {
+  const org = (slug: string) => `${portalBase}/companies/organization/${slug}`;
+  const categories: MarketplaceCategory[] = [];
+
+  if (canViewProperties) {
+    categories.push({
+      title: "Property Management",
+      icon: "/media/icons/duotune/iconsnew/prom.svg",
+      children: [
+        { title: "Properties", to: `${portalBase}/property-management` },
+        { title: "Property Approvals", to: `${portalBase}/property-management?approvals=1` },
+        { title: "Property Map", to: `${portalBase}/property-map` },
+        { title: "Property Amenities", to: `${portalBase}/property-amenities` },
+        ...(canViewCompanies ? [{ title: "Real Estate Agencies", to: org("real-estate") }] : []),
+      ],
+    });
+  }
+
+  if (canViewCompanies) {
+    const agentLinks: MarketplaceLink[] = [
+      { title: "Buyer Agents", to: org("buyers-agent") },
+      { title: "Real Estate Agents", to: org("real-estate-agent") },
+      ...agentTypes
+        .filter((type) => !["buyers-agent", "real-estate-agent"].includes(type.slug))
+        .map((type) => ({ title: type.label || type.name, to: org(type.slug) })),
+    ];
+    categories.push({
+      title: "Agents",
+      icon: "/media/icons/duotune/iconsnew/org.svg",
+      children: agentLinks,
+    });
+  }
+
+  if (canViewCompanies || canViewBuilderProjects) {
+    const children: MarketplaceLink[] = [];
+    if (canViewCompanies) {
+      children.push(
+        { title: "Builders", to: org("builders") },
+        { title: "Trades & Professionals", to: org("trades-professionals") },
+      );
+    }
+    if (canViewBuilderProjects) {
+      children.push({ title: "Builder Projects", to: `${portalBase}/builder-projects` });
+    }
+    categories.push({
+      title: "Builders & Projects",
+      icon: "/media/icons/duotune/iconsnew/builder.svg",
+      children,
+    });
+  }
+
+  if (canViewServices) {
+    categories.push({
+      title: "Services Management",
+      icon: "/media/icons/duotune/iconsnew/service.svg",
+      children: [
+        { title: "Services", to: `${portalBase}/services` },
+        { title: "Service Categories", to: `${portalBase}/service-categories` },
+      ],
+    });
+  }
+
+  if (canViewProperties) {
+    categories.push({
+      title: "Enquiries Management",
+      icon: "/media/icons/duotune/iconsnew/proe.svg",
+      children: [
+        { title: "Property Enquiries", to: `${portalBase}/inquiry` },
+        { title: "Auction Enquiries", to: `${portalBase}/auction-inquiries` },
+      ],
+    });
+  }
+
+  if (canViewServices) {
+    categories.push({
+      title: "Marketplace Configuration",
+      icon: "/media/icons/duotune/iconsnew/setting.svg",
+      children: [{ title: "Agent Types", to: `${portalBase}/agent-types` }],
+    });
+  }
+
+  return categories;
+};
+
 
 
 const SidebarMenuMain = () => {
@@ -24,6 +125,16 @@ const SidebarMenuMain = () => {
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : isAdmin ? ["admin"] : [],
   );
+  const marketplaceMenu = isSuperAdmin
+    ? buildMarketplaceMenu({
+        portalBase,
+        agentTypes,
+        canViewProperties: hasPermission("property.view"),
+        canViewCompanies: hasPermission("company.view"),
+        canViewServices: hasModule("service_management") && hasPermission("service.view"),
+        canViewBuilderProjects: hasModule("builder_management") && hasPermission("project.view"),
+      })
+    : [];
 
   useEffect(() => {
     if (!isSuperAdmin) return;
@@ -43,253 +154,89 @@ const SidebarMenuMain = () => {
         />
       )}
 
-      {isSuperAdmin && hasPermission("user.view") && (
-        <>
-          <SidebarMenuItemWithSub
-            to={`${portalBase}/users`}
-            title="User Management"
-            fontIcon="bi-archive"
-            icon="/media/icons/duotune/iconsnew/user.svg"
-            activePaths={[`${portalBase}/endusers`]}
-          >
-            <SidebarMenuItem
-              to={`${portalBase}/endusers`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
-              title="End Users"
-              fontIcon="bi-layers"
-            />
-          </SidebarMenuItemWithSub>
-
-          <SidebarMenuItemWithSub
-            to={`${portalBase}/superadmin-staff-menu`}
-            title="Superadmin Staff"
-            fontIcon="bi-shield-check"
-            icon="/media/icons/duotune/iconsnew/superstaff.svg"
-            activePaths={[`${portalBase}/staff`]}
-          >
-            <SidebarMenuItem
-              to={`${portalBase}/staff`}
-              icon="/media/icons/duotune/iconsnew/arrowside.svg"
-              title="Platform Staff"
-              fontIcon="bi-layers"
-            />
-          </SidebarMenuItemWithSub>
-        </>
-      )}
-
-      {isSuperAdmin && hasPermission("company.view") && (
-        <SidebarMenuItemWithSub
-          to={`${portalBase}/companies`}
-          title="Organisations"
-          fontIcon="bi-archive"
-          icon="/media/icons/duotune/iconsnew/org.svg"
-          activePaths={[
-            ...agentTypes.map((type) => `${portalBase}/companies/organization/${type.slug}`),
-            `${portalBase}/companies/organization/real-estate`,
-            `${portalBase}/companies/organization/builders`,
-            `${portalBase}/companies/organization/trades-professionals`,
-          ]}
-        >
-          <SidebarMenuItemWithSub
-            to={`${portalBase}/companies/organization/${agentTypes[0]?.slug ?? "buyers-agent"}`}
-            title="Agents"
-            fontIcon="bi-layers"
-            activePaths={agentTypes.map((type) => `${portalBase}/companies/organization/${type.slug}`)}
-          >
-            {agentTypes.map((type) => <SidebarMenuItem key={type.slug} to={`${portalBase}/companies/organization/${type.slug}`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title={type.label || type.name} fontIcon="bi-layers" />)}
-          </SidebarMenuItemWithSub>
-          <SidebarMenuItem
-            to={`${portalBase}/companies/organization/real-estate`}
-            icon="/media/icons/duotune/iconsnew/arrowside.svg"
-            title="Real Estate"
-            fontIcon="bi-layers"
-          />
-          <SidebarMenuItem
-            to={`${portalBase}/companies/organization/builders`}
-            icon="/media/icons/duotune/iconsnew/arrowside.svg"
-            title="Builders"
-            fontIcon="bi-layers"
-          />
-          <SidebarMenuItem
-            to={`${portalBase}/companies/organization/trades-professionals`}
-            icon="/media/icons/duotune/iconsnew/arrowside.svg"
-
-            title="Trades & Professionals"
-            fontIcon="bi-layers"
-          />
-        </SidebarMenuItemWithSub>
-      )}
-
       {isSuperAdmin && (
         <>
-          {(hasPermission("addon.view") ||
-            hasPermission("plan.view") ||
-            hasPermission("subscription.view")) && (
-              <SidebarMenuItemWithSub
-                to={`${portalBase}/addons`}
-                title="Billing & IDs"
-                fontIcon="bi-archive"
-                icon="/media/icons/duotune/iconsnew/bill.svg"
-                activePaths={[
-                  `${portalBase}/addons`,
-                  `${portalBase}/plans`,
-                  `${portalBase}/invoices`,
-                  `${portalBase}/subscriptions`,
-                ]}
-              >
-                {hasPermission("addon.view") && (
-                  <SidebarMenuItem
-                    to={`${portalBase}/addons`}
-                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
-                    title="Add-ons"
-                    fontIcon="bi-layers"
-                  />
-                )}
-
-                {hasPermission("plan.view") && (
-                  <SidebarMenuItem
-                    to={`${portalBase}/plans`}
-                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
-                    title="Plans"
-                    fontIcon="bi-layers"
-                  />
-                )}
-
-                {hasPermission("subscription.view") && (
-                  <SidebarMenuItem
-                    to={`${portalBase}/subscriptions`}
-                    icon="/media/icons/duotune/iconsnew/arrowside.svg"
-                    title="Subscriptions"
-                    fontIcon="bi-layers"
-                  />
-                )}
-
-                <SidebarMenuItem
-                  to={`${portalBase}/invoices`}
-                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
-                  title="Invoices"
-                  fontIcon="bi-layers"
-                />
-              </SidebarMenuItemWithSub>
-            )}
-
-          {isSuperAdmin && (
-            <SidebarMenuItem
-              to={`${portalBase}/property-map`}
-              title="Property Map"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/maps/map002.svg"
-            />
-          )}
-
-          {(hasPermission("email_template.view") || hasPermission("activity_logs.view")) && (
+          {marketplaceMenu.length > 0 && (
             <SidebarMenuItemWithSub
-              to={`${portalBase}/email-templates`}
-              title="Communications"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/com.svg"
-              activePaths={[`${portalBase}/activity-logs`]}
+              to={`${portalBase}/property-management`}
+              title="Marketplace Management"
+              fontIcon="bi-shop"
+              icon="/media/icons/duotune/iconsnew/prom.svg"
+              activePaths={marketplaceMenu.flatMap((category) => category.children.map((item) => item.to))}
             >
-              {hasPermission("email_template.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/email-templates`}
-                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
-
-                  title="Email Templates"
-                  fontIcon="bi-layers"
-                />
-              )}
-
-              {hasPermission("activity_logs.view") && (
-                <SidebarMenuItem
-                  to={`${portalBase}/activity-logs`}
-                  icon="/media/icons/duotune/iconsnew/arrowside.svg"
-                  title="Activity Logs"
-                  fontIcon="bi-layers"
-                />
-              )}
+              {marketplaceMenu.map((category) => (
+                <SidebarMenuItemWithSub
+                  key={category.title}
+                  to={category.children[0].to}
+                  title={category.title}
+                  icon={category.icon}
+                  activePaths={category.children.map((item) => item.to)}
+                >
+                  {category.children.map((item) => (
+                    <SidebarMenuItem
+                      key={`${item.title}:${item.to}`}
+                      to={item.to}
+                      icon="/media/icons/duotune/iconsnew/arrowside.svg"
+                      title={item.title}
+                      fontIcon="bi-layers"
+                      activeSearchParams={item.title === "Property Approvals" ? { approvals: "1" } : undefined}
+                      excludeSearchParams={item.title === "Properties" ? { approvals: "1" } : undefined}
+                    />
+                  ))}
+                </SidebarMenuItemWithSub>
+              ))}
             </SidebarMenuItemWithSub>
           )}
 
-          {hasPermission("plan_request.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/plan-requests`}
-              title="Plan Requests"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/plan.svg"
-            />
+          {(hasPermission("user.view") || hasPermission("company.view")) && (
+            <SidebarMenuItemWithSub to={`${portalBase}/endusers`} title="User Management" fontIcon="bi-people" icon="/media/icons/duotune/iconsnew/user.svg" activePaths={[`${portalBase}/staff`, `${portalBase}/companies`]}>
+              {hasPermission("user.view") && <>
+                <SidebarMenuItem to={`${portalBase}/endusers`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="End Users" fontIcon="bi-layers" />
+                <SidebarMenuItem to={`${portalBase}/staff`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Platform Staff" fontIcon="bi-layers" />
+              </>}
+              {hasPermission("company.view") && <SidebarMenuItem to={`${portalBase}/companies`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Organisations" fontIcon="bi-layers" />}
+            </SidebarMenuItemWithSub>
           )}
 
-          {isSuperAdmin && hasPermission("plan.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/pricing-inquiries`}
-              title="Pricing Inquiries"
-              fontIcon="bi-chat-left-text"
-              icon="/media/icons/duotune/iconsnew/inquiry.svg"
-            />
-          )}
-
-          {hasPermission("referral.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/referral-programs`}
-              title="Referral Programs"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/ref.svg"
-            />
-          )}
-
-          {hasPermission("coupon.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/coupons`}
-              title="Coupons"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/coupon.svg"
-            />
-          )}
-
-          {hasModule("service_management") && hasPermission("service.view") && (
-            <>
-              <SidebarMenuItem
-                to={`${portalBase}/services`}
-                title="Services Management"
-                fontIcon="bi-archive"
-                icon="/media/icons/duotune/iconsnew/service.svg"
-              />
-              {isSuperAdmin && (
-                <SidebarMenuItem
-                  to={`${portalBase}/service-categories`}
-                  title="Service Categories"
-                  fontIcon="bi-tags"
-                  icon="/media/icons/duotune/iconsnew/service.svg"
-                />
-              )}
-              {isSuperAdmin && (
-                <SidebarMenuItem
-                  to={`${portalBase}/agent-types`}
-                  title="Agent Types"
-                  fontIcon="bi-tags"
-                  icon="/media/icons/duotune/iconsnew/service.svg"
-                />
-              )}
-              {promoOffersEnabled && (
-                <SidebarMenuItem
-                  to={`${portalBase}/service-offers`}
-                  title="Service Offers"
-                  fontIcon="bi-archive"
-                  icon="/media/icons/duotune/iconsnew/proo.svg"
-                />
-              )}
-            </>
+          {(hasPermission("addon.view") || hasPermission("plan.view") || hasPermission("subscription.view") || hasPermission("plan_request.view") || hasPermission("coupon.view") || hasPermission("referral.view") || hasPermission("order.view")) && (
+            <SidebarMenuItemWithSub to={`${portalBase}/plans`} title="Billing & Commercial" fontIcon="bi-credit-card" icon="/media/icons/duotune/iconsnew/bill.svg" activePaths={[`${portalBase}/addons`, `${portalBase}/subscriptions`, `${portalBase}/invoices`, `${portalBase}/orders`, `${portalBase}/plan-requests`, `${portalBase}/pricing-inquiries`, `${portalBase}/coupons`, `${portalBase}/referral-programs`, `${portalBase}/property-offers`, `${portalBase}/service-offers`]}>
+              {hasPermission("addon.view") && <SidebarMenuItem to={`${portalBase}/addons`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Add-ons" fontIcon="bi-layers" />}
+              {hasPermission("plan.view") && <>
+                <SidebarMenuItem to={`${portalBase}/plans`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Plans" fontIcon="bi-layers" />
+                <SidebarMenuItem to={`${portalBase}/pricing-inquiries`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Pricing Inquiries" fontIcon="bi-layers" />
+              </>}
+              {hasPermission("subscription.view") && <SidebarMenuItem to={`${portalBase}/subscriptions`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Subscriptions" fontIcon="bi-layers" />}
+              <SidebarMenuItem to={`${portalBase}/invoices`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Invoices" fontIcon="bi-layers" />
+              {hasPermission("order.view") && <SidebarMenuItem to={`${portalBase}/orders`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Orders" fontIcon="bi-layers" />}
+              {hasPermission("plan_request.view") && <SidebarMenuItem to={`${portalBase}/plan-requests`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Plan Requests" fontIcon="bi-layers" />}
+              {hasPermission("coupon.view") && <SidebarMenuItem to={`${portalBase}/coupons`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Coupons" fontIcon="bi-layers" />}
+              {hasPermission("referral.view") && <SidebarMenuItem to={`${portalBase}/referral-programs`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Referral Programs" fontIcon="bi-layers" />}
+              <SidebarMenuItem to={`${portalBase}/property-offers`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Property Offers" fontIcon="bi-layers" />
+              <SidebarMenuItem to={`${portalBase}/service-offers`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Service Offers" fontIcon="bi-layers" />
+            </SidebarMenuItemWithSub>
           )}
 
           {hasPermission("permission.view") && (
-            <SidebarMenuItem
-              to={`${portalBase}/permissions`}
-              title="Permissions"
-              fontIcon="bi-archive"
-              icon="/media/icons/duotune/iconsnew/permission.svg"
-            />
+            <SidebarMenuItemWithSub to={`${portalBase}/permissions`} title="Trust & Compliance" fontIcon="bi-shield-check" icon="/media/icons/duotune/iconsnew/permission.svg">
+              {hasPermission("permission.view") && <SidebarMenuItem to={`${portalBase}/permissions`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Permissions" fontIcon="bi-layers" />}
+            </SidebarMenuItemWithSub>
           )}
+
+          {(hasPermission("email_template.view") || hasPermission("settings.view")) && (
+            <SidebarMenuItemWithSub to={`${portalBase}/email-templates`} title="Communications" fontIcon="bi-envelope" icon="/media/icons/duotune/iconsnew/com.svg" activePaths={[`${portalBase}/notifications`]}>
+              {hasPermission("email_template.view") && <SidebarMenuItem to={`${portalBase}/email-templates`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Email Templates" fontIcon="bi-layers" />}
+              {hasPermission("settings.view") && <SidebarMenuItem to={`${portalBase}/notifications`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Notifications" fontIcon="bi-layers" />}
+            </SidebarMenuItemWithSub>
+          )}
+
+          {hasPermission("activity_logs.view") && <SidebarMenuItemWithSub to={`${portalBase}/activity-logs`} title="Reports & Analytics" fontIcon="bi-graph-up" icon="/media/icons/duotune/iconsnew/act.svg">
+            <SidebarMenuItem to={`${portalBase}/activity-logs`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Activity Logs" fontIcon="bi-layers" />
+          </SidebarMenuItemWithSub>}
+
+          {hasPermission("settings.view") && <SidebarMenuItemWithSub to={`${portalBase}/settings`} title="Settings" fontIcon="bi-gear" icon="/media/icons/duotune/iconsnew/setting.svg" activePaths={[`${portalBase}/dynamic-id-settings`]}>
+            <SidebarMenuItem to={`${portalBase}/settings`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Platform Settings" fontIcon="bi-layers" />
+            <SidebarMenuItem to={`${portalBase}/dynamic-id-settings`} icon="/media/icons/duotune/iconsnew/arrowside.svg" title="Dynamic ID Settings" fontIcon="bi-layers" />
+          </SidebarMenuItemWithSub>}
         </>
       )}
 

@@ -4,7 +4,7 @@ import type { QueryParams } from "../entity-list/EntityList";
 
 type FetchFn = (params: QueryParams) => void;
 
-export const useEntityTable = (fetchFn: FetchFn, initialParams?: Partial<QueryParams>) => {
+export const useEntityTable = (fetchFn: FetchFn, initialParams?: Partial<QueryParams>, fetchKey?: unknown) => {
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 200);
 
@@ -24,7 +24,7 @@ export const useEntityTable = (fetchFn: FetchFn, initialParams?: Partial<QueryPa
 
   useEffect(() => {
     fetchFn(params);
-  }, [params]);
+  }, [params, fetchKey]);
 
   const handleParamsChange = (next: QueryParams) => {
     if (next.search !== params.search) {

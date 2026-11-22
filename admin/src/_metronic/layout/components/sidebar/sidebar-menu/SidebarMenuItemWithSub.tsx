@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import clsx from 'clsx'
 import {useLocation} from 'react-router'
 import {checkIsActive, KTIcon, KTSVG, WithChildren} from '../../../../helpers'
@@ -23,16 +23,25 @@ const SidebarMenuItemWithSub: React.FC<Props & WithChildren> = ({
   activePaths,
 }) => {
   const {pathname} = useLocation()
-  const isActive = [to, ...(activePaths ?? [])].some((path) => checkIsActive(pathname, path))
+  const isActive = [to, ...(activePaths ?? [])].some((path) => checkIsActive(pathname, path.split(/[?#]/)[0]))
+  const [isOpen, setIsOpen] = useState(isActive)
+  useEffect(() => {
+    if (isActive) setIsOpen(true)
+  }, [isActive])
   const {config} = useLayout()
   const {app} = config
 
   return (
     <div
-      className={clsx('menu-item', {'here show': isActive}, 'menu-accordion')}
-      data-kt-menu-trigger='click'
+      className={clsx('menu-item', {here: isActive, show: isOpen}, 'menu-accordion')}
     >
-      <span className='menu-link'>
+      <button
+        type='button'
+        className='menu-link border-0 w-100 text-start bg-transparent'
+        aria-expanded={isOpen}
+        style={{appearance: 'none'}}
+        onClick={() => setIsOpen((open) => !open)}
+      >
         {hasBullet && (
           <span className='menu-bullet'>
             <span className='bullet bullet-dot'></span>
@@ -52,8 +61,8 @@ const SidebarMenuItemWithSub: React.FC<Props & WithChildren> = ({
         )}
         <span className='menu-title'>{title}</span>
         <span className='menu-arrow'></span>
-      </span>
-      <div className={clsx('menu-sub menu-sub-accordion', {'menu-active-bg': isActive})}>
+      </button>
+      <div className={clsx('menu-sub menu-sub-accordion', {'menu-active-bg': isOpen})}>
         {children}
       </div>
     </div>

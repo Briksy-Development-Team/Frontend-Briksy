@@ -37,6 +37,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   const dispatch = useDispatch<AppDispatch>();
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
+  const isApprovalListing = searchParams.get("approvals") === "1";
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [mapProperties, setMapProperties] = useState<PropertyList[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
@@ -77,7 +78,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
         return;
       }
 
-      void dispatch(fetchPropertyList(params));
+      void dispatch(fetchPropertyList(listParams));
     },
   });
 
@@ -115,9 +116,21 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
   }, [dispatch, searchParams, setSearchParams]);
 
   const { params, handleParamsChange } = useEntityTable(
-    (p) => dispatch(fetchPropertyList(p)),
+    (p) => dispatch(fetchPropertyList(isApprovalListing
+      ? { ...p, filters: { ...p.filters, status: "Pending Review" } }
+      : p)),
     { sort: "created_at", direction: "desc" },
+    isApprovalListing,
   );
+  const listParams = useMemo(
+    () => isApprovalListing
+      ? { ...params, filters: { ...params.filters, status: "Pending Review" } }
+      : params,
+    [isApprovalListing, params],
+  );
+  const listFilters = isApprovalListing
+    ? propertyListConfig.filters.filter((filter) => filter.key !== "status")
+    : propertyListConfig.filters;
 
   useEffect(() => {
     if (viewMode !== "map") {
@@ -129,7 +142,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     setMapError(null);
 
     fetchPropertyMapApi({
-      ...params,
+      ...listParams,
       search: mapFilters.search || params.search,
       filters: {
         ...(params.filters ?? {}),
@@ -163,7 +176,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     return () => {
       active = false;
     };
-  }, [mapFilters, params, viewMode]);
+  }, [isApprovalListing, listParams, mapFilters, params, viewMode]);
 
   const mappedCount = useMemo(
     () => mapProperties.filter((property) => typeof property.latitude === "number" && typeof property.longitude === "number").length,
@@ -210,16 +223,8 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
     return (
       <Content>
         <PageHeader
-          title={
-            isSuperAdmin
-              ? "Property Management - At a Glance"
-              : "Property Management"
-          }
-          subtitle={
-            isSuperAdmin
-              ? "All properties across companies"
-              : "Manage properties for your company"
-          }
+          title={isApprovalListing ? "Property Approvals" : isSuperAdmin ? "Property Management - At a Glance" : "Property Management"}
+          subtitle={isApprovalListing ? "Properties submitted for approval" : isSuperAdmin ? "All properties across companies" : "Manage properties for your company"}
         />
         <div className="text-danger">{error}</div>
       </Content>
@@ -233,16 +238,8 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           element={
             <Content>
               <PageHeader
-                title={
-                  isSuperAdmin
-                    ? "Property Management - At a Glance"
-                    : "Property Management"
-                }
-                subtitle={
-                  isSuperAdmin
-                    ? "All properties across companies"
-                    : "Manage properties for your company"
-                }
+                title={isApprovalListing ? "Property Approvals" : isSuperAdmin ? "Property Management - At a Glance" : "Property Management"}
+                subtitle={isApprovalListing ? "Properties submitted for approval" : isSuperAdmin ? "All properties across companies" : "Manage properties for your company"}
               />
               {loading && <div className="alert alert-light py-2">Loading properties...</div>}
 
@@ -269,10 +266,10 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
                 <EntityList
                   data={data}
                   total={total}
-                  params={params}
+                  params={listParams}
                   onParamsChange={handleParamsChange}
                   columns={propertyListConfig.columns}
-                  filtersConfig={propertyListConfig.filters}
+                  filtersConfig={listFilters}
                   getRowLink={(row) => `${portalBase}/property-management/${resolvePropertyId(row)}`}
                   enableRowClick
                   headerActions={headerActions}
@@ -390,7 +387,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
               ).unwrap();
               setSavedProperty(saved);
 
-              dispatch(fetchPropertyList(params));
+              dispatch(fetchPropertyList(listParams));
               toast.success(editingProperty ? "Property updated." : "Property created.");
             } catch (error: any) {
               const apiError = error?.payload ?? error?.response?.data;
@@ -417,7 +414,7 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
         <PropertyImportModal
           onClose={() => setIsImportModalOpen(false)}
           onCompleted={() => {
-            void dispatch(fetchPropertyList(params));
+            void dispatch(fetchPropertyList(listParams));
           }}
         />
       ) : null}

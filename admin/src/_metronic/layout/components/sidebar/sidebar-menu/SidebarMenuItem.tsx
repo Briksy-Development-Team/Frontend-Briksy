@@ -13,6 +13,8 @@ type Props = {
   hasBullet?: boolean
   exact?: boolean
   excludePaths?: string[]
+  activeSearchParams?: Record<string, string>
+  excludeSearchParams?: Record<string, string>
 }
 
 const SidebarMenuItem: FC<Props & WithChildren> = ({
@@ -24,9 +26,19 @@ const SidebarMenuItem: FC<Props & WithChildren> = ({
   hasBullet = false,
   exact = false,
   excludePaths = [],
+  activeSearchParams,
+  excludeSearchParams,
 }) => {
-  const {pathname} = useLocation()
-  const isActive = checkIsActive(pathname, to, exact, excludePaths)
+  const {pathname, search} = useLocation()
+  const query = new URLSearchParams(search)
+  const matchesSearchParams = (expected?: Record<string, string>) =>
+    !expected || Object.entries(expected).every(([key, value]) => query.get(key) === value)
+  const isExcludedBySearch = Boolean(
+    excludeSearchParams && matchesSearchParams(excludeSearchParams),
+  )
+  const isActive = checkIsActive(pathname, to.split(/[?#]/)[0], exact, excludePaths)
+    && matchesSearchParams(activeSearchParams)
+    && !isExcludedBySearch
   const {config} = useLayout()
   const {app} = config
 
