@@ -1,21 +1,19 @@
 /**
- * AiSidebar.tsx — Lean ChatGPT-style sidebar for Briksy AI.
- * ponytail: Replaced duplicated list loops with shared list renderer and self-contained SessionItem.
+ * AiSidebar.tsx — Exact Figma-matched lean sidebar for Briksy AI.
+ * ponytail: collapses cleanly with zero-width transition matching Figma #4847:24283.
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Check,
+  History,
   MoreHorizontal,
-  PanelLeft,
   PanelLeftClose,
   Pencil,
   Pin,
   PinOff,
   Plus,
-  Search,
-  Sparkles,
-  SquarePen,
+  Share2,
   Trash2,
-  X,
 } from "lucide-react";
 import { getStoredAuth } from "../../auth/auth.storage";
 import type { ChatMessageItem } from "./ChatMessage";
@@ -34,13 +32,31 @@ interface Props {
   activeSessionId: string | null;
   isOpen: boolean;
   onClose: () => void;
-  onOpen?: () => void;
-  onToggle?: () => void;
   onNewChat: () => void;
   onSelectSession: (id: string) => void;
   onTogglePin: (id: string) => void;
   onRenameSession: (id: string, newTitle: string) => void;
   onDeleteSession: (id: string) => void;
+  onRequestDelete?: (session: ChatSession) => void;
+}
+
+function groupSessions(sessions: ChatSession[]) {
+  const startOfToday = new Date().setHours(0, 0, 0, 0);
+  const startOfYesterday = startOfToday - 86400000;
+  const startOf7Days = startOfToday - 7 * 86400000;
+
+  return {
+    today: sessions.filter((s) => (s.updatedAt || s.createdAt) >= startOfToday),
+    yesterday: sessions.filter((s) => {
+      const t = s.updatedAt || s.createdAt;
+      return t >= startOfYesterday && t < startOfToday;
+    }),
+    previous7Days: sessions.filter((s) => {
+      const t = s.updatedAt || s.createdAt;
+      return t >= startOf7Days && t < startOfYesterday;
+    }),
+    older: sessions.filter((s) => (s.updatedAt || s.createdAt) < startOf7Days),
+  };
 }
 
 export default function AiSidebar({
@@ -48,33 +64,21 @@ export default function AiSidebar({
   activeSessionId,
   isOpen,
   onClose,
-  onOpen,
-  onToggle,
   onNewChat,
   onSelectSession,
   onTogglePin,
   onRenameSession,
   onDeleteSession,
+  onRequestDelete,
 }: Props) {
-  const [search, setSearch] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
-
-  const auth = getStoredAuth();
-  const user = auth?.user;
+  const user = getStoredAuth()?.user;
   const userName = user?.name || user?.display_name || "Briksy Seeker";
   const userRole = user?.roles?.[0] || "Seeker";
-  const initials = userName
-    .split(" ")
-    .map((p) => p[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase() || "BS";
+  const initials = (userName.match(/\b\w/g)?.slice(0, 2).join("") || "BS").toUpperCase();
 
-  const q = search.trim().toLowerCase();
-  const list = q ? sessions.filter((s) => s.title.toLowerCase().includes(q)) : sessions;
-  const pinned = list.filter((s) => s.pinned);
-  const recents = list.filter((s) => !s.pinned);
+  const pinned = sessions.filter((s) => s.pinned);
+  const recents = sessions.filter((s) => !s.pinned);
+  const { today, yesterday, previous7Days, older } = groupSessions(recents);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -92,223 +96,116 @@ export default function AiSidebar({
     if (typeof window !== "undefined" && window.innerWidth < 768) onClose();
   };
 
-  const handleExpand = () => {
-    if (onOpen) onOpen();
-    else if (onToggle) onToggle();
-  };
-
-  const renderItems = (items: ChatSession[]) => (
-    <ul className="flex flex-col gap-0.5">
-      {items.map((s) => (
-        <SessionItem
-          key={s.id}
-          session={s}
-          isActive={s.id === activeSessionId}
-          onSelect={() => select(s.id)}
-          onTogglePin={() => onTogglePin(s.id)}
-          onRename={(t) => onRenameSession(s.id, t)}
-          onDelete={() => onDeleteSession(s.id)}
-        />
-      ))}
-    </ul>
-  );
+  const renderGroup = (label: string, items: ChatSession[], icon?: React.ReactNode) =>
+    items.length > 0 && (
+      <div className="flex flex-col gap-0.5">
+        <div className="flex items-center gap-1.5 px-2.5 pt-3 pb-1 text-[12px] font-medium uppercase tracking-[0.1em] text-[#8B6F54]">
+          {icon}
+          <span>{label}</span>
+        </div>
+        <ul className="flex flex-col gap-0.5">
+          {items.map((s) => (
+            <SessionItem
+              key={s.id}
+              session={s}
+              isActive={s.id === activeSessionId}
+              onSelect={() => select(s.id)}
+              onTogglePin={() => onTogglePin(s.id)}
+              onRename={(t) => onRenameSession(s.id, t)}
+              onDelete={() => (onRequestDelete ? onRequestDelete(s) : onDeleteSession(s.id))}
+            />
+          ))}
+        </ul>
+      </div>
+    );
 
   return (
     <>
-      {/* Mobile overlay backdrop */}
       {isOpen && (
-        <div
-          onClick={onClose}
-          className="absolute inset-0 z-20 bg-primary-brown/20 backdrop-blur-xs md:hidden"
-        />
+        <div onClick={onClose} className="absolute inset-0 z-20 bg-[#342511]/25 backdrop-blur-xs md:hidden" />
       )}
 
       <aside
-        className={`z-30 flex flex-col font-helvetica text-primary-brown transition-all duration-300 ease-in-out ${
-          // Mobile: absolute slide-out drawer
-          "absolute inset-y-0 left-0 bg-white-50 shadow-2xl md:shadow-none " +
-          (isOpen ? "translate-x-0 w-72 " : "-translate-x-full pointer-events-none ") +
-          // Desktop: static docked rail or expanded sidebar
-          "md:static md:translate-x-0 md:pointer-events-auto md:border-r md:border-white-100/70 " +
-          (isOpen ? "md:w-72" : "md:w-14")
+        className={`z-30 flex flex-col font-helvetica transition-all duration-300 ease-in-out absolute inset-y-0 left-0 bg-[#F8F4EE] shadow-2xl md:shadow-none md:static md:pointer-events-auto ${
+          isOpen
+            ? "translate-x-0 w-[272px] md:w-[272px] md:border-r md:border-[#EBEBEB] opacity-100"
+            : "-translate-x-full pointer-events-none md:translate-x-0 md:w-0 md:border-0 md:opacity-0 overflow-hidden"
         }`}
       >
-        {/* Expanded View */}
-        <div
-          className={`flex h-full w-72 shrink-0 flex-col bg-white-50 ${
-            isOpen ? "flex" : "hidden"
-          }`}
-        >
-          {/* Sidebar Header */}
-          <div className="flex h-14 shrink-0 items-center justify-between border-b border-white-100/70 px-4">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-brown text-white-50 shadow-xs">
-                <Sparkles size={16} />
-              </div>
-              <span className="text-[15px] font-bold tracking-tight text-primary-brown">Briksy AI</span>
+        <div className="flex h-full w-[272px] shrink-0 flex-col bg-[#F8F4EE]">
+          {/* Brand Row */}
+          <div className="flex h-[60px] shrink-0 items-center justify-between border-b border-[#EBEBEB] px-3.5">
+            <div className="flex items-center gap-2 pl-1">
+              <span className="text-[14px] font-medium leading-5 text-[#342511]">Briksy AI</span>
+              <span className="rounded-full bg-[#E2CBB3] px-2 py-0.5 text-[12px] font-medium leading-[1.5em] text-[#342511]">
+                Beta
+              </span>
             </div>
-
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setShowSearch((p) => !p)}
-                aria-label="Search chats"
-                className={`rounded-lg p-1.5 transition-colors cursor-pointer ${
-                  showSearch ? "bg-primary-bleach/50 text-primary-brown" : "text-primary-brown/75 hover:bg-white-100"
-                }`}
-              >
-                <Search size={18} strokeWidth={1.75} />
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Collapse sidebar"
-                className="rounded-lg p-1.5 text-primary-brown/75 hover:bg-white-100 transition-colors cursor-pointer"
-              >
-                <PanelLeftClose size={18} strokeWidth={1.75} />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Collapse sidebar"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#7C5F42] hover:bg-black/5 transition-colors cursor-pointer"
+            >
+              <PanelLeftClose size={16} strokeWidth={1.75} />
+            </button>
           </div>
 
-          {/* New Chat Button */}
-          <div className="shrink-0 p-4 pb-2">
+          {/* Recents Container */}
+          <div className="flex flex-1 flex-col overflow-hidden p-3 gap-3">
             <button
               type="button"
               onClick={() => {
                 onNewChat();
                 if (typeof window !== "undefined" && window.innerWidth < 768) onClose();
               }}
-              className="flex w-full items-center justify-between rounded-2xl border border-white-100/90 bg-white px-4 py-3.5 text-[14px] text-primary-brown shadow-2xs hover:border-primary-brown/30 hover:shadow-xs transition-all cursor-pointer"
+              className="flex w-full items-center justify-between rounded-xl border border-[#EBEBEB] bg-white p-3 text-[14px] font-medium text-[#342511] shadow-2xs hover:border-[#342511]/30 hover:shadow-xs transition-all cursor-pointer"
             >
-              <span className="flex items-center gap-2.5">
-                <Plus size={18} className="text-primary-brown/80" strokeWidth={1.75} />
-                <span className="font-normal text-primary-brown">New chat</span>
+              <span className="flex items-center gap-2">
+                <Plus size={18} className="text-[#342511]" strokeWidth={1.75} />
+                <span>New chat</span>
               </span>
-              <span className="text-[12px] font-medium text-primary-light-brown/60 tracking-wider">⌘N</span>
+              <span className="text-[12px] font-medium text-[#7C5F42]/60 tracking-wider">⌘N</span>
             </button>
 
-            {showSearch && (
-              <div className="relative mt-2.5">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-light-brown" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search chats…"
-                  className="w-full rounded-xl border border-white-100 bg-white py-2 pl-8 pr-7 text-[12.5px] text-primary-brown outline-none focus:border-primary-brown/40"
-                />
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => setSearch("")}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-primary-light-brown cursor-pointer"
-                  >
-                    <X size={13} />
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Recents list */}
-          <div className="scrollbar-custom flex-1 overflow-y-auto px-3 py-1">
-            {pinned.length > 0 && (
-              <div className="mb-4">
-                <div className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary-light-brown/80">
-                  <Pin size={11} className="rotate-45" />
-                  <span>Pinned</span>
+            <div className="scrollbar-custom flex-1 overflow-y-auto">
+              {sessions.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#EBEBEB] p-5 text-center gap-2 mt-1">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#7C5F42] shadow-2xs">
+                    <History size={18} strokeWidth={1.75} />
+                  </div>
+                  <p className="text-[14px] font-medium text-[#342511]">No chats yet</p>
+                  <p className="text-[12px] leading-relaxed text-[#7C5F42]">
+                    Your conversations will be saved here so you can pick up any search later.
+                  </p>
                 </div>
-                {renderItems(pinned)}
-              </div>
-            )}
-
-            <div>
-              <div className="mt-3 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-primary-light-brown/80">
-                <span>RECENTS</span>
-              </div>
-              {recents.length === 0 && pinned.length === 0 ? (
-                <p className="px-3 py-6 text-center text-[13px] text-primary-light-brown/70 font-normal">
-                  {search ? "No matches found" : "No conversation history yet"}
-                </p>
               ) : (
-                renderItems(recents)
+                <div className="flex flex-col gap-1 pb-2">
+                  {renderGroup("Pinned", pinned, <Pin size={11} className="rotate-45" />)}
+                  {renderGroup("TODAY", today)}
+                  {renderGroup("YESTERDAY", yesterday)}
+                  {renderGroup("PREVIOUS 7 DAYS", previous7Days)}
+                  {renderGroup("OLDER", older)}
+                </div>
               )}
             </div>
           </div>
 
           {/* User profile footer */}
-          <div className="shrink-0 border-t border-white-100/70 p-3">
-            <div className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-white-100/60">
+          <div className="shrink-0 border-t border-[#EBEBEB] p-3">
+            <div className="flex items-center gap-2.5 p-1 rounded-xl transition-colors hover:bg-white/60">
               {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={userName} className="h-9 w-9 rounded-full object-cover border border-white-100" />
+                <img src={user.avatar_url} alt={userName} className="h-9 w-9 rounded-full object-cover border border-[#EBEBEB]" />
               ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-brown text-[12.5px] font-semibold text-white-50">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#342511] text-[13px] font-medium text-white shadow-2xs">
                   {initials}
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-semibold text-primary-brown">{userName}</p>
-                <p className="truncate text-[11.5px] capitalize text-primary-light-brown">{userRole}</p>
+                <p className="truncate text-[14px] font-medium text-[#342511]">{userName}</p>
+                <p className="truncate text-[12px] text-[#7C5F42]">{userRole} · Australia</p>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Collapsed Rail (Visible on desktop when !isOpen: side, newchat, profile) */}
-        <div
-          className={`h-full w-14 shrink-0 flex-col items-center justify-between bg-white-50 ${
-            !isOpen ? "hidden md:flex" : "hidden"
-          }`}
-        >
-          {/* Top: AI icon by default, turns into sidebar toggle bar icon on hover */}
-          <div className="flex h-14 w-full shrink-0 items-center justify-center border-b border-white-100/70">
-            <button
-              type="button"
-              onClick={handleExpand}
-              title="Expand sidebar"
-              aria-label="Expand sidebar"
-              className="group flex h-9 w-9 items-center justify-center rounded-xl hover:bg-white-100 transition-colors cursor-pointer"
-            >
-              {/* AI Sparkles icon (visible by default, hidden on hover) */}
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary-brown text-white-50 shadow-xs group-hover:hidden transition-all">
-                <Sparkles size={15} />
-              </div>
-
-              {/* Bar icon (hidden by default, appears on hover) */}
-              <div className="hidden group-hover:flex items-center justify-center text-primary-brown transition-all">
-                <PanelLeft size={19} strokeWidth={1.75} />
-              </div>
-            </button>
-          </div>
-
-          {/* New Chat Button */}
-          <div className="flex flex-1 flex-col items-center p-2.5">
-            <button
-              type="button"
-              onClick={onNewChat}
-              title="New chat (⌘N)"
-              aria-label="New chat"
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-primary-brown/80 hover:bg-white-100 hover:text-primary-brown transition-colors cursor-pointer"
-            >
-              <SquarePen size={18} strokeWidth={1.75} />
-            </button>
-          </div>
-
-          {/* Bottom: Profile Avatar */}
-          <div className="flex w-full shrink-0 items-center justify-center border-t border-white-100/70 p-2.5">
-            <button
-              type="button"
-              onClick={handleExpand}
-              title={userName}
-              aria-label={userName}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white-100 overflow-hidden bg-primary-brown text-[11.5px] font-semibold text-white-50 cursor-pointer hover:ring-2 hover:ring-primary-bleach"
-            >
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={userName} className="h-full w-full object-cover" />
-              ) : (
-                initials
-              )}
-            </button>
           </div>
         </div>
       </aside>
@@ -334,34 +231,60 @@ function SessionItem({
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(session.title);
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, [menuOpen]);
+  const [copiedShare, setCopiedShare] = useState(false);
 
   const saveRename = () => {
-    if (title.trim()) onRename(title.trim());
+    const trimmed = title.trim();
+    if (trimmed && trimmed !== session.title) onRename(trimmed);
     setEditing(false);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}${window.location.pathname}?chat=${session.id}`;
+    navigator.clipboard?.writeText(url);
+    setCopiedShare(true);
+    setTimeout(() => {
+      setCopiedShare(false);
+      setMenuOpen(false);
+    }, 800);
   };
 
   if (editing) {
     return (
-      <li className="px-2 py-1">
-        <form onSubmit={(e) => { e.preventDefault(); saveRename(); }}>
+      <li className="relative px-1 py-0.5">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveRename();
+          }}
+          className="flex w-full items-center justify-between gap-1.5 rounded-lg border-[1.5px] border-[#E05A38] bg-white px-2.5 py-1.5 shadow-2xs"
+        >
           <input
             autoFocus
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setEditing(false);
+                setTitle(session.title);
+              }
+            }}
             onBlur={saveRename}
-            className="w-full rounded-md border border-primary-brown/40 bg-white px-2 py-1 text-[13px] outline-none"
+            className="w-full min-w-0 bg-transparent text-[14px] leading-5 text-[#342511] outline-none"
           />
+          <button
+            type="submit"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              saveRename();
+            }}
+            aria-label="Confirm rename"
+            className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[8px] bg-[#E2CBB3]/40 hover:bg-[#E2CBB3] text-[#342511] transition-colors cursor-pointer"
+          >
+            <Check size={14} strokeWidth={2.5} />
+          </button>
         </form>
       </li>
     );
@@ -372,15 +295,18 @@ function SessionItem({
       <button
         type="button"
         onClick={onSelect}
-        className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors cursor-pointer ${
-          isActive ? "bg-primary-bleach/45 font-medium text-primary-brown" : "text-primary-brown/85 hover:bg-white-100/60"
+        className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-[14px] leading-5 tracking-[0.03em] transition-colors cursor-pointer hover:bg-[#E2CBB3]/45 ${
+          isActive || menuOpen ? "bg-[#E2CBB3]/45 font-medium text-[#342511]" : "text-[#342511]"
         }`}
       >
-        <span className="truncate pr-5">{session.title}</span>
+        <span className="truncate pr-2">{session.title}</span>
         <span
-          onClick={(e) => { e.stopPropagation(); setMenuOpen((p) => !p); }}
-          className={`shrink-0 rounded p-1 transition-opacity cursor-pointer ${
-            isActive || menuOpen ? "opacity-100 text-primary-brown" : "opacity-0 group-hover:opacity-100 text-primary-light-brown hover:text-primary-brown"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((p) => !p);
+          }}
+          className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[8px] border border-[#EBEBEB] bg-white text-[#342511] shadow-2xs transition-opacity cursor-pointer ${
+            isActive || menuOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           }`}
         >
           <MoreHorizontal size={14} />
@@ -388,33 +314,44 @@ function SessionItem({
       </button>
 
       {menuOpen && (
-        <div ref={menuRef} className="absolute right-2 top-full z-30 mt-1 w-40 rounded-xl border border-white-100 bg-white p-1 shadow-lg">
-          <button
-            type="button"
-            onClick={() => { setMenuOpen(false); setEditing(true); }}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-[12px] text-primary-brown hover:bg-white-50 cursor-pointer"
-          >
-            <Pencil size={13} className="text-primary-light-brown" />
-            <span>Rename</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => { setMenuOpen(false); onTogglePin(); }}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-[12px] text-primary-brown hover:bg-white-50 cursor-pointer"
-          >
-            {session.pinned ? <PinOff size={13} /> : <Pin size={13} className="rotate-45" />}
-            <span>{session.pinned ? "Unpin chat" : "Pin chat"}</span>
-          </button>
-          <div className="my-1 border-t border-white-100" />
-          <button
-            type="button"
-            onClick={() => { setMenuOpen(false); onDelete(); }}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-[12px] text-red-600 hover:bg-red-50 cursor-pointer"
-          >
-            <Trash2 size={13} />
-            <span>Delete</span>
-          </button>
-        </div>
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => setMenuOpen(false)} />
+          <div className="absolute right-0 top-full z-30 mt-1 w-[200px] rounded-xl border border-[#EBEBEB] bg-white p-1.5 shadow-xl flex flex-col gap-0.5">
+            <button
+              type="button"
+              onClick={() => { setMenuOpen(false); onTogglePin(); }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[14px] text-[#342511] hover:bg-[#F8F4EE] transition-colors cursor-pointer"
+            >
+              {session.pinned ? <PinOff size={15} /> : <Pin size={15} className="rotate-45 text-[#7C5F42]" />}
+              <span>{session.pinned ? "Unpin" : "Pin to top"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMenuOpen(false); setEditing(true); }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[14px] text-[#342511] hover:bg-[#F8F4EE] transition-colors cursor-pointer"
+            >
+              <Pencil size={15} className="text-[#7C5F42]" />
+              <span>Rename</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[14px] text-[#342511] hover:bg-[#F8F4EE] transition-colors cursor-pointer"
+            >
+              <Share2 size={15} className="text-[#7C5F42]" />
+              <span>{copiedShare ? "Link copied!" : "Share link"}</span>
+            </button>
+            <div className="my-1 border-t border-[#EBEBEB]" />
+            <button
+              type="button"
+              onClick={() => { setMenuOpen(false); onDelete(); }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[14px] text-[#B42318] hover:bg-red-50 transition-colors cursor-pointer"
+            >
+              <Trash2 size={15} />
+              <span>Delete</span>
+            </button>
+          </div>
+        </>
       )}
     </li>
   );

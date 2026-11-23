@@ -1,19 +1,18 @@
-import React from 'react'
-
-const BASE_SIZES = [5, 10, 25, 50, 100]
+const BASE_SIZES = [5, 10, 25, 50, 100];
 
 const getPageSizeOptions = (total: number) => {
-  const filtered = BASE_SIZES.filter((s) => s < total)
-  return [...filtered, total]
-}
+  const filtered = BASE_SIZES.filter((s) => s < total);
+  return [...filtered, total];
+};
 
 type Props = {
-  page: number
-  per_page: number
-  total: number
-  onChange: (page: number) => void
-  onPageSizeChange: (size: number) => void
-}
+  page: number;
+  per_page: number;
+  total: number;
+  onChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+  entityName?: string;
+};
 
 const Pagination = ({
   page,
@@ -21,57 +20,62 @@ const Pagination = ({
   total,
   onChange,
   onPageSizeChange,
+  entityName = "records",
 }: Props) => {
-  const totalPages = Math.ceil(total / per_page)
+  const totalPages = Math.ceil(total / per_page);
 
   const getVisiblePages = () => {
-    const pages: number[] = []
-    const start = Math.max(1, page - 1)
-    const end = Math.min(totalPages, page + 1)
+    const pages: number[] = [];
+    const start = Math.max(1, page - 1);
+    const end = Math.min(totalPages, page + 1);
     for (let i = start; i <= end; i++) {
-      pages.push(i)
+      pages.push(i);
     }
-    return pages
-  }
+    return pages;
+  };
 
-  const visiblePages = getVisiblePages()
-  const sizeOptions = getPageSizeOptions(total)
+  const visiblePages = getVisiblePages();
+  const sizeOptions = getPageSizeOptions(total);
+
+  const from = total === 0 ? 0 : (page - 1) * per_page + 1;
+  const to = Math.min(page * per_page, total);
 
   return (
-    <div className='d-flex justify-content-between align-items-center m-5'>
-
-      <div className='d-flex align-items-center gap-2'>
-        <span className='text-muted fs-5'>Rows per page</span>
-
-        <select
-          className='form-select form-select-sm w-auto'
-          value={per_page}
-          onChange={(e) => {
-            onPageSizeChange(Number(e.target.value))
-          }}
-        >
-          {sizeOptions.map((size) => (
-            <option key={size} value={size}>
-              {size === total ? `${total} (All)` : size}
-            </option>
-          ))}
-        </select>
+    <div className="briksy-pagination">
+      <div className="briksy-pagination-info">
+        {total === 0 ? (
+          "No records"
+        ) : (
+          <>
+            Showing {from}–{to} of {total} {entityName}
+          </>
+        )}
       </div>
 
-      <div className='d-flex align-items-center gap-3'>
-
-        <div className='text-muted fs-5'>
-          {total === 0
-            ? '0 of 0'
-            : `${(page - 1) * per_page + 1} – ${Math.min(page * per_page, total)} of ${total}`}
+      <div className="briksy-pagination-controls">
+        <div className="briksy-page-size-wrap">
+          <span>Rows per page</span>
+          <select
+            className="briksy-page-select"
+            value={per_page}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            aria-label="Rows per page"
+          >
+            {sizeOptions.map((size) => (
+              <option key={size} value={size}>
+                {size === total ? `${total} (All)` : size}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className='d-flex align-items-center gap-1'>
-
+        <div className="briksy-page-btns">
           <button
-            className='btn btn-sm btn-icon'
-            disabled={page === 1}
+            type="button"
+            className="briksy-page-btn"
+            disabled={page <= 1}
             onClick={() => onChange(page - 1)}
+            aria-label="Previous page"
           >
             ‹
           </button>
@@ -79,27 +83,28 @@ const Pagination = ({
           {visiblePages.map((p) => (
             <button
               key={p}
-              className={`btn btn-sm btn-icon ${page === p ? 'btn-light' : 'btn-active-light-primary'
-                }`}
+              type="button"
+              className={`briksy-page-btn ${page === p ? "briksy-page-btn--active" : ""}`}
               onClick={() => onChange(p)}
+              aria-label={`Page ${p}`}
             >
               {p}
             </button>
           ))}
 
           <button
-            className='btn btn-sm btn-icon'
-            disabled={page === totalPages || totalPages === 0}
+            type="button"
+            className="briksy-page-btn"
+            disabled={page >= totalPages || totalPages === 0}
             onClick={() => onChange(page + 1)}
+            aria-label="Next page"
           >
             ›
           </button>
-
         </div>
-
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Pagination
+export default Pagination;

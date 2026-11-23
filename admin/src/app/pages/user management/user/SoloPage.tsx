@@ -70,8 +70,11 @@ const SoloPage = () => {
 
   return (
     <Content>
-      <PageHeader title="Sole traders" subtitle="All registered sole trader businesses and service tags" />
       <EntityList
+        title="Sole traders"
+        subtitle="All registered sole trader businesses and service tags"
+        entityName="traders"
+        profileType="avatar"
         data={data}
         total={total}
         params={params}

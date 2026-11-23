@@ -1,16 +1,20 @@
 import { useState } from "react";
 import {
-  Bath,
-  Bed,
-  Car,
   ChevronDown,
-  Home,
   ListTree,
-  Bus,
   ShieldCheck,
-  Sun,
-  Utensils,
 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bathtub01Icon,
+  BedDoubleIcon,
+  Car01Icon,
+  Home03Icon,
+  House01Icon,
+  KitchenUtensilsIcon,
+  MetroIcon,
+  Sun03Icon,
+} from "@hugeicons/core-free-icons";
 import Approves from "../../../../assets/logo/apprrove.svg";
 import { SafeImage } from "../../../../components/custom/SafeImage";
 import NearbySchools from "../../shared/NearbySchools";
@@ -30,7 +34,17 @@ export type PropertyAmenity = {
   value_type?: "boolean" | "number";
 };
 
-// ─── 1. PROPERTY HEADER (Status Tag + Title + Price) ─────────────────────────
+const formatSpecNumber = (
+  val: string | number | null | undefined,
+  fallback: string = "02",
+) => {
+  if (val == null || val === "" || val === "0") return fallback;
+  if (val === "studio") return "00";
+  const cleaned = String(val).replace("_plus", "+");
+  return cleaned.length === 1 ? `0${cleaned}` : cleaned;
+};
+
+// ─── 1. PROPERTY HEADER (Status Tag + Title + Price + Inline Specs) ──────────
 export interface PropertyHeaderProps {
   title: string;
   price?: string | null;
@@ -56,8 +70,18 @@ export const PropertyHeader = ({
   price,
   statusLabel,
   isAuction,
+  baths,
+  beds,
+  car,
+  sqm,
+  floorAreaUnit,
 }: PropertyHeaderProps) => {
   const displayStatus = statusLabel || (isAuction ? "AUCTION" : "FOR SALE");
+  const bathsDisplay = formatSpecNumber(baths, "02");
+  const bedsDisplay = formatSpecNumber(beds, "02");
+  const carDisplay = formatSpecNumber(car, "02");
+  const unitLabel = floorAreaUnit === "sqft" ? "ft²" : "m²";
+  const sizeDisplay = sqm ? `${sqm}${unitLabel}` : "103m²";
 
   return (
     <div className="flex flex-col gap-2.5 w-full font-helvetica">
@@ -76,6 +100,36 @@ export const PropertyHeader = ({
           {price}
         </p>
       )}
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-1 text-primary-brown">
+        <div className="flex items-center gap-2">
+          <HugeiconsIcon icon={Bathtub01Icon} size={20} className="text-primary-brown shrink-0" />
+          <span className="text-[14px] sm:text-[0.9375rem] leading-tight">
+            <strong className="font-bold">{bathsDisplay}</strong> Bathrooms
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <HugeiconsIcon icon={BedDoubleIcon} size={20} className="text-primary-brown shrink-0" />
+          <span className="text-[14px] sm:text-[0.9375rem] leading-tight">
+            <strong className="font-bold">{bedsDisplay}</strong> Beds
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <HugeiconsIcon icon={Car01Icon} size={20} className="text-primary-brown shrink-0" />
+          <span className="text-[14px] sm:text-[0.9375rem] leading-tight">
+            <strong className="font-bold">{carDisplay}</strong> Parking space
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <HugeiconsIcon icon={House01Icon} size={20} className="text-primary-brown shrink-0" />
+          <span className="text-[14px] sm:text-[0.9375rem] leading-tight">
+            <strong className="font-bold">{sizeDisplay}</strong> Area
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -114,42 +168,34 @@ export const BriksyQuickView = ({
   items?: QuickViewItem[];
 }) => {
   const defaultIcons = [
-    <Home size={22} className="text-primary-brown shrink-0" />,
-    <Utensils size={22} className="text-primary-brown shrink-0" />,
-    <Bus size={22} className="text-primary-brown shrink-0" />,
-    <Sun size={22} className="text-primary-brown shrink-0" />,
+    <HugeiconsIcon icon={Home03Icon} size={24} className="text-primary-light-brown shrink-0" />,
+    <HugeiconsIcon icon={KitchenUtensilsIcon} size={24} className="text-primary-light-brown shrink-0" />,
+    <HugeiconsIcon icon={MetroIcon} size={24} className="text-primary-light-brown shrink-0" />,
+    <HugeiconsIcon icon={Sun03Icon} size={24} className="text-primary-light-brown shrink-0" />,
   ];
 
   return (
-    <div className="flex flex-col gap-2.5 w-full font-helvetica">
-      <h2 className="text-[18px] sm:text-[1.25rem] font-medium leading-[28px] text-primary-brown">
+    <div className="flex flex-col gap-1.5 w-full font-helvetica">
+      <h2 className="px-1.5 text-[18px] sm:text-[1.25rem] font-medium leading-[28px] tracking-[-0.005em] text-[#222222]">
         Briksy Quick View
       </h2>
-      <div className="w-full bg-white rounded-2xl border border-white-100 p-2 sm:p-2.5 shadow-xs flex flex-col md:flex-row items-stretch md:items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-1.5 w-full">
         {items.map((item, idx) => (
           <div
             key={idx}
-            className="flex-1 flex flex-col md:flex-row items-stretch md:items-center"
+            className="bg-white rounded-[12px] p-4 flex items-start gap-2.5"
           >
-            <div className="flex-1 flex items-start gap-3 p-3 min-w-0">
-              <div className="mt-0.5 shrink-0 text-primary-brown">
-                {item.icon || defaultIcons[idx % defaultIcons.length]}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-[0.875rem] font-medium text-primary-brown leading-tight truncate">
-                  {item.title}
-                </span>
-                <span className="text-[0.875rem] text-primary-light-brown leading-normal line-clamp-2 mt-0.5">
-                  {item.description}
-                </span>
-              </div>
+            <div className="shrink-0 text-primary-light-brown">
+              {item.icon || defaultIcons[idx % defaultIcons.length]}
             </div>
-            {idx < items.length - 1 && (
-              <>
-                <div className="hidden md:block w-[1px] h-12 bg-white-100 shrink-0" />
-                <div className="block md:hidden h-[1px] w-full bg-white-100" />
-              </>
-            )}
+            <div className="flex flex-col min-w-0">
+              <span className="text-[0.875rem] font-medium leading-[20px] text-primary-brown">
+                {item.title}
+              </span>
+              <span className="text-[0.875rem] font-normal leading-[20px] tracking-[0.03em] text-primary-light-brown">
+                {item.description}
+              </span>
+            </div>
           </div>
         ))}
       </div>
@@ -157,36 +203,16 @@ export const BriksyQuickView = ({
   );
 };
 
-// ─── 3. ABOUT THIS PROPERTY + SPECS CARD ────────────────────────────────────
+// ─── 3. ABOUT THIS PROPERTY ─────────────────────────────────────────────────
 const DEFAULT_ABOUT =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent auctor purus luctus enim egestas, ac scelerisque ante pulvinar. Donec ut rhoncus ex. Suspendisse ac rhoncus nisl, eu tempor urna. Curabitur vel bibendum lorem. Morbi convallis convallis diam sit amet lacinia. Aliquam in elementum tellus.\n\nCurabitur tempor quis eros tempus lacinia. Nam bibendum pellentesque quam a convallis. Sed ut vulputate nisi. Integer in felis sed leo vestibulum venenatis. Suspendisse quis arcu sem. Aenean feugiat ex eu vestibulum vestibulum. Morbi a eleifend magna. Nam metus lacus, porttitor eu mauris a, blandit ultrices nibh. Mauris sit amet magna non ligula vestibulum eleifend. Nulla varius volutpat turpis sed lacinia. Nam eget mi in purus lobortis eleifend. Sed nec ante dictum sem condimentum ullamcorper quis venenatis nisi. Proin vitae facilisis nisi, ac posuere leo.";
 
-const formatSpecNumber = (
-  val: string | number | null | undefined,
-  fallback: string = "02",
-) => {
-  if (val == null || val === "" || val === "0") return fallback;
-  if (val === "studio") return "00";
-  const cleaned = String(val).replace("_plus", "+");
-  return cleaned.length === 1 ? `0${cleaned}` : cleaned;
-};
-
 export interface PropertyAboutAndSpecsProps {
   about?: string | null;
-  baths?: string | number | null;
-  beds?: string | number | null;
-  car?: string | number | null;
-  sqm?: string | number | null;
-  floorAreaUnit?: string | null;
 }
 
 export const PropertyAboutAndSpecs = ({
   about,
-  baths,
-  beds,
-  car,
-  sqm,
-  floorAreaUnit,
 }: PropertyAboutAndSpecsProps) => {
   const [expanded, setExpanded] = useState(false);
   const text =
@@ -194,87 +220,29 @@ export const PropertyAboutAndSpecs = ({
       ? about
       : DEFAULT_ABOUT;
 
-  const bathsDisplay = formatSpecNumber(baths, "02");
-  const bedsDisplay = formatSpecNumber(beds, "02");
-  const carDisplay = formatSpecNumber(car, "02");
-  const sizeDisplay = sqm ? `${sqm}${floorAreaUnit || "m²"}` : "103m²";
-
   return (
-    <div className="flex flex-col lg:flex-row gap-6 items-start w-full font-helvetica">
-      {/* Left Column: About this property */}
-      <div className="flex-1 min-w-0 flex flex-col gap-2.5">
-        <h2 className="text-[18px] sm:text-[1.25rem] font-medium leading-[28px] text-primary-brown">
-          About this property
-        </h2>
-        <p
-          className={`text-[14.5px] sm:text-[0.875rem] font-normal leading-[24px] sm:leading-[26px] text-primary-brown/90 whitespace-pre-line ${!expanded ? "line-clamp-6" : ""
+    <div className="flex flex-col gap-2.5 w-full font-helvetica">
+      <h2 className="text-[18px] sm:text-[1.25rem] font-medium leading-[28px] text-primary-brown">
+        About this property
+      </h2>
+      <p
+        className={`text-[14.5px] sm:text-[0.875rem] font-normal leading-[24px] sm:leading-[26px] text-primary-brown/90 whitespace-pre-line ${!expanded ? "line-clamp-6" : ""
+          }`}
+      >
+        {text}
+      </p>
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="w-fit flex items-center gap-1.5 text-[14px] font-medium text-[#8B6F54] hover:opacity-80 transition cursor-pointer mt-1"
+      >
+        <span>{expanded ? "read less" : "read more"}</span>
+        <ChevronDown
+          size={16}
+          className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""
             }`}
-        >
-          {text}
-        </p>
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          className="w-fit flex items-center gap-1.5 text-[14px] font-medium text-[#8B6F54] hover:opacity-80 transition cursor-pointer mt-1"
-        >
-          <span>{expanded ? "read less" : "read more"}</span>
-          <ChevronDown
-            size={16}
-            className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""
-              }`}
-          />
-        </button>
-      </div>
-
-      {/* Right Column: Specs Card (Figma width: 292px) */}
-      <div className="w-full sm:w-[292px] shrink-0 bg-white rounded-2xl border border-white-100 shadow-xs flex flex-col overflow-hidden">
-        <div className="p-3.5 sm:p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Bath size={20} className="text-primary-brown shrink-0" />
-            <span className="text-[1rem] font-bold text-primary-brown">
-              {bathsDisplay}
-            </span>
-          </div>
-          <span className="text-[0.875rem] text-primary-brown">Bathrooms</span>
-        </div>
-        <div className="h-[1px] bg-white-100 w-full" />
-
-        <div className="p-3.5 sm:p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Bed size={20} className="text-primary-brown shrink-0" />
-            <span className="text-[1rem] font-bold text-primary-brown">
-              {bedsDisplay}
-            </span>
-          </div>
-          <span className="text-[0.875rem] text-primary-brown">Bedrooms</span>
-        </div>
-        <div className="h-[1px] bg-white-100 w-full" />
-
-        <div className="p-3.5 sm:p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Car size={20} className="text-primary-brown shrink-0" />
-            <span className="text-[1rem] font-bold text-primary-brown">
-              {carDisplay}
-            </span>
-          </div>
-          <span className="text-[0.875rem] text-primary-brown">
-            Parking Spaces / Garage
-          </span>
-        </div>
-        <div className="h-[1px] bg-white-100 w-full" />
-
-        <div className="p-3.5 sm:p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Home size={20} className="text-primary-brown shrink-0" />
-            <span className="text-[1rem] font-bold text-primary-brown">
-              {sizeDisplay}
-            </span>
-          </div>
-          <span className="text-[0.875rem] text-primary-brown">
-            Property Size
-          </span>
-        </div>
-      </div>
+        />
+      </button>
     </div>
   );
 };
@@ -297,7 +265,7 @@ export const PropertyAmenities = ({
   return (
     <div className="flex flex-col gap-3 w-full font-helvetica">
       <h2 className="text-[18px] sm:text-[1.25rem] font-medium leading-[28px] text-primary-brown">
-        What this place offers
+        Property Features
       </h2>
 
       <div className="flex flex-wrap gap-2.5 sm:gap-3">
@@ -387,7 +355,7 @@ export const PropertyMap = ({
     <div className="flex flex-col gap-8 w-full font-helvetica">
       <div className="flex flex-col gap-3 w-full">
         <h2 className="text-[18px] sm:text-[1.25rem] font-medium leading-[28px] text-primary-brown">
-          Where you’ll be
+          Location & Nearby
         </h2>
         <div className="w-full h-[280px] sm:h-[321px] rounded-xl overflow-hidden border border-[#EDE8E4] bg-[#F8F4EE]">
           <iframe

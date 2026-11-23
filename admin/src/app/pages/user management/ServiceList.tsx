@@ -16,6 +16,8 @@ import ServiceModal from "../../services/features/service/component/ServiceModal
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { serviceListConfig } from "../../services/features/service/service_list.config";
 import type { RootState, AppDispatch } from "../../services/store";
+import type { ServiceList } from "../../services/features/service/service_list.types";
+import type { RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
 
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
@@ -25,7 +27,7 @@ import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 import ServiceMapPage from "../platform/ServiceMapPage";
 import { useToast } from "../../services/ui/toast/useToast";
 
-const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onBulkDelete?: (ids: string[]) => void }) => {
+const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: RowAction<ServiceList>[]; onBulkDelete?: (ids: string[]) => void }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
@@ -35,8 +37,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
         total,
         error,
         loading,
-        isModalOpen,
-        saving,
     } = useSelector((s: RootState) => s.services);
 
     const { params, handleParamsChange } = useEntityTable((p) =>
@@ -59,19 +59,21 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
 
     return (
         <Content>
-            <PageHeader title={title} subtitle={subtitle} />
-
             {loading && <div className="alert alert-light py-2">Loading services...</div>}
 
-        <EntityList
-            data={data}
-            total={total}
-            params={params}
-            onParamsChange={handleParamsChange}
+            <EntityList
+                title={title}
+                subtitle={subtitle}
+                entityName="services"
+                profileType="avatar"
+                data={data}
+                total={total}
+                params={params}
+                onParamsChange={handleParamsChange}
                 columns={serviceListConfig.columns}
                 filtersConfig={serviceListConfig.filters}
-        enableRowClick={true}
-        getRowLink={(row) => `${portalBase}/services/detail/${row.id}`}
+                enableRowClick={true}
+                getRowLink={(row) => `${portalBase}/services/detail/${row.id}`}
         headerActions={canManage ? [
             {
                 label: "Add Service",
@@ -94,7 +96,6 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: any[]; onB
 const ServiceListPageWrapper = () => {
     const dispatch = useDispatch<AppDispatch>();
     const toast = useToast();
-    const { isSuperAdmin } = useRoleAccess();
     const canManage = true;
     const {
         saving,
@@ -104,20 +105,20 @@ const ServiceListPageWrapper = () => {
         deletingService,
     } = useSelector((s: RootState) => s.services);
     const [bulkDeleteIds, setBulkDeleteIds] = useState<string[]>([]);
-    const [savedService, setSavedService] = useState<any>(null);
+    const [savedService, setSavedService] = useState<unknown>(null);
 
-    const rowActions = canManage
+    const rowActions: RowAction<ServiceList>[] = canManage
         ? [
             {
                 label: "Edit",
                 permission: "service.update",
-                onClick: (row: any) => dispatch(openServiceModal(row)),
+                onClick: (row: ServiceList) => dispatch(openServiceModal(row)),
             },
             {
                 label: "Delete",
                 className: "text-danger",
                 permission: "service.delete",
-                onClick: (row: any) => dispatch(openDeleteServiceModal(row)),
+                onClick: (row: ServiceList) => dispatch(openDeleteServiceModal(row)),
             },
         ]
         : [];
@@ -140,8 +141,9 @@ const ServiceListPageWrapper = () => {
                         dispatch(saveService({ id: editingService?.id, values }))
                             .unwrap()
                             .then((saved) => setSavedService(saved))
-                            .catch((error: any) => {
-                                toast.danger(error?.response?.data?.message ?? error?.message ?? "Unable to save service.");
+                            .catch((error: unknown) => {
+                                const err = error as { response?: { data?: { message?: string } }; message?: string };
+                                toast.danger(err?.response?.data?.message ?? err?.message ?? "Unable to save service.");
                             })
                     }
                 />

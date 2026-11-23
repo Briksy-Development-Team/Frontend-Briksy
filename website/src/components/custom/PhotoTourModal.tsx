@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Share, Play, Pause, Volume2, VolumeX, ImageIcon, Video, LayoutTemplate } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel, Thumbs } from 'swiper/modules';
@@ -264,6 +264,12 @@ export function PhotoTourModal({
   const initialMedia = useLegacy ? media?.[initialIndex] : undefined;
   const resolvedTab = initialTab ?? (initialMedia ? (isVideo(initialMedia) ? 'videos' : 'photos') : defaultTab);
   const [activeTab, setActiveTab] = useState<Tab>(resolvedTab);
+
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(resolvedTab);
+    }
+  }, [isOpen, resolvedTab]);
 
   const handleShare = async () => {
     try {

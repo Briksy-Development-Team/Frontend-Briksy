@@ -1,0 +1,794 @@
+/* Briksy Design System Tokens from Figma (MLrZRTXmjLJpqOLi2w67lm) */
+:root {
+  --briksy-dark-brown: #342511;
+  --briksy-text-secondary: #7C5F42;
+  --briksy-bg: #F8F4EE;
+  --briksy-card-bg: #FFFFFF;
+  --briksy-border: #E7E7E4;
+  --briksy-search-bg: #F3F4F3;
+  --briksy-status-green: #1F7A4D;
+  --briksy-status-amber: #8A5A00;
+  --briksy-status-red: #B42318;
+  --briksy-badge-green-bg: #E5F2EA;
+  --briksy-badge-amber-bg: #FBEFD5;
+  --briksy-badge-red-bg: #FDE8E8;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   1. PAGE HEADER (#4771:6646)
+───────────────────────────────────────────────────────────── */
+.briksy-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.briksy-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.briksy-breadcrumbs {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--briksy-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.briksy-breadcrumb-item {
+  color: var(--briksy-text-secondary);
+  text-decoration: none;
+}
+
+.briksy-breadcrumb-item:hover {
+  color: var(--briksy-dark-brown);
+}
+
+.briksy-breadcrumb-separator {
+  color: #bfaea0;
+}
+
+.briksy-page-title {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: -0.006em;
+  color: var(--briksy-dark-brown);
+  margin: 0;
+}
+
+.briksy-page-subtitle {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.03em;
+  color: var(--briksy-text-secondary);
+  margin: 0;
+}
+
+.briksy-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.briksy-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--briksy-card-bg);
+  border: 1px solid var(--briksy-border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--briksy-dark-brown);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.briksy-btn-secondary:hover {
+  background: #fdfcfb;
+  border-color: #d8d8d3;
+  color: var(--briksy-dark-brown);
+}
+
+.briksy-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--briksy-dark-brown);
+  border: 1px solid var(--briksy-dark-brown);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.briksy-btn-primary:hover {
+  background: #24190c;
+  border-color: #24190c;
+  color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   2. SUMMARY FILTERS (#4771:6661)
+───────────────────────────────────────────────────────────── */
+.briksy-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 991px) {
+  .briksy-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .briksy-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.briksy-summary-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  gap: 8px;
+  background: var(--briksy-card-bg);
+  border: 1px solid var(--briksy-border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+  user-select: none;
+}
+
+.briksy-summary-card:hover {
+  border-color: #cbbeaf;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 37, 17, 0.05);
+}
+
+.briksy-summary-card--active {
+  border: 1.5px solid var(--briksy-dark-brown) !important;
+  box-shadow: 0 4px 14px rgba(52, 37, 17, 0.08);
+}
+
+.briksy-card-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.briksy-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.briksy-card-label {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--briksy-text-secondary);
+}
+
+.briksy-card-count {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: -0.006em;
+  color: var(--briksy-dark-brown);
+}
+
+.briksy-card-subtitle {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--briksy-text-secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   3. TABLE CARD & TOOLBAR (#4771:6686 & #4771:6687)
+───────────────────────────────────────────────────────────── */
+.briksy-table-card {
+  background: var(--briksy-card-bg);
+  border: 1px solid var(--briksy-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.briksy-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--briksy-border);
+  flex-wrap: wrap;
+}
+
+.briksy-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 300px;
+  min-width: 200px;
+}
+
+@media (max-width: 767px) {
+  .briksy-search-wrap {
+    width: 100%;
+  }
+}
+
+.briksy-search-icon {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+  color: var(--briksy-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.briksy-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px 8px 36px;
+  background: var(--briksy-search-bg);
+  border: none;
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: var(--briksy-dark-brown);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.briksy-search-input::placeholder {
+  color: var(--briksy-text-secondary);
+  opacity: 0.85;
+}
+
+.briksy-search-input:focus {
+  background: #ebeceb;
+  box-shadow: 0 0 0 2px rgba(52, 37, 17, 0.15);
+}
+
+.briksy-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 8px 16px;
+  background: var(--briksy-card-bg);
+  border: 1px solid var(--briksy-border);
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--briksy-dark-brown);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.briksy-pill-btn:hover {
+  background: #fdfcfb;
+  border-color: #d8d8d3;
+  color: var(--briksy-dark-brown);
+}
+
+.briksy-pill-btn--active {
+  background: #f5efe7;
+  border-color: var(--briksy-dark-brown);
+  color: var(--briksy-dark-brown);
+}
+
+.briksy-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   4. TABLE LAYOUT & STYLING (#4771:6717)
+───────────────────────────────────────────────────────────── */
+.briksy-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.briksy-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+}
+
+.briksy-th {
+  padding: 12px 20px;
+  background: var(--briksy-bg) !important;
+  border-bottom: 1px solid var(--briksy-border);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--briksy-text-secondary);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.briksy-td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--briksy-border);
+  font-size: 13.5px;
+  color: var(--briksy-dark-brown);
+  white-space: nowrap;
+  background: var(--briksy-card-bg);
+  transition: background-color 0.1s ease;
+}
+
+.briksy-tr:hover .briksy-td,
+.briksy-tr--menu-open .briksy-td {
+  background: #ebebeb !important;
+}
+
+.briksy-tr--selected .briksy-td {
+  background: rgba(226, 203, 179, 0.18) !important;
+}
+
+.briksy-tr--selected:hover .briksy-td {
+  background: rgba(226, 203, 179, 0.28) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   5. ACTIONS DROPDOWN BUTTON (•••)
+───────────────────────────────────────────────────────────── */
+.briksy-dots-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--briksy-border);
+  border-radius: 8px;
+  background: var(--briksy-card-bg);
+  color: var(--briksy-dark-brown);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.briksy-dots-btn:hover,
+.briksy-dots-btn--active {
+  background: #f3f4f3;
+  border-color: var(--briksy-dark-brown);
+  color: var(--briksy-dark-brown);
+}
+
+/* Figma #4771:8621 & #4771:8564 Action Menu */
+.briksy-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: transparent;
+}
+
+.briksy-action-menu {
+  position: fixed;
+  z-index: 9999;
+  width: 232px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid var(--briksy-border);
+  border-radius: 12px;
+  box-shadow: 0px 0px 13px 0px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  animation: briksy-action-pop 0.12s ease-out;
+}
+
+@keyframes briksy-action-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.briksy-action-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--briksy-dark-brown);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.03em;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.briksy-action-item:hover {
+  background: #f3f4f3;
+}
+
+.briksy-action-item--danger {
+  color: #b42318;
+}
+
+.briksy-action-item--danger:hover {
+  background: #fee4e2;
+  color: #b42318;
+}
+
+.briksy-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.briksy-action-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.briksy-action-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fbefd5;
+  color: #8a5a00;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.briksy-action-divider {
+  height: 1px;
+  background: var(--briksy-border);
+  margin: 4px 0;
+}
+
+.briksy-dropdown-menu {
+  border-radius: 12px !important;
+  border: 1px solid var(--briksy-border) !important;
+  box-shadow: 0 12px 32px rgba(52, 37, 17, 0.12) !important;
+  padding: 6px !important;
+  min-width: 170px;
+  background: #ffffff !important;
+}
+
+.briksy-dropdown-item {
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--briksy-dark-brown);
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.briksy-dropdown-item:hover {
+  background: #f7f3ee;
+  color: var(--briksy-dark-brown);
+}
+
+.briksy-dropdown-item.text-danger:hover {
+  background: #fdeded;
+  color: var(--briksy-status-red);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   6. PAGINATION FOOTER
+───────────────────────────────────────────────────────────── */
+.briksy-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--briksy-border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.briksy-pagination-info {
+  font-size: 13px;
+  color: var(--briksy-text-secondary);
+}
+
+.briksy-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.briksy-page-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--briksy-text-secondary);
+}
+
+.briksy-page-select {
+  padding: 4px 10px;
+  border: 1px solid var(--briksy-border);
+  border-radius: 8px;
+  background: var(--briksy-card-bg);
+  font-size: 13px;
+  color: var(--briksy-dark-brown);
+  cursor: pointer;
+  outline: none;
+}
+
+.briksy-page-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.briksy-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border: 1px solid var(--briksy-border);
+  border-radius: 8px;
+  background: var(--briksy-card-bg);
+  color: var(--briksy-dark-brown);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.briksy-page-btn:hover:not(:disabled) {
+  background: #f7f3ee;
+  border-color: #d1c7bc;
+}
+
+.briksy-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.briksy-page-btn--active {
+  background: var(--briksy-dark-brown) !important;
+  border-color: var(--briksy-dark-brown) !important;
+  color: #ffffff !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   7. TABLE PROFILE MEDIA (#4771:6686 & #4771:8096)
+───────────────────────────────────────────────────────────── */
+.briksy-media-col {
+  width: 96px;
+  min-width: 96px;
+  padding: 10px 14px !important;
+  vertical-align: middle;
+}
+
+.briksy-media-col--avatar {
+  width: 68px;
+  min-width: 68px;
+}
+
+/* Duo Media: 76x56 rect + 26x26 logo badge */
+.briksy-duo-container {
+  position: relative;
+  width: 84px;
+  height: 60px;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.briksy-duo-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 76px;
+  height: 56px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #EFE8DE;
+  border: 1px solid var(--briksy-border, #E7E7E4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.briksy-duo-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.briksy-duo-placeholder {
+  color: var(--briksy-text-secondary, #7C5F42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.briksy-duo-logo {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  background: #E2CBB3;
+  color: var(--briksy-dark-brown, #342511);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.briksy-duo-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Avatar Media: 48x48 circle + 18x18 status badge */
+.briksy-avatar-container {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.briksy-avatar-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #E2CBB3;
+  color: var(--briksy-dark-brown, #342511);
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.briksy-avatar-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.briksy-avatar-badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.briksy-avatar-badge--verified {
+  background: #1F7A4D;
+}
+
+.briksy-avatar-badge--pending {
+  background: #8A5A00;
+}
+
+.briksy-avatar-badge--rejected {
+  background: #B42318;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   8. STATUS PILL WITH DOT (#4771:6744 & #4771:6806)
+───────────────────────────────────────────────────────────── */
+.briksy-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.briksy-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.briksy-status-pill--verified {
+  background: #E5F2EA;
+  color: #1F7A4D;
+}
+.briksy-status-pill--verified .briksy-status-dot {
+  background: #1F7A4D;
+}
+
+.briksy-status-pill--pending {
+  background: #FBEFD5;
+  color: #8A5A00;
+}
+.briksy-status-pill--pending .briksy-status-dot {
+  background: #8A5A00;
+}
+
+.briksy-status-pill--rejected {
+  background: #FDE8E8;
+  color: #B42318;
+}
+.briksy-status-pill--rejected .briksy-status-dot {
+  background: #B42318;
+}
+

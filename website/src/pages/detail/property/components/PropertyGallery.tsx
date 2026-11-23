@@ -1,4 +1,4 @@
-import { List, Play, TvMinimalPlay, LayoutTemplate } from 'lucide-react';
+import { List, Play, ImageIcon, Video, LayoutTemplate } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PhotoTourModal, type Media } from '../../../../components/custom/PhotoTourModal';
 import GallerySkeleton from '../../../../components/skeletons/GallerySkeleton';
@@ -70,45 +70,46 @@ export const PropertyGallery = ({
 
   return (
     <>
-      {/* Top tabs: Videos & Floor Plan (hidden if neither available) */}
-      {(hasVideos || hasFloorplan) && (
-        <div className="flex items-center justify-center gap-2 mb-3">
-          {hasVideos && (
-            <button
-              type="button"
-              onClick={() => openTour('videos')}
-              className="h-10 px-3.5 rounded-lg flex items-center gap-2 text-[14px] font-normal text-primary-brown bg-white shadow-2xs hover:bg-white-50 transition cursor-pointer"
-            >
-              <TvMinimalPlay size={18} />
-              <span>Videos</span>
-            </button>
-          )}
-          {hasFloorplan && (
-            <button
-              type="button"
-              onClick={() => openTour('floorplans')}
-              className="h-10 px-3.5 rounded-lg flex items-center gap-2 text-[14px] font-normal text-primary-brown hover:bg-white/60 transition cursor-pointer"
-            >
-              <LayoutTemplate size={18} />
-              <span>Floor Plan</span>
-            </button>
-          )}
-        </div>
-      )}
-
       <div className="flex gap-2 h-[300px] md:h-[300px] xl:h-[480px] -mx-[5%] md:mx-0 md:rounded-2xl overflow-hidden md:overflow-visible">
         {/* Hero: the only box on mobile */}
         <div className="relative flex-1 min-w-0 h-full md:rounded-xl overflow-hidden" style={{ backgroundColor: COLORS[0] }}>
-          <button type="button" aria-label="Open property media" className="relative block w-full h-full" onClick={() => heroMedia[0] && openTour('photos')}>
+          <button type="button" aria-label="Open property media" className="relative block w-full h-full cursor-pointer" onClick={() => heroMedia[0] && openTour('photos')}>
             {heroMedia[0] && <Thumb m={heroMedia[0]} size={64} />}
           </button>
-          <button
-            type="button"
-            onClick={() => openTour('photos')}
-            className="absolute bottom-4 right-4 md:hidden inline-flex items-center gap-2 rounded-lg bg-white px-3.5 py-2.5 text-[14px] font-medium text-primary-brown shadow-md"
-          >
-            <List size={20} /> All photos
-          </button>
+
+          {/* Bottom-left media pills: Photos, Floorplan, Video */}
+          <div className="absolute bottom-4 left-4 z-10 flex flex-wrap items-center gap-2">
+            {photos.length > 0 && (
+              <button
+                type="button"
+                onClick={() => openTour('photos')}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 sm:px-4 py-2 text-[13px] sm:text-[14px] font-medium text-primary-brown shadow-md hover:bg-white-50 transition cursor-pointer"
+              >
+                <ImageIcon size={16} />
+                <span>Photos ({photos.length})</span>
+              </button>
+            )}
+            {hasFloorplan && (
+              <button
+                type="button"
+                onClick={() => openTour('floorplans')}
+                className="inline-flex items-center gap-2 rounded-full bg-black/55 backdrop-blur-md px-3.5 sm:px-4 py-2 text-[13px] sm:text-[14px] font-medium text-white shadow-md hover:bg-black/70 transition cursor-pointer"
+              >
+                <LayoutTemplate size={16} />
+                <span>Floorplan (1)</span>
+              </button>
+            )}
+            {hasVideos && (
+              <button
+                type="button"
+                onClick={() => openTour('videos')}
+                className="inline-flex items-center gap-2 rounded-full bg-black/55 backdrop-blur-md px-3.5 sm:px-4 py-2 text-[13px] sm:text-[14px] font-medium text-white shadow-md hover:bg-black/70 transition cursor-pointer"
+              >
+                <Video size={16} />
+                <span>Video ({videos.length})</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Desktop only: 4 tiles */}
@@ -134,8 +135,10 @@ export const PropertyGallery = ({
                   </span>
                 )}
                 {isLast && (
-                  <span className="absolute bottom-4 right-4 bg-white shadow-sm rounded-lg px-3.5 py-2.5 text-[14px] font-medium text-primary-brown flex items-center gap-1.5">
-                    <List size={24} /> All photos
+                  <span className="absolute bottom-4 right-4 bg-white shadow-sm rounded-lg px-3.5 py-2.5 text-[0.875rem] font-medium text-primary-brown flex items-center gap-1.5">
+                    <List size={20} />
+                    {photos.length > 0 && <span className="font-bold">{photos.length}</span>}
+                    <span>All photos</span>
                   </span>
                 )}
               </button>

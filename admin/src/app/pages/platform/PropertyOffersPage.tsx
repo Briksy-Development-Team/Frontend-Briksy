@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Content } from "../../../_metronic/layout/components/content";
-import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { EntityList, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
@@ -43,7 +42,7 @@ function PropertyOffersList({
   items: PropertyOffer[];
   loading: boolean;
   error: string | null;
-  rowActions: any[];
+  rowActions: RowAction<PropertyOffer>[];
   onNewOffer: () => void;
 }) {
   const { isSuperAdmin } = useRoleAccess();
@@ -73,14 +72,14 @@ function PropertyOffersList({
 
   return (
     <Content>
-      <PageHeader
-        title="Property Offers"
-        subtitle="Create promotional offers for listings"
-      />
       {loading ? <div className="text-muted mb-4">Loading offers...</div> : null}
       {error ? <div className="alert alert-danger mb-5">{error}</div> : null}
 
       <EntityList
+        title="Property Offers"
+        subtitle="Create promotional offers for listings"
+        breadcrumbs={["Dashboard", "Property Offers"]}
+        entityName="offers"
         data={filteredItems}
         total={filteredItems.length}
         params={params}
@@ -167,9 +166,10 @@ export default function PropertyOffersPage() {
       }
       setEditing(null);
       await load();
-    } catch (error: any) {
-      const responseMessage = error?.response?.data?.message;
-      const message = responseMessage ?? error?.message ?? "Unable to save property offer.";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      const responseMessage = err?.response?.data?.message;
+      const message = responseMessage ?? err?.message ?? "Unable to save property offer.";
       setError(message);
       window.alert(message);
     } finally {
