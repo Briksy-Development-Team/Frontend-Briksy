@@ -90,8 +90,6 @@ export const PropertySidebar = ({
   propertyTitle,
   organizationId,
   organizationName,
-  organizationLogo,
-  organizationCategory,
   agent,
   creator,
   rating,
