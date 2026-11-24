@@ -198,7 +198,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
         className="group flex shrink-0 items-center gap-2 px-5 py-3 rounded-full bg-white border border-[#F5551A]/40 shadow-[inset_0_0_20px_rgba(245,85,26,0.35)] text-[15px] text-[#F5551A] whitespace-nowrap transition  hover:scale-105 hover:opacity-90"
       >
         <Sparkles size={17} />
-        <RollText text="Ask Ai" />
+        <RollText text="Ask AI" />
       </button>
     </div>
   );
