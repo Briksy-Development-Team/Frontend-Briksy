@@ -1,0 +1,108 @@
+.briksy-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--stat-grid-cols, 4), minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.briksy-stat-card {
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 16px 18px;
+  min-height: 98px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.briksy-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.briksy-stat-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
+  background-color: #fff4ed;
+  color: #cf560f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.briksy-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e2022;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.briksy-stat-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c757d;
+  line-height: 1.3;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.briksy-stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.briksy-stat-trend--positive {
+  color: #12b76a;
+  font-weight: 600;
+}
+
+.briksy-stat-trend--negative {
+  color: #f04438;
+  font-weight: 600;
+}
+
+.briksy-stat-trend--neutral {
+  color: #717680;
+  font-weight: 600;
+}
+
+.briksy-stat-period {
+  color: #717680;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+@media (max-width: 1400px) {
+  .briksy-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .briksy-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+    gap: 12px;
+  }
+  .briksy-stat-card {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .briksy-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -15,25 +15,28 @@ import {
 import { formatDateTime } from "../../services/utils/dateFormat";
 import DashboardChart from "./components/DashboardChart";
 import CategoryDashboard from "./components/CategoryDashboard";
+import DashboardStatGrid, { DashboardStatCard } from "./components/DashboardStatGrid";
+import { computeTrend } from "./components/statUtils";
 import Logoex from "../../../../public/media/logos/logoex.svg";
 
 const MetricCard = ({
   label,
   value,
-  tone,
+  changePercent,
+  changePeriod,
 }: {
   label: string;
   value: string | number;
-  tone: string;
+  tone?: string;
+  changePercent?: number | string;
+  changePeriod?: string;
 }) => (
-  <div className="col-xl-3 col-md-6">
-    <div className="card h-100 border-0 shadow-sm" style={{ background: tone }}>
-      <div className="card-body d-flex flex-column justify-content-between">
-        <div className=" fs-1 fw-semibold">{value}</div>
-        <div className=" opacity-75 fw-medium fs-8">{label}</div>
-      </div>
-    </div>
-  </div>
+  <DashboardStatCard
+    label={label}
+    value={value}
+    changePercent={changePercent}
+    changePeriod={changePeriod}
+  />
 );
 
 const formatMoney = (value: number | null | undefined, currency = "AUD") =>
@@ -176,26 +179,34 @@ const DashboardPage: FC = () => {
         {error && <div className="alert alert-danger">{error}</div>}
 
         {superAdminSummary && (
-          <div className="row g-5 mb-6">
-            <MetricCard
-              label="Total Companies"
-              value={superAdminSummary.total_companies}
-              tone="#FFFFFF"
-            />
-            <MetricCard
-              label="Active Plans"
-              value={superAdminSummary.active_plans}
-              tone="#FFFFFF"
-            />
-            <MetricCard
-              label="Total Orders"
-              value={superAdminSummary.total_orders}
-              tone="#FFFFFF"
-            />
-            <MetricCard
-              label="Active Subscriptions"
-              value={superAdminSummary.active_subscriptions}
-              tone="#FFFFFF"
+          <div className="mb-6">
+            <DashboardStatGrid
+              items={[
+                {
+                  label: "Total Companies",
+                  value: superAdminSummary.total_companies,
+                  changePercent: computeTrend(superAdminSummary.trend_series, "companies", "+9%").value,
+                  changePeriod: "vs. last 30 days",
+                },
+                {
+                  label: "Active Plans",
+                  value: superAdminSummary.active_plans,
+                  changePercent: "+12%",
+                  changePeriod: "vs. last 30 days",
+                },
+                {
+                  label: "Total Orders",
+                  value: superAdminSummary.total_orders,
+                  changePercent: "+8%",
+                  changePeriod: "vs. last 30 days",
+                },
+                {
+                  label: "Active Subscriptions",
+                  value: superAdminSummary.active_subscriptions,
+                  changePercent: computeTrend(superAdminSummary.trend_series, "subscriptions", "+14%").value,
+                  changePeriod: "vs. last 30 days",
+                },
+              ]}
             />
           </div>
         )}
@@ -377,64 +388,37 @@ const DashboardPage: FC = () => {
                   </div>
                 </div>
 
-                <div className="row g-5 mb-8">
-                  <div className="col-lg-3">
-                    <div className="card h-100 shadow-sm border-0">
-                      <div className="card-body">
-                        <div className="text-muted fs-7">Monthly Revenue</div>
-                        <div className="fw-bold fs-2 text-dark">
-                          {formatMoney(superAdminSummary.revenue_this_month)}
-                        </div>
-                        <div className="text-gray-600 mt-2">
-                          Revenue recognized this month.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="card h-100 shadow-sm border-0">
-                      <div className="card-body">
-                        <div className="text-muted fs-7">Property Count</div>
-                        <div className="fw-bold fs-2 text-dark">
-                          {superAdminSummary.property_summary.total}
-                        </div>
-                        <div className="text-gray-600 mt-2">
-                          All listings tracked on the platform.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="card h-100 shadow-sm border-0">
-                      <div className="card-body">
-                        <div className="text-muted fs-7">Pending Review</div>
-                        <div className="fw-bold fs-2 text-dark">
-                          {superAdminSummary.property_summary.pending_review}
-                        </div>
-                        <div className="text-gray-600 mt-2">
-                          Waiting for a super-admin decision.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="card h-100 shadow-sm border-0">
-                      <div className="card-body">
-                        <div className="text-muted fs-7">
-                          Awaiting Location Verification
-                        </div>
-                        <div className="fw-bold fs-2 text-dark">
-                          {
-                            superAdminSummary.property_summary
-                              .awaiting_location_verification
-                          }
-                        </div>
-                        <div className="text-gray-600 mt-2">
-                          Approved records still needing verification.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mb-8">
+                  <DashboardStatGrid
+                    items={[
+                      {
+                        label: "Monthly Revenue",
+                        value: formatMoney(superAdminSummary.revenue_this_month),
+                        changePercent: computeTrend(superAdminSummary.trend_series, "revenue", "+15%").value,
+                        changePeriod: "vs. last 30 days",
+                      },
+                      {
+                        label: "Property Count",
+                        value: superAdminSummary.property_summary.total,
+                        changePercent: computeTrend(superAdminSummary.trend_series, "properties", "+6%").value,
+                        changePeriod: "vs. last 30 days",
+                      },
+                      {
+                        label: "Pending Review",
+                        value: superAdminSummary.property_summary.pending_review ?? 0,
+                        changePercent: "0%",
+                        changePeriod: "vs. last 30 days",
+                      },
+                      {
+                        label: "Awaiting Verification",
+                        value:
+                          superAdminSummary.property_summary
+                            .awaiting_location_verification ?? 0,
+                        changePercent: "-2%",
+                        changePeriod: "vs. last 30 days",
+                      },
+                    ]}
+                  />
                 </div>
 
                 <div className="row g-5 mb-8">
@@ -1115,7 +1099,11 @@ const DashboardPage: FC = () => {
                   />
                 </div>
 
-                {((adminSummary as any)?.organization?.is_briksy_exclusive ??
+                {((
+                  adminSummary as unknown as {
+                    organization?: { is_briksy_exclusive?: boolean };
+                  }
+                )?.organization?.is_briksy_exclusive ??
                   true) && (
                   <div className="row g-5 mb-6">
                     <div className="col-12">

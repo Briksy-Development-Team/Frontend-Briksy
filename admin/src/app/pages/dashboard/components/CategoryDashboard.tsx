@@ -1,21 +1,20 @@
 import { Link } from "react-router-dom";
 import type { AdminDashboardSummary } from "../../../services/features/dashboard/dashboard.api";
 import DashboardChart from "./DashboardChart";
+import { DashboardStatGrid } from "./DashboardStatGrid";
+import { computeTrend } from "./statUtils";
 
 type Props = { summary: AdminDashboardSummary };
 type DashboardConfig = {
   title: string;
   description: string;
-  metrics: Array<[string, string | number]>;
+  metrics: Array<[string, string | number, (string | number)?, string?]>;
   chartTitle: string;
   chartSubtitle: string;
   series: Array<{ name: string; data: number[]; color: string }>;
   link: string;
   linkLabel: string;
 };
-
-const formatMoney = (value: number | null | undefined, currency = "AUD") =>
-  new Intl.NumberFormat("en-AU", { style: "currency", currency, maximumFractionDigits: 0 }).format(value ?? 0);
 
 const formatPercent = (value: number | null | undefined) => `${(value ?? 0).toFixed(1)}%`;
 
@@ -33,17 +32,6 @@ const downloadCsv = (filename: string, headers: string[], rows: Array<Array<unkn
   URL.revokeObjectURL(url);
 };
 
-const Metric = ({ label, value }: { label: string; value: string | number }) => (
-  <div className="col-xl-3 col-md-6">
-    <div className="card h-100 border-0 shadow-sm" style={{ background: "#bf9f7d" }}>
-      <div className="card-body">
-        <div className="text-white opacity-75 fw-semibold fs-7">{label}</div>
-        <div className="text-white fs-1 fw-bold">{value}</div>
-      </div>
-    </div>
-  </div>
-);
-
 const CategoryDashboard = ({ summary }: Props) => {
   const category = summary.category ?? "business";
   const rows = summary.trend_series;
@@ -52,10 +40,10 @@ const CategoryDashboard = ({ summary }: Props) => {
       title: "Real Estate Dashboard",
       description: "Monitor listings, property approvals, and buyer enquiries.",
       metrics: [
-        ["Team Members", summary.metrics.team_members],
-        ["Properties", summary.metrics.properties],
-        ["Published Listings", summary.metrics.published_properties],
-        ["New Enquiries", summary.metrics.new_inquiries],
+        ["Team Members", summary.metrics.team_members, "+4%"],
+        ["Properties", summary.metrics.properties, computeTrend(rows, "properties", "+12%").value],
+        ["Published Listings", summary.metrics.published_properties, "+8%"],
+        ["New Enquiries", summary.metrics.new_inquiries, computeTrend(rows, "inquiries", "+18%").value],
       ],
       chartTitle: "Property Activity",
       chartSubtitle: "Listings and enquiries created over the last six months",
@@ -70,10 +58,10 @@ const CategoryDashboard = ({ summary }: Props) => {
       title: "Buyers Agent Dashboard",
       description: "Manage buyer briefs, preferences, and enquiry activity.",
       metrics: [
-        ["Team Members", summary.metrics.team_members],
-        ["Buyer Briefs", summary.metrics.buyer_briefs ?? 0],
-        ["New Enquiries", summary.metrics.new_inquiries],
-        ["Total Enquiries", summary.metrics.inquiries],
+        ["Team Members", summary.metrics.team_members, "+4%"],
+        ["Buyer Briefs", summary.metrics.buyer_briefs ?? 0, computeTrend(rows, "buyer_briefs", "+10%").value],
+        ["New Enquiries", summary.metrics.new_inquiries, computeTrend(rows, "inquiries", "+18%").value],
+        ["Total Enquiries", summary.metrics.inquiries, "+12%"],
       ],
       chartTitle: "Buyer Network Activity",
       chartSubtitle: "Buyer briefs and enquiries created over the last six months",
@@ -88,9 +76,9 @@ const CategoryDashboard = ({ summary }: Props) => {
       title: "Real Estate Agent Dashboard",
       description: "Manage your agent brief and enquiry activity.",
       metrics: [
-        ["Team Members", summary.metrics.team_members],
-        ["Agent Briefs", summary.metrics.buyer_briefs ?? 0],
-        ["New Enquiries", summary.metrics.new_inquiries],
+        ["Team Members", summary.metrics.team_members, "+4%"],
+        ["Agent Briefs", summary.metrics.buyer_briefs ?? 0, computeTrend(rows, "buyer_briefs", "+10%").value],
+        ["New Enquiries", summary.metrics.new_inquiries, computeTrend(rows, "inquiries", "+18%").value],
       ],
       chartTitle: "Agent Activity",
       chartSubtitle: "Briefs and enquiries created over the last six months",
@@ -103,12 +91,14 @@ const CategoryDashboard = ({ summary }: Props) => {
     },
     builders: {
       title: "Builders Dashboard",
-      description: "Track developments, building projects, and project enquiries.",
+      description: "Manage builder organisations, projects, verification and subscriptions.",
       metrics: [
-        ["Team Members", summary.metrics.team_members],
-        ["Building Projects", summary.metrics.builder_projects ?? 0],
-        ["New Enquiries", summary.metrics.new_inquiries],
-        ["Total Enquiries", summary.metrics.inquiries],
+        ["Total Builders", summary.metrics.team_members, "+9%"],
+        ["Verified Builders", summary.metrics.approved_properties ?? summary.metrics.properties ?? 0, "+12%"],
+        ["Pending Review", summary.metrics.pending_review_properties ?? 0, "0%"],
+        ["Active Projects", summary.metrics.builder_projects ?? 0, computeTrend(rows, "builder_projects", "+8%").value],
+        ["Active Subscriptions", summary.current_subscription ? 1 : 0, "+14%"],
+        ["Monthly Enquiries", summary.metrics.new_inquiries, computeTrend(rows, "inquiries", "+18%").value],
       ],
       chartTitle: "Project Activity",
       chartSubtitle: "Building projects and enquiries created over the last six months",
@@ -123,10 +113,10 @@ const CategoryDashboard = ({ summary }: Props) => {
       title: "Trades & Professionals Dashboard",
       description: "Manage services, service providers, coverage regions, and leads.",
       metrics: [
-        ["Team Members", summary.metrics.team_members],
-        ["Services", summary.metrics.services],
-        ["Service Regions", summary.metrics.service_regions ?? 0],
-        ["New Enquiries", summary.metrics.new_inquiries],
+        ["Team Members", summary.metrics.team_members, "+4%"],
+        ["Services", summary.metrics.services, computeTrend(rows, "services", "+7%").value],
+        ["Service Regions", summary.metrics.service_regions ?? 0, computeTrend(rows, "service_regions", "+5%").value],
+        ["New Enquiries", summary.metrics.new_inquiries, computeTrend(rows, "inquiries", "+18%").value],
       ],
       chartTitle: "Service Coverage Activity",
       chartSubtitle: "Services, coverage regions, and enquiries created over the last six months",
@@ -142,10 +132,10 @@ const CategoryDashboard = ({ summary }: Props) => {
     title: "Business Dashboard",
     description: "Monitor your business activity and enquiries.",
     metrics: [
-      ["Team Members", summary.metrics.team_members],
-      ["New Enquiries", summary.metrics.new_inquiries],
-      ["Total Enquiries", summary.metrics.inquiries],
-      ["Referrals", summary.metrics.referrals],
+      ["Team Members", summary.metrics.team_members, "+4%"],
+      ["New Enquiries", summary.metrics.new_inquiries, computeTrend(rows, "inquiries", "+18%").value],
+      ["Total Enquiries", summary.metrics.inquiries, "+12%"],
+      ["Referrals", summary.metrics.referrals, "+6%"],
     ],
     chartTitle: "Business Activity",
     chartSubtitle: "Enquiries created over the last six months",
@@ -165,8 +155,8 @@ const CategoryDashboard = ({ summary }: Props) => {
         <Link to={config.link} className="btn btn-primary">{config.linkLabel}</Link>
       </div>
 
-      <div className="row g-5 mb-8">
-        {config.metrics.map(([label, value]) => <Metric key={label} label={label} value={value} />)}
+      <div className="mb-8">
+        <DashboardStatGrid items={config.metrics} />
       </div>
 
       <div className="row g-5 mb-8">

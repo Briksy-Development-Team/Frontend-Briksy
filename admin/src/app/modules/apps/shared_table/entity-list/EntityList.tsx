@@ -3,32 +3,31 @@ import { EntityTable } from "./table/EntityTable";
 import { EntityHeader } from "./components/header/EntityHeader";
 import Paginations from "./components/Pagination";
 import { exportToExcel } from "../utils/exportToExcel";
-import type { ReactNode } from "react";
-import type { RowAction } from "./table/EntityTable";
-import type { AddAction, BulkAction } from "./components/header/EntityHeader";
 import ExportModal from "../utils/ExportModal";
-import { PageHeader, type BreadcrumbItem } from "./components/header/PageHeader";
-import { SummaryFilters, type SummaryCardItem } from "./components/header/SummaryFilters";
-import type { FilterConfig } from "./components/header/FilterDropdown";
+import { PageHeader } from "./components/header/PageHeader";
+import { SummaryFilters } from "./components/header/SummaryFilters";
 import "./EntityList.css";
 
-export type { RowAction, AddAction, BulkAction, BreadcrumbItem, SummaryCardItem, FilterConfig };
+import type {
+  RowAction,
+  AddAction,
+  BulkAction,
+  BreadcrumbItem,
+  SummaryCardItem,
+  FilterConfig,
+  Column,
+  QueryParams,
+} from "./types";
 
-export type Column<T> = {
-  Header: string;
-  accessor: Extract<keyof T, string> | `${Extract<keyof T, string>}.${string}`;
-  sortable?: boolean;
-  alwaysVisible?: boolean;
-  Cell?: (props: { value: T[keyof T]; row: T }) => ReactNode;
-};
-
-export type QueryParams = {
-  page: number;
-  per_page: number;
-  search: string;
-  sort?: string;
-  direction?: "asc" | "desc";
-  filters?: Record<string, unknown>;
+export type {
+  RowAction,
+  AddAction,
+  BulkAction,
+  BreadcrumbItem,
+  SummaryCardItem,
+  FilterConfig,
+  Column,
+  QueryParams,
 };
 
 type Props<T extends { id: number | string }> = {
@@ -58,7 +57,7 @@ type Props<T extends { id: number | string }> = {
   profileType?: "duo" | "avatar" | "none" | "auto";
 };
 
-const EntityList = <T extends { id: number | string }>({
+export function EntityList<T extends { id: number | string }>({
   data,
   total,
   params,
@@ -81,7 +80,7 @@ const EntityList = <T extends { id: number | string }>({
   entityName,
   searchPlaceholder,
   profileType = "auto",
-}: Props<T>) => {
+}: Props<T>) {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(
     columns.map((c) => c.accessor as string),
   );
@@ -241,6 +240,6 @@ const EntityList = <T extends { id: number | string }>({
       )}
     </div>
   );
-};
+}
 
-export { EntityList };
+export default EntityList;

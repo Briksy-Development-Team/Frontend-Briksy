@@ -1,5 +1,5 @@
 import { useRef, useMemo } from "react";
-import type { QueryParams } from "../../EntityList";
+import type { QueryParams } from "../../types";
 import type { FilterConfig } from "./FilterDropdown";
 
 export type SummaryCardItem = {

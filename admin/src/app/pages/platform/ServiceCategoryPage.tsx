@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
-import { KTCard } from "../../../_metronic/helpers";
-import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { EntityList, type Column, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import axiosInstance from "../../services/api/axiosInstance";
 
@@ -26,6 +26,8 @@ const ServiceCategoryPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+
+  const { params, handleParamsChange } = useEntityTable(() => undefined);
 
   const load = async () => {
     setLoading(true);
@@ -85,48 +87,97 @@ const ServiceCategoryPage = () => {
     await load();
   };
 
+  const filtered = useMemo(() => {
+    let list = categories;
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      list = list.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q) || c.description?.toLowerCase().includes(q));
+    }
+    if (params.filters?.is_active !== undefined && params.filters.is_active !== "") {
+      const active = params.filters.is_active === "1";
+      list = list.filter((c) => c.is_active === active);
+    }
+    return list;
+  }, [categories, params.search, params.filters]);
+
+  const paged = useMemo(() => {
+    const start = (params.page - 1) * params.per_page;
+    return filtered.slice(start, start + params.per_page);
+  }, [filtered, params.page, params.per_page]);
+
+  const columns = useMemo<Column<ServiceCategory>[]>(() => [
+    {
+      Header: "Category",
+      accessor: "name",
+      Cell: ({ row }: { row: ServiceCategory | { original: ServiceCategory } }) => {
+        const item = "original" in row ? row.original : row;
+        return (
+          <div>
+            <div className="fw-bold">{item.name}</div>
+            {item.description && <div className="text-muted fs-7">{item.description}</div>}
+          </div>
+        );
+      },
+    },
+    { Header: "Slug", accessor: "slug" },
+    {
+      Header: "Status",
+      accessor: "is_active",
+      Cell: ({ value }: { value: unknown }) => (value ? "Active" : "Hidden"),
+    },
+    { Header: "Order", accessor: "sort_order" },
+  ], []);
+
+  const rowActions: RowAction<ServiceCategory>[] = [
+    { label: "Edit", onClick: (c) => openEdit(c) },
+    { label: "Delete", className: "text-danger", onClick: (c) => void remove(c) },
+  ];
+
   return (
     <Content>
-      <PageHeader title="Service Categories" subtitle="Manage the categories shown across service forms and the public website." />
-      <KTCard>
-        <div className="card-header border-0 pt-6">
-          <h3 className="card-title">Trades & professional categories</h3>
-          <div className="card-toolbar">
-            <button type="button" className="btn btn-primary" onClick={openCreate}>Add category</button>
-          </div>
-        </div>
-        <div className="card-body py-4">
-          {error && <div className="alert alert-danger">{error}</div>}
-          {loading ? <div className="text-muted">Loading categories...</div> : (
-            <div className="table-responsive">
-              <table className="table align-middle table-row-dashed fs-6 gy-5">
-                <thead><tr><th>Name</th><th>Slug</th><th>Status</th><th>Order</th><th className="text-end">Actions</th></tr></thead>
-                <tbody>
-                  {categories.map((category) => (
-                    <tr key={category.id}>
-                      <td><div className="fw-bold">{category.name}</div><div className="text-muted">{category.description}</div></td>
-                      <td>{category.slug}</td>
-                      <td><span className={`badge ${category.is_active ? "badge-light-success" : "badge-light-secondary"}`}>{category.is_active ? "Active" : "Hidden"}</span></td>
-                      <td>{category.sort_order}</td>
-                      <td className="text-end">
-                        <button type="button" className="btn btn-sm btn-light-primary me-2" onClick={() => openEdit(category)}>Edit</button>
-                        <button type="button" className="btn btn-sm btn-light-danger" onClick={() => void remove(category)}>Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </KTCard>
+      {error && <div className="alert alert-danger mb-4">{error}</div>}
+      {loading && <div className="text-muted mb-2">Loading categories...</div>}
+
+      <EntityList
+        title="Service Categories"
+        subtitle="Manage the categories shown across service forms and the public website."
+        entityName="categories"
+        profileType="none"
+        data={paged}
+        total={filtered.length}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={columns}
+        filtersConfig={[
+          {
+            key: "is_active",
+            label: "Status",
+            type: "select",
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Hidden", value: "0" },
+            ],
+          },
+        ]}
+        headerActions={[{ label: "Add Category", onClick: openCreate }]}
+        rowActions={rowActions}
+      />
 
       {isModalOpen && (
-        <ModalShell title={editing ? "Edit service category" : "Add service category"} onClose={() => { setEditing(null); setIsModalOpen(false); }} onSubmit={save} isSubmitting={saving} isValid={form.name.trim().length > 0}>
+        <ModalShell
+          title={editing ? "Edit service category" : "Add service category"}
+          onClose={() => { setEditing(null); setIsModalOpen(false); }}
+          onSubmit={save}
+          isSubmitting={saving}
+          isValid={form.name.trim().length > 0}
+        >
           <div className="mb-5"><label className="form-label">Name</label><input className="form-control" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
           <div className="mb-5"><label className="form-label">Slug <span className="text-muted">(optional)</span></label><input className="form-control" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} /></div>
           <div className="mb-5"><label className="form-label">Description</label><textarea className="form-control" rows={3} value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></div>
-          <div className="row"><div className="col-md-6 mb-5"><label className="form-label">Sort order</label><input type="number" className="form-control" value={form.sort_order} onChange={(event) => setForm({ ...form, sort_order: Number(event.target.value) })} /></div><div className="col-md-6 mb-5 d-flex align-items-end"><label className="form-check form-switch form-check-custom form-check-solid"><input className="form-check-input" type="checkbox" checked={form.is_active} onChange={(event) => setForm({ ...form, is_active: event.target.checked })} /><span className="form-check-label">Visible on website</span></label></div></div>
+          <div className="row">
+            <div className="col-md-6 mb-5"><label className="form-label">Sort order</label><input type="number" className="form-control" value={form.sort_order} onChange={(event) => setForm({ ...form, sort_order: Number(event.target.value) })} /></div>
+            <div className="col-md-6 mb-5 d-flex align-items-end"><label className="form-check form-switch form-check-custom form-check-solid"><input className="form-check-input" type="checkbox" checked={form.is_active} onChange={(event) => setForm({ ...form, is_active: event.target.checked })} /><span className="form-check-label">Visible on website</span></label></div>
+          </div>
         </ModalShell>
       )}
     </Content>

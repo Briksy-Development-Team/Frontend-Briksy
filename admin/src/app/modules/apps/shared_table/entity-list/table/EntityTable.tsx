@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useTable, type HeaderGroup, type Row, type Cell, type Column as ReactTableColumn } from "react-table";
-import type { Column as CustomColumn } from "../EntityList";
+import type { Column as CustomColumn } from "../types";
 import { usePermissionAccess } from "../../../../auth";
 
 export type RowAction<T> = {
