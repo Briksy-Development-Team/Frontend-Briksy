@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
-import { KTCard, KTIcon } from "../../../_metronic/helpers";
-import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { EntityList, type Column, type SummaryCardItem } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { useRoleAccess } from "../../modules/auth";
 import {
   fetchAdminReferralDashboardApi,
@@ -9,6 +9,7 @@ import {
 } from "../../services/features/referrals/referral.api";
 import type {
   ReferralDashboard,
+  ReferralOrganization,
   ReferralProgramOverview,
 } from "../../services/features/referrals/referral.types";
 import { formatDateTime } from "../../services/utils/dateFormat";
@@ -18,7 +19,9 @@ const ReferralsPage = () => {
   const [data, setData] = useState<ReferralDashboard | ReferralProgramOverview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [copyMessage, setCopyMessage] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const { params, handleParamsChange } = useEntityTable(() => undefined);
 
   useEffect(() => {
     let active = true;
@@ -28,9 +31,7 @@ const ReferralsPage = () => {
 
     loader()
       .then((response) => {
-        if (active) {
-          setData(response);
-        }
+        if (active) setData(response);
       })
       .catch((requestError: unknown) => {
         if (active) {
@@ -38,9 +39,7 @@ const ReferralsPage = () => {
         }
       })
       .finally(() => {
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       });
 
     return () => {
@@ -52,165 +51,191 @@ const ReferralsPage = () => {
     value: ReferralDashboard | ReferralProgramOverview | null,
   ): value is ReferralDashboard => Boolean(value && "referral_link" in value);
 
-  const summaryCards = useMemo(
-    () =>
-      isSuperAdmin
-        ? [
-            { label: "Companies", value: String((data as ReferralProgramOverview | null)?.totals.organizations ?? 0) },
-            { label: "With Referrals", value: String((data as ReferralProgramOverview | null)?.totals.with_referrals ?? 0) },
-            { label: "Total in Page", value: String((data as ReferralProgramOverview | null)?.pagination?.total ?? 0) },
-          ]
-        : [
-            { label: "Referral Code", value: (data as ReferralDashboard | null)?.referral_code ?? "—" },
-            { label: "Total Onboards", value: String((data as ReferralDashboard | null)?.total_referrals ?? 0) },
-            { label: "Share Link", value: (data as ReferralDashboard | null)?.referral_link ?? "—" },
-          ],
-    [data, isSuperAdmin],
-  );
+  const copyLink = useCallback(async () => {
+    if (!isAdminReferralDashboard(data) || !data.referral_link) return;
+    await navigator.clipboard.writeText(data.referral_link);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2500);
+  }, [data]);
 
-  const copyLink = async () => {
-    if (!isAdminReferralDashboard(data) || !data.referral_link) {
-      return;
+  const rawList: ReferralOrganization[] = useMemo(() => {
+    if (!data) return [];
+    if (isSuperAdmin) {
+      return (data as ReferralProgramOverview).organizations ?? [];
+    }
+    return (data as ReferralDashboard).recent_referrals ?? [];
+  }, [data, isSuperAdmin]);
+
+  const filtered = useMemo(() => {
+    let list = rawList;
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      list = list.filter(
+        (r) =>
+          r.name.toLowerCase().includes(q) ||
+          r.trading_name?.toLowerCase().includes(q) ||
+          r.referral_code?.toLowerCase().includes(q) ||
+          r.contact_email?.toLowerCase().includes(q) ||
+          r.referred_by_name?.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [rawList, params.search]);
+
+  const paged = useMemo(() => {
+    const start = (params.page - 1) * params.per_page;
+    return filtered.slice(start, start + params.per_page);
+  }, [filtered, params.page, params.per_page]);
+
+  const summaryCards = useMemo<SummaryCardItem[]>(() => {
+    if (!data) return [];
+    if (isSuperAdmin) {
+      const overview = data as ReferralProgramOverview;
+      return [
+        {
+          id: "companies",
+          label: "Companies",
+          count: overview.totals.organizations ?? 0,
+          subtitle: "Total registered companies",
+          dotColor: "#342511",
+          active: true,
+        },
+        {
+          id: "with_referrals",
+          label: "With Referrals",
+          count: overview.totals.with_referrals ?? 0,
+          subtitle: "Active referring businesses",
+          dotColor: "#1F7A4D",
+        },
+        {
+          id: "total",
+          label: "Total in Page",
+          count: overview.pagination?.total ?? overview.organizations.length,
+          subtitle: "Total program records",
+          dotColor: "#8A5A00",
+        },
+      ];
     }
 
-    await navigator.clipboard.writeText(data.referral_link);
-    setCopyMessage("Referral link copied to clipboard.");
-    window.setTimeout(() => setCopyMessage(null), 2500);
-  };
+    const dashboard = data as ReferralDashboard;
+    return [
+      {
+        id: "code",
+        label: "Referral Code",
+        count: dashboard.referral_code ?? "—",
+        subtitle: "Your unique invite code",
+        dotColor: "#342511",
+        active: true,
+      },
+      {
+        id: "onboards",
+        label: "Total Onboards",
+        count: dashboard.total_referrals ?? 0,
+        subtitle: "Companies joined via your link",
+        dotColor: "#1F7A4D",
+      },
+    ];
+  }, [data, isSuperAdmin]);
+
+  const columns = useMemo<Column<ReferralOrganization>[]>(() => {
+    const baseCol: Column<ReferralOrganization>[] = [
+      {
+        Header: "Company",
+        accessor: "name",
+        Cell: ({ row }: { row: ReferralOrganization | { original: ReferralOrganization } }) => {
+          const item = "original" in row ? row.original : row;
+          return (
+            <div>
+              <div className="fw-semibold">{item.name}</div>
+              <div className="text-muted fs-7">{item.trading_name ?? "—"}</div>
+            </div>
+          );
+        },
+      },
+    ];
+
+    if (isSuperAdmin) {
+      return [
+        ...baseCol,
+        {
+          Header: "Referral Code",
+          accessor: "referral_code",
+          Cell: ({ value }: { value: unknown }) => String(value ?? "—"),
+        },
+        {
+          Header: "Referred By",
+          accessor: "referred_by_name",
+          Cell: ({ value }: { value: unknown }) => String(value ?? "—"),
+        },
+        {
+          Header: "Referral Count",
+          accessor: "referred_organizations_count",
+          Cell: ({ value }: { value: unknown }) => String(value ?? 0),
+        },
+        {
+          Header: "Created",
+          accessor: "created_at",
+          Cell: ({ value }: { value: unknown }) =>
+            formatDateTime(value ? String(value) : undefined, { withRelative: false }),
+        },
+      ];
+    }
+
+    return [
+      ...baseCol,
+      {
+        Header: "Email",
+        accessor: "contact_email",
+        Cell: ({ value }: { value: unknown }) => String(value ?? "—"),
+      },
+      {
+        Header: "Referral Code",
+        accessor: "referral_code",
+        Cell: ({ value }: { value: unknown }) => String(value ?? "—"),
+      },
+      {
+        Header: "Created",
+        accessor: "created_at",
+        Cell: ({ value }: { value: unknown }) =>
+          formatDateTime(value ? String(value) : undefined, { withRelative: false }),
+      },
+    ];
+  }, [isSuperAdmin]);
+
+  const headerActions = useMemo(() => {
+    if (!isSuperAdmin && isAdminReferralDashboard(data)) {
+      return [
+        {
+          label: copied ? "Copied!" : "Copy Referral Link",
+          onClick: copyLink,
+        },
+      ];
+    }
+    return [];
+  }, [isSuperAdmin, data, copied, copyLink]);
 
   return (
     <Content>
-      <PageHeader
+      {loading && <div className="text-muted mb-2">Loading referral data...</div>}
+      {error && <div className="alert alert-danger mb-4">{error}</div>}
+
+      <EntityList
         title={isSuperAdmin ? "Referral Programs" : "Referrals"}
         subtitle={
           isSuperAdmin
             ? "Review referral codes and onboarding activity across all companies."
             : "Share your referral link to bring new companies and onboard more businesses."
         }
+        entityName="referrals"
+        profileType="none"
+        summaryCards={summaryCards}
+        data={paged}
+        total={filtered.length}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={columns}
+        headerActions={headerActions}
       />
-
-      {loading && <div className="alert alert-light">Loading referral dashboard...</div>}
-      {error && <div className="alert alert-danger">{error}</div>}
-      {copyMessage && <div className="alert alert-success">{copyMessage}</div>}
-
-      {!loading && !error && data && (
-        <>
-          <div className="row g-5 mb-5">
-            {summaryCards.map((card) => (
-              <div className="col-md-4" key={card.label}>
-                <KTCard>
-                  <div className="card-body">
-                    <div className="text-muted fs-7 mb-2">{card.label}</div>
-                    <div className="fw-bold fs-4 text-gray-900 text-break">{card.value}</div>
-                  </div>
-                </KTCard>
-              </div>
-            ))}
-          </div>
-
-          <KTCard>
-            <div className="card-body">
-              {isSuperAdmin ? (
-                <>
-                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-                    <div>
-                      <h3 className="fw-bold mb-1">Referral Programs</h3>
-                      <div className="text-muted">Company-wide referral overview.</div>
-                    </div>
-                  </div>
-
-                  <div className="table-responsive">
-                    <table className="table align-middle table-row-dashed fs-6 gy-4">
-                      <thead>
-                        <tr className="text-start text-muted fw-bold fs-7 text-uppercase">
-                          <th>Company</th>
-                          <th>Referral Code</th>
-                          <th>Referred By</th>
-                          <th>Referral Count</th>
-                          <th>Created</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(data as ReferralProgramOverview).organizations.length === 0 ? (
-                          <tr>
-                            <td colSpan={5}>
-                              <div className="alert alert-light border mb-0">No referral programs found.</div>
-                            </td>
-                          </tr>
-                        ) : (
-                          (data as ReferralProgramOverview).organizations.map((organization) => (
-                            <tr key={organization.id}>
-                              <td>
-                                <div className="fw-semibold">{organization.name}</div>
-                                <div className="text-muted fs-7">{organization.trading_name ?? "—"}</div>
-                              </td>
-                              <td>{organization.referral_code ?? "—"}</td>
-                              <td>{organization.referred_by_name ?? "—"}</td>
-                              <td>{String(organization.referred_organizations_count ?? 0)}</td>
-                              <td>{formatDateTime(organization.created_at ?? undefined, { withRelative: false })}</td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-                    <div>
-                      <h3 className="fw-bold mb-1">Referral Link</h3>
-                      <div className="text-muted">Use this link when inviting new signups.</div>
-                    </div>
-                    <button className="btn btn-primary" onClick={copyLink}>
-                      <KTIcon iconName="copy" className="fs-2 me-2" />
-                      Copy Link
-                    </button>
-                  </div>
-
-                  <div className="alert alert-light border border-dashed mb-5 text-break">
-                    {(data as ReferralDashboard).referral_link}
-                  </div>
-
-                  <div className="table-responsive">
-                    <table className="table align-middle table-row-dashed fs-6 gy-4">
-                      <thead>
-                        <tr className="text-start text-muted fw-bold fs-7 text-uppercase">
-                          <th>Company</th>
-                          <th>Email</th>
-                          <th>Referral Code</th>
-                          <th>Created</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(data as ReferralDashboard).recent_referrals.length === 0 ? (
-                          <tr>
-                            <td colSpan={4}>
-                              <div className="alert alert-light border mb-0">No referred companies yet.</div>
-                            </td>
-                          </tr>
-                        ) : (
-                          (data as ReferralDashboard).recent_referrals.map((organization) => (
-                            <tr key={organization.id}>
-                              <td>
-                                <div className="fw-semibold">{organization.name}</div>
-                                <div className="text-muted fs-7">{organization.trading_name ?? "—"}</div>
-                              </td>
-                              <td>{organization.contact_email ?? "—"}</td>
-                              <td>{organization.referral_code ?? "—"}</td>
-                              <td>{formatDateTime(organization.created_at ?? undefined, { withRelative: false })}</td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
-            </div>
-          </KTCard>
-        </>
-      )}
     </Content>
   );
 };

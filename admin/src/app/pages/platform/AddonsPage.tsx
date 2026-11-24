@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
-import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
+import { EntityList, type Column, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import {
   deleteSuperAdminAddonApi,
@@ -26,6 +27,8 @@ export default function AddonsPage() {
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Partial<Addon> | null>(null);
 
+  const { params, handleParamsChange } = useEntityTable(() => undefined);
+
   const load = async () => {
     setLoading(true);
     setError(null);
@@ -49,98 +52,128 @@ export default function AddonsPage() {
     await load();
   };
 
+  const filtered = useMemo(() => {
+    let list = items;
+    if (params.search) {
+      const q = params.search.toLowerCase();
+      list = list.filter(
+        (a) =>
+          a.name.toLowerCase().includes(q) ||
+          a.slug.toLowerCase().includes(q) ||
+          a.feature_key.toLowerCase().includes(q) ||
+          a.description?.toLowerCase().includes(q)
+      );
+    }
+    if (params.filters?.is_active !== undefined && params.filters.is_active !== "") {
+      const active = params.filters.is_active === "1";
+      list = list.filter((a) => a.is_active === active);
+    }
+    return list;
+  }, [items, params.search, params.filters]);
+
+  const paged = useMemo(() => {
+    const start = (params.page - 1) * params.per_page;
+    return filtered.slice(start, start + params.per_page);
+  }, [filtered, params.page, params.per_page]);
+
+  const columns = useMemo<Column<Addon>[]>(
+    () => [
+      {
+        Header: "Name",
+        accessor: "name",
+        Cell: ({ row }: { row: Addon | { original: Addon } }) => {
+          const item = "original" in row ? row.original : row;
+          return (
+            <div>
+              <div className="fw-bold">{item.name}</div>
+              {item.description && <div className="text-muted fs-7">{item.description}</div>}
+            </div>
+          );
+        },
+      },
+      { Header: "Slug", accessor: "slug" },
+      { Header: "Feature Key", accessor: "feature_key" },
+      {
+        Header: "Pricing",
+        accessor: "pricing_type",
+        Cell: ({ row }: { row: Addon | { original: Addon } }) => {
+          const p = "original" in row ? row.original : row;
+          if (p.pricing_type === "monthly") return `$${p.monthly_price ?? 0}/mo`;
+          if (p.pricing_type === "yearly") return `$${p.yearly_price ?? 0}/yr`;
+          if (p.pricing_type === "one_time") return `$${p.one_time_price ?? 0} once`;
+          return p.pricing_type;
+        },
+      },
+      {
+        Header: "Status",
+        accessor: "is_active",
+        Cell: ({ value }: { value: unknown }) => (value ? "Active" : "Inactive"),
+      },
+      { Header: "Order", accessor: "sort_order" },
+    ],
+    []
+  );
+
+  const rowActions: RowAction<Addon>[] = [
+    {
+      label: "Edit",
+      onClick: (addon) => setEditing(addon),
+    },
+    {
+      label: "Toggle Status",
+      onClick: async (addon) => {
+        await toggleSuperAdminAddonApi(addon.id, !addon.is_active);
+        await load();
+      },
+    },
+    {
+      label: "Delete",
+      className: "text-danger",
+      onClick: async (addon) => {
+        if (!window.confirm(`Delete ${addon.name}?`)) return;
+        await deleteSuperAdminAddonApi(addon.id);
+        await load();
+      },
+    },
+  ];
+
   return (
     <Content>
-      <PageHeader title="Add-ons" subtitle="Manage chargeable feature add-ons" />
-      <div className="card">
-        <div className="card-header d-flex align-items-center justify-content-between">
-          <div className="fw-semibold">Active add-ons</div>
-          <button className="btn btn-primary" onClick={() => setEditing(emptyAddon)}>New Add-on</button>
-        </div>
-        <div className="card-body">
-          {loading ? <div className="text-muted">Loading...</div> : null}
-          {error ? <div className="alert alert-danger">{error}</div> : null}
-          <div className="table-responsive">
-            <table className="table align-middle table-row-bordered">
-              <thead>
-                <tr className="text-muted fs-7 text-uppercase">
-                  <th>Name</th>
-                  <th>Slug</th>
-                  <th>Feature</th>
-                  <th>Pricing</th>
-                  <th>Status</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((addon) => (
-                  <tr key={addon.id}>
-                    <td className="fw-semibold">{addon.name}</td>
-                    <td>{addon.slug}</td>
-                    <td>{addon.feature_key}</td>
-                    <td>{addon.pricing_type}</td>
-                    <td>{addon.is_active ? "Active" : "Inactive"}</td>
-                    <td className="text-end">
-                      <div className="dropdown">
-                        <button
-                          type="button"
-                          className="btn btn-sm btn-light btn-active-light-primary"
-                          data-bs-toggle="dropdown"
-                        >
-                          Actions
-                        </button>
-                        <ul className="dropdown-menu">
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item"
-                              onClick={() => setEditing(addon)}
-                            >
-                              Edit
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item"
-                              onClick={async () => {
-                                await toggleSuperAdminAddonApi(addon.id, !addon.is_active);
-                                await load();
-                              }}
-                            >
-                              Toggle
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              className="dropdown-item text-danger"
-                              onClick={async () => {
-                                await deleteSuperAdminAddonApi(addon.id);
-                                await load();
-                              }}
-                            >
-                              Delete
-                            </button>
-                          </li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      {error && <div className="alert alert-danger mb-4">{error}</div>}
+      {loading && <div className="text-muted mb-2">Loading add-ons...</div>}
 
-      {editing ? (
+      <EntityList
+        title="Add-ons"
+        subtitle="Manage chargeable feature add-ons"
+        entityName="addons"
+        profileType="none"
+        data={paged}
+        total={filtered.length}
+        params={params}
+        onParamsChange={handleParamsChange}
+        columns={columns}
+        filtersConfig={[
+          {
+            key: "is_active",
+            label: "Status",
+            type: "select",
+            options: [
+              { label: "Active", value: "1" },
+              { label: "Inactive", value: "0" },
+            ],
+          },
+        ]}
+        headerActions={[{ label: "New Add-on", onClick: () => setEditing(emptyAddon) }]}
+        rowActions={rowActions}
+      />
+
+      {editing && (
         <ModalShell
           title={editing.id ? "Edit Add-on" : "New Add-on"}
           onClose={() => setEditing(null)}
           onSubmit={submit}
           submitLabel="Save"
-          isValid={!!editing.name && !!editing.slug && !!editing.feature_key}
+          isValid={Boolean(editing.name && editing.slug && editing.feature_key)}
         >
           <div className="row g-5">
             <div className="col-md-6">
@@ -190,7 +223,7 @@ export default function AddonsPage() {
             </div>
           </div>
         </ModalShell>
-      ) : null}
+      )}
     </Content>
   );
 }
