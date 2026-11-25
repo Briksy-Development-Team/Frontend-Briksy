@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useOutletContext } from "react-router-dom";
 import gsap from "gsap";
-import {
-  BriefcaseBusiness,
-  Sparkles,
-  Building2,
-  FileText,
-  MapPin,
-  type LucideIcon,
-} from "lucide-react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Loader } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
+import AiIcon from "../../../assets/icons/category/ai.svg";
+import BuilderIcon from "../../../assets/icons/category/builder.svg";
+import BuyerAgentIcon from "../../../assets/icons/category/buyeragenst.svg";
+import HouseBrownIcon from "../../../assets/icons/category/housebrown.svg";
+import RealEstateIcon from "../../../assets/icons/category/realestate.svg";
+import TraderIcon from "../../../assets/icons/category/trader.svg";
 import CARD_IMAGE from "../../../assets/about/electrician.svg";
 import ImageBigone from "../../../assets/about/imagebigone.svg";
 import ImageBigTwo from "../../../assets/about/imagebigtwo.svg";
@@ -17,48 +19,15 @@ import ImageSmallTwo from "../../../assets/about/imagesmalltwo.svg";
 
 const ORBIT_IMAGES = [ImageBigone, ImageBigTwo, ImageSmallOne, ImageSmallTwo];
 
-type Row = {
-  icon: LucideIcon;
-  iconClass?: string;
-  label: string;
-  meta?: string;
-};
+const PILL_TAGS = [
+  { icon: BuilderIcon, label: "Builders", className: "top-8 left-1/2 -translate-x-2" },
+  { icon: RealEstateIcon, label: "Real Estate\nAgents", className: "top-10 left-5" },
+  { icon: TraderIcon, label: "Trades &\nProfessionals", className: "top-16 -right-12" },
+  { icon: BuyerAgentIcon, label: "Buyers\nAgent", className: "top-32 -left-10" },
+];
 
-const VERIFIED_CARD: { title: string; rows: Row[] } = {
-  title: "Find local professionals",
-  rows: [
-    {
-      icon: BriefcaseBusiness,
-      iconClass: "text-[#342511]",
-      label: "Multiple services",
-      meta: "Local experts",
-    },
-  ],
-};
-
-const CHECKS_CARD: { title: string; rows: Row[] } = {
-  title: "Know who you're connecting with",
-  rows: [
-    {
-      icon: Building2,
-      iconClass: "text-[#07172a]/50",
-      label: "Business name listed",
-    },
-    {
-      icon: FileText,
-      iconClass: "text-[#07172a]/50",
-      label: "ABN information available",
-    },
-    {
-      icon: MapPin,
-      iconClass: "text-[#07172a]/50",
-      label: "Local business details",
-    },
-  ].map((row) => ({ ...row, iconClass: "text-[#07172a]/50" })),
-};
-
-const STAGE_W = 620;
-const STAGE_H = 720;
+const STAGE_W = 420;
+const STAGE_H = 520;
 
 const PERSPECTIVE = 1000; // Slightly higher than 900 to flatten the distortion just a bit
 const MAX_TILT_Y = 13; // Down from 22 (a gentle reduction in left/right tilt)
@@ -95,40 +64,6 @@ const RINGS = [
 const ORBIT_TILES = RINGS.flatMap(({ tiles, ...ring }) =>
   tiles.map((tile) => ({ ...ring, ...tile })),
 );
-
-function InfoCard({
-  title,
-  rows,
-  className,
-}: {
-  title: string;
-  rows: Row[];
-  className: string;
-}) {
-  return (
-    <div
-      data-z={INFO_CARD_Z}
-      className={`float-layer absolute w-[215px] overflow-hidden rounded-[10px] border border-[#07172a]/10 bg-[#fffefa]/90 text-[#07172a]
-         shadow-[0_12px_28px_rgba(7,23,42,0.1),inset_0_1px_0_rgba(255 ,255,255,0.7)] backdrop-blur-md ${className}`}
-    >
-      <p className="px-2 py-2 text-[12px] font-medium leading-tight">{title}</p>
-      {rows.map(({ icon: Icon, iconClass, label, meta }) => (
-        <div
-          key={label}
-          className="flex items-center justify-between border-t border-[#07172a]/5 bg-[#07172a]/[0.02] px-3 py-2 text-[10.5px] leading-tight"
-        >
-          <span className="flex items-center gap-1.5 text-[#07172a]/85 text-nowrap">
-            <Icon size={14} strokeWidth={1.8} className={iconClass} />
-            {label}
-          </span>
-          {meta && (
-            <span className="text-[#07172a]/45 text-[10px] text-nowrap">{meta}</span>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function LeftVisual({
   trackRef,
@@ -213,6 +148,19 @@ export default function LeftVisual({
         ease: "steps(8)",
         repeat: -1,
       });
+
+      gsap.fromTo(
+        q(".pill-bubble"),
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.55,
+          stagger: 0.1,
+          ease: "back.out(1.7)",
+          scrollTrigger: { trigger: area, start: "top 70%", once: true },
+        },
+      );
 
       const clamp = gsap.utils.clamp(-1, 1);
       const pointer = { x: 0, y: 0, active: false };
@@ -341,7 +289,7 @@ export default function LeftVisual({
 
         <div
           ref={tiltRef}
-          className="relative z-10 h-[650px] w-[450px] [transform-style:preserve-3d]"
+          className="relative z-10 h-[500px] w-[350px] [transform-style:preserve-3d]"
         >
           <img
             src={CARD_IMAGE}
@@ -349,8 +297,30 @@ export default function LeftVisual({
             className="h-full w-full rounded-[18px] object-cover shadow-[0_20px_45px_rgba(0,0,0,0.22)]"
           />
 
-          <InfoCard {...VERIFIED_CARD} className="-right-14 top-6" />
-          <InfoCard {...CHECKS_CARD} className="-left-12 -bottom-4" />
+          {PILL_TAGS.map(({ icon, label, className }) => (
+            <div key={label} data-z={INFO_CARD_Z} className={`float-layer absolute ${className}`}>
+              <div className="pill-bubble flex items-center gap-2.5 rounded-full border border-[#07172a]/5 bg-[#fffefa]/95 px-4 py-2.5 text-[#342511] shadow-[0_12px_28px_rgba(7,23,42,0.12)] backdrop-blur-md">
+                <img src={icon} alt="" className="h-5 w-5 shrink-0" />
+                <span className="whitespace-pre-line text-[13px] font-medium leading-[1.2]">{label}</span>
+              </div>
+            </div>
+          ))}
+
+          <div
+            data-z={INFO_CARD_Z}
+            className="float-layer absolute -left-12 bottom-12 w-[200px] overflow-hidden rounded-[8px] border border-[#07172a]/10 bg-[#fffefa]/[0.86] shadow-[0_9px_24px_rgba(7,23,42,0.09),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-[9px]"
+          >
+            <div className="flex items-start gap-[7px] px-[11px] py-2">
+              <img src={HouseBrownIcon} alt="" className="h-4 w-4 shrink-0" />
+              <span className="text-[0.7rem] leading-4 ">Your property ecosystem</span>
+            </div>
+            <div className="flex items-center gap-[5px] border-t border-[#07172a]/5 bg-[#07172a]/[0.02] px-[11px] py-[7px]">
+              <Loader size={13} className="spin-icon shrink-0" />
+              <span className="text-[0.6rem]  tracking-[0.28px] ">
+                Build, Buy, Connect. All in One page
+              </span>
+            </div>
+          </div>
 
           <button
             type="button"
@@ -358,7 +328,7 @@ export default function LeftVisual({
             data-z={ASK_BUTTON_Z}
             className="float-layer absolute -right-10 bottom-24 flex items-center gap-1.5 whitespace-nowrap rounded-full border-[3px] border-[#F5551A] bg-white px-5 py-2.5 text-sm leading-none font-semibold text-[#F5551A] shadow-[0_12px_24px_rgba(245,85,26,0.22),inset_0_0_16px_rgba(245,85,26,0.35)] cursor-pointer"
           >
-            <Sparkles size={18} />
+            <img src={AiIcon} alt="" className="h-[18px] w-[18px] shrink-0" />
             Ask Ai
           </button>
         </div>
