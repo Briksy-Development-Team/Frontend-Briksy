@@ -16,7 +16,7 @@ export const buildApiParams = (params: {
   filter: params.filters
     ? Object.fromEntries(
         Object.entries(params.filters)
-          .filter(([, v]) => v !== undefined && v !== null && v !== "")
+          .filter(([, v]) => v !== undefined && v !== null && v !== "" && (!Array.isArray(v) || v.length > 0))
           .map(([k, v]) => {
             if (Array.isArray(v)) return [k, v.join(",")];
             if (v && typeof v === "object") {

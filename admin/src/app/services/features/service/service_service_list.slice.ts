@@ -22,6 +22,7 @@ type ServiceState = {
   total: number;
 
   loading: boolean;
+  listRequestId?: string;
   saving: boolean;
 
   error: string | null;
@@ -116,18 +117,23 @@ const serviceSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      .addCase(fetchServiceList.pending, (state) => {
+      .addCase(fetchServiceList.pending, (state, action) => {
+        state.listRequestId = action.meta.requestId;
         state.loading = true;
         state.error = null;
       })
 
       .addCase(fetchServiceList.fulfilled, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.data = action.payload.data;
         state.total = action.payload.total;
       })
 
       .addCase(fetchServiceList.rejected, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
 
         state.error = action.error.message ?? "Failed to fetch services";

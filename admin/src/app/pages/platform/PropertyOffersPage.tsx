@@ -3,7 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import { Content } from "../../../_metronic/layout/components/content";
 import { EntityList, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
-import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { offersConfig } from "../../services/features/offers/offers.config";
@@ -38,19 +39,23 @@ function PropertyOffersList({
   error,
   rowActions,
   onNewOffer,
+  revision,
 }: {
   items: PropertyOffer[];
   loading: boolean;
   error: string | null;
   rowActions: RowAction<PropertyOffer>[];
   onNewOffer: () => void;
+  revision: number;
 }) {
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : ["admin"]
   );
 
-  const { params, handleParamsChange } = useEntityTable(() => undefined);
+  const summary = isSuperAdmin ? listingSummaries.propertyOffers : undefined;
+  const server = useServerListing<PropertyOffer>(summary?.endpoint, { sort: "sort_order", direction: "asc" }, revision);
+  const { params, handleParamsChange } = server;
 
   const filteredItems = useMemo(() => {
     let result = [...items];
@@ -72,16 +77,17 @@ function PropertyOffersList({
 
   return (
     <Content>
-      {loading ? <div className="text-muted mb-4">Loading offers...</div> : null}
-      {error ? <div className="alert alert-danger mb-5">{error}</div> : null}
+      {(loading || server.loading) ? <div className="text-muted mb-4">Loading offers...</div> : null}
+      {(error || server.error) ? <div className="alert alert-danger mb-5">{error || server.error}</div> : null}
 
       <EntityList
         title="Property Offers"
         subtitle="Create promotional offers for listings"
         breadcrumbs={["Dashboard", "Property Offers"]}
         entityName="offers"
-        data={filteredItems}
-        total={filteredItems.length}
+        data={isSuperAdmin ? server.rows : filteredItems}
+        total={isSuperAdmin ? server.total : filteredItems.length}
+        listingSummary={summary}
         params={params}
         onParamsChange={handleParamsChange}
         columns={offersConfig.columns}
@@ -102,6 +108,8 @@ function PropertyOffersList({
 }
 
 export default function PropertyOffersPage() {
+  const { isSuperAdmin } = useRoleAccess();
+  const [revision, setRevision] = useState(0);
   const [items, setItems] = useState<PropertyOffer[]>([]);
   const [properties, setProperties] = useState<PropertyList[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,11 +124,12 @@ export default function PropertyOffersPage() {
     setError(null);
     try {
       const [offers, propertyResponse] = await Promise.all([
-        fetchPropertyOffersApi(),
+        isSuperAdmin ? Promise.resolve([]) : fetchPropertyOffersApi(),
         fetchPropertyListApi({ per_page: 100, sort: "created_at", direction: "desc" }),
       ]);
 
       setItems(offers);
+      if (isSuperAdmin) setRevision((value) => value + 1);
       setProperties(propertyResponse.data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load property offers.");
@@ -212,6 +221,7 @@ export default function PropertyOffersPage() {
           element={
             <PropertyOffersList
               items={items}
+              revision={revision}
               loading={loading}
               error={error}
               rowActions={rowActions}

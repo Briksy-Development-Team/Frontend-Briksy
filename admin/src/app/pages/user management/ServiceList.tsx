@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -27,7 +28,11 @@ import { getRolePortalBaseRoute, useRoleAccess } from "../../modules/auth";
 import ServiceMapPage from "../platform/ServiceMapPage";
 import { useToast } from "../../services/ui/toast/useToast";
 
-const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: RowAction<ServiceList>[]; onBulkDelete?: (ids: string[]) => void }) => {
+const ServiceListPage = ({ rowActions, onBulkDelete, revision }: {
+    rowActions?: RowAction<ServiceList>[];
+    onBulkDelete?: (ids: string[]) => void;
+    revision: number;
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(isSuperAdmin ? ["super_admin"] : ["admin"]);
@@ -40,7 +45,7 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: RowAction<
     } = useSelector((s: RootState) => s.services);
 
     const { params, handleParamsChange } = useEntityTable((p) =>
-        dispatch(fetchServiceList(p)),
+        dispatch(fetchServiceList(p)), undefined, isSuperAdmin ? revision : undefined,
     );
 
     const title = "Services";
@@ -62,6 +67,7 @@ const ServiceListPage = ({ rowActions, onBulkDelete }: { rowActions?: RowAction<
             {loading && <div className="alert alert-light py-2">Loading services...</div>}
 
             <EntityList
+                listingSummary={isSuperAdmin ? listingSummaries.services : undefined}
                 title={title}
                 subtitle={subtitle}
                 entityName="services"
@@ -106,6 +112,8 @@ const ServiceListPageWrapper = () => {
     } = useSelector((s: RootState) => s.services);
     const [bulkDeleteIds, setBulkDeleteIds] = useState<string[]>([]);
     const [savedService, setSavedService] = useState<unknown>(null);
+    const [revision, setRevision] = useState(0);
+    const refreshList = () => setRevision((value) => value + 1);
 
     const rowActions: RowAction<ServiceList>[] = canManage
         ? [
@@ -126,7 +134,7 @@ const ServiceListPageWrapper = () => {
     return (
         <>
             <Routes>
-                <Route index element={<ServiceListPage rowActions={rowActions} onBulkDelete={setBulkDeleteIds} />} />
+                <Route index element={<ServiceListPage rowActions={rowActions} onBulkDelete={setBulkDeleteIds} revision={revision} />} />
                 <Route path="map" element={<ServiceMapPage />} />
                 <Route path="detail/:id" element={<GenericDetailPage rowActions={rowActions} dataPatch={savedService} />} />
                 <Route path=":id" element={<GenericDetailPage rowActions={rowActions} dataPatch={savedService} />} />
@@ -140,7 +148,10 @@ const ServiceListPageWrapper = () => {
                     onSubmit={(values) =>
                         dispatch(saveService({ id: editingService?.id, values }))
                             .unwrap()
-                            .then((saved) => setSavedService(saved))
+                            .then((saved) => {
+                                setSavedService(saved);
+                                refreshList();
+                            })
                             .catch((error: unknown) => {
                                 const err = error as { response?: { data?: { message?: string } }; message?: string };
                                 toast.danger(err?.response?.data?.message ?? err?.message ?? "Unable to save service.");
@@ -154,7 +165,10 @@ const ServiceListPageWrapper = () => {
                     title="Delete Service"
                     message={`Are you sure you want to delete "${deletingService.name}"?`}
                     onClose={() => dispatch(closeDeleteServiceModal())}
-                    onConfirm={() => dispatch(deleteService(deletingService.id))}
+                    onConfirm={async () => {
+                        const action = await dispatch(deleteService(deletingService.id));
+                        if (deleteService.fulfilled.match(action)) refreshList();
+                    }}
                     isSubmitting={saving}
                 />
             )}
@@ -165,8 +179,12 @@ const ServiceListPageWrapper = () => {
                     message={`Are you sure you want to delete ${bulkDeleteIds.length} selected service${bulkDeleteIds.length === 1 ? "" : "s"}?`}
                     onClose={() => setBulkDeleteIds([])}
                     onConfirm={async () => {
-                        await Promise.all(bulkDeleteIds.map((id) => dispatch(deleteService(id)).unwrap()));
+                        const results = await Promise.all(bulkDeleteIds.map((id) => dispatch(deleteService(id))));
                         setBulkDeleteIds([]);
+                        refreshList();
+                        if (results.some(deleteService.rejected.match)) {
+                            toast.danger("Some services could not be deleted.");
+                        }
                     }}
                     isSubmitting={saving}
                 />

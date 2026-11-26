@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
@@ -43,6 +44,7 @@ const SeekerList = () => {
   return (
     <Content>
       <EntityList
+        listingSummary={isSuperAdmin ? listingSummaries.seekers : undefined}
         title="End Users"
         subtitle="All registered end users"
         entityName="users"

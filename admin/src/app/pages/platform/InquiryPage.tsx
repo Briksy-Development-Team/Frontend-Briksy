@@ -1,10 +1,11 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 
 import type { RootState, AppDispatch } from "../../services/store";
 import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
-import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
+import { EntityList, type QueryParams } from "../../modules/apps/shared_table/entity-list/EntityList";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { Content } from "../../../_metronic/layout/components/content";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
@@ -37,8 +38,12 @@ const InquiryList = ({ rowActions, pricingOnly = false, auctionOnly = false }: {
         total,
     } = useSelector((s: RootState) => s.inquiries);
 
-    const { params, handleParamsChange } = useEntityTable((p) =>
-        dispatch(fetchInquiries(pricingOnly || auctionOnly ? { ...p, filters: { ...p.filters, lead_source: pricingOnly ? "pricing" : "auction_registration" } } : p)),
+    const source = pricingOnly ? "pricing" : auctionOnly ? "auction_registration" : undefined;
+    const withSource = (p: QueryParams) => source
+        ? { ...p, filters: { ...p.filters, lead_source: source } }
+        : p;
+    const { params, handleParamsChange } = useEntityTable(
+        (p) => dispatch(fetchInquiries(withSource(p))), undefined, source,
     );
 
     return (
@@ -53,9 +58,11 @@ const InquiryList = ({ rowActions, pricingOnly = false, auctionOnly = false }: {
             </div>
 
             <EntityList
+                listingSummary={isSuperAdmin ? listingSummaries.inquiries : undefined}
+                entityName="inquiries"
                 data={data}
                 total={total}
-                params={params}
+                params={withSource(params)}
                 onParamsChange={handleParamsChange}
                 columns={pricingOnly
                     ? inquiryConfig.pricingColumns
@@ -64,7 +71,7 @@ const InquiryList = ({ rowActions, pricingOnly = false, auctionOnly = false }: {
                     : !isSuperAdmin && hasModule("service_management")
                         ? inquiryConfig.serviceColumns
                     : inquiryConfig.columns}
-                filtersConfig={inquiryConfig.filters}
+                filtersConfig={source ? inquiryConfig.filters.filter(({ key }) => key !== "lead_source") : inquiryConfig.filters}
                 getRowLink={(row) => `${portalBase}/${auctionOnly ? "auction-inquiries" : pricingOnly ? "pricing-inquiries" : "inquiry"}/${getDisplayId(row)}`}
                 enableRowClick
                 rowActions={rowActions}

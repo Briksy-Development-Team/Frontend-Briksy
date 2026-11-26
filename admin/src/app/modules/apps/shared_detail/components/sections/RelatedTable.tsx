@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import type { TableSectionConfig } from "../../core/DetailTypes";
-import { EntityList } from "../../../shared_table/entity-list/EntityList";
+import { EntityList, type QueryParams } from "../../../shared_table/entity-list/EntityList";
 import { useEntityTable } from "../../../shared_table/hooks/useEntityTable";
 
 type Props<T> = {
@@ -10,8 +10,15 @@ type Props<T> = {
 };
 
 export default function RelatedTable<T>({ config, data: entityData }: Props<T>) {
-  const { params, handleParamsChange } = useEntityTable((params) =>
-    config.fetchFn(params, entityData)
+  const scope = config.scopeFilters?.(entityData);
+  const summary = config.listingSummary?.(entityData);
+  const withScope = (params: QueryParams) => scope
+    ? { ...params, filters: { ...params.filters, ...scope } }
+    : params;
+  const { params, handleParamsChange } = useEntityTable(
+    (params) => config.fetchFn(withScope(params), entityData),
+    undefined,
+    JSON.stringify([summary?.endpoint, scope]),
   );
 
   const rows = useSelector((state) => config.dataSelector(state, entityData)) || [];
@@ -26,9 +33,11 @@ export default function RelatedTable<T>({ config, data: entityData }: Props<T>) 
       </div>
       <div className="card-body p-0">
         <EntityList
+          entityName={config.title.toLowerCase()}
+          listingSummary={summary}
           data={rows}
           total={total}
-          params={params}
+          params={withScope(params)}
           onParamsChange={handleParamsChange}
           columns={config.columns}
           filtersConfig={config.filtersConfig}

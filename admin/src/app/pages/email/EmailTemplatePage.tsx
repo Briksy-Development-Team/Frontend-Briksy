@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
+import Pagination from "../../modules/apps/shared_table/entity-list/components/Pagination";
+import { SummaryFilters } from "../../modules/apps/shared_table/entity-list/components/header/SummaryFilters";
+import { useListingSummary } from "../../modules/apps/shared_table/hooks/useListingSummary";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
+import "../../modules/apps/shared_table/entity-list/EntityList.css";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { KTCard, KTIcon } from "../../../_metronic/helpers";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
@@ -37,9 +43,9 @@ const EmailTemplatePage = () => {
   const canCreate = abilities.includes("email_template.create");
   const canUpdate = abilities.includes("email_template.update");
   const canDelete = abilities.includes("email_template.delete");
-  const [items, setItems] = useState<EmailTemplate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [adminItems, setItems] = useState<EmailTemplate[]>([]);
+  const [adminLoading, setLoading] = useState(true);
+  const [adminError, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<EmailTemplate | null>(null);
   const [deleting, setDeleting] = useState<EmailTemplate | null>(null);
   const [previewItem, setPreviewItem] = useState<EmailTemplate | null>(null);
@@ -55,7 +61,15 @@ const EmailTemplatePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState<EmailTemplateFormValues>(emptyForm);
 
+  const summary = isSuperAdmin ? listingSummaries.emailTemplates : undefined;
+  const server = useServerListing<EmailTemplate>(summary?.endpoint, { sort: "created_at", direction: "desc" });
+  const items = isSuperAdmin ? server.rows : adminItems;
+  const loading = isSuperAdmin ? server.loading : adminLoading;
+  const error = isSuperAdmin ? server.error : adminError;
+  const summaryCards = useListingSummary(summary, server.params, items, "templates");
+
   useEffect(() => {
+    if (isSuperAdmin) return;
     let active = true;
     setLoading(true);
     fetchEmailTemplatesApi(scope)
@@ -78,7 +92,7 @@ const EmailTemplatePage = () => {
     return () => {
       active = false;
     };
-  }, [scope]);
+  }, [isSuperAdmin, scope]);
 
   const title = useMemo(() => "Email Templates", []);
 
@@ -95,7 +109,8 @@ const EmailTemplatePage = () => {
       const saved = editing
         ? await updateEmailTemplateApi(scope, editing.id, payload)
         : await createEmailTemplateApi(scope, payload);
-      setItems((current) => {
+      if (isSuperAdmin) server.reload();
+      else setItems((current) => {
         const idx = current.findIndex((item) => item.id === saved.id);
         if (idx === -1) {
           return [saved, ...current];
@@ -155,7 +170,8 @@ const EmailTemplatePage = () => {
     }
 
     await deleteEmailTemplateApi(scope, deleting.id);
-    setItems((current) => current.filter((item) => item.id !== deleting.id));
+    if (isSuperAdmin) server.reload();
+    else setItems((current) => current.filter((item) => item.id !== deleting.id));
     setDeleting(null);
   };
 
@@ -198,13 +214,17 @@ const EmailTemplatePage = () => {
           <div className="d-flex justify-content-between align-items-center mb-5">
             <div>
               <h3 className="fw-bold mb-1">{title}</h3>
-              <div className="text-muted">{items.length} templates configured</div>
+              {!isSuperAdmin && <div className="text-muted">{items.length} templates configured</div>}
             </div>
             <button className="btn btn-primary" onClick={openCreate} disabled={!canCreate}>
               <KTIcon iconName="plus" className="fs-2 me-2" />
               Add Template
             </button>
           </div>
+
+          {summaryCards && (
+            <SummaryFilters cards={summaryCards} params={server.params} onParamsChange={server.handleParamsChange} />
+          )}
 
           {loading && <div className="alert alert-light">Loading templates...</div>}
           {error && <div className="alert alert-danger">{error}</div>}
@@ -247,6 +267,17 @@ const EmailTemplatePage = () => {
               </div>
             ))}
           </div>
+          {isSuperAdmin && (
+            <Pagination
+              page={server.params.page}
+              per_page={server.params.per_page}
+              total={server.total}
+              maxPageSize={100}
+              entityName="templates"
+              onChange={(page) => server.handleParamsChange({ ...server.params, page })}
+              onPageSizeChange={(per_page) => server.handleParamsChange({ ...server.params, per_page, page: 1 })}
+            />
+          )}
         </div>
       </KTCard>
 

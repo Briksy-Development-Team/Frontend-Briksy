@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPropertyList } from "../../services/features/properties/property.slice";
@@ -264,6 +265,8 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
 
               {viewMode === "list" ? (
                 <EntityList
+                  listingSummary={isSuperAdmin ? (isApprovalListing ? listingSummaries.propertyApprovals : listingSummaries.property) : undefined}
+                  entityName={isApprovalListing ? "pending properties" : "properties"}
                   data={data}
                   total={total}
                   params={listParams}
@@ -405,7 +408,12 @@ const PropertyListPage = ({ rowActions }: { rowActions?: any[] }) => {
           title="Delete Property"
           message={`Are you sure you want to delete "${deletingProperty.title}"?`}
           onClose={() => dispatch(closeDeletePropertyModal())}
-          onConfirm={() => dispatch(deleteProperty(deletingProperty.id))}
+          onConfirm={async () => {
+            const action = await dispatch(deleteProperty(deletingProperty.id));
+            if (isSuperAdmin && deleteProperty.fulfilled.match(action)) {
+              void dispatch(fetchPropertyList(listParams));
+            }
+          }}
           isSubmitting={saving}
         />
       )}

@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../../modules/apps/shared_table/listingSummaries";
 import { useCallback, useState } from "react";
 import axiosInstance from "../../api/axiosInstance";
 import { buildApiParams } from "../../utils/buildApiParams";
@@ -33,7 +34,7 @@ export default function BuilderProjectsReviewSection({ data }: { data: any }) {
     }
   }, [data?.id]);
 
-  const { params, handleParamsChange } = useEntityTable(fetchProjects);
+  const { params, handleParamsChange } = useEntityTable(fetchProjects, undefined, data?.id);
 
   const review = async (project: BuilderProject, action: "approve" | "reject") => {
     const rejection_reason = action === "reject"
@@ -60,9 +61,11 @@ export default function BuilderProjectsReviewSection({ data }: { data: any }) {
     <>
       {message ? <div className="alert alert-warning">{message}</div> : null}
       <EntityList
+        listingSummary={listingSummaries.projects}
+        entityName="projects"
         data={projects}
         total={total}
-        params={params}
+        params={{ ...params, filters: { ...params.filters, organization_id: data.id } }}
         onParamsChange={handleParamsChange}
         columns={builderProjectConfig.columns}
         filtersConfig={builderProjectConfig.filters}

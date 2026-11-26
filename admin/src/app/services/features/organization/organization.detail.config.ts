@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../../modules/apps/shared_table/listingSummaries";
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import { fetchStaff } from "../staff/staff.slice";
 import { staffConfig } from "../staff/staff.config";
@@ -151,6 +152,12 @@ export const organizationDetailConfig: DetailConfig<any> = {
     },
     {
       id: "staff_members",
+      listingSummary: (data) => {
+        const id = getOrganizationId(data);
+        return id && getPortalBase() === "/super-admin"
+          ? { ...listingSummaries.staff, endpoint: `/super-admin/organizations/${encodeURIComponent(id)}/staff` }
+          : undefined;
+      },
       type: "table",
       title: "Staff Members",
       gridColumnSpan: 12,
@@ -180,6 +187,12 @@ export const organizationDetailConfig: DetailConfig<any> = {
     },
     {
       id: "properties_table",
+      listingSummary: (data) => {
+        const id = getOrganizationId(data);
+        return id && getPortalBase() === "/super-admin"
+          ? { ...listingSummaries.property, endpoint: `/super-admin/organizations/${encodeURIComponent(id)}/properties` }
+          : undefined;
+      },
       type: "table",
       title: "Properties",
       gridColumnSpan: 12,
@@ -228,6 +241,12 @@ export const organizationDetailConfig: DetailConfig<any> = {
     },
     {
       id: "services_table",
+      listingSummary: (data) => {
+        const id = getOrganizationId(data);
+        return id && getPortalBase() === "/super-admin"
+          ? { ...listingSummaries.services, endpoint: `/super-admin/organizations/${encodeURIComponent(id)}/services` }
+          : undefined;
+      },
       type: "table",
       title: "Services",
       gridColumnSpan: 12,

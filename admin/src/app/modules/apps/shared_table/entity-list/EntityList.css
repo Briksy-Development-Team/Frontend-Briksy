@@ -156,13 +156,21 @@
   background: var(--briksy-card-bg);
   border: 1px solid var(--briksy-border);
   border-radius: 16px;
-  cursor: pointer;
   transition: all 0.18s ease;
   text-align: left;
   user-select: none;
 }
 
-.briksy-summary-card:hover {
+button.briksy-summary-card {
+  cursor: pointer;
+}
+
+button.briksy-summary-card:focus-visible {
+  outline: 2px solid var(--briksy-dark-brown);
+  outline-offset: 2px;
+}
+
+button.briksy-summary-card:hover {
   border-color: #cbbeaf;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(52, 37, 17, 0.05);

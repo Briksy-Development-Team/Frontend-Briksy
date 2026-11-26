@@ -1,6 +1,6 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
-import { useEffect } from "react";
 
 import {
   fetchCoupons,
@@ -48,15 +48,12 @@ const CouponList = ({ rowActions }: { rowActions: any[] }) => {
     isModalOpen,
   } = useSelector((s: RootState) => s.coupons);
 
-  const { params, handleParamsChange } = useEntityTable((p) =>
-    dispatch(fetchCoupons(p)),
+  const { params, handleParamsChange } = useEntityTable((p) => dispatch(fetchCoupons(p)),
+    undefined,
+    saving || isModalOpen,
   );
 
-  useEffect(() => {
-    if (!saving && !isModalOpen) {
-      dispatch(fetchCoupons(params));
-    }
-  }, [isModalOpen, saving, params, dispatch]);
+
 
   if (error) {
     return (
@@ -72,6 +69,8 @@ const CouponList = ({ rowActions }: { rowActions: any[] }) => {
       <PageHeader title="Coupons" subtitle="Manage discount coupons" />
 
       <EntityList
+        listingSummary={listingSummaries.coupons}
+        entityName="coupons"
         data={data}
         total={total}
         params={params}

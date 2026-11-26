@@ -1,6 +1,6 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useDispatch, useSelector } from "react-redux"
 import { Route, Routes } from "react-router-dom"
-import { useEffect } from "react"
 import { useMemo } from "react"
 
 import {
@@ -43,22 +43,19 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
   } = useSelector((s: RootState) => s.staff)
 
   const { params, handleParamsChange } = useEntityTable(
-    (p) => dispatch(fetchStaff(p))
+    (p) => dispatch(fetchStaff(p)),
+    undefined,
+    saving || isModalOpen,
   )
 
-  // refetch after save
-  useEffect(() => {
-    if (!saving && !isModalOpen) {
-      dispatch(fetchStaff(params))
-    }
-  }, [isModalOpen, saving, params, dispatch])
+
 
   const staffLimit = entitlements?.limits?.staff_members ?? null;
   const limitReached = !isSuperAdmin && staffLimit !== null && total >= staffLimit;
   const filtersConfig = useMemo(
     () => staffConfig.filters.map((filter) =>
-      filter.key === "roles" && filter.type === "select" && !isSuperAdmin
-        ? { ...filter, options: ["admin", "admin_staff"] }
+      filter.key === "roles" && filter.type === "select"
+        ? { ...filter, options: isSuperAdmin ? ["super_admin_employee"] : ["admin", "admin_staff"] }
         : filter
     ),
     [isSuperAdmin]
@@ -87,6 +84,8 @@ const StaffList = ({ rowActions }: { rowActions: any[] }) => {
         </div>
       ) : null}
       <EntityList
+        listingSummary={isSuperAdmin ? listingSummaries.staff : undefined}
+        entityName="staff members"
         data={data}
         total={total}
         params={params}

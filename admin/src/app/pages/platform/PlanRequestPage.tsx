@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 
@@ -42,10 +43,11 @@ const PlanRequestList = ({ rowActions }: { rowActions: any[] }) => {
   const {
     data,
     total,
+    saving,
   } = useSelector((s: RootState) => s.planRequests);
 
   const { params, handleParamsChange } = useEntityTable((p) =>
-    dispatch(fetchPlanRequests(p)),
+    dispatch(fetchPlanRequests(p)), undefined, isSuperAdmin ? saving : undefined,
   );
 
   return (
@@ -53,6 +55,8 @@ const PlanRequestList = ({ rowActions }: { rowActions: any[] }) => {
       <PageHeader title="Plan Requests" subtitle="Manage plan requests" />
 
       <EntityList
+        listingSummary={isSuperAdmin ? listingSummaries.planRequests : undefined}
+        entityName="plan requests"
         data={data}
         total={total}
         params={params}

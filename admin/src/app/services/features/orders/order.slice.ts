@@ -21,6 +21,7 @@ type OrderState = {
   data: Order[];
   total: number;
   loading: boolean;
+  listRequestId?: string;
   error: string | null;
 
   isModalOpen: boolean;
@@ -119,18 +120,23 @@ const orderSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(fetchOrders.pending, (state) => {
+      .addCase(fetchOrders.pending, (state, action) => {
+        state.listRequestId = action.meta.requestId;
         state.loading = true;
         state.error = null;
       })
 
       .addCase(fetchOrders.fulfilled, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.data = action.payload.data;
         state.total = action.payload.total;
       })
 
       .addCase(fetchOrders.rejected, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.error = action.error.message ?? "Failed to fetch orders";
       })

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { buildApiParams } from "../../services/utils/buildApiParams";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
+import { useCallback, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../services/api/axiosInstance";
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
@@ -26,29 +28,29 @@ export default function BuilderProjectPage() {
   const [data, setData] = useState<BuilderProject[]>([]);
   const [total, setTotal] = useState(0);
 
+  const listRequest = useRef(0);
   const fetchProjects = useCallback(async (params?: any) => {
+    const request = ++listRequest.current;
     setError(null);
     try {
-      const response = await axiosInstance.get<{ data: { data: BuilderProject[]; total?: number } }>(
+      const response = await axiosInstance.get<{ data: { data: BuilderProject[]; total?: number }; meta?: { pagination?: { total: number } } }>(
         reviewMode ? "/super-admin/builder-projects" : "/admin/builder-projects",
-        { params }
+        { params: reviewMode ? buildApiParams(params ?? {}) : params }
       );
+      if (request !== listRequest.current) return;
       const payload: any = response.data.data;
       const items = Array.isArray(payload)
         ? payload
         : payload?.data ?? payload?.items ?? [];
       setData(items);
-      setTotal(payload?.total ?? items.length);
+      setTotal(response.data.meta?.pagination?.total ?? payload?.total ?? items.length);
     } catch {
-      setError("Builder projects could not be loaded.");
+      if (request === listRequest.current) setError("Builder projects could not be loaded.");
     }
   }, [reviewMode]);
 
   const { params, handleParamsChange } = useEntityTable(fetchProjects);
 
-  useEffect(() => {
-    void fetchProjects(params);
-  }, [fetchProjects, params]);
 
   const saveProject = async (values: ProjectFormValues) => {
     setSavingProject(true);
@@ -182,6 +184,8 @@ export default function BuilderProjectPage() {
       />
 
       <EntityList
+        listingSummary={reviewMode ? listingSummaries.projects : undefined}
+        entityName="projects"
         data={data}
         total={total}
         params={params}

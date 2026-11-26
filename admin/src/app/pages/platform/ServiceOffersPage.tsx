@@ -4,7 +4,8 @@ import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
 import { EntityList } from "../../modules/apps/shared_table/entity-list/EntityList";
 import GenericDetailPage from "../../modules/apps/shared_table/entity-list/components/GenericDetailPage";
-import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import { DeleteConfirmModal } from "../../modules/apps/component/DeleteConfirmModal";
 import { serviceOffersConfig } from "../../services/features/service/service_offers.config";
@@ -38,19 +39,23 @@ function ServiceOffersList({
   error,
   rowActions,
   onNewOffer,
+  revision,
 }: {
   items: ServiceOffer[];
   loading: boolean;
   error: string | null;
   rowActions: any[];
   onNewOffer: () => void;
+  revision: number;
 }) {
   const { isSuperAdmin } = useRoleAccess();
   const portalBase = getRolePortalBaseRoute(
     isSuperAdmin ? ["super_admin"] : ["admin"]
   );
 
-  const { params, handleParamsChange } = useEntityTable(() => undefined);
+  const summary = isSuperAdmin ? listingSummaries.serviceOffers : undefined;
+  const server = useServerListing<ServiceOffer>(summary?.endpoint, { sort: "sort_order", direction: "asc" }, revision);
+  const { params, handleParamsChange } = server;
 
   const filteredItems = useMemo(() => {
     let result = [...items];
@@ -76,12 +81,13 @@ function ServiceOffersList({
         title="Service Offers"
         subtitle="Create promotional offers for services"
       />
-      {loading ? <div className="text-muted mb-4">Loading offers...</div> : null}
-      {error ? <div className="alert alert-danger mb-5">{error}</div> : null}
+      {(loading || server.loading) ? <div className="text-muted mb-4">Loading offers...</div> : null}
+      {(error || server.error) ? <div className="alert alert-danger mb-5">{error || server.error}</div> : null}
 
       <EntityList
-        data={filteredItems}
-        total={filteredItems.length}
+        data={isSuperAdmin ? server.rows : filteredItems}
+        total={isSuperAdmin ? server.total : filteredItems.length}
+        listingSummary={summary}
         params={params}
         onParamsChange={handleParamsChange}
         columns={serviceOffersConfig.columns}
@@ -102,6 +108,8 @@ function ServiceOffersList({
 }
 
 export default function ServiceOffersPage() {
+  const { isSuperAdmin } = useRoleAccess();
+  const [revision, setRevision] = useState(0);
   const [items, setItems] = useState<ServiceOffer[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [editing, setEditing] = useState<OfferForm | null>(null);
@@ -115,10 +123,11 @@ export default function ServiceOffersPage() {
     setLoading(true);
     try {
       const [offers, serviceResponse] = await Promise.all([
-        fetchServiceOffersApi(),
+        isSuperAdmin ? Promise.resolve([]) : fetchServiceOffersApi(),
         fetchServiceGroupApi({ per_page: 100, sort: "name", direction: "asc" }),
       ]);
       setItems(offers);
+      if (isSuperAdmin) setRevision((value) => value + 1);
       setServices(serviceResponse.data);
       setError(null);
     } catch (e: any) {
@@ -204,6 +213,7 @@ export default function ServiceOffersPage() {
           element={
             <ServiceOffersList
               items={items}
+              revision={revision}
               loading={loading}
               error={error}
               rowActions={rowActions}

@@ -23,13 +23,19 @@ const ReferralsPage = () => {
 
   const { params, handleParamsChange } = useEntityTable(() => undefined);
 
+  const serverParams = isSuperAdmin ? params : undefined;
+
   useEffect(() => {
+    const controller = new AbortController();
     let active = true;
     setLoading(true);
 
-    const loader = isSuperAdmin ? fetchSuperAdminReferralProgramsApi : fetchAdminReferralDashboardApi;
+    setError(null);
+    const request = serverParams
+      ? fetchSuperAdminReferralProgramsApi(serverParams, controller.signal)
+      : fetchAdminReferralDashboardApi();
 
-    loader()
+    request
       .then((response) => {
         if (active) setData(response);
       })
@@ -44,8 +50,9 @@ const ReferralsPage = () => {
 
     return () => {
       active = false;
+      controller.abort();
     };
-  }, [isSuperAdmin]);
+  }, [serverParams]);
 
   const isAdminReferralDashboard = (
     value: ReferralDashboard | ReferralProgramOverview | null,
@@ -67,6 +74,7 @@ const ReferralsPage = () => {
   }, [data, isSuperAdmin]);
 
   const filtered = useMemo(() => {
+    if (isSuperAdmin) return rawList;
     let list = rawList;
     if (params.search) {
       const q = params.search.toLowerCase();
@@ -80,43 +88,48 @@ const ReferralsPage = () => {
       );
     }
     return list;
-  }, [rawList, params.search]);
+  }, [isSuperAdmin, rawList, params.search]);
 
   const paged = useMemo(() => {
+    if (isSuperAdmin) return filtered;
     const start = (params.page - 1) * params.per_page;
     return filtered.slice(start, start + params.per_page);
-  }, [filtered, params.page, params.per_page]);
+  }, [isSuperAdmin, filtered, params.page, params.per_page]);
 
   const summaryCards = useMemo<SummaryCardItem[]>(() => {
-    if (!data) return [];
     if (isSuperAdmin) {
-      const overview = data as ReferralProgramOverview;
+      const overview = data as ReferralProgramOverview | null;
+      const hasReferrals = params.filters?.with_referrals === "1";
       return [
         {
           id: "companies",
-          label: "Companies",
-          count: overview.totals.organizations ?? 0,
-          subtitle: "Total registered companies",
+          label: "All companies",
+          count: (loading ? undefined : overview?.totals?.organizations) ?? "—",
+          subtitle: "Companies matching the current search",
           dotColor: "#342511",
-          active: true,
+          active: !hasReferrals,
+          filterKey: "with_referrals",
         },
         {
           id: "with_referrals",
           label: "With Referrals",
-          count: overview.totals.with_referrals ?? 0,
+          count: (loading ? undefined : overview?.totals?.with_referrals) ?? "—",
           subtitle: "Active referring businesses",
           dotColor: "#1F7A4D",
+          active: hasReferrals,
+          filterKey: "with_referrals",
+          filterValue: "1",
         },
         {
-          id: "total",
-          label: "Total in Page",
-          count: overview.pagination?.total ?? overview.organizations.length,
-          subtitle: "Total program records",
+          id: "matching",
+          label: "Matching companies",
+          count: (loading ? undefined : overview?.pagination?.total) ?? "—",
           dotColor: "#8A5A00",
         },
       ];
     }
 
+    if (!data) return [];
     const dashboard = data as ReferralDashboard;
     return [
       {
@@ -135,13 +148,14 @@ const ReferralsPage = () => {
         dotColor: "#1F7A4D",
       },
     ];
-  }, [data, isSuperAdmin]);
+  }, [data, isSuperAdmin, loading, params.filters?.with_referrals]);
 
   const columns = useMemo<Column<ReferralOrganization>[]>(() => {
     const baseCol: Column<ReferralOrganization>[] = [
       {
         Header: "Company",
         accessor: "name",
+        sortable: isSuperAdmin,
         Cell: ({ row }: { row: ReferralOrganization | { original: ReferralOrganization } }) => {
           const item = "original" in row ? row.original : row;
           return (
@@ -170,11 +184,13 @@ const ReferralsPage = () => {
         {
           Header: "Referral Count",
           accessor: "referred_organizations_count",
+          sortable: true,
           Cell: ({ value }: { value: unknown }) => String(value ?? 0),
         },
         {
           Header: "Created",
           accessor: "created_at",
+          sortable: true,
           Cell: ({ value }: { value: unknown }) =>
             formatDateTime(value ? String(value) : undefined, { withRelative: false }),
         },
@@ -230,7 +246,7 @@ const ReferralsPage = () => {
         profileType="none"
         summaryCards={summaryCards}
         data={paged}
-        total={filtered.length}
+        total={isSuperAdmin ? (data as ReferralProgramOverview | null)?.pagination?.total ?? 0 : filtered.length}
         params={params}
         onParamsChange={handleParamsChange}
         columns={columns}

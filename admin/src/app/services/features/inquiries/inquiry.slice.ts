@@ -7,6 +7,7 @@ type InquiryState = {
   data: Inquiry[];
   total: number;
   loading: boolean;
+  listRequestId?: string;
   error: string | null;
 };
 
@@ -35,16 +36,21 @@ const inquirySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchInquiries.pending, (state) => {
+      .addCase(fetchInquiries.pending, (state, action) => {
+        state.listRequestId = action.meta.requestId;
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchInquiries.fulfilled, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.data = action.payload.data;
         state.total = action.payload.total;
       })
       .addCase(fetchInquiries.rejected, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.error = action.error.message ?? "Failed to fetch inquiries";
       });

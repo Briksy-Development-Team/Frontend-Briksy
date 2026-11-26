@@ -69,11 +69,12 @@ const PRESETS = [
 
 type Props = {
   filters: FilterConfig[];
+  appliedFilters?: Record<string, unknown>;
   onFilterChange: (filters: Record<string, FilterValue>) => void;
   onReset?: () => void;
 };
 
-const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
+const FilterDropdown = ({ filters, appliedFilters, onFilterChange, onReset }: Props) => {
   const [values, setValues] = useState<Record<string, FilterValue>>({});
   const [open, setOpen] = useState<string | null>(null);
   const [activePreset, setActivePreset] = useState<Record<string, string>>({});
@@ -83,15 +84,24 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
     setTimeout(() => MenuComponent.reinitialization(), 0);
   }, [filters]);
 
-  const toggleValue = (key: string, value: string | number) =>
+  useEffect(() => {
+    if (!appliedFilters) return;
+    setValues(appliedFilters as Record<string, FilterValue>);
+    setActivePreset({});
+  }, [appliedFilters]);
+
+  const selectedOptions = (value: FilterValue | undefined) =>
+    Array.isArray(value) ? value : typeof value === "string" || typeof value === "number" ? [value] : [];
+
+  const toggleValue = (key: string, value: string | number, single: boolean) =>
     setValues((prev) => {
-      const current = (prev[key] as (string | number)[]) || [];
-      return {
-        ...prev,
-        [key]: current.includes(value)
-          ? current.filter((v) => v !== value)
-          : [...current, value],
-      };
+      const current = selectedOptions(prev[key]);
+      const next = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
+      if (!single) return { ...prev, [key]: next };
+      const filters = { ...prev };
+      if (current.includes(value)) delete filters[key];
+      else filters[key] = String(value);
+      return filters;
     });
 
   const setRange = (
@@ -165,7 +175,7 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
     }
   };
 
-  const activeFiltersCount = Object.keys(values).filter(key => getCount(key) > 0).length;
+  const activeFiltersCount = filters.filter(({ key }) => getCount(key) > 0).length;
 
   return (
     <div className="position-relative">
@@ -237,10 +247,8 @@ const FilterDropdown = ({ filters, onFilterChange, onReset }: Props) => {
                               <input
                                 type="checkbox"
                                 className="form-check-input"
-                                checked={(
-                                  (values[f.key] as (string | number)[]) || []
-                                ).includes(value)}
-                                onChange={() => toggleValue(f.key, value)}
+                                checked={selectedOptions(values[f.key]).includes(value)}
+                                onChange={() => toggleValue(f.key, value, f.single === true)}
                               />
                             <span className="mx-3 form-check-label text-gray-800">{label}</span>
                           </label>

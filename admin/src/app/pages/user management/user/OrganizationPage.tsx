@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../../modules/apps/shared_table/listingSummaries";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchOrganization } from "../../../services/features/organization/organization.slice";
@@ -83,11 +84,12 @@ const OrganizationPage = ({
     );
 
     const isTradesProfessional = typeSlugs?.includes("trades-professionals") || businessTypes?.includes("solo_trader");
-    const entityName = isTradesProfessional ? "professionals" : typeSlugs?.includes("builders") ? "builders" : "agencies";
+    const entityName = addonFeature ? "organisations" : isTradesProfessional ? "professionals" : typeSlugs?.includes("builders") ? "builders" : "agencies";
 
     return (
         <Content>
             <EntityList
+                listingSummary={isSuperAdmin ? listingSummaries.organizations : undefined}
                 title={resolvedTitle}
                 subtitle={resolvedSubtitle}
                 breadcrumbs={["Organisations", "Agents", resolvedTitle]}

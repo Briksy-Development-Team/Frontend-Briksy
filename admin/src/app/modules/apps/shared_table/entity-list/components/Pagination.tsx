@@ -9,6 +9,7 @@ type Props = {
   page: number;
   per_page: number;
   total: number;
+  maxPageSize?: number;
   onChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   entityName?: string;
@@ -18,6 +19,7 @@ const Pagination = ({
   page,
   per_page,
   total,
+  maxPageSize,
   onChange,
   onPageSizeChange,
   entityName = "records",
@@ -35,7 +37,9 @@ const Pagination = ({
   };
 
   const visiblePages = getVisiblePages();
-  const sizeOptions = getPageSizeOptions(total);
+  const sizeOptions = maxPageSize
+    ? [...new Set([...getPageSizeOptions(total).filter((size) => size > 0 && size <= maxPageSize), per_page])].sort((a, b) => a - b)
+    : getPageSizeOptions(total);
 
   const from = total === 0 ? 0 : (page - 1) * per_page + 1;
   const to = Math.min(page * per_page, total);

@@ -15,7 +15,7 @@ const getBasePath = () => {
   const auth = getAuth();
   const abilities = auth?.abilities ?? [];
 
-  return abilities.includes("super_admin") ? "/super-admin" : "/admin";
+  return abilities.some((role) => role === "super_admin" || role === "super_admin_employee") ? "/super-admin" : "/admin";
 };
 
 export const fetchSuperAdminDynamicIdSettingsApi = async (): Promise<DynamicIdSetting[]> => {

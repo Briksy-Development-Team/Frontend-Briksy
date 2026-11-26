@@ -24,6 +24,7 @@ export const useNotifications = () => {
 
   const [items, setItems] = useState<PlatformNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [matchingUnreadCount, setMatchingUnreadCount] = useState<number>();
   const [preferences, setPreferences] = useState<NotificationPreference | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export const useNotifications = () => {
     const version = ++requestVersion.current;
 
     try {
-      const [notificationsRes, unreadRes, preferencesRes] = await Promise.all([
+      const [notificationsRes, unreadRes, preferencesRes, searchUnreadRes] = await Promise.all([
         fetchNotificationsApi(scope, {
           page: nextPage,
           per_page: 15,
@@ -58,18 +59,22 @@ export const useNotifications = () => {
         }),
         fetchUnreadCountApi(scope),
         fetchNotificationPreferencesApi(scope),
+        nextSearch && isSuperAdmin && nextFilter !== "unread"
+          ? fetchNotificationsApi(scope, { page: 1, per_page: 1, search: nextSearch, filter: { unread: true } })
+          : undefined,
       ]);
 
       if (version !== requestVersion.current) return;
       setItems(notificationsRes.items);
       setUnreadCount(unreadRes);
+      setMatchingUnreadCount(nextFilter === "unread" ? notificationsRes.total : searchUnreadRes?.total ?? unreadRes);
       setPreferences(preferencesRes);
       setTotal(notificationsRes.total);
       setLastPage(notificationsRes.lastPage);
     } catch (error_: unknown) {
-      setError(error_ instanceof Error ? error_.message : "Failed to load notifications");
+      if (version === requestVersion.current) setError(error_ instanceof Error ? error_.message : "Failed to load notifications");
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
   };
 
@@ -81,7 +86,7 @@ export const useNotifications = () => {
     void load();
     const interval = window.setInterval(() => void load(), 30000);
     return () => window.clearInterval(interval);
-  }, [scope, subscriptionBlocked]);
+  }, [scope, subscriptionBlocked, filter, search, page]);
 
   const refresh = () => void load(filter, search, page);
 
@@ -116,6 +121,7 @@ export const useNotifications = () => {
     scope,
     items: filteredItems,
     unreadCount,
+    matchingUnreadCount: loading ? undefined : matchingUnreadCount,
     preferences,
     loading,
     error,
@@ -126,17 +132,14 @@ export const useNotifications = () => {
     lastPage,
     setFilter: (next: NotificationFilter) => {
       setFilter(next);
-      void load(next, search, 1);
       setPage(1);
     },
     setSearch: (next: string) => {
       setSearch(next);
-      void load(filter, next, 1);
       setPage(1);
     },
     setPage: (next: number) => {
       setPage(next);
-      void load(filter, search, next);
     },
     refresh,
     markRead,

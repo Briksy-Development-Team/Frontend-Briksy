@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
 import { PageHeader } from "../../modules/apps/shared_table/entity-list/components/header/PageHeader";
-import { fetchSuperAdminSubscriptionsApi } from "../../services/features/billing/billing.api";
+import Pagination from "../../modules/apps/shared_table/entity-list/components/Pagination";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { useListingSummary, type ListingSummary } from "../../modules/apps/shared_table/hooks/useListingSummary";
 import type { CompanySubscription } from "../../services/features/billing/billing.types";
 
 type InvoiceFilters = {
@@ -27,27 +29,27 @@ const formatMoney = (value: number | null | undefined, currency = "AUD") =>
     maximumFractionDigits: 2,
   }).format(value ?? 0);
 
+const invoiceSummary: ListingSummary = {
+  endpoint: "/super-admin/subscriptions",
+  resetKeys: ["organization_id", "plan_id", "status", "billing_cycle"],
+};
+
 const InvoicePage = () => {
-  const [items, setItems] = useState<CompanySubscription[]>([]);
   const [filters, setFilters] = useState<InvoiceFilters>(initialFilters);
-  const [loading, setLoading] = useState(true);
+  const { rows: items, total, params, setParams, loading, error } =
+    useServerListing<CompanySubscription>(invoiceSummary.endpoint, { sort: "created_at", direction: "desc" });
+  const allInvoices = useListingSummary(invoiceSummary, params, items, "invoices")?.[0];
 
-  const load = async (nextFilters = filters) => {
-    setLoading(true);
-    const params = Object.fromEntries(
-      Object.entries(nextFilters).filter(([, value]) => value.trim().length > 0),
-    );
-
-    try {
-      setItems(await fetchSuperAdminSubscriptionsApi(params));
-    } finally {
-      setLoading(false);
-    }
+  const apply = ({ search, ...values }: InvoiceFilters) => {
+    const activeFilters = Object.fromEntries(Object.entries(values).filter(([, value]) => value.trim() !== ""));
+    setParams((current) => ({ ...current, search, filters: activeFilters, page: 1 }));
   };
 
-  useEffect(() => {
-    void load(initialFilters);
-  }, []);
+  const resetCounts = () => {
+    const next = { ...initialFilters, search: params.search };
+    setFilters(next);
+    apply(next);
+  };
 
   const totalAmount = useMemo(
     () => items.reduce((sum, item) => sum + (item.amount ?? 0), 0),
@@ -110,28 +112,34 @@ const InvoicePage = () => {
                 className="btn btn-light"
                 onClick={() => {
                   setFilters(initialFilters);
-                  void load(initialFilters);
+                  apply(initialFilters);
                 }}
               >
                 Reset
               </button>
-              <button type="button" className="btn btn-primary" onClick={() => void load(filters)}>
+              <button type="button" className="btn btn-primary" onClick={() => apply(filters)}>
                 Apply Filters
               </button>
             </div>
           </div>
 
           <div className="d-flex flex-wrap gap-4 mb-5">
+            <button
+              type="button"
+              className={`briksy-summary-card rounded px-4 py-3 gap-0 ${allInvoices?.active ? "briksy-summary-card--active" : ""}`}
+              aria-pressed={Boolean(allInvoices?.active)}
+              onClick={resetCounts}
+            >
+              <span className="text-muted fs-7">All invoices</span>
+              <span className="fw-bold fs-4">{allInvoices?.count}</span>
+            </button>
             <div className="border rounded px-4 py-3">
-              <div className="text-muted fs-7">Invoices</div>
-              <div className="fw-bold fs-4">{items.length}</div>
-            </div>
-            <div className="border rounded px-4 py-3">
-              <div className="text-muted fs-7">Total records amount</div>
+              <div className="text-muted fs-7">Page amount</div>
               <div className="fw-bold fs-4">{formatMoney(totalAmount)}</div>
             </div>
           </div>
 
+          {error && <div className="alert alert-danger">{error}</div>}
           {loading ? <div className="alert alert-light">Loading invoices...</div> : null}
 
           <div className="table-responsive">
@@ -184,6 +192,15 @@ const InvoicePage = () => {
               </tbody>
             </table>
           </div>
+          <Pagination
+            entityName="invoices"
+            page={params.page}
+            per_page={params.per_page}
+            total={total}
+            maxPageSize={100}
+            onChange={(page) => setParams((current) => ({ ...current, page }))}
+            onPageSizeChange={(per_page) => setParams((current) => ({ ...current, per_page, page: 1 }))}
+          />
         </div>
       </div>
     </Content>

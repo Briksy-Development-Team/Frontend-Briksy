@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EntityTable } from "./table/EntityTable";
 import { EntityHeader } from "./components/header/EntityHeader";
 import Paginations from "./components/Pagination";
 import { exportToExcel } from "../utils/exportToExcel";
 import ExportModal from "../utils/ExportModal";
 import { PageHeader } from "./components/header/PageHeader";
+import { LegacySummaryFilters } from "./components/header/LegacySummaryFilters";
+import { getSummaryFilters, useListingSummary, type ListingSummary } from "../hooks/useListingSummary";
 import { SummaryFilters } from "./components/header/SummaryFilters";
 import "./EntityList.css";
 
@@ -50,6 +52,7 @@ type Props<T extends { id: number | string }> = {
   subtitle?: string;
   breadcrumbs?: (string | BreadcrumbItem)[];
   summaryCards?: SummaryCardItem[];
+  listingSummary?: ListingSummary;
   hideSummaryFilters?: boolean;
   hideHeader?: boolean;
   entityName?: string;
@@ -75,6 +78,7 @@ export function EntityList<T extends { id: number | string }>({
   subtitle,
   breadcrumbs,
   summaryCards,
+  listingSummary,
   hideSummaryFilters = false,
   hideHeader = false,
   entityName,
@@ -143,6 +147,18 @@ export function EntityList<T extends { id: number | string }>({
 
   const selectedBulkActions = bulkActions ? bulkActions(Array.from(selectedRows)) : undefined;
 
+  const listingCards = useListingSummary(listingSummary, params, data, entityName);
+  const applyFilters = (filters: Record<string, unknown>) => onParamsChange({ ...params, filters, page: 1 });
+  const cards = summaryCards ?? listingCards?.map((card) =>
+    card.id === "all" && listingSummary && !listingSummary.filterKey
+      ? { ...card, onClick: () => applyFilters(getSummaryFilters(params.filters, listingSummary)) }
+      : card
+  );
+  const summaryFilterKey = listingSummary?.filterKey;
+  const toolbarFilters = useMemo(() => filtersConfig?.map((filter) =>
+    summaryFilterKey === filter.key ? { ...filter, single: true } : filter
+  ), [filtersConfig, summaryFilterKey]);
+
   const showPageHeader = !hideHeader && Boolean(title);
 
   return (
@@ -159,19 +175,17 @@ export function EntityList<T extends { id: number | string }>({
       )}
 
       {/* 2. Summary Filters (#4771:6661) above table */}
-      {!hideSummaryFilters && (
-        <SummaryFilters
+      {!hideSummaryFilters && (cards ? (
+        <SummaryFilters cards={cards} params={params} onParamsChange={onParamsChange} />
+      ) : (
+        <LegacySummaryFilters
           data={data}
           total={total}
           params={params}
-          onFilterChange={(filters) =>
-            onParamsChange({ ...params, filters, page: 1 })
-          }
-          filtersConfig={filtersConfig}
-          customCards={summaryCards}
+          onParamsChange={onParamsChange}
           entityName={entityName}
         />
-      )}
+      ))}
 
       {/* 3. Table Card (#4771:6686) */}
       <div className="briksy-table-card">
@@ -196,10 +210,9 @@ export function EntityList<T extends { id: number | string }>({
           }
           headerActions={headerActions}
           bulkActions={selectedBulkActions}
-          filtersConfig={filtersConfig}
-          onFilterChange={(filters) =>
-            onParamsChange({ ...params, filters, page: 1 })
-          }
+          filtersConfig={toolbarFilters}
+          appliedFilters={listingSummary || summaryCards?.some((card) => card.filterKey) ? params.filters : undefined}
+          onFilterChange={applyFilters}
           searchPlaceholder={searchPlaceholder}
           showActionsInToolbar={!showPageHeader}
         />
@@ -220,6 +233,7 @@ export function EntityList<T extends { id: number | string }>({
         <Paginations
           page={params.page}
           per_page={params.per_page}
+          maxPageSize={listingSummary || summaryCards?.some((card) => card.filterKey) ? 100 : undefined}
           total={total}
           onChange={(page) => onParamsChange({ ...params, page })}
           onPageSizeChange={(size) =>

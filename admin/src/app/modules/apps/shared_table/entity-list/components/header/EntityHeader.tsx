@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ColumnSelector } from "./ColumnSelector";
 import SortSelector from "./SortSelector";
 import { usePermissionAccess } from "../../../../../auth";
@@ -39,6 +39,7 @@ type Props = {
   headerActions?: AddAction[];
   bulkActions?: BulkAction[];
   filtersConfig?: FilterConfig[];
+  appliedFilters?: Record<string, unknown>;
   onFilterChange?: (filters: Record<string, FilterValue>) => void;
   searchPlaceholder?: string;
   showActionsInToolbar?: boolean;
@@ -56,10 +57,13 @@ const EntityHeader = ({
   headerActions,
   bulkActions,
   filtersConfig,
+  appliedFilters,
   onFilterChange,
   searchPlaceholder = "Search name, ID, ABN or email",
   showActionsInToolbar = false,
 }: Props) => {
+  const [searchInput, setSearchInput] = useState(search);
+  useEffect(() => setSearchInput(search), [search]);
   const { hasPermission } = usePermissionAccess();
   const visibleHeaderActions =
     headerActions?.filter((action) => !action.permission || hasPermission(action.permission)) ?? [];
@@ -89,14 +93,17 @@ const EntityHeader = ({
           type="text"
           className="briksy-search-input"
           placeholder={searchPlaceholder}
-          value={search}
-          onChange={(e) => onSearchChange(e.target.value)}
+          value={searchInput}
+          onChange={(e) => {
+            setSearchInput(e.target.value);
+            onSearchChange(e.target.value);
+          }}
         />
       </div>
 
       {/* Filter Dropdown */}
       {filtersConfig && onFilterChange && (
-        <FilterDropdown filters={filtersConfig} onFilterChange={onFilterChange} />
+        <FilterDropdown filters={filtersConfig} appliedFilters={appliedFilters} onFilterChange={onFilterChange} />
       )}
 
       {/* Column Selector */}

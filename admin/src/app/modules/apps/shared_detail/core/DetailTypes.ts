@@ -1,3 +1,4 @@
+import type { ListingSummary } from "../../shared_table/hooks/useListingSummary";
 import type { ReactNode } from "react";
 import type { QueryParams, Column, RowAction } from "../../shared_table/entity-list/EntityList";
 
@@ -24,6 +25,8 @@ export interface InfoSectionConfig<T> extends BaseSectionConfig {
 
 // Config for "table" sections (Embedded dynamic tables)
 export interface TableSectionConfig<T> extends BaseSectionConfig {
+  listingSummary?: (data: T) => ListingSummary | undefined;
+  scopeFilters?: (data: T) => Record<string, unknown>;
   type: "table";
   // The fetch function for the related table
   fetchFn: (params: QueryParams, data: T) => void;

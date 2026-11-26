@@ -20,6 +20,7 @@ type StaffState = {
   data: Staff[];
   total: number;
   loading: boolean;
+  listRequestId?: string;
   error: string | null;
 
   isModalOpen: boolean;
@@ -114,18 +115,23 @@ const staffSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(fetchStaff.pending, (state) => {
+      .addCase(fetchStaff.pending, (state, action) => {
+        state.listRequestId = action.meta.requestId;
         state.loading = true;
         state.error = null;
       })
 
       .addCase(fetchStaff.fulfilled, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.data = action.payload.data;
         state.total = action.payload.total;
       })
 
       .addCase(fetchStaff.rejected, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.error = action.error.message ?? "Failed to fetch staff";
       })

@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
 import { EntityList, type Column, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
-import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import axiosInstance from "../../services/api/axiosInstance";
 
@@ -18,7 +19,6 @@ type AgentType = {
   sort_order: number;
 };
 
-type Envelope = { data: AgentType[] };
 const emptyForm = {
   name: "",
   slug: "",
@@ -37,30 +37,15 @@ const familyLabels: Record<PlanFamily, string> = {
 };
 
 export default function AgentTypePage() {
-  const [types, setTypes] = useState<AgentType[]>([]);
   const [editing, setEditing] = useState<AgentType | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const { params, handleParamsChange } = useEntityTable(() => undefined);
+  const summary = listingSummaries.agentTypes;
+  const { rows, total, params, handleParamsChange, loading, error, reload } =
+    useServerListing<AgentType>(summary.endpoint, { filters: { module: "Agents" }, sort: "sort_order", direction: "asc" });
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get<Envelope>("/super-admin/organization-types", {
-        params: { per_page: 100, "filter[module]": "Agents", sort: "sort_order", direction: "asc" },
-      });
-      setTypes(response.data.data ?? []);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void load();
-  }, []);
 
   const edit = (type?: AgentType) => {
     setEditing(type ?? null);
@@ -87,35 +72,11 @@ export default function AgentTypePage() {
       if (editing) await axiosInstance.put(`/super-admin/organization-types/${editing.id}`, payload);
       else await axiosInstance.post("/super-admin/organization-types", payload);
       setOpen(false);
-      await load();
+      reload();
     } finally {
       setSaving(false);
     }
   };
-
-  const filtered = useMemo(() => {
-    let list = types;
-    if (params.search) {
-      const q = params.search.toLowerCase();
-      list = list.filter(
-        (t) =>
-          t.name.toLowerCase().includes(q) ||
-          t.slug.toLowerCase().includes(q) ||
-          t.display_name?.toLowerCase().includes(q) ||
-          t.label?.toLowerCase().includes(q)
-      );
-    }
-    if (params.filters?.is_active !== undefined && params.filters.is_active !== "") {
-      const active = params.filters.is_active === "1";
-      list = list.filter((t) => t.is_active === active);
-    }
-    return list;
-  }, [types, params.search, params.filters]);
-
-  const paged = useMemo(() => {
-    const start = (params.page - 1) * params.per_page;
-    return filtered.slice(start, start + params.per_page);
-  }, [filtered, params.page, params.per_page]);
 
   const columns = useMemo<Column<AgentType>[]>(
     () => [
@@ -153,6 +114,7 @@ export default function AgentTypePage() {
 
   return (
     <Content>
+      {error && <div className="alert alert-danger mb-5">{error}</div>}
       {loading && <div className="text-muted mb-2">Loading agent types...</div>}
 
       <EntityList
@@ -160,10 +122,11 @@ export default function AgentTypePage() {
         subtitle="Manage the active categories shown under Agents."
         entityName="agent-types"
         profileType="none"
-        data={paged}
-        total={filtered.length}
+        data={rows}
+        total={total}
+        listingSummary={summary}
         params={params}
-        onParamsChange={handleParamsChange}
+        onParamsChange={(next) => handleParamsChange({ ...next, filters: { ...next.filters, module: "Agents" } })}
         columns={columns}
         filtersConfig={[
           {

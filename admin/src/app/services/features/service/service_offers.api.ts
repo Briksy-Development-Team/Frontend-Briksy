@@ -18,7 +18,7 @@ export type ServiceOffer = {
 };
 
 const getBasePath = () =>
-  getAuth()?.abilities?.includes("super_admin") ? "/super-admin/service-offers" : "/admin/service-offers";
+  getAuth()?.abilities?.some((role) => role === "super_admin" || role === "super_admin_employee") ? "/super-admin/service-offers" : "/admin/service-offers";
 
 type ApiResponse<T> = { success: boolean; message: string; data: T };
 

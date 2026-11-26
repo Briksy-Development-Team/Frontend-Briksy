@@ -1,3 +1,6 @@
+import { listingSummaries } from "../../../modules/apps/shared_table/listingSummaries";
+import { fetchInquiries } from "../inquiries/inquiry.slice";
+import { store, type RootState } from "../../store";
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import type { Seeker } from "./seeker.types";
 import { formatDateTime } from "../../utils/dateFormat";
@@ -84,9 +87,21 @@ export const seekerDetailConfig: DetailConfig<Seeker> = {
       id: "property_inquiries",
       type: "table",
       title: "Related Enquiries",
-      fetchFn: async () => ({ data: [], meta: { pagination: { total: 0 } } }),
-      dataSelector: (state: any, data: any) => data?.inquiries ?? [],
-      totalSelector: (state: any, data: any) => data?.inquiries?.length ?? 0,
+      listingSummary: (data) => data?.id && window.location.pathname.startsWith("/super-admin/")
+        ? listingSummaries.inquiries
+        : undefined,
+      scopeFilters: (data) => ({ user_id: data?.id }),
+      fetchFn: (params, data) => {
+        if (data?.id && window.location.pathname.startsWith("/super-admin/")) {
+          void store.dispatch(fetchInquiries(params));
+        }
+      },
+      dataSelector: (state: RootState, data: any) => window.location.pathname.startsWith("/super-admin/")
+        ? state.inquiries.data
+        : data?.inquiries ?? [],
+      totalSelector: (state: RootState, data: any) => window.location.pathname.startsWith("/super-admin/")
+        ? state.inquiries.total
+        : data?.inquiries?.length ?? 0,
       columns: [
         { Header: "Reference", accessor: "reference_no" },
         { Header: "Subject", accessor: "subject" },

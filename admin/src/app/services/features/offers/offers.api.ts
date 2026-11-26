@@ -6,7 +6,7 @@ const getBasePath = () => {
   const auth = getAuth();
   const abilities = auth?.abilities ?? [];
 
-  return abilities.includes("super_admin") ? "/super-admin/property-offers" : "/admin/property-offers";
+  return abilities.some((role) => role === "super_admin" || role === "super_admin_employee") ? "/super-admin/property-offers" : "/admin/property-offers";
 };
 
 type ApiResponse<T> = {

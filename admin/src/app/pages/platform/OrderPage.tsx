@@ -1,6 +1,6 @@
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
-import { useEffect } from "react";
 
 import {
   fetchOrders,
@@ -49,15 +49,12 @@ const OrderList = ({ rowActions }: { rowActions: any[] }) => {
     saving,
   } = useSelector((s: RootState) => s.orders);
 
-  const { params, handleParamsChange } = useEntityTable((p) =>
-    dispatch(fetchOrders(p)),
+  const { params, handleParamsChange } = useEntityTable((p) => dispatch(fetchOrders(p)),
+    undefined,
+    saving || isModalOpen,
   );
 
-  useEffect(() => {
-    if (!saving && !isModalOpen) {
-      dispatch(fetchOrders(params));
-    }
-  }, [isModalOpen, saving, params, dispatch]);
+
 
   if (error)
     return (
@@ -72,6 +69,8 @@ const OrderList = ({ rowActions }: { rowActions: any[] }) => {
       <PageHeader title="Orders" subtitle="Track plan and billing orders" />
 
       <EntityList
+        listingSummary={isSuperAdmin ? listingSummaries.orders : undefined}
+        entityName="orders"
         data={data}
         total={total}
         params={params}

@@ -24,7 +24,7 @@ const priorityBadge: Record<string, string> = {
 const NotificationsPage = () => {
   const { isSuperAdmin } = useRoleAccess();
   const navigate = useNavigate();
-  const { items, unreadCount, loading, error, filter, search, page, total,
+  const { items, unreadCount, matchingUnreadCount, loading, error, filter, search, page, total,
     lastPage, setFilter, setSearch, setPage, markRead, markAllRead, remove } = useNotifications();
 
   const title = isSuperAdmin ? "Platform Notifications" : "Notifications";
@@ -49,9 +49,10 @@ const NotificationsPage = () => {
             <button
               key={key}
               className={`btn btn-sm ${filter === key ? "btn-primary" : "btn-light"}`}
+              aria-pressed={filter === key}
               onClick={() => setFilter(key)}
             >
-              {key === "all" ? "All" : key === "unread" ? `Unread${unreadCount > 0 ? ` (${unreadCount})` : ""}` : "High Priority"}
+              {key === "all" ? "All" : key === "unread" ? `Unread${isSuperAdmin ? ` (${matchingUnreadCount ?? "—"})` : unreadCount > 0 ? ` (${unreadCount})` : ""}` : "High Priority"}
             </button>
           ))}
         </div>

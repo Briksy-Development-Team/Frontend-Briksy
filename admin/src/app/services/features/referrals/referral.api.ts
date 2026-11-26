@@ -1,3 +1,4 @@
+import { buildApiParams } from "../../utils/buildApiParams";
 import axiosInstance from "../../api/axiosInstance";
 import type { ReferralDashboard, ReferralProgramOverview } from "./referral.types";
 
@@ -12,7 +13,7 @@ export const fetchAdminReferralDashboardApi = async (): Promise<ReferralDashboar
   return response.data.data;
 };
 
-export const fetchSuperAdminReferralProgramsApi = async (): Promise<ReferralProgramOverview> => {
-  const response = await axiosInstance.get<ReferralEnvelope<ReferralProgramOverview>>("/super-admin/referrals");
+export const fetchSuperAdminReferralProgramsApi = async (params: Parameters<typeof buildApiParams>[0] = {}, signal?: AbortSignal): Promise<ReferralProgramOverview> => {
+  const response = await axiosInstance.get<ReferralEnvelope<ReferralProgramOverview>>("/super-admin/referrals", { params: buildApiParams(params), signal });
   return response.data.data;
 };

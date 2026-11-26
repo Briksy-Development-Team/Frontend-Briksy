@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
 import { EntityList, type Column, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
-import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import axiosInstance from "../../services/api/axiosInstance";
 
@@ -14,37 +15,19 @@ type ServiceCategory = {
   sort_order: number;
 };
 
-type Envelope = { data: ServiceCategory[] };
 
 const emptyForm = { name: "", slug: "", description: "", is_active: true, sort_order: 0 };
 
 const ServiceCategoryPage = () => {
-  const [categories, setCategories] = useState<ServiceCategory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<ServiceCategory | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  const { params, handleParamsChange } = useEntityTable(() => undefined);
+  const summary = listingSummaries.categories;
+  const { rows, total, params, handleParamsChange, loading, error, reload } =
+    useServerListing<ServiceCategory>(summary.endpoint, { sort: "sort_order", direction: "asc" });
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get<Envelope>("/super-admin/service-categories");
-      setCategories(response.data.data ?? []);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to load service categories.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void load();
-  }, []);
 
   const openCreate = () => {
     setEditing(null);
@@ -75,7 +58,7 @@ const ServiceCategoryPage = () => {
       }
       setEditing(null);
       setIsModalOpen(false);
-      await load();
+      reload();
     } finally {
       setSaving(false);
     }
@@ -84,26 +67,8 @@ const ServiceCategoryPage = () => {
   const remove = async (category: ServiceCategory) => {
     if (!window.confirm(`Delete ${category.name}?`)) return;
     await axiosInstance.delete(`/super-admin/service-categories/${category.id}`);
-    await load();
+    reload();
   };
-
-  const filtered = useMemo(() => {
-    let list = categories;
-    if (params.search) {
-      const q = params.search.toLowerCase();
-      list = list.filter((c) => c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q) || c.description?.toLowerCase().includes(q));
-    }
-    if (params.filters?.is_active !== undefined && params.filters.is_active !== "") {
-      const active = params.filters.is_active === "1";
-      list = list.filter((c) => c.is_active === active);
-    }
-    return list;
-  }, [categories, params.search, params.filters]);
-
-  const paged = useMemo(() => {
-    const start = (params.page - 1) * params.per_page;
-    return filtered.slice(start, start + params.per_page);
-  }, [filtered, params.page, params.per_page]);
 
   const columns = useMemo<Column<ServiceCategory>[]>(() => [
     {
@@ -143,8 +108,9 @@ const ServiceCategoryPage = () => {
         subtitle="Manage the categories shown across service forms and the public website."
         entityName="categories"
         profileType="none"
-        data={paged}
-        total={filtered.length}
+        data={rows}
+        total={total}
+        listingSummary={summary}
         params={params}
         onParamsChange={handleParamsChange}
         columns={columns}

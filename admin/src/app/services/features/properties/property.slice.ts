@@ -25,6 +25,7 @@ type PropertyState = {
   total: number;
 
   loading: boolean;
+  listRequestId?: string;
   saving: boolean;
 
   error: string | null;
@@ -121,18 +122,23 @@ const propertySlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      .addCase(fetchPropertyList.pending, (state) => {
+      .addCase(fetchPropertyList.pending, (state, action) => {
+        state.listRequestId = action.meta.requestId;
         state.loading = true;
         state.error = null;
       })
 
       .addCase(fetchPropertyList.fulfilled, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
         state.data = action.payload.data;
         state.total = action.payload.total;
       })
 
       .addCase(fetchPropertyList.rejected, (state, action) => {
+        if (state.listRequestId !== action.meta.requestId) return;
+        state.listRequestId = undefined;
         state.loading = false;
 
         state.error = action.error.message ?? "Failed to fetch properties";

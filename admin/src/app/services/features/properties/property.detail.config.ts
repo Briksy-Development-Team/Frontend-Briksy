@@ -1,3 +1,4 @@
+import { listingSummaries } from "../../../modules/apps/shared_table/listingSummaries";
 import React from "react";
 import type { DetailConfig } from "../../../modules/apps/shared_detail/core/DetailTypes";
 import { getDisplayId } from "../../utils/displayId";
@@ -149,6 +150,10 @@ export const propertyDetailConfig: DetailConfig<any> = {
     },
     {
       id: "property_inquiries",
+      listingSummary: (data) => data?.id && window.location.pathname.startsWith("/super-admin/")
+        ? listingSummaries.inquiries
+        : undefined,
+      scopeFilters: (data) => ({ property_listing_id: data?.id }),
       type: "table",
       title: "Related Inquiries",
       gridColumnSpan: 12,
@@ -157,13 +162,7 @@ export const propertyDetailConfig: DetailConfig<any> = {
           return;
         }
 
-        void store.dispatch(fetchInquiries({
-          ...params,
-          filters: {
-            ...(params.filters ?? {}),
-            property_listing_id: data.id,
-          },
-        }));
+        void store.dispatch(fetchInquiries(params));
       },
       dataSelector: (state: RootState) => state.inquiries.data,
       totalSelector: (state: RootState) => state.inquiries.total,

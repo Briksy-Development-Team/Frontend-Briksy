@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Content } from "../../../_metronic/layout/components/content";
 import { EntityList, type Column, type RowAction } from "../../modules/apps/shared_table/entity-list/EntityList";
-import { useEntityTable } from "../../modules/apps/shared_table/hooks/useEntityTable";
+import { useServerListing } from "../../modules/apps/shared_table/hooks/useServerListing";
+import { listingSummaries } from "../../modules/apps/shared_table/listingSummaries";
 import { ModalShell } from "../../modules/apps/component/ModalShell";
 import {
   deleteSuperAdminAddonApi,
-  fetchSuperAdminAddonsApi,
   saveSuperAdminAddonApi,
   toggleSuperAdminAddonApi,
 } from "../../services/features/billing/billing.api";
@@ -22,59 +22,19 @@ const emptyAddon: Partial<Addon> = {
 };
 
 export default function AddonsPage() {
-  const [items, setItems] = useState<Addon[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Partial<Addon> | null>(null);
 
-  const { params, handleParamsChange } = useEntityTable(() => undefined);
+  const summary = listingSummaries.addons;
+  const { rows, total, params, handleParamsChange, loading, error, reload } =
+    useServerListing<Addon>(summary.endpoint, { sort: "sort_order", direction: "asc" });
 
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      setItems(await fetchSuperAdminAddonsApi());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load add-ons.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    void load();
-  }, []);
 
   const submit = async () => {
     if (!editing?.name || !editing.slug || !editing.feature_key) return;
     await saveSuperAdminAddonApi(editing, editing.id);
     setEditing(null);
-    await load();
+    reload();
   };
-
-  const filtered = useMemo(() => {
-    let list = items;
-    if (params.search) {
-      const q = params.search.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.name.toLowerCase().includes(q) ||
-          a.slug.toLowerCase().includes(q) ||
-          a.feature_key.toLowerCase().includes(q) ||
-          a.description?.toLowerCase().includes(q)
-      );
-    }
-    if (params.filters?.is_active !== undefined && params.filters.is_active !== "") {
-      const active = params.filters.is_active === "1";
-      list = list.filter((a) => a.is_active === active);
-    }
-    return list;
-  }, [items, params.search, params.filters]);
-
-  const paged = useMemo(() => {
-    const start = (params.page - 1) * params.per_page;
-    return filtered.slice(start, start + params.per_page);
-  }, [filtered, params.page, params.per_page]);
 
   const columns = useMemo<Column<Addon>[]>(
     () => [
@@ -123,7 +83,7 @@ export default function AddonsPage() {
       label: "Toggle Status",
       onClick: async (addon) => {
         await toggleSuperAdminAddonApi(addon.id, !addon.is_active);
-        await load();
+        reload();
       },
     },
     {
@@ -132,7 +92,7 @@ export default function AddonsPage() {
       onClick: async (addon) => {
         if (!window.confirm(`Delete ${addon.name}?`)) return;
         await deleteSuperAdminAddonApi(addon.id);
-        await load();
+        reload();
       },
     },
   ];
@@ -147,8 +107,9 @@ export default function AddonsPage() {
         subtitle="Manage chargeable feature add-ons"
         entityName="addons"
         profileType="none"
-        data={paged}
-        total={filtered.length}
+        data={rows}
+        total={total}
+        listingSummary={summary}
         params={params}
         onParamsChange={handleParamsChange}
         columns={columns}
