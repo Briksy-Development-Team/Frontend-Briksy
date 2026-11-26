@@ -15,7 +15,7 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
-import { getStoredAuth } from "../../auth/auth.storage";
+import type { AuthUser } from "../../auth/auth.types";
 import type { ChatMessageItem } from "./ChatMessage";
 
 export interface ChatSession {
@@ -28,6 +28,8 @@ export interface ChatSession {
 }
 
 interface Props {
+  user: AuthUser | null;
+  onLogin: () => void;
   sessions: ChatSession[];
   activeSessionId: string | null;
   isOpen: boolean;
@@ -60,6 +62,8 @@ function groupSessions(sessions: ChatSession[]) {
 }
 
 export default function AiSidebar({
+  user,
+  onLogin,
   sessions,
   activeSessionId,
   isOpen,
@@ -71,10 +75,8 @@ export default function AiSidebar({
   onDeleteSession,
   onRequestDelete,
 }: Props) {
-  const user = getStoredAuth()?.user;
-  const userName = user?.name || user?.display_name || "Briksy Seeker";
-  const userRole = user?.roles?.[0] || "Seeker";
-  const initials = (userName.match(/\b\w/g)?.slice(0, 2).join("") || "BS").toUpperCase();
+  const userName = user?.name || user?.display_name || "";
+  const initials = userName.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join("").toUpperCase();
 
   const pinned = sessions.filter((s) => s.pinned);
   const recents = sessions.filter((s) => !s.pinned);
@@ -174,9 +176,9 @@ export default function AiSidebar({
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#7C5F42] shadow-2xs">
                     <History size={18} strokeWidth={1.75} />
                   </div>
-                  <p className="text-[14px] font-medium text-[#342511]">No chats yet</p>
+                  <p className="text-[14px] font-medium text-[#342511]">{user ? "No chats yet" : "Chat history"}</p>
                   <p className="text-[12px] leading-relaxed text-[#7C5F42]">
-                    Your conversations will be saved here so you can pick up any search later.
+                    {user ? "Your conversations will be saved here so you can pick up any search later." : "Log in to save your chats."}
                   </p>
                 </div>
               ) : (
@@ -193,19 +195,22 @@ export default function AiSidebar({
 
           {/* User profile footer */}
           <div className="shrink-0 border-t border-[#EBEBEB] p-3">
-            <div className="flex items-center gap-2.5 p-1 rounded-xl transition-colors hover:bg-white/60">
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={userName} className="h-9 w-9 rounded-full object-cover border border-[#EBEBEB]" />
-              ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#342511] text-[13px] font-medium text-white shadow-2xs">
-                  {initials}
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
+            {user ? (
+              <div className="flex items-center gap-2.5 p-1">
+                {user.avatar_url ? (
+                  <img src={user.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover border border-[#EBEBEB]" />
+                ) : initials ? (
+                  <div aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#342511] text-[13px] font-medium text-white shadow-2xs">
+                    {initials}
+                  </div>
+                ) : null}
                 <p className="truncate text-[14px] font-medium text-[#342511]">{userName}</p>
-                <p className="truncate text-[12px] text-[#7C5F42]">{userRole} · Australia</p>
               </div>
-            </div>
+            ) : (
+              <button type="button" onClick={onLogin} className="w-full rounded-xl px-3 py-2 text-left text-[14px] font-medium text-[#342511] transition-colors hover:bg-white/60 cursor-pointer">
+                Login
+              </button>
+            )}
           </div>
         </div>
       </aside>

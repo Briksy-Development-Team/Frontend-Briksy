@@ -5,16 +5,17 @@
  * - "02 Typing — sidebar collapsed" (#4847:24283)
  */
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AlertCircle, ArrowRight, ArrowUpRight, Check, PanelLeft, RotateCw, Search, Square, Trash2, WifiOff, X } from "lucide-react";
 import ModalWrapper from "../wrapper/ModalWrapper";
 import LogoM from "../../assets/logo/logomobile.svg";
 import { askBriksyAi } from "../../api/clients.api";
 import ChatMessage, { type ChatMessageItem } from "./ChatMessage";
 import AiSidebar, { type ChatSession } from "./AiSidebar";
+import type { AuthUser } from "../../auth/auth.types";
 import { useAuth } from "../../auth/AuthContext";
 
-const STORAGE_KEY = "briksy_ai_chat_sessions_v1";
+const STORAGE_KEY = "briksy_ai_chat_sessions_v2";
 let _id = 0;
 const uid = (p = "ai") => `${p}-${Date.now()}-${++_id}`;
 
@@ -24,9 +25,9 @@ const PROMPT_POOLS = [
   ["Modern apartments with balcony in South Yarra", "Verified electrical contractors in Perth", "Family homes with pool under $1.5M", "Architectural designers in Melbourne"],
 ];
 
-const readSessions = (): ChatSession[] => {
+const readSessions = (storageKey: string): ChatSession[] => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(storageKey);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed.filter((s: ChatSession) => !s.id?.startsWith("seed-")) : [];
@@ -35,8 +36,8 @@ const readSessions = (): ChatSession[] => {
   }
 };
 
-const writeSessions = (s: ChatSession[]) => {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch {}
+const writeSessions = (storageKey: string, s: ChatSession[]) => {
+  try { localStorage.setItem(storageKey, JSON.stringify(s)); } catch {}
 };
 
 const OfflineBanner = () => (
@@ -49,12 +50,25 @@ const OfflineBanner = () => (
   </div>
 );
 
-export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+type ModalProps = { isOpen: boolean; onClose: () => void };
+
+export default function AiModeModal(props: ModalProps) {
+  const { user, isAuthenticated, isBootstrapping } = useAuth();
+  const account = !isBootstrapping && isAuthenticated && user?.id ? user : null;
+  const storageKey = account ? `${STORAGE_KEY}:${account.id}` : null;
+
+  return <AiChat key={storageKey ?? "guest"} {...props} user={account} storageKey={storageKey} />;
+}
+
+function AiChat({ isOpen, onClose, user, storageKey }: ModalProps & {
+  user: AuthUser | null;
+  storageKey: string | null;
+}) {
   const location = useLocation();
-  const { isAuthenticated, isBootstrapping } = useAuth();
+  const navigate = useNavigate();
   const openedPath = useRef(location.pathname);
 
-  const [sessions, setSessions] = useState<ChatSession[]>(() => readSessions());
+  const [sessions, setSessions] = useState<ChatSession[]>(() => storageKey ? readSessions(storageKey) : []);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sessionToDelete, setSessionToDelete] = useState<ChatSession | null>(null);
@@ -234,9 +248,13 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
   }, []);
 
   useEffect(() => {
-    if (isBootstrapping) return;
-    setSessions(readSessions());
-  }, [isAuthenticated, isBootstrapping]);
+    if (storageKey) writeSessions(storageKey, sessions);
+  }, [storageKey, sessions]);
+
+  useEffect(() => () => {
+    abortRef.current?.abort();
+    if (toastTimeoutRef.current !== null) window.clearTimeout(toastTimeoutRef.current);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth < 1024) setSidebarOpen(false);
@@ -259,11 +277,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
   }, [messages, busy]);
 
   const updateSessions = (fn: (prev: ChatSession[]) => ChatSession[]) => {
-    setSessions((prev) => {
-      const next = fn(prev);
-      writeSessions(next);
-      return next;
-    });
+    setSessions(fn);
   };
 
   const handleNewChat = () => {
@@ -304,7 +318,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
     if (isOff) {
       setBusy(false);
-      setToast({ id: uid("err"), text: "Couldn’t reach Briksy AI. Your message is saved.", icon: "alert", actionLabel: "Retry", onAction: () => retry(userMsg) });
+      setToast({ id: uid("err"), text: "Couldn’t reach Briksy AI. Please try again.", icon: "alert", actionLabel: "Retry", onAction: () => retry(userMsg) });
       return;
     }
 
@@ -343,7 +357,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
             : s
         )
       );
-      setToast({ id: uid("err"), text: "Couldn’t reach Briksy AI. Your message is saved.", icon: "alert", actionLabel: "Retry", onAction: () => retry(userMsg) });
+      setToast({ id: uid("err"), text: "Couldn’t reach Briksy AI. Please try again.", icon: "alert", actionLabel: "Retry", onAction: () => retry(userMsg) });
     } finally {
       if (abortRef.current === controller) {
         setBusy(false);
@@ -378,7 +392,12 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
         className="relative flex overflow-hidden h-[90vh] w-[90vw] max-w-7xl rounded-[24px] bg-[#F8F4EE] font-helvetica text-[#342511] shadow-2xl my-auto border border-[#EBEBEB]"
       >
         <AiSidebar
-          sessions={sessions}
+          user={user}
+          onLogin={() => {
+            onClose();
+            navigate("/login", { state: { from: location.pathname + location.search } });
+          }}
+          sessions={user ? sessions : []}
           activeSessionId={activeId}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
