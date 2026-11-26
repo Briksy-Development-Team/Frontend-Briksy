@@ -79,7 +79,10 @@ export default function SearchToolbar({
             <div className="w-px h-4 hidden md:block bg-[#EDE8E4]" />
             <button
               type="button"
-              onClick={onAskAi}
+              onClick={() => {
+                onAskAi?.();
+                window.dispatchEvent(new CustomEvent("briksy:ai-ask", { detail: query.trim() }));
+              }}
               className="flex items-center justify-center gap-2 px-0 md:px-2 h-full text-[0.875rem]"
             >
               <Sparkles className="w-4 h-4" />

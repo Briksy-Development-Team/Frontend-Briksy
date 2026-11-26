@@ -38,6 +38,12 @@ export const SearchOverlay = ({ open, onClose, onAskAi }: { open: boolean; onClo
   }, [open, onClose, filterOpen]);
 
   const onSearch = () => query.trim() && (onClose(), navigate(`/result?q=${encodeURIComponent(query)}`));
+  const openAi = () => {
+    const q = query.trim();
+    onClose();
+    onAskAi?.();
+    window.dispatchEvent(new CustomEvent("briksy:ai-ask", { detail: q }));
+  };
   const addFilter = (lbl: string) => (setQuery(lbl), !filters.includes(lbl) && setFilters([...filters, lbl]), inputRef.current?.focus());
 
   return (
@@ -65,7 +71,7 @@ export const SearchOverlay = ({ open, onClose, onAskAi }: { open: boolean; onClo
               </div>
             </div>
 
-            <button onClick={() => onAskAi?.()} className="flex h-[54px] shrink-0 items-center gap-2 rounded-[12px] bg-gradient-to-tr from-[#79241D] to-[#DF4235] px-5 text-[15px] font-semibold text-white hover:opacity-90">
+            <button onClick={openAi} className="flex h-[54px] shrink-0 items-center gap-2 rounded-[12px] bg-gradient-to-tr from-[#79241D] to-[#DF4235] px-5 text-[15px] font-semibold text-white hover:opacity-90">
               <Sparkles size={17} /> Ask Ai
             </button>
           </div>
