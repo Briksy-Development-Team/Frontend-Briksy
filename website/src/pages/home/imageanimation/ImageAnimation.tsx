@@ -41,22 +41,6 @@ const JOURNEY_STEPS: JourneyStep[] = [
   },
 ];
 
-const roll = "block transition-transform duration-300 ease-out group-hover:-translate-y-full";
-
-const RollText = ({ text }: { text: string }) => (
-  <span className="flex">
-    {text.split("").map((char, i) => {
-      const delay = { transitionDelay: `${i * 30}ms` };
-      return (
-        <span key={i} className="relative block overflow-hidden">
-          <span className={roll} style={delay}>{char}</span>
-          <span className={`${roll} absolute left-0 top-full`} style={delay}>{char}</span>
-        </span>
-      );
-    })}
-  </span>
-);
-
 const ImageAnimation = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -108,7 +92,7 @@ const ImageAnimation = () => {
                     <img src={step.icon} alt="" className="h-6 w-6 object-contain" />
                   </div>
                   <div className="w-[96px] text-[18px] sm:text-[20px] font-medium tracking-tight text-primary-brown leading-none">
-                    <RollText text={step.key} />
+                    <p>{step.key}</p>
                   </div>
                 </div>
 

@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 
 import Filter from "../filter/Filter";
 import { useScrollFade } from "./FloatingSearch";
-import RollText from "../../utils/RollText";
 
 import { SEARCH_TAB_CATEGORIES, type Category, type PropType } from "../../constants/categories";
 
@@ -88,11 +87,11 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
           type="button"
           onClick={() => selectCategory(cat)}
           className={`group flex-1 min-w-0 flex items-center justify-center rounded-xl font-medium whitespace-nowrap transition-all duration-200 ${className} ${selected.id === cat.id
-            ? "bg-[#342511] text-white shadow-sm"
-            : "text-[#342511] bg-[#f0ebe4] hover:bg-[#e8e0d8]"
+            ? "bg-primary-brown text-white shadow-sm"
+            : "text-primary-brown bg-[#f0ebe4] hover:bg-[#e8e0d8]"
             }`}
         >
-          <RollText text={cat.label} />
+          <p>{cat.label}</p>
         </button>
       ))}
     </div>
@@ -147,6 +146,11 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
     </div>
   );
 
+  const openAi = () => {
+    setMode("ai");
+    window.dispatchEvent(new CustomEvent("briksy:ai-ask", { detail: query.trim() }));
+  };
+
   // ── Desktop input row ────────────────────────────────────────────────────────
   const divider = <div className="w-px h-8 bg-[#EDE8E4] shrink-0" />;
 
@@ -194,11 +198,11 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
       {/* Ask AI — orange glow button */}
       <button
         type="button"
-        onClick={() => setMode("ai")}
+        onClick={openAi}
         className="group flex shrink-0 items-center gap-2 px-5 py-3 rounded-full bg-white border border-[#F5551A]/40 shadow-[inset_0_0_20px_rgba(245,85,26,0.35)] text-[15px] text-[#F5551A] whitespace-nowrap transition  hover:scale-105 hover:opacity-90"
       >
         <Sparkles size={17} />
-        <RollText text="Ask AI" />
+        <p>Ask AI</p>
       </button>
     </div>
   );
@@ -249,7 +253,7 @@ const HeroSearchBar = ({ mode, setMode }: Props) => {
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={() => setMode("ai")}
+              onClick={openAi}
               className="flex shrink-0 items-center justify-center gap-2 h-10 px-3 rounded-3xl border-[3px] border-transparent
                 [background:linear-gradient(110.61deg,#79241D_22.989%,#DF4235_86.442%)_padding-box,linear-gradient(290deg,#DF4235,#79241D)_border-box]
                 text-[#FBF8F3] font-medium shadow-md shadow-red-900/20 hover:opacity-90 transition"

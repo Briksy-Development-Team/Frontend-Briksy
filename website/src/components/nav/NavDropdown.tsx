@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
-import RollText from "../../utils/RollText";
 import type { NavCard, NavItem } from "../../hooks/useNavMenu";
 
 const zoom = (e: MouseEvent<HTMLElement>, scale: number) =>
@@ -113,7 +112,7 @@ export default function NavDropdown({ item, onClose, onMouseEnter, onMouseLeave 
                         onClick={onClose}
                         className="group dd-item py-1 text-base xl:text-md font-normal leading-5 text-black transition-colors duration-150 hover:text-[#8B6F54]"
                       >
-                        <RollText text={l.label} />
+                        <p>{l.label}</p>
                       </Link>
                     ))}
                   </div>

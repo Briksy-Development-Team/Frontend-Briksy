@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import { SwiperScroll } from "./SwiperScroll";
-import RollText from "../../utils/RollText";
 
 export interface SubCategory {
   id?: string | number;
@@ -123,7 +122,7 @@ export function SwiperSection<T = any>({
 
   const defaultContainerClass =
     variant === "home"
-      ? "lg:w-full pl-[5%] lg:px-0 lg:ml-10 min-[1400px]:ml-0 min-[1400px]:pl-0"
+      ? "w-full max-w-[1400px] mx-auto px-4 md:px-8"
       : "w-full max-w-[1400px] mx-auto";
 
   const innerContainerClass = containerClassName ?? defaultContainerClass;
@@ -134,10 +133,7 @@ export function SwiperSection<T = any>({
     <section className={`font-helvetica ${className}`}>
       <div className={innerContainerClass}>
         <div
-          className={`relative ${headerMargin} ${variant === "home"
-            ? "max-w-[1400px] mx-auto pr-4 md:pr-8 xl:pr-14"
-            : ""
-            } flex flex-col text-primary-brown items-start justify-end lg:justify-center ${headerClassName}`}
+          className={`relative ${headerMargin} flex flex-col text-primary-brown items-start justify-end lg:justify-center ${headerClassName}`}
         >
           <div className="flex w-full items-center justify-between">
             <h2 className={titleClasses}>{title}</h2>
@@ -151,7 +147,7 @@ export function SwiperSection<T = any>({
                   onClick={handleViewAll}
                   className="group cursor-pointer hidden md:flex items-center gap-1.5 text-[14px] md:text-[16px] font-medium text-[#8B6F54] hover:text-[#562F00] transition-colors"
                 >
-                  <RollText text={resolvedViewAllText} />
+                  <p>{resolvedViewAllText}</p>
                   <span className="relative block overflow-hidden">
                     <ArrowUpRight size={18} className={arrowRoll} />
                     <ArrowUpRight size={18} className={`${arrowRoll} absolute left-0 top-full`} />
@@ -169,7 +165,7 @@ export function SwiperSection<T = any>({
         </div>
 
         {categories && categories.length > 0 && (
-          <div className="flex flex-wrap justify-center hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start max-w-[1400px] mx-auto">
+          <div className="flex flex-wrap justify-center hidden md:flex gap-4 pb-6 text-[1rem] sm:justify-start">
             {categories.map((tab, i) => (
               <button
                 type="button"
@@ -188,13 +184,7 @@ export function SwiperSection<T = any>({
         )}
 
         {/* Swiper Cards */}
-        <div
-          key={activeIdx}
-          className={`animate-fade-in gap-3 ${variant === "home"
-            ? "min-[1400px]:pl-[calc((100vw-1400px)/2)]"
-            : ""
-            }`}
-        >
+        <div key={activeIdx} className="animate-fade-in gap-3">
           <SwiperScroll
             items={displayItems}
             renderItem={renderItem}
@@ -202,6 +192,7 @@ export function SwiperSection<T = any>({
             slideClassName={slideClassName}
             spaceBetween={spaceBetween}
             className={variant === "home" ? "" : "!ml-0"}
+            fadeColor={variant === "home" ? "#F0EAE5" : undefined}
           />
         </div>
       </div>

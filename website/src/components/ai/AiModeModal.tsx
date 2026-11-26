@@ -267,6 +267,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
   };
 
   const handleNewChat = () => {
+    abortRef.current?.abort();
     setActiveId(null);
     setInput("");
     setError("");
@@ -274,9 +275,10 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
     setTimeout(() => textareaRef.current?.focus(), 50);
   };
 
-  const submit = async (query = input) => {
+  const submit = async (query = input, forceNew = false) => {
     const q = query.trim();
-    if (!q || busy) return;
+    if (!q || (busy && !forceNew)) return;
+    if (forceNew) abortRef.current?.abort();
 
     setInput("");
     setError("");
@@ -286,7 +288,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
     const thinkId = uid("t");
     const thinkMsg: ChatMessageItem = { id: thinkId, role: "assistant", content: "", recommendations: [], thinking: true };
 
-    let targetId = activeId;
+    let targetId = forceNew ? null : activeId;
     if (!targetId) {
       targetId = uid("chat");
       updateSessions((prev) => [
@@ -301,6 +303,7 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
     }
 
     if (isOff) {
+      setBusy(false);
       setToast({ id: uid("err"), text: "Couldn’t reach Briksy AI. Your message is saved.", icon: "alert", actionLabel: "Retry", onAction: () => retry(userMsg) });
       return;
     }
@@ -342,10 +345,24 @@ export default function AiModeModal({ isOpen, onClose }: { isOpen: boolean; onCl
       );
       setToast({ id: uid("err"), text: "Couldn’t reach Briksy AI. Your message is saved.", icon: "alert", actionLabel: "Retry", onAction: () => retry(userMsg) });
     } finally {
-      setBusy(false);
-      setTimeout(() => followUpRef.current?.focus(), 50);
+      if (abortRef.current === controller) {
+        setBusy(false);
+        setTimeout(() => followUpRef.current?.focus(), 50);
+      }
     }
   };
+
+  const askRef = useRef({ submit, handleNewChat });
+  askRef.current = { submit, handleNewChat };
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const q = (e as CustomEvent<string>).detail?.trim();
+      if (q) askRef.current.submit(q, true);
+      else askRef.current.handleNewChat();
+    };
+    window.addEventListener("briksy:ai-ask", onAsk);
+    return () => window.removeEventListener("briksy:ai-ask", onAsk);
+  }, []);
 
   const idle = messages.length === 0;
   const currentPrompts = PROMPT_POOLS[poolIndex] || PROMPT_POOLS[0];
